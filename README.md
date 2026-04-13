@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Arena Gladiator ⚔️
 
-## Getting Started
+A production-ready SEO website for an iGaming casino streamer brand with a dark gladiator/arena theme. Built with Next.js 16, React 19, TailwindCSS 4, Framer Motion, GSAP, and Supabase.
 
-First, run the development server:
+## Features
+
+- **Cinematic Hero Section** — Full-screen with rain/ember particles (canvas), GSAP camera push-in, ambient sound toggle
+- **Streamer Hub** — Live Twitch embed with dynamic "gladiator status" (online/offline)
+- **Bonus Hunt Tracker** — Real-time card carousel with 3D depth, smooth layout animations
+- **Slot Request System** — `!sr` command input with Fuse.js fuzzy matching and animated queue
+- **Leaderboard** — Gladiator rank progression (Recruit → Legend) with animated gold fill bars
+- **Casino Reviews** — SEO-optimized landing pages with Review, FAQ, and Product schema markup
+- **Full SEO** — Metadata, Open Graph, Twitter cards, sitemap.xml, robots.txt, JSON-LD schemas
+
+## Quick Start
 
 ```bash
+npm install
+cp .env.example .env.local
+# Edit .env.local with your Supabase and Twitch credentials
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Environment Variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Variable | Description |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key |
+| `NEXT_PUBLIC_SITE_URL` | Production URL for SEO |
+| `NEXT_PUBLIC_TWITCH_CHANNEL` | Twitch channel username |
+| `TWITCH_CLIENT_ID` | Twitch API client ID (server-side) |
+| `TWITCH_CLIENT_SECRET` | Twitch API client secret (server-side) |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Required Assets
 
-## Learn More
+| Path | Description |
+|---|---|
+| `/public/images/hero-gladiator.jpg` | Hero background (1920x1080+) |
+| `/public/og-image.jpg` | Open Graph image (1200x630) |
+| `/public/sounds/arena-ambience.mp3` | Ambient sound loop |
 
-To learn more about Next.js, take a look at the following resources:
+## Database Setup
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Run `supabase/schema.sql` in your Supabase SQL Editor.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment
 
-## Deploy on Vercel
+```bash
+npm i -g vercel && vercel --prod
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Set environment variables in Vercel project settings.

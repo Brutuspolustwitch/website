@@ -1,26 +1,163 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ── Arena Design System ─────────────────────────────────────────────── */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-arena-black: #0a0a0a;
+  --color-arena-charcoal: #1a1a1a;
+  --color-arena-dark: #141414;
+  --color-arena-crimson: #8b0000;
+  --color-arena-red: #c62828;
+  --color-arena-blood: #b71c1c;
+  --color-arena-bronze: #cd7f32;
+  --color-arena-gold: #d4a843;
+  --color-arena-gold-light: #f0d78c;
+  --color-arena-ember: #ff6f00;
+  --color-arena-steel: #3a3a3a;
+  --color-arena-iron: #2a2a2a;
+  --color-arena-smoke: #999;
+  --color-arena-ash: #666;
+  --color-arena-white: #e8e0d4;
+
+  --font-display: "Cinzel", serif;
+  --font-body: "Inter", sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ── Base ───────────────────────────────────────────────────────────── */
+
+:root {
+  --background: #0a0a0a;
+  --foreground: #e8e0d4;
+  color-scheme: dark;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3a3a3a #0a0a0a;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+}
+
+::selection {
+  background: rgba(139, 0, 0, 0.5);
+  color: #f0d78c;
+}
+
+/* ── Arena Utility Classes ──────────────────────────────────────────── */
+
+.arena-border {
+  border: 1px solid rgba(212, 168, 67, 0.15);
+  box-shadow:
+    inset 0 0 20px rgba(0, 0, 0, 0.5),
+    0 0 15px rgba(212, 168, 67, 0.05);
+}
+
+.arena-border-crimson {
+  border: 1px solid rgba(139, 0, 0, 0.3);
+  box-shadow:
+    inset 0 0 20px rgba(0, 0, 0, 0.5),
+    0 0 15px rgba(139, 0, 0, 0.1);
+}
+
+/* Metallic shine sweep on hover */
+.arena-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.arena-shine::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(212, 168, 67, 0.08),
+    rgba(212, 168, 67, 0.15),
+    rgba(212, 168, 67, 0.08),
+    transparent
+  );
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+
+.arena-shine:hover::after {
+  left: 100%;
+}
+
+/* Impact button press */
+.arena-btn-press {
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
+}
+
+.arena-btn-press:active {
+  transform: scale(0.96) translateY(1px);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* Engraved text */
+.arena-engraved {
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.05),
+    0 -1px 0 rgba(0, 0, 0, 0.8);
+}
+
+/* Fire glow text */
+.arena-glow {
+  text-shadow:
+    0 0 10px rgba(255, 111, 0, 0.3),
+    0 0 20px rgba(255, 111, 0, 0.15),
+    0 0 40px rgba(139, 0, 0, 0.1);
+}
+
+/* Gold gradient text */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #d4a843, #f0d78c, #cd7f32);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Crimson gradient text */
+.text-crimson-gradient {
+  background: linear-gradient(135deg, #c62828, #8b0000);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Keyframes ──────────────────────────────────────────────────────── */
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 15px rgba(139, 0, 0, 0.2); }
+  50% { box-shadow: 0 0 30px rgba(139, 0, 0, 0.4); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.progress-gold-fill {
+  background: linear-gradient(90deg, #cd7f32, #d4a843, #f0d78c, #d4a843, #cd7f32);
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+}
+
+.metal-frame-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
 }
