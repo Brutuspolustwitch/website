@@ -9,9 +9,13 @@ export const metadata: Metadata = {
 export default function RodaDiariaPage() {
   return (
     <div className="h-screen overflow-hidden relative pt-16">
-      {/* Ambient background */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(139,0,0,0.08),transparent_70%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_80%,rgba(212,168,67,0.05),transparent_50%)]" />
+      {/* Background image */}
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/wheel-bg.jpg')" }} />
+      {/* Dark overlay to keep it moody */}
+      <div className="absolute inset-0 bg-black/70" />
+      {/* Ambient color gradients on top */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(139,0,0,0.12),transparent_70%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_80%,rgba(212,168,67,0.08),transparent_50%)]" />
 
       {/* Header — floats above the SpinWheel background */}
       <div className="absolute top-16 left-0 right-0 z-20 text-center py-3 lg:py-4 pointer-events-none">
