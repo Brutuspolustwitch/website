@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { SITE_URL } from "@/lib/constants";
 import { cookies } from "next/headers";
+import { supabase } from "@/lib/supabase";
+import type { UserRole } from "@/lib/supabase";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -77,6 +79,37 @@ export async function GET(request: Request) {
       return NextResponse.redirect(`${SITE_URL}/?auth_error=no_user`);
     }
 
+    // Upsert user into Supabase users table
+    let role: UserRole = "viewer";
+    const { data: existingUser } = await supabase
+      .from("users")
+      .select("role")
+      .eq("twitch_id", user.id)
+      .single();
+
+    if (existingUser) {
+      // User exists — update profile info, keep existing role
+      role = existingUser.role as UserRole;
+      await supabase
+        .from("users")
+        .update({
+          login: user.login,
+          display_name: user.display_name,
+          profile_image_url: user.profile_image_url,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("twitch_id", user.id);
+    } else {
+      // New user — insert with default "viewer" role
+      await supabase.from("users").insert({
+        twitch_id: user.id,
+        login: user.login,
+        display_name: user.display_name,
+        profile_image_url: user.profile_image_url,
+        role: "viewer",
+      });
+    }
+
     // Build session payload (stored in httpOnly cookie)
     const session = {
       id: user.id,
@@ -84,6 +117,7 @@ export async function GET(request: Request) {
       display_name: user.display_name,
       profile_image_url: user.profile_image_url,
       email: user.email || null,
+      role,
       created_at: new Date().toISOString(),
     };
 
@@ -103,6 +137,7 @@ export async function GET(request: Request) {
         login: user.login,
         display_name: user.display_name,
         profile_image_url: user.profile_image_url,
+        role,
       }),
       {
         httpOnly: false,

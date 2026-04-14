@@ -71,6 +71,19 @@ export interface SpinHistoryRow {
   created_at: string;
 }
 
+export type UserRole = "admin" | "configurador" | "moderador" | "viewer";
+
+export interface UserRow {
+  id: string;
+  twitch_id: string;
+  login: string;
+  display_name: string;
+  profile_image_url: string | null;
+  role: UserRole;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface CasinoOfferRow {
   id: string;
   slug: string;

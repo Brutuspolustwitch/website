@@ -100,6 +100,19 @@ create table if not exists casino_offers (
 
 create index idx_casino_offers_visible on casino_offers(visible, sort_order);
 
+-- Users (Twitch-authenticated, with roles)
+create table if not exists users (
+  id uuid primary key default gen_random_uuid(),
+  twitch_id text not null unique,
+  login text not null,
+  display_name text not null,
+  profile_image_url text,
+  role text not null default 'viewer' check (role in ('admin', 'configurador', 'moderador', 'viewer')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index idx_users_twitch_id on users(twitch_id);
 
 -- Enable Realtime for bonus hunt tracking
 alter publication supabase_realtime add table bonus_hunt_slots;
@@ -134,3 +147,10 @@ create policy "Public read visible offers" on casino_offers for select using (tr
 create policy "Admin insert offers" on casino_offers for insert with check (true);
 create policy "Admin update offers" on casino_offers for update using (true);
 create policy "Admin delete offers" on casino_offers for delete using (true);
+
+-- Users: public read, admin-only write
+alter table users enable row level security;
+create policy "Public read users" on users for select using (true);
+create policy "Admin insert users" on users for insert with check (true);
+create policy "Admin update users" on users for update using (true);
+create policy "Admin delete users" on users for delete using (true);

@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/lib/auth-context";
+import { hasRole } from "@/lib/roles";
+import type { UserRole } from "@/lib/supabase";
 
 /* ── Types ──────────────────────────────────────────────────────── */
 interface NavChild {
@@ -17,6 +20,7 @@ interface NavItem {
   href: string;
   label: string;
   children?: NavChild[];
+  minRole?: UserRole;
 }
 
 /* ── Sidebar link definitions (custom order) ────────────────────── */
@@ -49,6 +53,7 @@ const SECONDARY_LINKS: NavItem[] = [
   {
     href: "/admin",
     label: "Admin Area",
+    minRole: "configurador",
     children: [
       { href: "/admin/parcerias", label: "Parcerias" },
       { href: "/admin/utilizadores", label: "Utilizadores" },
@@ -65,7 +70,7 @@ const SECONDARY_LINKS: NavItem[] = [
       },
     ],
   },
-  { href: "/moderador", label: "Moderador Area" },
+  { href: "/moderador", label: "Moderador Area", minRole: "moderador" },
 ];
 
 /* ── Icons per route ────────────────────────────────────────────── */
@@ -126,7 +131,14 @@ interface SidebarProps {
 
 export function Sidebar({ open, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const { user } = useAuth();
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+
+  // Filter secondary links by user role
+  const visibleSecondary = useMemo(
+    () => SECONDARY_LINKS.filter((item) => !item.minRole || hasRole(user?.role, item.minRole)),
+    [user?.role]
+  );
 
   const toggleExpand = (href: string) => {
     setExpanded((prev) => ({ ...prev, [href]: !prev[href] }));
@@ -318,11 +330,13 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         {/* Main links */}
         {MAIN_LINKS.map(renderNavItem)}
 
-        {/* Divider */}
-        <div className="!my-3 mx-1 h-px bg-gradient-to-r from-transparent via-arena-steel/30 to-transparent" />
-
-        {/* Secondary links */}
-        {SECONDARY_LINKS.map(renderNavItem)}
+        {/* Secondary links (role-gated) */}
+        {visibleSecondary.length > 0 && (
+          <>
+            <div className="!my-3 mx-1 h-px bg-gradient-to-r from-transparent via-arena-steel/30 to-transparent" />
+            {visibleSecondary.map(renderNavItem)}
+          </>
+        )}
       </nav>
 
       {/* Social icons */}

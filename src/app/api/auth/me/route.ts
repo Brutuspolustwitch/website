@@ -17,6 +17,7 @@ export async function GET() {
         login: session.login,
         display_name: session.display_name,
         profile_image_url: session.profile_image_url,
+        role: session.role ?? "viewer",
       },
     });
   } catch {

@@ -1,12 +1,14 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
+import type { UserRole } from "./supabase";
 
 export interface TwitchUser {
   id: string;
   login: string;
   display_name: string;
   profile_image_url: string;
+  role: UserRole;
 }
 
 interface AuthContextType {
