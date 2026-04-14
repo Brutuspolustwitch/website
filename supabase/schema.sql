@@ -183,3 +183,46 @@ create policy "Users read own notifications" on notifications for select using (
 create policy "Admin insert notifications" on notifications for insert with check (true);
 create policy "Admin update notifications" on notifications for update using (true);
 create policy "Admin delete notifications" on notifications for delete using (true);
+
+-- Rewards (Reward Armory store items)
+create table if not exists rewards (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  description text not null default '',
+  image text,
+  cost integer not null default 0,
+  type text not null default 'custom' check (type in ('deposit', 'ticket', 'gift', 'cash', 'custom')),
+  tier text not null default 'common' check (tier in ('common', 'elite', 'legendary')),
+  stock integer,
+  cooldown integer,
+  vip_only boolean not null default false,
+  vip_level_required integer,
+  active boolean not null default true,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index idx_rewards_active on rewards(active, sort_order);
+
+-- Reward redemptions (tracks who redeemed what)
+create table if not exists reward_redemptions (
+  id uuid primary key default gen_random_uuid(),
+  reward_id uuid not null references rewards(id) on delete cascade,
+  user_twitch_id text not null references users(twitch_id) on delete cascade,
+  cost integer not null,
+  created_at timestamptz not null default now()
+);
+
+create index idx_redemptions_user on reward_redemptions(user_twitch_id, created_at desc);
+create index idx_redemptions_reward on reward_redemptions(reward_id, created_at desc);
+
+alter table rewards enable row level security;
+create policy "Public read rewards" on rewards for select using (true);
+create policy "Admin insert rewards" on rewards for insert with check (true);
+create policy "Admin update rewards" on rewards for update using (true);
+create policy "Admin delete rewards" on rewards for delete using (true);
+
+alter table reward_redemptions enable row level security;
+create policy "Public read redemptions" on reward_redemptions for select using (true);
+create policy "Insert redemptions" on reward_redemptions for insert with check (true);

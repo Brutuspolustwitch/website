@@ -1,26 +1,204 @@
-import type { Metadata } from "next";
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { SEStore } from "@/components/SEStore";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Loja",
-  description: "Loja oficial Arena Gladiator. Troca os teus pontos de lealdade por recompensas exclusivas.",
-  openGraph: {
-    title: "Loja | Arena Gladiator",
-    description: "Loja oficial Arena Gladiator — recompensas StreamElements.",
-  },
-};
+import { useAuth } from "@/lib/auth-context";
+import { useArmorySound } from "@/hooks/useArmorySound";
+import { RewardCard, type Reward } from "@/components/RewardCard";
+import { VipBadge, getVipLevel } from "@/components/VipBadge";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import { useEffect, useState, useCallback } from "react";
+import { motion } from "framer-motion";
 
 export default function LojaPage() {
+  const { user, loading: authLoading, login } = useAuth();
+  const { init, play, vibrate } = useArmorySound();
+  const [rewards, setRewards] = useState<Reward[]>([]);
+  const [points, setPoints] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
+
+  const vipLevel = getVipLevel(points);
+
+  useEffect(() => {
+    fetch("/api/rewards")
+      .then((r) => r.json())
+      .then((d) => { if (Array.isArray(d.rewards)) setRewards(d.rewards); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    fetch(`/api/streamelements?endpoint=user-points&username=${encodeURIComponent(user.login)}`)
+      .then((r) => r.json())
+      .then((d) => { if (typeof d.points === "number") setPoints(d.points); })
+      .catch(() => {});
+  }, [user]);
+
+  useEffect(() => {
+    const handler = () => { init(); window.removeEventListener("pointerdown", handler); };
+    window.addEventListener("pointerdown", handler);
+    return () => window.removeEventListener("pointerdown", handler);
+  }, [init]);
+
+  const showToast = useCallback((msg: string, type: "success" | "error") => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 3500);
+  }, []);
+
+  const handleRedeem = useCallback(async (rewardId: string): Promise<boolean> => {
+    play("click");
+    vibrate("click");
+
+    try {
+      const res = await fetch("/api/rewards/redeem", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rewardId }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        showToast(data.error || "Falha ao resgatar", "error");
+        return false;
+      }
+
+      play("redeem");
+      vibrate("success");
+      if (typeof data.newPoints === "number") setPoints(data.newPoints);
+
+      setRewards((prev) =>
+        prev.map((r) =>
+          r.id === rewardId && r.stock !== null ? { ...r, stock: r.stock - 1 } : r
+        )
+      );
+
+      showToast("Recompensa resgatada com sucesso!", "success");
+      return true;
+    } catch {
+      showToast("Erro de rede", "error");
+      return false;
+    }
+  }, [play, vibrate, showToast]);
+
+  const legendaryRewards = rewards.filter((r) => r.tier === "legendary");
+  const otherRewards = rewards.filter((r) => r.tier !== "legendary");
+
   return (
     <div className="pt-24 pb-16 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionHeading title="Loja" subtitle="Troca os teus pontos por recompensas exclusivas" />
-        <p className="mt-2 text-sm text-white/40 text-center">Os pontos são ganhos assistindo à stream — usa-os aqui para desbloquear itens.</p>
-        <div className="mt-12">
-          <SEStore />
-        </div>
+        <SectionHeading title="Armaria" subtitle="Recompensas forjadas para guerreiros" />
+
+        {/* Points Bar */}
+        {user ? (
+          <div className="flex items-center justify-center gap-4 mb-10">
+            <div className="flex items-center gap-3 bg-black/40 backdrop-blur-md border border-arena-gold/20 rounded-xl px-5 py-2.5">
+              <span className="gladiator-label text-sm text-arena-gold">
+                ⭐ {points.toLocaleString()} pontos
+              </span>
+              <div className="w-px h-5 bg-arena-gold/20" />
+              <VipBadge level={vipLevel} />
+            </div>
+          </div>
+        ) : !authLoading ? (
+          <div className="text-center mb-10">
+            <p className="text-arena-smoke text-sm mb-3">Entra com Twitch para ver os teus pontos e resgatar recompensas</p>
+            <button
+              onClick={login}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#9146FF] hover:bg-[#7c3aed] text-white text-sm font-semibold transition-all cursor-pointer"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z" />
+              </svg>
+              Login com Twitch
+            </button>
+          </div>
+        ) : null}
+
+        {/* Loading skeletons */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-72 rounded-xl bg-white/[0.03] animate-pulse border border-white/[0.05]" />
+            ))}
+          </div>
+        ) : rewards.length === 0 ? (
+          <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-12 text-center">
+            <p className="text-arena-ash text-lg">A armaria está vazia de momento.</p>
+            <p className="text-arena-ash/60 text-sm mt-2">Volta em breve para novas recompensas!</p>
+          </div>
+        ) : (
+          <>
+            {/* Legendary Highlight Section */}
+            {legendaryRewards.length > 0 && (
+              <div className="mb-12">
+                <h3 className="gladiator-label text-sm text-arena-crimson mb-4 flex items-center gap-2">
+                  <span className="h-px flex-1 bg-gradient-to-r from-arena-crimson/30 to-transparent" />
+                  🔥 Lendárias
+                  <span className="h-px flex-1 bg-gradient-to-l from-arena-crimson/30 to-transparent" />
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {legendaryRewards.map((reward, i) => (
+                    <motion.div
+                      key={reward.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, delay: i * 0.1 }}
+                    >
+                      <RewardCard
+                        reward={reward}
+                        userPoints={points}
+                        userVipLevel={vipLevel}
+                        onRedeem={handleRedeem}
+                        onHover={() => { play("hover"); vibrate("hover"); }}
+                        onClick={() => { play("click"); vibrate("click"); }}
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Other rewards grid */}
+            {otherRewards.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {otherRewards.map((reward, i) => (
+                  <motion.div
+                    key={reward.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: i * 0.05 }}
+                  >
+                    <RewardCard
+                      reward={reward}
+                      userPoints={points}
+                      userVipLevel={vipLevel}
+                      onRedeem={handleRedeem}
+                      onHover={() => { play("hover"); vibrate("hover"); }}
+                      onClick={() => { play("click"); vibrate("click"); }}
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
       </div>
+
+      {/* Toast notification */}
+      {toast && (
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 40 }}
+          className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-xl border backdrop-blur-lg gladiator-label text-sm
+            ${toast.type === "success"
+              ? "bg-green-900/60 border-green-500/30 text-green-300"
+              : "bg-red-900/60 border-red-500/30 text-red-300"
+            }`}
+        >
+          {toast.msg}
+        </motion.div>
+      )}
     </div>
   );
 }
