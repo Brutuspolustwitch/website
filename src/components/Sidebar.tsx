@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -231,6 +232,37 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         {/* Secondary links */}
         {SECONDARY_LINKS.map(renderNavItem)}
       </nav>
+
+      {/* Social icons */}
+      <div className="px-4 py-3">
+        <div className="flex items-center justify-center gap-4">
+          <a
+            href="https://www.instagram.com/brutuspolus"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="opacity-60 hover:opacity-100 transition-opacity duration-200"
+            aria-label="Instagram"
+          >
+            <Image src="/images/fa-instagram.png" alt="Instagram" width={24} height={24} className="w-6 h-6 object-contain" />
+          </a>
+          <a
+            href="https://www.twitch.tv/arena_gladiator"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="opacity-60 hover:opacity-100 transition-opacity duration-200"
+            aria-label="Twitch"
+          >
+            <Image src="/images/fa-twitch.png" alt="Twitch" width={24} height={24} className="w-6 h-6 object-contain" />
+          </a>
+          <a
+            href="mailto:contact@arena-gladiator.gg"
+            className="opacity-60 hover:opacity-100 transition-opacity duration-200"
+            aria-label="Email"
+          >
+            <Image src="/images/fa-gmail.png" alt="Email" width={24} height={24} className="w-6 h-6 object-contain" />
+          </a>
+        </div>
+      </div>
 
       {/* Decorative gladiator accent */}
       <div className="p-4 text-center">
