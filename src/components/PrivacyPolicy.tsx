@@ -101,7 +101,7 @@ export function PrivacyPolicy() {
           {sections.map((section, i) => (
             <ScrollReveal key={i}>
               <div className="bg-arena-charcoal/60 rounded-xl border border-arena-steel/20 p-6 sm:p-8">
-                <h2 className="font-[family-name:var(--font-display)] text-arena-gold text-lg font-bold mb-4">
+                <h2 className="gladiator-label text-arena-gold text-lg font-bold mb-4">
                   {section.title}
                 </h2>
                 <div className="text-arena-smoke text-sm leading-relaxed whitespace-pre-line">

@@ -126,7 +126,7 @@ export default function ParceriasPage() {
           <button onClick={() => { setEditing(null); setCreating(false); }} className="text-arena-gold text-sm mb-4 hover:underline">
             ← Voltar à lista
           </button>
-          <h1 className="font-[family-name:var(--font-display)] text-2xl font-black text-arena-gold uppercase tracking-wider mb-6">
+          <h1 className="gladiator-title text-2xl mb-6">
             {editing ? `Editar: ${editing.name}` : "Nova Parceria"}
           </h1>
           <OfferForm
@@ -147,7 +147,7 @@ export default function ParceriasPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="font-[family-name:var(--font-display)] text-2xl font-black text-arena-gold uppercase tracking-wider">
+            <h1 className="gladiator-title text-2xl">
               Parcerias
             </h1>
             <p className="text-sm text-arena-ash mt-1">{offers.length} ofertas registadas</p>

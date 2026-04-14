@@ -124,7 +124,7 @@ export function HeroSection() {
 
             {/* Headline */}
             <motion.h1
-              className="max-w-2xl font-[family-name:var(--font-display)] text-[clamp(3.2rem,10vw,7.8rem)] font-black uppercase leading-[0.92] tracking-[-0.05em] text-white drop-shadow-[0_8px_30px_rgba(0,0,0,0.55)]"
+              className="gladiator-title max-w-2xl text-[clamp(3.2rem,10vw,7.8rem)] leading-[0.92]"
               initial={reduceMotion ? false : { opacity: 0, y: 22 }}
               animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
               transition={{ duration: 0.9, ease: "easeOut", delay: 0.25 }}

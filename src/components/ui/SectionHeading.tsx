@@ -9,11 +9,11 @@ interface SectionHeadingProps {
 export function SectionHeading({ title, subtitle, className = "" }: SectionHeadingProps) {
   return (
     <div className={`text-center mb-12 ${className}`}>
-      <h2 className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl lg:text-5xl font-bold text-gold-gradient arena-engraved tracking-wide">
+      <h2 className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl lg:text-5xl font-black text-gold-gradient arena-engraved tracking-wider uppercase">
         {title}
       </h2>
       {subtitle && (
-        <p className="mt-3 text-arena-smoke text-sm sm:text-base max-w-2xl mx-auto">
+        <p className="mt-3 gladiator-subtitle text-sm sm:text-base max-w-2xl mx-auto">
           {subtitle}
         </p>
       )}

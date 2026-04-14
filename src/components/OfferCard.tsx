@@ -75,7 +75,7 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
             </div>
             {/* Casino name watermark */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <span className="font-[family-name:var(--font-display)] text-2xl lg:text-3xl font-black text-white/30 uppercase tracking-wider">
+              <span className="gladiator-label text-2xl lg:text-3xl font-black text-white/30">
                 {offer.name}
               </span>
             </div>

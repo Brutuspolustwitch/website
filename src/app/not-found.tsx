@@ -24,10 +24,10 @@ export default function NotFound() {
           <div className="absolute inset-0 rounded-full bg-gradient-to-t from-arena-black/60 to-transparent" />
         </div>
 
-        <h1 className="font-[family-name:var(--font-display)] text-8xl font-black text-gold-gradient arena-glow mb-4">
+        <h1 className="gladiator-title text-8xl mb-4">
           404
         </h1>
-        <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold text-arena-smoke tracking-wider mb-2">
+        <h2 className="gladiator-subtitle text-2xl mb-2">
           FALLEN IN BATTLE
         </h2>
         <p className="text-arena-ash mb-8 max-w-md mx-auto">

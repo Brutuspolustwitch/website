@@ -19,10 +19,10 @@ export default function RodaDiariaPage() {
 
       {/* Header — floats above the SpinWheel background */}
       <div className="absolute top-16 left-0 right-0 z-20 text-center py-3 lg:py-4 pointer-events-none">
-        <h1 className="font-[family-name:var(--font-display)] text-xl lg:text-2xl font-black uppercase tracking-[0.15em] text-arena-gold">
+        <h1 className="gladiator-title text-xl lg:text-2xl">
           Provação Diária da Arena
         </h1>
-        <p className="text-[11px] text-arena-ash/60 uppercase tracking-[0.2em] mt-0.5">
+        <p className="gladiator-subtitle text-[11px] mt-0.5">
           Gira a roda do destino e reivindica a tua glória
         </p>
       </div>

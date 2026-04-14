@@ -76,7 +76,7 @@ export function AgeGate() {
           <div className="w-12 h-px bg-arena-gold/30 mx-auto mb-5" />
 
           {/* Title */}
-          <h2 className="font-[family-name:var(--font-display)] text-xl font-black text-white uppercase tracking-wider mb-2">
+          <h2 className="gladiator-title text-xl mb-2">
             Verificação de Idade
           </h2>
           <p className="text-sm text-arena-ash leading-relaxed mb-6">

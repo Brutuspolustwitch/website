@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cinzel, Oswald, Uncial_Antiqua } from "next/font/google";
+import { Cinzel, Bebas_Neue } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/AppShell";
 import { SITE_NAME, SITE_DESCRIPTION, SITE_URL } from "@/lib/constants";
@@ -11,14 +11,8 @@ const cinzel = Cinzel({
   display: "swap",
 });
 
-const oswald = Oswald({
+const bebasNeue = Bebas_Neue({
   variable: "--font-ui",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const uncialAntiqua = Uncial_Antiqua({
-  variable: "--font-fx",
   subsets: ["latin"],
   weight: "400",
   display: "swap",
@@ -82,7 +76,7 @@ export default function RootLayout({
   return (
     <html
       lang="pt"
-      className={`${cinzel.variable} ${oswald.variable} ${uncialAntiqua.variable} h-full antialiased`}
+      className={`${cinzel.variable} ${bebasNeue.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-arena-black text-arena-white">
         <AppShell>{children}</AppShell>

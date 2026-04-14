@@ -156,7 +156,7 @@ export default async function CasinoReviewPage({ params }: PageProps) {
         {/* Bonus highlight */}
         <ScrollReveal delay={0.1}>
           <ArenaCard variant="crimson" className="p-8 text-center mb-10">
-            <p className="font-[family-name:var(--font-ui)] text-xs text-arena-ash tracking-widest uppercase mb-2">
+            <p className="gladiator-subtitle text-xs mb-2">
               Exclusive Bonus
             </p>
             <p className="text-3xl font-bold text-arena-gold arena-glow mb-3">
@@ -174,7 +174,7 @@ export default async function CasinoReviewPage({ params }: PageProps) {
         {/* Review body */}
         <ScrollReveal delay={0.2}>
           <ArenaCard className="p-8 mb-8">
-            <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-arena-gold mb-4 tracking-wider">
+            <h2 className="gladiator-title text-xl mb-4">
               Full Review
             </h2>
             <p className="text-arena-smoke leading-relaxed">{casino.reviewBody}</p>
@@ -185,7 +185,7 @@ export default async function CasinoReviewPage({ params }: PageProps) {
         <ScrollReveal delay={0.3}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <ArenaCard className="p-6">
-              <h3 className="font-[family-name:var(--font-ui)] text-sm font-bold text-green-400 tracking-wider mb-4 uppercase">
+              <h3 className="gladiator-label text-sm font-bold text-green-400 mb-4">
                 Strengths
               </h3>
               <ul className="space-y-3">
@@ -198,7 +198,7 @@ export default async function CasinoReviewPage({ params }: PageProps) {
               </ul>
             </ArenaCard>
             <ArenaCard className="p-6">
-              <h3 className="font-[family-name:var(--font-ui)] text-sm font-bold text-arena-red tracking-wider mb-4 uppercase">
+              <h3 className="gladiator-label text-sm font-bold text-arena-red mb-4">
                 Weaknesses
               </h3>
               <ul className="space-y-3">
@@ -216,7 +216,7 @@ export default async function CasinoReviewPage({ params }: PageProps) {
         {/* Supported countries */}
         <ScrollReveal delay={0.4}>
           <ArenaCard className="p-6 mb-8">
-            <h3 className="font-[family-name:var(--font-ui)] text-sm font-bold text-arena-gold tracking-wider mb-3 uppercase">
+            <h3 className="gladiator-label text-sm font-bold text-arena-gold mb-3">
               Availability
             </h3>
             <p className="text-sm text-arena-smoke">{casino.countries.join(", ")}</p>
@@ -226,7 +226,7 @@ export default async function CasinoReviewPage({ params }: PageProps) {
         {/* FAQ Section (SEO) */}
         <ScrollReveal delay={0.5}>
           <ArenaCard className="p-8">
-            <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-arena-gold mb-6 tracking-wider">
+            <h2 className="gladiator-title text-xl mb-6">
               Frequently Asked Questions
             </h2>
             <div className="space-y-6">

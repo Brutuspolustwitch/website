@@ -665,11 +665,11 @@ export function SpinWheel() {
                       boxShadow: `0 0 60px ${result.glowColor}, inset 0 0 30px rgba(0,0,0,0.3)`,
                     }}
                   >
-                    <p className="font-[family-name:var(--font-fx)] text-[9px] uppercase tracking-[0.3em] mb-1"
+                    <p className="font-[family-name:var(--font-display)] text-[9px] uppercase tracking-[0.3em] mb-1"
                       style={{ color: result.tier === "loss" ? "#8b0000" : "#cd7f32" }}
                     >{result.tier === "loss" ? "O gladiador caiu..." : "O coliseu aclama!"}</p>
                     <p className="text-3xl mb-1">{result.icon}</p>
-                    <h3 className="font-[family-name:var(--font-fx)] text-lg font-black uppercase tracking-wide" style={{ color: result.color }}>{resultTitle}</h3>
+                    <h3 className="font-[family-name:var(--font-display)] text-lg font-black uppercase tracking-wide" style={{ color: result.color }}>{resultTitle}</h3>
                     <p className="mt-0.5 text-sm font-bold" style={{ color: result.color }}>{result.label}</p>
                     <button onClick={() => setShowResult(false)} className="mt-2 text-[9px] uppercase tracking-widest text-arena-ash hover:text-arena-smoke transition-colors">Fechar</button>
                   </div>

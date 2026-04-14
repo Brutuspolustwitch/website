@@ -87,10 +87,10 @@ export function GuessTheSpoils() {
         {/* ── Heading ──────────────────────────────────────────────── */}
         <ScrollReveal>
           <div className="text-center mb-14">
-            <h1 className="font-[family-name:var(--font-display)] text-4xl sm:text-5xl lg:text-6xl font-bold text-crimson-gradient tracking-wide uppercase">
+            <h1 className="gladiator-title text-4xl sm:text-5xl lg:text-6xl">
               Guess the Spoils
             </h1>
-            <p className="mt-3 text-arena-smoke text-xs sm:text-sm tracking-[0.25em] uppercase">
+            <p className="gladiator-subtitle mt-3 text-xs sm:text-sm">
               Survive the Arena and Claim Your Glory!
             </p>
           </div>
@@ -310,7 +310,7 @@ export function GuessTheSpoils() {
                 {tab === "treasury" && (
                   <div className="py-10 text-center space-y-3">
                     <p className="text-arena-ash text-sm">💰 Total Winnings</p>
-                    <p className="text-arena-gold text-3xl font-bold font-[family-name:var(--font-fx)]">
+                    <p className="text-arena-gold text-3xl font-bold font-[family-name:var(--font-display)] arena-glow">
                       {totalWin.toFixed(2)}€
                     </p>
                     <p className="text-arena-ash text-xs">Total Buy: {totalBuy.toFixed(2)}€</p>
