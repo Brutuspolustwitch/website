@@ -152,6 +152,15 @@ body {
   100% { background-position: 200% center; }
 }
 
+@keyframes shake {
+  0%, 100% { transform: translate(0, 0); }
+  15% { transform: translate(-4px, 2px); }
+  30% { transform: translate(4px, -2px); }
+  45% { transform: translate(-3px, 3px); }
+  60% { transform: translate(3px, -1px); }
+  75% { transform: translate(-2px, 1px); }
+}
+
 .progress-gold-fill {
   background: linear-gradient(90deg, #cd7f32, #d4a843, #f0d78c, #d4a843, #cd7f32);
   background-size: 200% auto;
