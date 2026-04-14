@@ -156,7 +156,7 @@ export default async function CasinoReviewPage({ params }: PageProps) {
         {/* Bonus highlight */}
         <ScrollReveal delay={0.1}>
           <ArenaCard variant="crimson" className="p-8 text-center mb-10">
-            <p className="font-[family-name:var(--font-display)] text-xs text-arena-ash tracking-widest uppercase mb-2">
+            <p className="font-[family-name:var(--font-ui)] text-xs text-arena-ash tracking-widest uppercase mb-2">
               Exclusive Bonus
             </p>
             <p className="text-3xl font-bold text-arena-gold arena-glow mb-3">
@@ -185,7 +185,7 @@ export default async function CasinoReviewPage({ params }: PageProps) {
         <ScrollReveal delay={0.3}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <ArenaCard className="p-6">
-              <h3 className="font-[family-name:var(--font-display)] text-sm font-bold text-green-400 tracking-wider mb-4 uppercase">
+              <h3 className="font-[family-name:var(--font-ui)] text-sm font-bold text-green-400 tracking-wider mb-4 uppercase">
                 Strengths
               </h3>
               <ul className="space-y-3">
@@ -198,7 +198,7 @@ export default async function CasinoReviewPage({ params }: PageProps) {
               </ul>
             </ArenaCard>
             <ArenaCard className="p-6">
-              <h3 className="font-[family-name:var(--font-display)] text-sm font-bold text-arena-red tracking-wider mb-4 uppercase">
+              <h3 className="font-[family-name:var(--font-ui)] text-sm font-bold text-arena-red tracking-wider mb-4 uppercase">
                 Weaknesses
               </h3>
               <ul className="space-y-3">
@@ -216,7 +216,7 @@ export default async function CasinoReviewPage({ params }: PageProps) {
         {/* Supported countries */}
         <ScrollReveal delay={0.4}>
           <ArenaCard className="p-6 mb-8">
-            <h3 className="font-[family-name:var(--font-display)] text-sm font-bold text-arena-gold tracking-wider mb-3 uppercase">
+            <h3 className="font-[family-name:var(--font-ui)] text-sm font-bold text-arena-gold tracking-wider mb-3 uppercase">
               Availability
             </h3>
             <p className="text-sm text-arena-smoke">{casino.countries.join(", ")}</p>

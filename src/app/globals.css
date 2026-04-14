@@ -19,8 +19,9 @@
   --color-arena-ash: #666;
   --color-arena-white: #e8e0d4;
 
-  --font-display: "Uncial Antiqua", serif;
-  --font-body: "Uncial Antiqua", serif;
+  --font-display: "Cinzel", serif;
+  --font-ui: "Oswald", sans-serif;
+  --font-fx: "Uncial Antiqua", cursive;
 }
 
 /* ── Base ───────────────────────────────────────────────────────────── */
@@ -44,7 +45,7 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
 }
 
 ::selection {

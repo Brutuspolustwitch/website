@@ -52,7 +52,7 @@ export function Leaderboard() {
               <ArenaCard key={rank.key} className="p-3 text-center">
                 <span className="text-2xl">{rank.icon}</span>
                 <p
-                  className="font-[family-name:var(--font-display)] text-sm font-bold mt-1 tracking-wider"
+                  className="font-[family-name:var(--font-ui)] text-sm font-bold mt-1 tracking-wider"
                   style={{ color: rank.color }}
                 >
                   {rank.label}
@@ -86,7 +86,7 @@ export function Leaderboard() {
                     {/* Position */}
                     <div className="w-10 text-center">
                       <span
-                        className={`font-[family-name:var(--font-display)] text-xl font-black ${
+                        className={`font-[family-name:var(--font-ui)] text-xl font-black ${
                           i === 0
                             ? "text-gold-gradient"
                             : i === 1
@@ -108,7 +108,7 @@ export function Leaderboard() {
                           {entry.display_name}
                         </span>
                         <span
-                          className="text-xs font-[family-name:var(--font-display)] tracking-wider px-2 py-0.5"
+                          className="text-xs font-[family-name:var(--font-ui)] tracking-wider px-2 py-0.5"
                           style={{
                             color: rank.color,
                             backgroundColor: `${rank.color}15`,

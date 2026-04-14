@@ -83,7 +83,7 @@ export function StreamerHub() {
               animate={isLive ? { scale: [1, 1.3, 1], opacity: [1, 0.7, 1] } : {}}
               transition={{ duration: 1.5, repeat: Infinity }}
             />
-            <span className="font-[family-name:var(--font-display)] text-sm tracking-widest uppercase">
+            <span className="font-[family-name:var(--font-ui)] text-sm tracking-widest uppercase">
               {loading ? (
                 <span className="text-arena-smoke">A verificar...</span>
               ) : isLive ? (
@@ -159,7 +159,7 @@ export function StreamerHub() {
                   alt="BrutusPolus"
                   className="w-28 h-28 object-contain"
                 />
-                <span className="font-[family-name:var(--font-display)] text-arena-gold text-sm font-bold tracking-[0.2em] uppercase arena-glow">
+                <span className="font-[family-name:var(--font-ui)] text-arena-gold text-sm font-bold tracking-[0.2em] uppercase arena-glow">
                   Arena Chat
                 </span>
               </div>

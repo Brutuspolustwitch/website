@@ -86,7 +86,7 @@ export function BonusHuntTracker() {
               },
             ].map((stat) => (
               <ArenaCard key={stat.label} className="p-4 text-center">
-                <p className="text-xs text-arena-ash uppercase tracking-wider font-[family-name:var(--font-display)]">
+                <p className="text-xs text-arena-ash uppercase tracking-wider font-[family-name:var(--font-ui)]">
                   {stat.label}
                 </p>
                 <p className={`text-2xl font-bold mt-1 ${stat.color ?? "text-arena-white"}`}>
@@ -130,10 +130,10 @@ export function BonusHuntTracker() {
                   {/* Slot header */}
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <span className="text-xs text-arena-ash font-[family-name:var(--font-display)] tracking-wider">
+                      <span className="text-xs text-arena-ash font-[family-name:var(--font-ui)] tracking-wider">
                         #{i + 1}
                       </span>
-                      <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-arena-white mt-1">
+                      <h3 className="font-[family-name:var(--font-ui)] text-lg font-bold text-arena-white mt-1">
                         {slot.name}
                       </h3>
                     </div>
