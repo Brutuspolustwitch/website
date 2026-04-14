@@ -351,11 +351,34 @@ function WheelSVG() {
 
 function Pointer() {
   return (
-    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1 z-20">
-      <svg width="32" height="48" viewBox="0 0 32 48">
-        <polygon points="16,44 6,12 16,0 26,12" fill="#c62828" stroke="#d4a843" strokeWidth="1.5" />
-        <polygon points="16,40 11,14 16,4 16,40" fill="rgba(255,255,255,0.12)" />
-        <ellipse cx="16" cy="45" rx="3" ry="2" fill="#8b0000" opacity="0.6" />
+    <div className="absolute top-0 left-1/2 -translate-x-1/2 z-20" style={{ marginTop: "-28px" }}>
+      <svg width="36" height="64" viewBox="0 0 36 64" fill="none">
+        {/* Cross-guard */}
+        <rect x="6" y="14" width="24" height="5" rx="1.5" fill="#b8860b" stroke="#8b6914" strokeWidth="0.8" />
+        <rect x="10" y="14.5" width="16" height="4" rx="1" fill="url(#guardShine)" opacity="0.3" />
+        {/* Grip / handle */}
+        <rect x="14" y="2" width="8" height="14" rx="2" fill="#3a2a1a" stroke="#5a4a2a" strokeWidth="0.6" />
+        {/* Grip wrap lines */}
+        <line x1="14.5" y1="5" x2="21.5" y2="5" stroke="#6b5a3a" strokeWidth="0.5" />
+        <line x1="14.5" y1="8" x2="21.5" y2="8" stroke="#6b5a3a" strokeWidth="0.5" />
+        <line x1="14.5" y1="11" x2="21.5" y2="11" stroke="#6b5a3a" strokeWidth="0.5" />
+        {/* Pommel */}
+        <circle cx="18" cy="3" r="3" fill="#b8860b" stroke="#8b6914" strokeWidth="0.6" />
+        <circle cx="18" cy="3" r="1.2" fill="#c62828" />
+        {/* Blade */}
+        <polygon points="18,19 12,21 18,62 24,21" fill="#c0c0c0" stroke="#888" strokeWidth="0.5" />
+        {/* Blade center ridge */}
+        <line x1="18" y1="21" x2="18" y2="58" stroke="#e8e8e8" strokeWidth="1" opacity="0.5" />
+        {/* Blade edge highlights */}
+        <polygon points="18,19 13,21 18,58" fill="rgba(255,255,255,0.12)" />
+        {/* Blade tip glow */}
+        <ellipse cx="18" cy="62" rx="2" ry="1.5" fill="#d4a843" opacity="0.4" />
+        <defs>
+          <linearGradient id="guardShine" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#fff" />
+            <stop offset="100%" stopColor="transparent" />
+          </linearGradient>
+        </defs>
       </svg>
     </div>
   );
@@ -545,10 +568,10 @@ export function SpinWheel() {
     : "";
 
   return (
-    <div className={`h-full w-full flex flex-col lg:flex-row items-center lg:items-stretch gap-4 lg:gap-6 transition-transform duration-300 ${screenShake ? "animate-[shake_0.3s_ease-in-out]" : ""}`}>
+    <div className={`h-full w-full flex flex-col items-center justify-center transition-transform duration-300 relative ${screenShake ? "animate-[shake_0.3s_ease-in-out]" : ""}`}>
 
-      {/* ── LEFT: Wheel + Controls ───────────────────────── */}
-      <div className="flex-1 flex flex-col items-center justify-center min-w-0 relative">
+      {/* ── CENTER: Wheel + Controls ─────────────────────── */}
+      <div className="flex-1 flex flex-col items-center justify-center min-w-0 relative w-full">
         <div className="absolute inset-0 overflow-hidden pointer-events-none"><EmberCanvas /></div>
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle,transparent_30%,rgba(0,0,0,0.5)_100%)]" />
 
@@ -644,8 +667,8 @@ export function SpinWheel() {
         </div>
       </div>
 
-      {/* ── RIGHT: Win History ────────────────────────────── */}
-      <div className="w-full lg:w-56 xl:w-64 shrink-0 rounded-xl border border-arena-gold/10 bg-arena-dark/80 backdrop-blur-sm p-3 lg:p-4 flex flex-col max-h-[28vh] lg:max-h-full overflow-hidden">
+      {/* ── FLOATING HISTORY — overlays top-right ────────── */}
+      <div className="absolute top-2 right-2 lg:top-4 lg:right-4 z-30 w-48 lg:w-52 max-h-[35vh] rounded-xl border border-arena-gold/10 bg-arena-dark/90 backdrop-blur-md p-2.5 lg:p-3 flex flex-col overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
         <WinHistory history={history} />
       </div>
     </div>
