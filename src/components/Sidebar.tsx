@@ -19,12 +19,21 @@ const MAIN_LINKS: NavItem[] = [
   {
     href: "/stream",
     label: "Stream",
-    children: [{ href: "/destaques", label: "Destaques" }],
+    children: [
+      { href: "/live", label: "Live" },
+      { href: "/calendario", label: "Calendário" },
+      { href: "/bonus-hunt", label: "Bonus Hunt" },
+    ],
   },
   {
     href: "/torneio",
     label: "Comunidade",
-    children: [{ href: "/liga-dos-brutus", label: "Liga dos Brutus" }],
+    children: [
+      { href: "/roda-diaria", label: "Roda Diária" },
+      { href: "/giveaways", label: "Giveaways" },
+      { href: "/liga-dos-brutus", label: "Liga dos Brutus" },
+      { href: "/adivinha-o-resultado", label: "Adivinha o Resultado" },
+    ],
   },
   { href: "/loja", label: "Loja" },
   { href: "/sobre", label: "Sobre" },
