@@ -23,7 +23,7 @@ export default function RodaDiariaPage() {
           Arrebanha Daily
         </h1>
         <p className="gladiator-subtitle text-[11px] mt-0.5">
-          Gira a roda do destino e reivindica a tua glória
+          Gira a roda dos campeões e arrebanha a tua glória
         </p>
       </div>
 
