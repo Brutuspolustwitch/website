@@ -19,7 +19,7 @@ export function SectionHeading({ title, subtitle, className = "", subtitleClassN
         </p>
       )}
       {/* Decorative divider */}
-      <div className="mt-6 flex items-center justify-center gap-3">
+      <div className={`mt-6 flex items-center justify-center gap-3 ${subtitleClassName}`}>
         <div className="h-px w-12 bg-gradient-to-r from-transparent to-arena-gold/40" />
         <span className="text-arena-gold/60 text-xs">⚔</span>
         <div className="h-px w-12 bg-gradient-to-l from-transparent to-arena-gold/40" />

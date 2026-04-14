@@ -3,8 +3,6 @@
 import { useEffect, useRef } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import gsap from "gsap";
-import { SITE_NAME } from "@/lib/constants";
-import Link from "next/link";
 
 /**
  * HERO SECTION — Full-screen cinematic entry point.
@@ -110,18 +108,8 @@ export function HeroSection() {
 
       {/* Content — bottom-left aligned */}
       <div className="relative z-10 flex min-h-[100svh] items-end">
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 pt-28 sm:pb-20 sm:pt-32 lg:pb-24 lg:pt-36">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 pt-28 sm:pb-36 sm:pt-32 lg:pb-40 lg:pt-36">
           <div className="max-w-3xl">
-            {/* Kicker */}
-            <motion.p
-              className="mb-4 text-[0.72rem] font-semibold uppercase tracking-[0.36em] text-arena-gold/90"
-              initial={reduceMotion ? false : { opacity: 0, y: 16 }}
-              animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
-            >
-              {SITE_NAME}
-            </motion.p>
-
             {/* Headline */}
             <motion.h1
               className="gladiator-title max-w-2xl text-[clamp(3.2rem,10vw,7.8rem)] leading-[0.92]"
@@ -143,26 +131,7 @@ export function HeroSection() {
               ranked challengers, and high-conversion casino discovery.
             </motion.p>
 
-            {/* CTA buttons */}
-            <motion.div
-              className="mt-8 flex flex-wrap items-center gap-4"
-              initial={reduceMotion ? false : { opacity: 0, y: 20 }}
-              animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, ease: "easeOut", delay: 0.55 }}
-            >
-              <Link
-                href="/stream"
-                className="inline-flex items-center justify-center gap-2.5 rounded-full border border-arena-gold/35 bg-gradient-to-b from-arena-gold/[0.18] to-[rgba(139,0,0,0.3)] px-6 py-3.5 text-sm font-bold uppercase tracking-[0.08em] text-[#fff4d8] transition-all duration-200 hover:-translate-y-0.5 hover:border-arena-gold/65 focus-visible:outline-2 focus-visible:outline-arena-gold/80 focus-visible:outline-offset-2"
-              >
-                Join the Battle
-              </Link>
-              <Link
-                href="/liga-dos-brutus"
-                className="inline-flex items-center justify-center rounded-full border border-white/[0.09] bg-white/[0.03] px-5 py-3 text-sm font-semibold text-[#f4ead7]/85 transition-all duration-200 hover:-translate-y-0.5 hover:border-arena-gold/25"
-              >
-                Inspect the Tracker
-              </Link>
-            </motion.div>
+
           </div>
         </div>
       </div>
