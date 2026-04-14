@@ -114,27 +114,6 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
         {/* ═══ Content ═══ */}
         <div className="scroll-content">
 
-          {/* ── Header ── */}
-          <div className="scroll-header">
-            <div className="scroll-emblem">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M12 2C8 2 5 5 5 9v2c0 1-.5 2-1 3l-1 2c-.5 1 0 2 1 2h14c1 0 1.5-1 1-2l-1-2c-.5-1-1-2-1-3V9c0-4-3-7-7-7z"
-                  fill="rgba(60,40,10,0.7)"
-                  stroke="rgba(255,220,100,0.4)"
-                  strokeWidth="0.5"
-                />
-                <path d="M9 9h6v3H9z" fill="rgba(255,220,100,0.3)" />
-                <path d="M10 12v3h4v-3" fill="rgba(60,40,10,0.5)" />
-              </svg>
-            </div>
-            <h2 className="scroll-title">{offer.name}</h2>
-            <p className="scroll-subtitle">Est. {offer.established} · {offer.license}</p>
-          </div>
-
-          {/* ── Engraved Divider ── */}
-          <div className="engraved-divider" />
-
           {/* ── Casino Banner ── */}
           <div className="casino-banner">
             <div className="casino-banner-inner">
