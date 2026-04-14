@@ -100,6 +100,13 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
                           <p className="text-sm font-semibold text-arena-white">{user.display_name}</p>
                           <p className="text-xs text-arena-ash">@{user.login}</p>
                         </div>
+                        <Link
+                          href="/perfil"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="block px-4 py-2.5 text-sm text-arena-smoke hover:text-arena-white hover:bg-arena-steel/20 transition-colors"
+                        >
+                          Perfil
+                        </Link>
                         <button
                           onClick={async () => {
                             await logout();

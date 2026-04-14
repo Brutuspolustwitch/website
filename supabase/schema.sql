@@ -164,3 +164,22 @@ create policy "Public read users" on users for select using (true);
 create policy "Admin insert users" on users for insert with check (true);
 create policy "Admin update users" on users for update using (true);
 create policy "Admin delete users" on users for delete using (true);
+
+-- Notifications (giveaway wins, adivinha o resultado, etc.)
+create table if not exists notifications (
+  id uuid primary key default gen_random_uuid(),
+  user_twitch_id text not null references users(twitch_id) on delete cascade,
+  type text not null check (type in ('giveaway_win', 'guess_result_win', 'general')),
+  title text not null,
+  message text not null,
+  read boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
+create index idx_notifications_user on notifications(user_twitch_id, created_at desc);
+
+alter table notifications enable row level security;
+create policy "Users read own notifications" on notifications for select using (true);
+create policy "Admin insert notifications" on notifications for insert with check (true);
+create policy "Admin update notifications" on notifications for update using (true);
+create policy "Admin delete notifications" on notifications for delete using (true);
