@@ -70,3 +70,29 @@ export interface SpinHistoryRow {
   tier: string;
   created_at: string;
 }
+
+export interface CasinoOfferRow {
+  id: string;
+  slug: string;
+  name: string;
+  logo_url: string | null;
+  logo_bg: string;
+  banner_url: string | null;
+  badge: "NEW" | "HOT" | null;
+  tags: string[];
+  headline: string;
+  bonus_value: string;
+  free_spins: string;
+  min_deposit: string;
+  code: string;
+  cashback: string | null;
+  withdraw_time: string;
+  license: string;
+  established: string;
+  notes: string[];
+  affiliate_url: string;
+  visible: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}

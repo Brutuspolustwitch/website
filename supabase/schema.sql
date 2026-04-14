@@ -71,18 +71,35 @@ create table if not exists casino_affiliates (
   created_at timestamptz not null default now()
 );
 
--- Spin History (daily wheel)
-create table if not exists spin_history (
+-- Casino Offers (admin-managed partnerships)
+create table if not exists casino_offers (
   id uuid primary key default gen_random_uuid(),
-  player text not null,
-  reward text not null,
-  icon text not null,
-  color text not null,
-  tier text not null check (tier in ('legendary', 'epic', 'rare', 'common', 'loss')),
-  created_at timestamptz not null default now()
+  slug text not null unique,
+  name text not null,
+  logo_url text,
+  logo_bg text not null default '#666',
+  banner_url text,
+  badge text check (badge in ('NEW', 'HOT', null)),
+  tags text[] not null default '{}',
+  headline text not null,
+  bonus_value text not null,
+  free_spins text not null default '',
+  min_deposit text not null,
+  code text not null default '',
+  cashback text,
+  withdraw_time text not null default 'Up to 48h',
+  license text not null default 'Curaçao',
+  established text not null default '2023',
+  notes text[] not null default '{}',
+  affiliate_url text not null default '#',
+  visible boolean not null default true,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
 );
 
-create index idx_spin_history_created on spin_history(created_at desc);
+create index idx_casino_offers_visible on casino_offers(visible, sort_order);
+
 
 -- Enable Realtime for bonus hunt tracking
 alter publication supabase_realtime add table bonus_hunt_slots;
@@ -110,3 +127,10 @@ create policy "Anyone can request slots" on slot_requests for insert with check 
 alter table spin_history enable row level security;
 create policy "Public read spin history" on spin_history for select using (true);
 create policy "Anyone can insert spin history" on spin_history for insert with check (true);
+
+-- Casino offers: public read, authenticated full access
+alter table casino_offers enable row level security;
+create policy "Public read visible offers" on casino_offers for select using (true);
+create policy "Admin insert offers" on casino_offers for insert with check (true);
+create policy "Admin update offers" on casino_offers for update using (true);
+create policy "Admin delete offers" on casino_offers for delete using (true);

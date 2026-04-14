@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { supabase } from "@/lib/supabase";
+import type { CasinoOfferRow } from "@/lib/supabase";
 
 /* ═══════════════════════════════════════════════════════════════════
    TYPES
@@ -282,9 +284,45 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
 }
 
 export function OfferCards() {
+  const [offers, setOffers] = useState<CasinoOffer[]>(OFFERS);
+
+  useEffect(() => {
+    (async () => {
+      const { data, error } = await supabase
+        .from("casino_offers")
+        .select("*")
+        .eq("visible", true)
+        .order("sort_order", { ascending: true });
+      if (!error && data && data.length > 0) {
+        setOffers(
+          (data as CasinoOfferRow[]).map((r) => ({
+            slug: r.slug,
+            name: r.name,
+            logo_url: r.logo_url ?? undefined,
+            logo_bg: r.logo_bg,
+            banner_url: r.banner_url ?? undefined,
+            badge: r.badge ?? undefined,
+            tags: r.tags,
+            headline: r.headline,
+            bonus_value: r.bonus_value,
+            free_spins: r.free_spins,
+            min_deposit: r.min_deposit,
+            code: r.code,
+            cashback: r.cashback ?? undefined,
+            withdraw_time: r.withdraw_time,
+            license: r.license,
+            established: r.established,
+            notes: r.notes,
+            affiliate_url: r.affiliate_url,
+          }))
+        );
+      }
+    })();
+  }, []);
+
   return (
     <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {OFFERS.map((offer) => (
+      {offers.map((offer) => (
         <OfferCard key={offer.slug} offer={offer} />
       ))}
     </div>
