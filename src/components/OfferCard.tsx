@@ -195,7 +195,7 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
   );
 }
 
-export function OfferCards() {
+export function OfferCards({ emptyClassName = "" }: { emptyClassName?: string }) {
   const [offers, setOffers] = useState<CasinoOffer[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -242,7 +242,7 @@ export function OfferCards() {
 
   if (offers.length === 0) {
     return (
-      <div className="mt-12 text-center text-arena-ash py-12">
+      <div className={`mt-12 text-center text-arena-ash py-12 ${emptyClassName}`}>
         <p className="text-lg">Nenhuma oferta disponível de momento.</p>
         <p className="text-sm mt-2">Volta em breve para novas promoções!</p>
       </div>

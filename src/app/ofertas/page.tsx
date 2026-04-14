@@ -35,8 +35,8 @@ export default function OfertasPage() {
       {/* Content */}
       <div className="relative pt-24 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeading title="Ofertas" subtitle="Bónus e promoções exclusivas — clica num cartão para ver detalhes" />
-          <OfferCards />
+          <SectionHeading title="Ofertas" subtitle="Bónus e promoções exclusivas — clica num cartão para ver detalhes" subtitleClassName="text-black opacity-100" />
+          <OfferCards emptyClassName="text-black" />
         </div>
       </div>
     </div>
