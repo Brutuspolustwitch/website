@@ -142,11 +142,11 @@ export function StreamerHub() {
             {/* Chat */}
             <div className="relative bg-arena-black rounded-2xl overflow-hidden arena-border-crimson metal-frame-glow shadow-2xl shadow-black/60 min-h-[400px] lg:min-h-0 flex flex-col">
               {/* Emblem header — overlays Twitch's "Stream Chat" bar */}
-              <div className="relative z-20 flex items-center justify-center gap-3 py-3 bg-gradient-to-b from-arena-charcoal to-arena-dark border-b border-white/5">
+              <div className="relative z-20 flex items-center justify-center gap-3 py-4 bg-gradient-to-b from-arena-charcoal to-arena-dark border-b border-white/5">
                 <img
                   src="/images/BrutoEmblem.png"
                   alt="BrutusPolus"
-                  className="w-10 h-10 object-contain"
+                  className="w-14 h-14 object-contain p-0.5"
                 />
                 <span className="font-[family-name:var(--font-display)] text-arena-gold text-sm font-bold tracking-[0.2em] uppercase arena-glow">
                   Arena Chat
