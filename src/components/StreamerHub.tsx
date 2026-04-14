@@ -77,7 +77,7 @@ export function StreamerHub() {
               {loading ? (
                 <span className="text-arena-smoke">A verificar...</span>
               ) : isLive ? (
-                <span className="text-green-400">EM DIRETO</span>
+                <span className="text-green-400 arena-glow">EM DIRETO</span>
               ) : (
                 <span className="text-arena-ash">OFFLINE</span>
               )}
@@ -89,7 +89,7 @@ export function StreamerHub() {
         <ScrollReveal delay={0.1}>
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-4">
             {/* Stream / Clip player */}
-            <div className="relative w-full aspect-video bg-arena-black rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/40">
+            <div className="relative w-full aspect-video bg-arena-black rounded-2xl overflow-hidden arena-border-crimson metal-frame-glow shadow-2xl shadow-black/60">
               {isLive || loading ? (
                 <iframe
                   src={`https://player.twitch.tv/?channel=${TWITCH_CHANNEL}&parent=${hostname}`}
@@ -128,7 +128,7 @@ export function StreamerHub() {
                   {clips.length > 1 && (
                     <button
                       onClick={shuffleClip}
-                      className="pointer-events-auto ml-3 shrink-0 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-medium tracking-wide uppercase transition-colors backdrop-blur-sm border border-white/10"
+                      className="pointer-events-auto ml-3 shrink-0 px-3 py-1.5 rounded-lg bg-arena-crimson/30 hover:bg-arena-crimson/50 text-arena-gold text-xs font-medium tracking-wide uppercase transition-colors backdrop-blur-sm border border-arena-crimson/40 arena-btn-press"
                     >
                       Próximo clip
                     </button>
@@ -138,7 +138,7 @@ export function StreamerHub() {
             </div>
 
             {/* Chat */}
-            <div className="relative bg-arena-dark rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/40 min-h-[400px] lg:min-h-0">
+            <div className="relative bg-arena-dark rounded-2xl overflow-hidden arena-border-crimson shadow-2xl shadow-black/60 min-h-[400px] lg:min-h-0">
               <iframe
                 src={`https://www.twitch.tv/embed/${TWITCH_CHANNEL}/chat?parent=${hostname}&darkpopout`}
                 className="w-full h-full absolute inset-0"
