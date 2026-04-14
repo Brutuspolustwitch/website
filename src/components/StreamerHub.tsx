@@ -115,6 +115,7 @@ export function StreamerHub() {
                     key={activeClip.id}
                     src={`https://clips.twitch.tv/embed?clip=${activeClip.id}&parent=${hostname}&autoplay=true&muted=false`}
                     className="absolute inset-0 w-full h-full z-10"
+                    allow="autoplay; encrypted-media"
                     allowFullScreen
                     title={activeClip.title}
                   />
@@ -152,23 +153,22 @@ export function StreamerHub() {
             {/* Chat */}
             <div className="relative bg-arena-black rounded-2xl overflow-hidden arena-border-crimson metal-frame-glow shadow-2xl shadow-black/60 min-h-[400px] lg:min-h-0 flex flex-col">
               {/* Emblem header — overlays Twitch's "Stream Chat" bar */}
-              <div className="relative z-20 flex items-center justify-center gap-3 py-4 bg-gradient-to-b from-arena-charcoal to-arena-dark border-b border-white/5">
+              <div className="relative z-20 flex items-center justify-center gap-2 py-1.5 bg-gradient-to-b from-arena-charcoal to-arena-dark border-b border-white/5">
                 <img
                   src="/images/BrutoEmblem.png"
                   alt="BrutusPolus"
-                  className="w-14 h-14 object-contain p-0.5"
+                  className="w-20 h-20 object-contain"
                 />
                 <span className="font-[family-name:var(--font-display)] text-arena-gold text-sm font-bold tracking-[0.2em] uppercase arena-glow">
                   Arena Chat
                 </span>
               </div>
 
-              {/* Chat iframe — pulled up to hide Twitch's native "Stream Chat" header */}
-              <div className="relative flex-1 overflow-hidden">
+              {/* Chat iframe — starts behind the header to hide Twitch's native bar */}
+              <div className="relative flex-1 overflow-hidden" style={{ marginTop: "-40px" }}>
                 <iframe
                   src={`https://www.twitch.tv/embed/${TWITCH_CHANNEL}/chat?parent=${hostname}&darkpopout`}
-                  className="absolute left-0 right-0 w-full z-10"
-                  style={{ top: "-56px", height: "calc(100% + 56px)" }}
+                  className="absolute inset-0 w-full h-full z-10"
                   title="Twitch chat"
                 />
               </div>
