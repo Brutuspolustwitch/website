@@ -15,7 +15,7 @@ interface ArenaButtonProps extends HTMLMotionProps<"button"> {
 export const ArenaButton = forwardRef<HTMLButtonElement, ArenaButtonProps>(
   function ArenaButton({ variant = "primary", size = "md", className = "", children, ...props }, ref) {
     const base =
-      "relative inline-flex items-center justify-center font-[family-name:var(--font-ui)] font-bold tracking-wider uppercase arena-btn-press arena-shine cursor-pointer";
+      "relative inline-flex items-center justify-center gladiator-label font-bold arena-btn-press arena-shine cursor-pointer";
 
     const variants = {
       primary:

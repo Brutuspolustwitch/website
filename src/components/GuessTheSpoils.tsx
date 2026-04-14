@@ -119,7 +119,7 @@ export function GuessTheSpoils() {
                   <div className="w-9 h-9 rounded bg-arena-crimson/20 border border-arena-crimson/30 flex items-center justify-center text-arena-gold text-base">
                     🛡
                   </div>
-                  <h2 className="font-[family-name:var(--font-ui)] text-lg text-arena-white font-bold tracking-wide">
+                  <h2 className="gladiator-label text-lg text-arena-white font-bold">
                     Campaign {toRoman(idx + 1)}
                   </h2>
                 </div>
@@ -310,7 +310,7 @@ export function GuessTheSpoils() {
                 {tab === "treasury" && (
                   <div className="py-10 text-center space-y-3">
                     <p className="text-arena-ash text-sm">💰 Total Winnings</p>
-                    <p className="text-arena-gold text-3xl font-bold font-[family-name:var(--font-display)] arena-glow">
+                    <p className="gladiator-title text-3xl arena-glow">
                       {totalWin.toFixed(2)}€
                     </p>
                     <p className="text-arena-ash text-xs">Total Buy: {totalBuy.toFixed(2)}€</p>

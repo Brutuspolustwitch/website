@@ -23,7 +23,7 @@ export default function LigaDosBrutusPage() {
           {/* Leaderboard - main column */}
           <div className="lg:col-span-2">
             <div className="mb-4">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <h2 className="gladiator-title text-xl flex items-center gap-2">
                 <span className="text-arena-gold">🏆</span> Top Gladiadores
               </h2>
               <p className="text-sm text-white/50 mt-1">Ranking por pontos de lealdade StreamElements</p>
@@ -35,7 +35,7 @@ export default function LigaDosBrutusPage() {
           <div className="space-y-8">
             {/* Tips */}
             <div>
-              <h2 className="text-xl font-bold text-white flex items-center gap-2 mb-4">
+              <h2 className="gladiator-title text-xl flex items-center gap-2 mb-4">
                 <span>💰</span> Últimas Doações
               </h2>
               <SETipsFeed />
@@ -43,7 +43,7 @@ export default function LigaDosBrutusPage() {
 
             {/* Activity */}
             <div>
-              <h2 className="text-xl font-bold text-white flex items-center gap-2 mb-4">
+              <h2 className="gladiator-title text-xl flex items-center gap-2 mb-4">
                 <span>📡</span> Atividade Recente
               </h2>
               <SEActivityFeed />

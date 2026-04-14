@@ -130,7 +130,7 @@ export function SlotRequestSystem() {
           <ScrollReveal delay={0.1}>
             <ArenaCard className="p-5 flex flex-col h-[500px]">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-[family-name:var(--font-ui)] text-arena-gold text-sm font-bold tracking-wider">
+                <h3 className="gladiator-label text-arena-gold text-sm font-bold">
                   COMMAND CENTER
                 </h3>
                 <label className="flex items-center gap-2 text-xs text-arena-ash cursor-pointer">
@@ -189,7 +189,7 @@ export function SlotRequestSystem() {
           {/* Queue */}
           <ScrollReveal delay={0.2}>
             <ArenaCard className="p-5 h-[500px] flex flex-col">
-              <h3 className="font-[family-name:var(--font-ui)] text-arena-gold text-sm font-bold tracking-wider mb-4">
+              <h3 className="gladiator-label text-arena-gold text-sm font-bold mb-4">
                 REQUEST QUEUE
               </h3>
               <div className="flex-1 overflow-y-auto space-y-3 pr-2">
@@ -208,7 +208,7 @@ export function SlotRequestSystem() {
                           : "border-arena-steel/15 bg-arena-iron/20"
                       }`}
                     >
-                      <span className="text-arena-ash text-xs font-[family-name:var(--font-ui)] w-6">
+                      <span className="gladiator-label text-arena-ash text-xs w-6">
                         #{i + 1}
                       </span>
                       <div className="flex-1 min-w-0">

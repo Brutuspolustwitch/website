@@ -404,7 +404,7 @@ function Pointer() {
 function WinHistory({ history }: { history: HistoryEntry[] }) {
   return (
     <div className="flex flex-col h-full min-h-0">
-      <h3 className="font-[family-name:var(--font-ui)] text-xs uppercase tracking-[0.2em] text-arena-gold/80 mb-3 shrink-0">
+      <h3 className="gladiator-label text-xs text-arena-gold/80 mb-3 shrink-0">
         ⚔ Histórico
       </h3>
       <div className="flex-1 overflow-y-auto space-y-1 min-h-0 pr-1">
@@ -665,11 +665,11 @@ export function SpinWheel() {
                       boxShadow: `0 0 60px ${result.glowColor}, inset 0 0 30px rgba(0,0,0,0.3)`,
                     }}
                   >
-                    <p className="font-[family-name:var(--font-display)] text-[9px] uppercase tracking-[0.3em] mb-1"
+                    <p className="gladiator-subtitle text-[9px] mb-1"
                       style={{ color: result.tier === "loss" ? "#8b0000" : "#cd7f32" }}
                     >{result.tier === "loss" ? "O gladiador caiu..." : "O coliseu aclama!"}</p>
                     <p className="text-3xl mb-1">{result.icon}</p>
-                    <h3 className="font-[family-name:var(--font-display)] text-lg font-black uppercase tracking-wide" style={{ color: result.color }}>{resultTitle}</h3>
+                    <h3 className="gladiator-title text-lg" style={{ color: result.color }}>{resultTitle}</h3>
                     <p className="mt-0.5 text-sm font-bold" style={{ color: result.color }}>{result.label}</p>
                     <button onClick={() => setShowResult(false)} className="mt-2 text-[9px] uppercase tracking-widest text-arena-ash hover:text-arena-smoke transition-colors">Fechar</button>
                   </div>
@@ -681,7 +681,7 @@ export function SpinWheel() {
           {/* Button + cooldown */}
           <div className="mt-3 flex flex-col items-center gap-1.5">
             <button onClick={spin} disabled={spinning || isOnCooldown}
-              className={`arena-btn-press relative px-7 py-2.5 rounded-xl font-[family-name:var(--font-ui)] text-xs font-black uppercase tracking-[0.15em] transition-all duration-300 border-2 overflow-hidden ${
+              className={`arena-btn-press relative px-7 py-2.5 rounded-xl gladiator-label text-xs font-black transition-all duration-300 border-2 overflow-hidden ${
                 spinning || isOnCooldown
                   ? "border-arena-steel/30 bg-arena-dark text-arena-ash/50 cursor-not-allowed"
                   : "border-arena-gold/40 bg-gradient-to-b from-arena-charcoal to-arena-dark text-arena-gold hover:border-arena-gold/70 hover:shadow-[0_0_30px_rgba(212,168,67,0.2)] active:scale-95"

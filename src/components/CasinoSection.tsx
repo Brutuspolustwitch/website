@@ -106,13 +106,13 @@ export function CasinoSection() {
                 {/* Header */}
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h3 className="font-[family-name:var(--font-ui)] text-xl font-bold text-arena-white">
+                    <h3 className="gladiator-title text-xl">
                       {casino.name}
                     </h3>
                     <StarRating rating={casino.rating} />
                   </div>
                   <div className="bg-arena-crimson/20 border border-arena-crimson/30 px-3 py-1.5">
-                    <p className="text-xs text-arena-gold font-[family-name:var(--font-ui)] tracking-wider">
+                    <p className="gladiator-label text-xs text-arena-gold">
                       BONUS
                     </p>
                     <p className="text-sm font-bold text-arena-white">{casino.bonus}</p>
@@ -122,7 +122,7 @@ export function CasinoSection() {
                 {/* Pros / Cons */}
                 <div className="grid grid-cols-2 gap-4 mb-4 flex-1">
                   <div>
-                    <p className="text-xs text-arena-ash uppercase tracking-wider mb-2 font-[family-name:var(--font-ui)]">
+                    <p className="gladiator-label text-xs text-arena-ash mb-2">
                       Pros
                     </p>
                     <ul className="space-y-1">
@@ -135,7 +135,7 @@ export function CasinoSection() {
                     </ul>
                   </div>
                   <div>
-                    <p className="text-xs text-arena-ash uppercase tracking-wider mb-2 font-[family-name:var(--font-ui)]">
+                    <p className="gladiator-label text-xs text-arena-ash mb-2">
                       Cons
                     </p>
                     <ul className="space-y-1">
