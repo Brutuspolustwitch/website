@@ -61,8 +61,18 @@ export function StreamerHub() {
   }, [clips, activeClip]);
 
   return (
-    <section id="stream" className="py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-[1400px] mx-auto">
+    <section
+      id="stream"
+      className="relative py-12 px-4 sm:px-6 lg:px-8 min-h-screen"
+    >
+      {/* Background image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/images/Stream.jpg')" }}
+      />
+      <div className="absolute inset-0 bg-arena-black/75" />
+
+      <div className="relative max-w-[1400px] mx-auto">
         {/* Status indicator */}
         <ScrollReveal>
           <div className="flex items-center justify-center gap-3 mb-6">
