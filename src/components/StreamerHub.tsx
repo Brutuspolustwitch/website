@@ -153,12 +153,12 @@ export function StreamerHub() {
                 </span>
               </div>
 
-              {/* Chat iframe — pulled up to hide Twitch's native header */}
+              {/* Chat iframe — pulled up to hide Twitch's native "Stream Chat" header */}
               <div className="relative flex-1 overflow-hidden">
                 <iframe
                   src={`https://www.twitch.tv/embed/${TWITCH_CHANNEL}/chat?parent=${hostname}&darkpopout`}
-                  className="absolute w-full z-10"
-                  style={{ top: "-50px", height: "calc(100% + 50px)" }}
+                  className="absolute left-0 right-0 w-full z-10"
+                  style={{ top: "-56px", height: "calc(100% + 56px)" }}
                   title="Twitch chat"
                 />
               </div>
