@@ -1,19 +1,13 @@
 import type { Metadata } from "next";
-import { Cinzel, Inter } from "next/font/google";
+import { Uncial_Antiqua } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/AppShell";
 import { SITE_NAME, SITE_DESCRIPTION, SITE_URL } from "@/lib/constants";
 
-const cinzel = Cinzel({
+const uncialAntiqua = Uncial_Antiqua({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["400", "700", "900"],
-  display: "swap",
-});
-
-const inter = Inter({
-  variable: "--font-body",
-  subsets: ["latin"],
+  weight: "400",
   display: "swap",
 });
 
@@ -75,7 +69,7 @@ export default function RootLayout({
   return (
     <html
       lang="pt"
-      className={`${cinzel.variable} ${inter.variable} h-full antialiased`}
+      className={`${uncialAntiqua.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-arena-black text-arena-white">
         <AppShell>{children}</AppShell>
