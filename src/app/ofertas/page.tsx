@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { OfferCards } from "@/components/OfferCard";
 
@@ -15,24 +14,22 @@ export const metadata: Metadata = {
 export default function OfertasPage() {
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* Background image — fixed parallax feel */}
-      <div className="fixed inset-0 -z-10">
-        <Image
-          src="/images/offers.jpg"
-          alt=""
-          fill
-          className="object-cover object-center"
-          priority
-          quality={85}
-        />
+      {/* Background image — stretched to fill exactly */}
+      <div
+        className="fixed inset-0 -z-10"
+        style={{
+          backgroundImage: "url('/images/offers.jpg')",
+          backgroundSize: "100% 100%",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
         {/* Dark overlay for readability */}
-        <div className="absolute inset-0 bg-black/70" />
+        <div className="absolute inset-0 bg-black/50" />
         {/* Crimson tint for on-brand warmth */}
-        <div className="absolute inset-0 bg-gradient-to-br from-arena-crimson/15 via-transparent to-arena-black/90" />
-        {/* Bottom fade into page bg */}
-        <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-arena-black to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-br from-arena-crimson/10 via-transparent to-arena-black/60" />
         {/* Vignette */}
-        <div className="absolute inset-0" style={{ boxShadow: "inset 0 0 200px 60px rgba(0,0,0,0.7)" }} />
+        <div className="absolute inset-0" style={{ boxShadow: "inset 0 0 150px 40px rgba(0,0,0,0.5)" }} />
       </div>
 
       {/* Content */}
