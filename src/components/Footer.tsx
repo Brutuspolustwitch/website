@@ -43,7 +43,7 @@ export function Footer() {
 
         <div className="mt-4 pt-3 border-t border-arena-steel/30 text-center">
           <p className="text-[10px] text-arena-ash">
-            &copy; {new Date().getFullYear()} {SITE_NAME}. Todos os direitos reservados.
+            &copy; {new Date().getFullYear()} BrutusPolus, Todos os direitos reservados
           </p>
         </div>
       </div>
