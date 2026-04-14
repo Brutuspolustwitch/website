@@ -15,7 +15,7 @@ export async function GET(request: Request) {
 
   const { data, error } = await query;
 
-  if (error) return NextResponse.json({ error: "Failed to fetch rewards" }, { status: 500 });
+  if (error) return NextResponse.json({ error: "Failed to fetch rewards", details: error.message }, { status: 500 });
   return NextResponse.json({ rewards: data ?? [] });
 }
 
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
     sort_order: body.sort_order || 0,
   });
 
-  if (error) return NextResponse.json({ error: "Failed to create reward" }, { status: 500 });
+  if (error) return NextResponse.json({ error: "Failed to create reward", details: error.message }, { status: 500 });
   return NextResponse.json({ ok: true });
 }
 
@@ -75,7 +75,7 @@ export async function PATCH(request: Request) {
   }
 
   const { error } = await supabase.from("rewards").update(updates).eq("id", body.id);
-  if (error) return NextResponse.json({ error: "Failed to update reward" }, { status: 500 });
+  if (error) return NextResponse.json({ error: "Failed to update reward", details: error.message }, { status: 500 });
   return NextResponse.json({ ok: true });
 }
 
@@ -92,11 +92,11 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "Insufficient permissions" }, { status: 403 });
   }
 
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get("id");
+  const body = await request.json();
+  const id = body.id;
   if (!id) return NextResponse.json({ error: "Missing reward id" }, { status: 400 });
 
   const { error } = await supabase.from("rewards").delete().eq("id", id);
-  if (error) return NextResponse.json({ error: "Failed to delete reward" }, { status: 500 });
+  if (error) return NextResponse.json({ error: "Failed to delete reward", details: error.message }, { status: 500 });
   return NextResponse.json({ ok: true });
 }

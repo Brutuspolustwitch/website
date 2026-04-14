@@ -71,7 +71,7 @@ export default function AdminRewardsPage() {
 
       if (!res.ok) {
         const d = await res.json();
-        showToast(d.error || "Erro ao guardar");
+        showToast(d.details || d.error || "Erro ao guardar");
       } else {
         showToast(isEdit ? "Recompensa atualizada" : "Recompensa criada");
         setEditing(null);
