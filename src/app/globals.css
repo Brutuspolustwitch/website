@@ -254,7 +254,7 @@ body {
   --stone-dark: #4a3728;
   --stone-mid: #6b5240;
   --stone-light: #8a7060;
-  --scroll-radius: 18px;
+  --scroll-radius: 14px;
 }
 
 /* ── Greek Key / Meander Pattern Border ─────────────────── */
@@ -284,7 +284,7 @@ body {
 .papyrus-scroll {
   position: relative;
   width: 100%;
-  max-width: 420px;
+  max-width: 340px;
   margin: 0 auto;
   background:
     repeating-linear-gradient(
@@ -327,7 +327,7 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 28px;
+  height: 20px;
   background: linear-gradient(
     180deg,
     rgba(180, 140, 70, 0.35) 0%,
@@ -350,7 +350,7 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 28px;
+  height: 20px;
   background: linear-gradient(
     0deg,
     rgba(180, 140, 70, 0.35) 0%,
@@ -372,7 +372,7 @@ body {
   cursor: pointer;
 }
 .papyrus-scroll-wrapper:hover {
-  transform: translateY(-8px) rotate(0.3deg);
+  transform: translateY(-5px) rotate(0.2deg);
 }
 .papyrus-scroll-wrapper:hover .papyrus-scroll {
   box-shadow:
@@ -387,21 +387,21 @@ body {
 .scroll-content {
   position: relative;
   z-index: 1;
-  padding: 36px 28px 32px;
+  padding: 22px 18px 20px;
 }
 
 /* ── Header / Title Area ────────────────────────────────── */
 .scroll-header {
   text-align: center;
-  padding-bottom: 16px;
-  margin-bottom: 16px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
   position: relative;
 }
 
 .scroll-emblem {
-  width: 48px;
-  height: 48px;
-  margin: 0 auto 10px;
+  width: 36px;
+  height: 36px;
+  margin: 0 auto 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -422,7 +422,7 @@ body {
 
 .scroll-title {
   font-family: 'Cinzel', 'Georgia', serif;
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--ink-dark);
   letter-spacing: 0.15em;
@@ -434,10 +434,10 @@ body {
 
 .scroll-subtitle {
   font-family: 'Cinzel', 'Georgia', serif;
-  font-size: 0.65rem;
+  font-size: 0.55rem;
   font-weight: 400;
   color: var(--ink-light);
-  letter-spacing: 0.3em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   margin-top: 4px;
   opacity: 0.7;
@@ -477,8 +477,8 @@ body {
 /* ── Casino Banner / Logo Area ──────────────────────────── */
 .casino-banner {
   position: relative;
-  margin: 16px 0;
-  border-radius: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
   overflow: hidden;
   box-shadow:
     inset 0 2px 8px rgba(60, 40, 10, 0.2),
@@ -487,7 +487,7 @@ body {
 }
 .casino-banner-inner {
   width: 100%;
-  aspect-ratio: 16 / 7;
+  aspect-ratio: 16 / 6;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -513,10 +513,10 @@ body {
   position: relative;
   z-index: 1;
   font-family: 'Cinzel', 'Georgia', serif;
-  font-size: 1.6rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--gold-light);
-  letter-spacing: 0.2em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   text-shadow: 0 0 20px rgba(212, 160, 23, 0.3), 0 2px 4px rgba(0,0,0,0.5);
 }
@@ -526,12 +526,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  margin: 14px 0;
+  gap: 4px;
+  margin: 8px 0;
 }
 .star-icon {
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
   filter: drop-shadow(0 1px 2px rgba(139, 105, 20, 0.3));
 }
 .star-filled {
@@ -542,10 +542,10 @@ body {
 }
 .rating-number {
   font-family: 'Cinzel', 'Georgia', serif;
-  font-size: 1.1rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: var(--ink-dark);
-  margin-left: 6px;
+  margin-left: 4px;
 }
 
 /* ── Stat Rows ──────────────────────────────────────────── */
@@ -553,13 +553,13 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0;
-  margin: 14px 0;
+  margin: 8px 0;
 }
 .stat-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 0;
+  padding: 5px 0;
   border-bottom: 1px solid rgba(139, 105, 20, 0.12);
 }
 .stat-row:last-child {
@@ -567,14 +567,14 @@ body {
 }
 .stat-label {
   font-family: 'Cinzel', 'Georgia', serif;
-  font-size: 0.7rem;
+  font-size: 0.6rem;
   font-weight: 600;
   color: var(--ink-light);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 .stat-value {
-  font-size: 0.82rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--ink-dark);
   text-align: right;
@@ -595,9 +595,9 @@ body {
 /* ── Promo Section — Gold Frame Highlight ───────────────── */
 .promo-section {
   position: relative;
-  margin: 18px -6px;
-  padding: 20px 18px;
-  border-radius: 12px;
+  margin: 10px -4px;
+  padding: 14px 12px;
+  border-radius: 8px;
   background: linear-gradient(
     135deg,
     rgba(212, 160, 23, 0.08) 0%,
@@ -640,38 +640,38 @@ body {
 
 .promo-label {
   font-family: 'Cinzel', 'Georgia', serif;
-  font-size: 0.6rem;
+  font-size: 0.5rem;
   font-weight: 600;
   color: var(--gold-dark);
-  letter-spacing: 0.3em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   position: relative;
   z-index: 2;
 }
 
 .promo-bonus {
   font-family: 'Cinzel', 'Georgia', serif;
-  font-size: 1.8rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--deep-red);
-  line-height: 1.1;
-  margin: 0 0 4px;
+  line-height: 1.15;
+  margin: 0 0 2px;
   text-shadow: 0 1px 0 rgba(255, 240, 200, 0.5);
   position: relative;
   z-index: 2;
 }
 .promo-bonus-accent {
   display: block;
-  font-size: 2.2rem;
+  font-size: 1.35rem;
   color: var(--deep-red-light);
   text-shadow: 0 0 12px rgba(192, 57, 43, 0.15);
 }
 
 .promo-detail {
-  font-size: 0.78rem;
+  font-size: 0.65rem;
   color: var(--ink-mid);
-  margin: 6px 0 12px;
+  margin: 4px 0 8px;
   position: relative;
   z-index: 2;
 }
@@ -680,8 +680,8 @@ body {
 .promo-code-wrapper {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
+  gap: 6px;
+  padding: 5px 10px;
   background: linear-gradient(
     135deg,
     rgba(60, 40, 10, 0.06) 0%,
@@ -702,7 +702,7 @@ body {
   );
 }
 .promo-code-label {
-  font-size: 0.6rem;
+  font-size: 0.5rem;
   font-weight: 600;
   color: var(--ink-light);
   letter-spacing: 0.15em;
@@ -710,13 +710,13 @@ body {
 }
 .promo-code-value {
   font-family: 'Cinzel', 'Georgia', serif;
-  font-size: 0.95rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--ink-dark);
   letter-spacing: 0.12em;
 }
 .promo-code-copy {
-  font-size: 0.6rem;
+  font-size: 0.5rem;
   color: var(--gold-dark);
   opacity: 0.6;
   transition: opacity 0.3s;
@@ -727,7 +727,7 @@ body {
 
 /* ── CTA Button — Carved Gold Plate ─────────────────────── */
 .cta-section {
-  margin-top: 20px;
+  margin-top: 12px;
   text-align: center;
   position: relative;
   z-index: 1;
@@ -737,18 +737,18 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 6px;
   width: 100%;
-  padding: 16px 32px;
+  padding: 10px 20px;
   font-family: 'Cinzel', 'Georgia', serif;
-  font-size: 1rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #fff;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -819,9 +819,9 @@ body {
 }
 
 .cta-subtext {
-  font-size: 0.65rem;
+  font-size: 0.55rem;
   color: var(--ink-light);
-  margin-top: 8px;
+  margin-top: 5px;
   opacity: 0.6;
   letter-spacing: 0.05em;
 }
@@ -829,21 +829,21 @@ body {
 /* ── Corner Ornaments ───────────────────────────────────── */
 .scroll-ornament {
   position: absolute;
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
   opacity: 0.2;
   z-index: 1;
   pointer-events: none;
 }
-.scroll-ornament.top-left { top: 12px; left: 12px; }
-.scroll-ornament.top-right { top: 12px; right: 12px; transform: scaleX(-1); }
-.scroll-ornament.bottom-left { bottom: 12px; left: 12px; transform: scaleY(-1); }
-.scroll-ornament.bottom-right { bottom: 12px; right: 12px; transform: scale(-1, -1); }
+.scroll-ornament.top-left { top: 8px; left: 8px; }
+.scroll-ornament.top-right { top: 8px; right: 8px; transform: scaleX(-1); }
+.scroll-ornament.bottom-left { bottom: 8px; left: 8px; transform: scaleY(-1); }
+.scroll-ornament.bottom-right { bottom: 8px; right: 8px; transform: scale(-1, -1); }
 
 /* ── Wax Seal Accent ────────────────────────────────────── */
 .wax-seal {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: radial-gradient(
     circle at 40% 35%,
@@ -863,7 +863,7 @@ body {
 }
 .wax-seal::after {
   content: '⚔';
-  font-size: 14px;
+  font-size: 11px;
   color: rgba(255, 200, 150, 0.5);
 }
 
@@ -871,16 +871,16 @@ body {
 .perks-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin: 14px 0;
+  gap: 4px;
+  margin: 8px 0;
   justify-content: center;
 }
 .perk-tag {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  font-size: 0.7rem;
+  gap: 3px;
+  padding: 2px 7px;
+  font-size: 0.6rem;
   font-weight: 600;
   color: var(--ink-mid);
   background: rgba(139, 105, 20, 0.06);
@@ -891,11 +891,11 @@ body {
 
 /* ── Scroll Unroll Animation on Hover ───────────────────── */
 .papyrus-scroll-wrapper:hover .papyrus-scroll-top::before {
-  height: 24px;
+  height: 18px;
   transition: height 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .papyrus-scroll-wrapper:hover .papyrus-scroll-bottom::after {
-  height: 24px;
+  height: 18px;
   transition: height 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -925,21 +925,31 @@ body {
 
 /* ── Responsive ─────────────────────────────────────────── */
 @media (max-width: 480px) {
+  .papyrus-scroll {
+    max-width: 100%;
+  }
   .scroll-content {
-    padding: 30px 20px 26px;
+    padding: 18px 14px 16px;
   }
   .scroll-title {
-    font-size: 1.25rem;
+    font-size: 0.95rem;
   }
   .promo-bonus {
-    font-size: 1.5rem;
+    font-size: 0.95rem;
   }
   .promo-bonus-accent {
-    font-size: 1.8rem;
+    font-size: 1.1rem;
   }
   .cta-button {
-    font-size: 0.88rem;
-    padding: 14px 24px;
+    font-size: 0.68rem;
+    padding: 8px 16px;
+  }
+  .casino-banner-text {
+    font-size: 0.9rem;
+  }
+  .scroll-emblem {
+    width: 30px;
+    height: 30px;
   }
 }
 
