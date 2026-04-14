@@ -71,9 +71,23 @@ create table if not exists casino_affiliates (
   created_at timestamptz not null default now()
 );
 
+-- Spin History (daily wheel)
+create table if not exists spin_history (
+  id uuid primary key default gen_random_uuid(),
+  player text not null,
+  reward text not null,
+  icon text not null,
+  color text not null,
+  tier text not null check (tier in ('legendary', 'epic', 'rare', 'common', 'loss')),
+  created_at timestamptz not null default now()
+);
+
+create index idx_spin_history_created on spin_history(created_at desc);
+
 -- Enable Realtime for bonus hunt tracking
 alter publication supabase_realtime add table bonus_hunt_slots;
 alter publication supabase_realtime add table slot_requests;
+alter publication supabase_realtime add table spin_history;
 
 -- Row Level Security (RLS)
 alter table bonus_hunt_sessions enable row level security;
@@ -91,3 +105,8 @@ create policy "Public read casinos" on casino_affiliates for select using (true)
 
 -- Insert policy for slot requests (anyone can request)
 create policy "Anyone can request slots" on slot_requests for insert with check (true);
+
+-- Spin history: public read + insert
+alter table spin_history enable row level security;
+create policy "Public read spin history" on spin_history for select using (true);
+create policy "Anyone can insert spin history" on spin_history for insert with check (true);

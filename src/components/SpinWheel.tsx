@@ -3,6 +3,8 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { supabase } from "@/lib/supabase";
+import type { SpinHistoryRow } from "@/lib/supabase";
 
 /* ═══════════════════════════════════════════════════════════════════
    TYPES & CONFIG
@@ -34,13 +36,13 @@ const SEGMENT_ANGLE = 360 / SEGMENT_COUNT;
 
 const COOLDOWN_MS = 24 * 60 * 60 * 1000;
 const STORAGE_KEY = "arena-spin-last";
-const HISTORY_KEY = "arena-spin-history";
 
 interface HistoryEntry {
   player: string;
   reward: string;
   icon: string;
   color: string;
+  tier: string;
   time: number;
 }
 
@@ -83,20 +85,31 @@ function vibrate(pattern: number | number[]) {
   }
 }
 
-function getHistory(): HistoryEntry[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const stored = localStorage.getItem(HISTORY_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
+async function fetchHistory(): Promise<HistoryEntry[]> {
+  const { data } = await supabase
+    .from("spin_history")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(50);
+  if (!data) return [];
+  return (data as SpinHistoryRow[]).map((row) => ({
+    player: row.player,
+    reward: row.reward,
+    icon: row.icon,
+    color: row.color,
+    tier: row.tier,
+    time: new Date(row.created_at).getTime(),
+  }));
 }
 
-function addHistory(entry: HistoryEntry) {
-  const history = getHistory();
-  history.unshift(entry);
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 50)));
+async function addHistory(entry: HistoryEntry) {
+  await supabase.from("spin_history").insert({
+    player: entry.player,
+    reward: entry.reward,
+    icon: entry.icon,
+    color: entry.color,
+    tier: entry.tier,
+  });
 }
 
 function timeAgo(timestamp: number): string {
@@ -441,7 +454,28 @@ export function SpinWheel() {
   const lastSegmentRef = useRef(-1);
   const spinAnimRef = useRef<number | null>(null);
 
-  useEffect(() => { setHistory(getHistory()); }, []);
+  useEffect(() => {
+    fetchHistory().then(setHistory);
+
+    // Realtime: listen for new spins from other users
+    const channel = supabase
+      .channel("spin_history_realtime")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "spin_history" }, (payload) => {
+        const row = payload.new as SpinHistoryRow;
+        const entry: HistoryEntry = {
+          player: row.player,
+          reward: row.reward,
+          icon: row.icon,
+          color: row.color,
+          tier: row.tier,
+          time: new Date(row.created_at).getTime(),
+        };
+        setHistory((prev) => [entry, ...prev].slice(0, 50));
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
   useEffect(() => {
     const interval = setInterval(() => setCooldown(getRemainingMs()), 1000);
     return () => clearInterval(interval);
@@ -533,8 +567,7 @@ export function SpinWheel() {
         playImpact(); triggerShake();
         if (hapticsEnabled) vibrate([80, 30, 120]);
 
-        addHistory({ player: randomGladiator(), reward: winner.label, icon: winner.icon, color: winner.color, time: Date.now() });
-        setHistory(getHistory());
+        addHistory({ player: randomGladiator(), reward: winner.label, icon: winner.icon, color: winner.color, tier: winner.tier, time: Date.now() });
 
         setTimeout(() => {
           triggerFlash();

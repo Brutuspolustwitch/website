@@ -1,9 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl || "https://placeholder.supabase.co", supabaseAnonKey || "placeholder");
 
 /* ── Database Types ──────────────────────────────────────────────────
    These mirror the Supabase tables used by the arena platform.
@@ -58,5 +58,15 @@ export interface CasinoAffiliate {
   affiliate_url: string;
   review_body: string;
   faq: { question: string; answer: string }[];
+  created_at: string;
+}
+
+export interface SpinHistoryRow {
+  id: string;
+  player: string;
+  reward: string;
+  icon: string;
+  color: string;
+  tier: string;
   created_at: string;
 }
