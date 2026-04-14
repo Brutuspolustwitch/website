@@ -141,23 +141,24 @@ export function StreamerHub() {
 
             {/* Chat */}
             <div className="relative bg-arena-black rounded-2xl overflow-hidden arena-border-crimson metal-frame-glow shadow-2xl shadow-black/60 min-h-[400px] lg:min-h-0 flex flex-col">
-              {/* Emblem header */}
-              <div className="relative z-10 flex items-center justify-center gap-2.5 py-3 bg-gradient-to-b from-arena-charcoal to-arena-dark border-b border-white/5">
+              {/* Emblem header — overlays Twitch's "Stream Chat" bar */}
+              <div className="relative z-20 flex items-center justify-center gap-3 py-3 bg-gradient-to-b from-arena-charcoal to-arena-dark border-b border-white/5">
                 <img
                   src="/images/BrutoEmblem.png"
                   alt="BrutusPolus"
-                  className="w-7 h-7 object-contain"
+                  className="w-10 h-10 object-contain"
                 />
-                <span className="font-[family-name:var(--font-display)] text-arena-gold text-xs font-bold tracking-[0.2em] uppercase arena-glow">
+                <span className="font-[family-name:var(--font-display)] text-arena-gold text-sm font-bold tracking-[0.2em] uppercase arena-glow">
                   Arena Chat
                 </span>
               </div>
 
-              {/* Chat iframe */}
-              <div className="relative flex-1">
+              {/* Chat iframe — pulled up to hide Twitch's native header */}
+              <div className="relative flex-1 overflow-hidden">
                 <iframe
                   src={`https://www.twitch.tv/embed/${TWITCH_CHANNEL}/chat?parent=${hostname}&darkpopout`}
-                  className="w-full h-full absolute inset-0"
+                  className="absolute w-full z-10"
+                  style={{ top: "-50px", height: "calc(100% + 50px)" }}
                   title="Twitch chat"
                 />
               </div>
