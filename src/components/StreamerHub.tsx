@@ -90,50 +90,52 @@ export function StreamerHub() {
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-4">
             {/* Stream / Clip player */}
             <div className="relative w-full aspect-video bg-arena-black rounded-2xl overflow-hidden arena-border-crimson metal-frame-glow shadow-2xl shadow-black/60">
-              {isLive || loading ? (
+              {(isLive || loading) && (
                 <iframe
                   src={`https://player.twitch.tv/?channel=${TWITCH_CHANNEL}&parent=${hostname}`}
-                  className="absolute inset-0 w-full h-full"
+                  className="absolute inset-0 w-full h-full z-10"
                   allowFullScreen
                   title={`${TWITCH_CHANNEL} live stream`}
                 />
-              ) : activeClip ? (
-                <iframe
-                  key={activeClip.id}
-                  src={`${activeClip.embed_url}&parent=${hostname}&autoplay=true&muted=false`}
-                  className="absolute inset-0 w-full h-full"
-                  allowFullScreen
-                  title={activeClip.title}
-                />
-              ) : (
+              )}
+
+              {!isLive && !loading && activeClip && (
+                <>
+                  <iframe
+                    key={activeClip.id}
+                    src={`https://clips.twitch.tv/embed?clip=${activeClip.id}&parent=${hostname}&autoplay=true&muted=false`}
+                    className="absolute inset-0 w-full h-full z-10"
+                    allowFullScreen
+                    title={activeClip.title}
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-4 flex items-end justify-between">
+                    <div className="min-w-0">
+                      <p className="text-white text-sm font-medium truncate">
+                        {activeClip.title}
+                      </p>
+                      <p className="text-arena-smoke text-xs">
+                        Clipped by {activeClip.creator_name} · {activeClip.view_count.toLocaleString()} views
+                      </p>
+                    </div>
+                    {clips.length > 1 && (
+                      <button
+                        onClick={shuffleClip}
+                        className="ml-3 shrink-0 px-3 py-1.5 rounded-lg bg-arena-crimson/30 hover:bg-arena-crimson/50 text-arena-gold text-xs font-medium tracking-wide uppercase transition-colors backdrop-blur-sm border border-arena-crimson/40 arena-btn-press"
+                      >
+                        Próximo clip
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {!isLive && !loading && !activeClip && (
                 <iframe
                   src={`https://player.twitch.tv/?channel=${TWITCH_CHANNEL}&parent=${hostname}`}
-                  className="absolute inset-0 w-full h-full"
+                  className="absolute inset-0 w-full h-full z-10"
                   allowFullScreen
                   title={`${TWITCH_CHANNEL} channel`}
                 />
-              )}
-
-              {/* Clip info overlay */}
-              {!isLive && !loading && activeClip && (
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 flex items-end justify-between pointer-events-none">
-                  <div className="min-w-0">
-                    <p className="text-white text-sm font-medium truncate">
-                      {activeClip.title}
-                    </p>
-                    <p className="text-arena-smoke text-xs">
-                      Clipped by {activeClip.creator_name} · {activeClip.view_count.toLocaleString()} views
-                    </p>
-                  </div>
-                  {clips.length > 1 && (
-                    <button
-                      onClick={shuffleClip}
-                      className="pointer-events-auto ml-3 shrink-0 px-3 py-1.5 rounded-lg bg-arena-crimson/30 hover:bg-arena-crimson/50 text-arena-gold text-xs font-medium tracking-wide uppercase transition-colors backdrop-blur-sm border border-arena-crimson/40 arena-btn-press"
-                    >
-                      Próximo clip
-                    </button>
-                  )}
-                </div>
               )}
             </div>
 
