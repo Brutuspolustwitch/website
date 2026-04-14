@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
 import { Footer } from "@/components/Footer";
+import { AgeGate } from "@/components/AgeGate";
+import { CookieConsent } from "@/components/CookieConsent";
 import { AuthProvider } from "@/lib/auth-context";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -20,6 +22,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="lg:pl-60">
         <Footer />
       </div>
+
+      <AgeGate />
+      <CookieConsent />
     </AuthProvider>
   );
 }
