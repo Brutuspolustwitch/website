@@ -6,6 +6,11 @@ import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Reward } from "@/components/RewardCard";
 
+const SELECT_CLS =
+  "w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-arena-gold/40 appearance-none cursor-pointer";
+const INPUT_CLS =
+  "w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-arena-gold/40";
+
 const emptyReward: Omit<Reward, "id"> = {
   title: "",
   description: "",
@@ -120,12 +125,201 @@ export default function AdminRewardsPage() {
 
         <div className="flex justify-end mb-6">
           <button
-            onClick={() => setEditing({ ...emptyReward })}
+            onClick={() => setEditing(editing ? null : { ...emptyReward })}
             className="px-4 py-2 rounded-lg bg-arena-crimson hover:bg-arena-red text-white text-sm gladiator-label transition-all cursor-pointer"
           >
-            + Nova Recompensa
+            {editing && !editing.id ? "✕ Fechar" : "+ Nova Recompensa"}
           </button>
         </div>
+
+        {/* Inline expandable form */}
+        <AnimatePresence>
+          {editing && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="overflow-hidden mb-8"
+            >
+              <div className="rounded-2xl border border-white/10 bg-[#111] p-6">
+                <h2 className="gladiator-label text-lg text-arena-white mb-6">
+                  {editing.id ? "Editar Recompensa" : "Nova Recompensa"}
+                </h2>
+
+                <div className="space-y-4">
+                  <Field label="Título">
+                    <input
+                      type="text"
+                      value={editing.title}
+                      onChange={(e) => setEditing({ ...editing, title: e.target.value })}
+                      className={INPUT_CLS}
+                    />
+                  </Field>
+
+                  <Field label="Descrição">
+                    <textarea
+                      value={editing.description}
+                      onChange={(e) => setEditing({ ...editing, description: e.target.value })}
+                      rows={2}
+                      className={`${INPUT_CLS} resize-none`}
+                    />
+                  </Field>
+
+                  <Field label="Imagem URL">
+                    <input
+                      type="url"
+                      value={editing.image || ""}
+                      onChange={(e) => setEditing({ ...editing, image: e.target.value || null })}
+                      className={INPUT_CLS}
+                      placeholder="https://..."
+                    />
+                  </Field>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <Field label="Custo (pontos)">
+                      <input
+                        type="number"
+                        min={1}
+                        value={editing.cost}
+                        onChange={(e) => setEditing({ ...editing, cost: parseInt(e.target.value) || 0 })}
+                        className={INPUT_CLS}
+                      />
+                    </Field>
+
+                    <Field label="Stock (vazio = ilimitado)">
+                      <input
+                        type="number"
+                        min={0}
+                        value={editing.stock ?? ""}
+                        onChange={(e) => setEditing({ ...editing, stock: e.target.value ? parseInt(e.target.value) : null })}
+                        className={INPUT_CLS}
+                      />
+                    </Field>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <Field label="Tier">
+                      <div className="flex gap-2">
+                        {(["common", "elite", "legendary"] as const).map((t) => (
+                          <button
+                            key={t}
+                            type="button"
+                            onClick={() => setEditing({ ...editing, tier: t })}
+                            className={`flex-1 py-2 rounded-lg text-xs gladiator-label uppercase transition-all cursor-pointer border
+                              ${editing.tier === t
+                                ? t === "common"
+                                  ? "bg-arena-steel/30 border-arena-smoke/40 text-arena-white"
+                                  : t === "elite"
+                                    ? "bg-arena-gold/15 border-arena-gold/40 text-arena-gold"
+                                    : "bg-arena-crimson/15 border-arena-red/40 text-arena-red"
+                                : "bg-transparent border-white/10 text-arena-ash hover:border-white/20"
+                              }`}
+                          >
+                            {t === "common" ? "⚔️" : t === "elite" ? "🏆" : "👑"} {t}
+                          </button>
+                        ))}
+                      </div>
+                    </Field>
+
+                    <Field label="Tipo">
+                      <div className="flex flex-wrap gap-2">
+                        {(["deposit", "ticket", "gift", "cash", "custom"] as const).map((t) => (
+                          <button
+                            key={t}
+                            type="button"
+                            onClick={() => setEditing({ ...editing, type: t })}
+                            className={`px-3 py-2 rounded-lg text-xs gladiator-label uppercase transition-all cursor-pointer border
+                              ${editing.type === t
+                                ? "bg-arena-gold/15 border-arena-gold/30 text-arena-gold"
+                                : "bg-transparent border-white/10 text-arena-ash hover:border-white/20"
+                              }`}
+                          >
+                            {t === "deposit" ? "💰" : t === "ticket" ? "🎟️" : t === "gift" ? "🎁" : t === "cash" ? "💵" : "⚡"} {t}
+                          </button>
+                        ))}
+                      </div>
+                    </Field>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <Field label="Cooldown (horas)">
+                      <input
+                        type="number"
+                        min={0}
+                        value={editing.cooldown ?? ""}
+                        onChange={(e) => setEditing({ ...editing, cooldown: e.target.value ? parseInt(e.target.value) : null })}
+                        className={INPUT_CLS}
+                      />
+                    </Field>
+
+                    <Field label="Ordem">
+                      <input
+                        type="number"
+                        value={editing.sort_order}
+                        onChange={(e) => setEditing({ ...editing, sort_order: parseInt(e.target.value) || 0 })}
+                        className={INPUT_CLS}
+                      />
+                    </Field>
+                  </div>
+
+                  <div className="flex items-center gap-6">
+                    <label className="flex items-center gap-2 text-sm text-arena-smoke cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={editing.vip_only}
+                        onChange={(e) => setEditing({ ...editing, vip_only: e.target.checked, vip_level_required: e.target.checked ? 1 : null })}
+                        className="rounded border-white/20"
+                      />
+                      Apenas VIP
+                    </label>
+
+                    {editing.vip_only && (
+                      <Field label="Nível mínimo">
+                        <div className="flex gap-2">
+                          {([
+                            { v: 1, label: "Warrior", icon: "🗡️" },
+                            { v: 2, label: "Champion", icon: "🏆" },
+                            { v: 3, label: "Legend", icon: "👑" },
+                          ] as const).map((l) => (
+                            <button
+                              key={l.v}
+                              type="button"
+                              onClick={() => setEditing({ ...editing, vip_level_required: l.v })}
+                              className={`px-3 py-1.5 rounded-lg text-xs gladiator-label transition-all cursor-pointer border
+                                ${(editing.vip_level_required ?? 1) === l.v
+                                  ? "bg-arena-gold/15 border-arena-gold/30 text-arena-gold"
+                                  : "bg-transparent border-white/10 text-arena-ash hover:border-white/20"
+                                }`}
+                            >
+                              {l.icon} {l.label}
+                            </button>
+                          ))}
+                        </div>
+                      </Field>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-white/[0.06]">
+                  <button
+                    onClick={() => setEditing(null)}
+                    className="px-4 py-2 rounded-lg text-sm text-arena-smoke hover:bg-white/5 transition-all cursor-pointer"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={handleSave}
+                    disabled={saving || !editing.title.trim()}
+                    className="px-5 py-2 rounded-lg bg-arena-crimson hover:bg-arena-red text-white text-sm gladiator-label disabled:opacity-40 transition-all cursor-pointer"
+                  >
+                    {saving ? "A guardar..." : editing.id ? "Guardar" : "Criar"}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Rewards Table */}
         {loading ? (
@@ -134,11 +328,11 @@ export default function AdminRewardsPage() {
               <div key={i} className="h-16 bg-white/[0.03] animate-pulse rounded-lg" />
             ))}
           </div>
-        ) : rewards.length === 0 ? (
+        ) : rewards.length === 0 && !editing ? (
           <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-10 text-center">
             <p className="text-arena-ash">Nenhuma recompensa criada</p>
           </div>
-        ) : (
+        ) : rewards.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -193,176 +387,7 @@ export default function AdminRewardsPage() {
               </tbody>
             </table>
           </div>
-        )}
-
-        {/* Edit/Create Modal */}
-        <AnimatePresence>
-          {editing && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-              onClick={() => setEditing(null)}
-            >
-              <motion.div
-                initial={{ scale: 0.95, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.95, opacity: 0 }}
-                className="bg-arena-dark border border-white/10 rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <h2 className="gladiator-label text-lg text-arena-white mb-6">
-                  {editing.id ? "Editar Recompensa" : "Nova Recompensa"}
-                </h2>
-
-                <div className="space-y-4">
-                  <Field label="Título">
-                    <input
-                      type="text"
-                      value={editing.title}
-                      onChange={(e) => setEditing({ ...editing, title: e.target.value })}
-                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-arena-gold/40"
-                    />
-                  </Field>
-
-                  <Field label="Descrição">
-                    <textarea
-                      value={editing.description}
-                      onChange={(e) => setEditing({ ...editing, description: e.target.value })}
-                      rows={2}
-                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-arena-gold/40 resize-none"
-                    />
-                  </Field>
-
-                  <Field label="Imagem URL">
-                    <input
-                      type="url"
-                      value={editing.image || ""}
-                      onChange={(e) => setEditing({ ...editing, image: e.target.value || null })}
-                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-arena-gold/40"
-                      placeholder="https://..."
-                    />
-                  </Field>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <Field label="Custo (pontos)">
-                      <input
-                        type="number"
-                        min={1}
-                        value={editing.cost}
-                        onChange={(e) => setEditing({ ...editing, cost: parseInt(e.target.value) || 0 })}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-arena-gold/40"
-                      />
-                    </Field>
-
-                    <Field label="Stock (vazio = ilimitado)">
-                      <input
-                        type="number"
-                        min={0}
-                        value={editing.stock ?? ""}
-                        onChange={(e) => setEditing({ ...editing, stock: e.target.value ? parseInt(e.target.value) : null })}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-arena-gold/40"
-                      />
-                    </Field>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <Field label="Tier">
-                      <select
-                        value={editing.tier}
-                        onChange={(e) => setEditing({ ...editing, tier: e.target.value as Reward["tier"] })}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-arena-gold/40"
-                      >
-                        <option value="common">Common</option>
-                        <option value="elite">Elite</option>
-                        <option value="legendary">Legendary</option>
-                      </select>
-                    </Field>
-
-                    <Field label="Tipo">
-                      <select
-                        value={editing.type}
-                        onChange={(e) => setEditing({ ...editing, type: e.target.value })}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-arena-gold/40"
-                      >
-                        <option value="deposit">Deposit</option>
-                        <option value="ticket">Ticket</option>
-                        <option value="gift">Gift</option>
-                        <option value="cash">Cash</option>
-                        <option value="custom">Custom</option>
-                      </select>
-                    </Field>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <Field label="Cooldown (horas)">
-                      <input
-                        type="number"
-                        min={0}
-                        value={editing.cooldown ?? ""}
-                        onChange={(e) => setEditing({ ...editing, cooldown: e.target.value ? parseInt(e.target.value) : null })}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-arena-gold/40"
-                      />
-                    </Field>
-
-                    <Field label="Ordem">
-                      <input
-                        type="number"
-                        value={editing.sort_order}
-                        onChange={(e) => setEditing({ ...editing, sort_order: parseInt(e.target.value) || 0 })}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-arena-gold/40"
-                      />
-                    </Field>
-                  </div>
-
-                  <div className="flex items-center gap-6">
-                    <label className="flex items-center gap-2 text-sm text-arena-smoke cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={editing.vip_only}
-                        onChange={(e) => setEditing({ ...editing, vip_only: e.target.checked, vip_level_required: e.target.checked ? 1 : null })}
-                        className="rounded border-white/20"
-                      />
-                      Apenas VIP
-                    </label>
-
-                    {editing.vip_only && (
-                      <div className="flex items-center gap-2 text-sm text-arena-smoke">
-                        <span>Nível mínimo:</span>
-                        <select
-                          value={editing.vip_level_required ?? 1}
-                          onChange={(e) => setEditing({ ...editing, vip_level_required: parseInt(e.target.value) })}
-                          className="bg-white/5 border border-white/10 rounded px-2 py-1 text-white text-sm"
-                        >
-                          <option value={1}>1 – Warrior</option>
-                          <option value={2}>2 – Champion</option>
-                          <option value={3}>3 – Legend</option>
-                        </select>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex justify-end gap-3 mt-8">
-                  <button
-                    onClick={() => setEditing(null)}
-                    className="px-4 py-2 rounded-lg text-sm text-arena-smoke hover:bg-white/5 transition-all cursor-pointer"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    onClick={handleSave}
-                    disabled={saving || !editing.title.trim()}
-                    className="px-5 py-2 rounded-lg bg-arena-crimson hover:bg-arena-red text-white text-sm gladiator-label disabled:opacity-40 transition-all cursor-pointer"
-                  >
-                    {saving ? "A guardar..." : editing.id ? "Guardar" : "Criar"}
-                  </button>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        ) : null}
 
         {/* Toast */}
         <AnimatePresence>
