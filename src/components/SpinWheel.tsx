@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 /* ═══════════════════════════════════════════════════════════════════
    TYPES & CONFIG
@@ -16,23 +17,32 @@ interface Reward {
 }
 
 const REWARDS: Reward[] = [
-  { label: "Jackpot",         icon: "👑", color: "#d4a843", glowColor: "rgba(212,168,67,0.6)",  tier: "legendary" },
-  { label: "Free Spin",       icon: "🔄", color: "#cd7f32", glowColor: "rgba(205,127,50,0.5)",  tier: "rare" },
-  { label: "Bonus Coins",     icon: "🪙", color: "#f0d78c", glowColor: "rgba(240,215,140,0.5)", tier: "common" },
-  { label: "XP Boost",        icon: "⚡", color: "#ff6f00", glowColor: "rgba(255,111,0,0.5)",   tier: "common" },
-  { label: "Mystery Reward",  icon: "🎭", color: "#9c27b0", glowColor: "rgba(156,39,176,0.5)",  tier: "epic" },
-  { label: "Defeat",          icon: "💀", color: "#8b0000", glowColor: "rgba(139,0,0,0.5)",     tier: "loss" },
-  { label: "Bonus Coins",     icon: "🪙", color: "#f0d78c", glowColor: "rgba(240,215,140,0.5)", tier: "common" },
-  { label: "Free Spin",       icon: "🔄", color: "#cd7f32", glowColor: "rgba(205,127,50,0.5)",  tier: "rare" },
-  { label: "XP Boost",        icon: "⚡", color: "#ff6f00", glowColor: "rgba(255,111,0,0.5)",   tier: "common" },
-  { label: "Defeat",          icon: "💀", color: "#8b0000", glowColor: "rgba(139,0,0,0.5)",     tier: "loss" },
+  { label: "Jackpot",     icon: "👑", color: "#d4a843", glowColor: "rgba(212,168,67,0.6)",  tier: "legendary" },
+  { label: "Free Spin",   icon: "🔄", color: "#cd7f32", glowColor: "rgba(205,127,50,0.5)",  tier: "rare" },
+  { label: "Bonus Coins", icon: "🪙", color: "#f0d78c", glowColor: "rgba(240,215,140,0.5)", tier: "common" },
+  { label: "XP Boost",    icon: "⚡", color: "#ff6f00", glowColor: "rgba(255,111,0,0.5)",   tier: "common" },
+  { label: "Mystery",     icon: "🎭", color: "#9c27b0", glowColor: "rgba(156,39,176,0.5)",  tier: "epic" },
+  { label: "Defeat",      icon: "💀", color: "#8b0000", glowColor: "rgba(139,0,0,0.5)",     tier: "loss" },
+  { label: "Bonus Coins", icon: "🪙", color: "#f0d78c", glowColor: "rgba(240,215,140,0.5)", tier: "common" },
+  { label: "Free Spin",   icon: "🔄", color: "#cd7f32", glowColor: "rgba(205,127,50,0.5)",  tier: "rare" },
+  { label: "XP Boost",    icon: "⚡", color: "#ff6f00", glowColor: "rgba(255,111,0,0.5)",   tier: "common" },
+  { label: "Defeat",      icon: "💀", color: "#8b0000", glowColor: "rgba(139,0,0,0.5)",     tier: "loss" },
 ];
 
 const SEGMENT_COUNT = REWARDS.length;
 const SEGMENT_ANGLE = 360 / SEGMENT_COUNT;
 
-const COOLDOWN_MS = 24 * 60 * 60 * 1000; // 24 hours
+const COOLDOWN_MS = 24 * 60 * 60 * 1000;
 const STORAGE_KEY = "arena-spin-last";
+const HISTORY_KEY = "arena-spin-history";
+
+interface HistoryEntry {
+  player: string;
+  reward: string;
+  icon: string;
+  color: string;
+  time: number;
+}
 
 /* ═══════════════════════════════════════════════════════════════════
    HELPERS
@@ -73,8 +83,45 @@ function vibrate(pattern: number | number[]) {
   }
 }
 
+function getHistory(): HistoryEntry[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const stored = localStorage.getItem(HISTORY_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
+function addHistory(entry: HistoryEntry) {
+  const history = getHistory();
+  history.unshift(entry);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 50)));
+}
+
+function timeAgo(timestamp: number): string {
+  const diff = Date.now() - timestamp;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "agora";
+  if (mins < 60) return `${mins}m`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d`;
+}
+
+const GLADIATOR_NAMES = [
+  "Maximus", "Spartacus", "Brutus", "Crixus", "Flamma",
+  "Commodus", "Verus", "Priscus", "Carpophorus", "Tetraites",
+  "Hermes", "Tigris", "Spiculus", "Triumphus", "Gannicus",
+];
+
+function randomGladiator(): string {
+  return GLADIATOR_NAMES[Math.floor(Math.random() * GLADIATOR_NAMES.length)];
+}
+
 /* ═══════════════════════════════════════════════════════════════════
-   PARTICLE CANVAS — ambient floating embers
+   EMBER PARTICLES (ambient)
    ═══════════════════════════════════════════════════════════════════ */
 
 function EmberCanvas() {
@@ -98,11 +145,7 @@ function EmberCanvas() {
     resize();
     window.addEventListener("resize", resize);
 
-    interface Particle {
-      x: number; y: number; r: number; vx: number; vy: number;
-      alpha: number; decay: number; hue: number;
-    }
-
+    interface Particle { x: number; y: number; r: number; vx: number; vy: number; alpha: number; decay: number; hue: number }
     const particles: Particle[] = [];
 
     function spawnParticle() {
@@ -122,16 +165,13 @@ function EmberCanvas() {
     function loop() {
       if (!canvas || !ctx) return;
       ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
-
       if (Math.random() < 0.15) spawnParticle();
-
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
         p.x += p.vx + Math.sin(Date.now() * 0.001 + i) * 0.15;
         p.y += p.vy;
         p.alpha -= p.decay;
         if (p.alpha <= 0) { particles.splice(i, 1); continue; }
-
         ctx.beginPath();
         const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 2.5);
         grad.addColorStop(0, `hsla(${p.hue}, 100%, 60%, ${p.alpha})`);
@@ -140,28 +180,18 @@ function EmberCanvas() {
         ctx.arc(p.x, p.y, p.r * 2.5, 0, Math.PI * 2);
         ctx.fill();
       }
-
       animId = requestAnimationFrame(loop);
     }
     loop();
 
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", resize);
-    };
+    return () => { cancelAnimationFrame(animId); window.removeEventListener("resize", resize); };
   }, []);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      className="pointer-events-none absolute inset-0 w-full h-full"
-      style={{ opacity: 0.7 }}
-    />
-  );
+  return <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 w-full h-full" style={{ opacity: 0.6 }} />;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   BURST PARTICLES — on win
+   BURST CANVAS — victory sparks
    ═══════════════════════════════════════════════════════════════════ */
 
 function BurstCanvas({ active, color }: { active: boolean; color: string }) {
@@ -179,25 +209,15 @@ function BurstCanvas({ active, color }: { active: boolean; color: string }) {
     canvas.height = canvas.offsetHeight * dpr;
     ctx.scale(dpr, dpr);
 
-    const cx = canvas.offsetWidth / 2;
-    const cy = canvas.offsetHeight / 2;
+    const cxC = canvas.offsetWidth / 2;
+    const cyC = canvas.offsetHeight / 2;
 
-    interface Spark {
-      x: number; y: number; vx: number; vy: number;
-      r: number; alpha: number; decay: number;
-    }
+    interface Spark { x: number; y: number; vx: number; vy: number; r: number; alpha: number; decay: number }
     const sparks: Spark[] = [];
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < 80; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const speed = 2 + Math.random() * 6;
-      sparks.push({
-        x: cx, y: cy,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        r: 1.5 + Math.random() * 2.5,
-        alpha: 1,
-        decay: 0.012 + Math.random() * 0.015,
-      });
+      const speed = 3 + Math.random() * 8;
+      sparks.push({ x: cxC, y: cyC, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, r: 1.5 + Math.random() * 3, alpha: 1, decay: 0.01 + Math.random() * 0.012 });
     }
 
     let animId: number;
@@ -206,10 +226,7 @@ function BurstCanvas({ active, color }: { active: boolean; color: string }) {
       ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
       let alive = false;
       for (const s of sparks) {
-        s.x += s.vx;
-        s.y += s.vy;
-        s.vy += 0.08;
-        s.alpha -= s.decay;
+        s.x += s.vx; s.y += s.vy; s.vy += 0.06; s.alpha -= s.decay;
         if (s.alpha <= 0) continue;
         alive = true;
         ctx.beginPath();
@@ -220,27 +237,21 @@ function BurstCanvas({ active, color }: { active: boolean; color: string }) {
       if (alive) animId = requestAnimationFrame(loop);
     }
     loop();
-
     return () => cancelAnimationFrame(animId);
   }, [active, color]);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      className="pointer-events-none absolute inset-0 w-full h-full"
-    />
-  );
+  return <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 w-full h-full" />;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   SVG WHEEL
+   SVG WHEEL — vertical text in segments
    ═══════════════════════════════════════════════════════════════════ */
 
 function WheelSVG() {
-  const size = 380;
+  const size = 400;
   const cx = size / 2;
   const cy = size / 2;
-  const r = size / 2 - 8;
+  const r = size / 2 - 10;
 
   function segmentPath(index: number) {
     const startAngle = (index * SEGMENT_ANGLE - 90) * (Math.PI / 180);
@@ -249,153 +260,139 @@ function WheelSVG() {
     const y1 = cy + r * Math.sin(startAngle);
     const x2 = cx + r * Math.cos(endAngle);
     const y2 = cy + r * Math.sin(endAngle);
-    const largeArc = SEGMENT_ANGLE > 180 ? 1 : 0;
-    return `M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${largeArc} 1 ${x2},${y2} Z`;
-  }
-
-  function textTransform(index: number) {
-    const midAngle = ((index + 0.5) * SEGMENT_ANGLE - 90) * (Math.PI / 180);
-    const textR = r * 0.62;
-    const tx = cx + textR * Math.cos(midAngle);
-    const ty = cy + textR * Math.sin(midAngle);
-    const rotation = (index + 0.5) * SEGMENT_ANGLE;
-    return { tx, ty, rotation };
+    return `M${cx},${cy} L${x1},${y1} A${r},${r} 0 0 1 ${x2},${y2} Z`;
   }
 
   return (
     <svg viewBox={`0 0 ${size} ${size}`} className="w-full h-full" aria-hidden="true">
       <defs>
-        {/* Metallic gradient for rim */}
         <radialGradient id="rimGrad" cx="50%" cy="50%" r="50%">
-          <stop offset="85%" stopColor="#2a2a2a" />
-          <stop offset="92%" stopColor="#3a3a3a" />
-          <stop offset="96%" stopColor="#555" />
-          <stop offset="100%" stopColor="#222" />
+          <stop offset="82%" stopColor="#1a1a1a" />
+          <stop offset="90%" stopColor="#2a2a2a" />
+          <stop offset="95%" stopColor="#444" />
+          <stop offset="100%" stopColor="#1a1a1a" />
         </radialGradient>
-        {/* Inner shadow */}
-        <filter id="innerShadow">
-          <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#000" floodOpacity="0.5" />
-        </filter>
-        {/* Segment pattern overlays for metal look */}
-        <filter id="roughen">
-          <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" result="noise" />
-          <feComposite in="SourceGraphic" in2="noise" operator="in" />
+        <filter id="segShadow">
+          <feDropShadow dx="0" dy="1" stdDeviation="2" floodColor="#000" floodOpacity="0.6" />
         </filter>
       </defs>
 
-      {/* Outer rim — forged metal ring */}
-      <circle cx={cx} cy={cy} r={r + 6} fill="url(#rimGrad)" stroke="#555" strokeWidth="1" />
-      {/* Notches on rim for mechanical feel */}
-      {Array.from({ length: SEGMENT_COUNT }).map((_, i) => {
-        const angle = (i * SEGMENT_ANGLE - 90) * (Math.PI / 180);
-        const ox = cx + (r + 4) * Math.cos(angle);
-        const oy = cy + (r + 4) * Math.sin(angle);
-        const ix = cx + (r - 2) * Math.cos(angle);
-        const iy = cy + (r - 2) * Math.sin(angle);
+      {/* Outer metallic rim */}
+      <circle cx={cx} cy={cy} r={r + 8} fill="url(#rimGrad)" stroke="#555" strokeWidth="1" />
+      <circle cx={cx} cy={cy} r={r + 5} fill="none" stroke="#d4a843" strokeWidth="0.5" opacity="0.3" />
+
+      {/* Rim tick marks */}
+      {Array.from({ length: SEGMENT_COUNT * 3 }).map((_, i) => {
+        const angle = (i * (360 / (SEGMENT_COUNT * 3)) - 90) * (Math.PI / 180);
+        const isMajor = i % 3 === 0;
+        const outerR = r + 6;
+        const innerR = isMajor ? r - 2 : r + 1;
         return (
-          <line key={`notch-${i}`} x1={ix} y1={iy} x2={ox} y2={oy} stroke="#666" strokeWidth="2" />
+          <line
+            key={`tick-${i}`}
+            x1={cx + innerR * Math.cos(angle)} y1={cy + innerR * Math.sin(angle)}
+            x2={cx + outerR * Math.cos(angle)} y2={cy + outerR * Math.sin(angle)}
+            stroke={isMajor ? "#888" : "#555"} strokeWidth={isMajor ? 2 : 1}
+          />
         );
       })}
 
-      {/* Segments */}
+      {/* Segments with vertical text */}
       {REWARDS.map((reward, i) => {
-        const { tx, ty, rotation } = textTransform(i);
-        const segColors = [
-          "rgba(20,20,20,0.95)",
-          "rgba(30,28,24,0.95)",
-        ];
+        const midAngleDeg = (i + 0.5) * SEGMENT_ANGLE;
+        const midAngle = (midAngleDeg - 90) * (Math.PI / 180);
+        const segColors = ["rgba(18,18,18,0.97)", "rgba(28,26,22,0.97)"];
+        const letters = reward.label.toUpperCase().split("");
+
+        const iconR = r * 0.85;
+        const letterStartR = r * 0.73;
+        const letterStep = Math.min((r * 0.40) / Math.max(letters.length, 1), 13);
+
         return (
           <g key={i}>
-            <path
-              d={segmentPath(i)}
-              fill={segColors[i % 2]}
-              stroke="rgba(80,70,50,0.4)"
-              strokeWidth="1.5"
-              filter="url(#innerShadow)"
-            />
-            {/* Color accent line at segment edge */}
-            <path
-              d={segmentPath(i)}
-              fill="none"
-              stroke={reward.color}
-              strokeWidth="0.5"
-              opacity="0.3"
-            />
-            {/* Icon */}
+            <path d={segmentPath(i)} fill={segColors[i % 2]} stroke="rgba(80,70,50,0.35)" strokeWidth="1" filter="url(#segShadow)" />
+
+            {/* Emoji icon at outer edge */}
             <text
-              x={tx}
-              y={ty - 6}
-              textAnchor="middle"
-              dominantBaseline="central"
-              fontSize="22"
-              transform={`rotate(${rotation}, ${tx}, ${ty})`}
-            >
-              {reward.icon}
-            </text>
-            {/* Label */}
-            <text
-              x={tx}
-              y={ty + 14}
-              textAnchor="middle"
-              dominantBaseline="central"
-              fontSize="8.5"
-              fontWeight="700"
-              fill={reward.color}
-              fontFamily="'Cinzel', serif"
-              letterSpacing="0.5"
-              transform={`rotate(${rotation}, ${tx}, ${ty})`}
-            >
-              {reward.label.toUpperCase()}
-            </text>
+              x={cx + iconR * Math.cos(midAngle)} y={cy + iconR * Math.sin(midAngle)}
+              textAnchor="middle" dominantBaseline="central" fontSize="17"
+              transform={`rotate(${midAngleDeg}, ${cx + iconR * Math.cos(midAngle)}, ${cy + iconR * Math.sin(midAngle)})`}
+            >{reward.icon}</text>
+
+            {/* Letters stacked along radial line inward */}
+            {letters.map((letter, li) => {
+              const lr = letterStartR - li * letterStep;
+              const lx = cx + lr * Math.cos(midAngle);
+              const ly = cy + lr * Math.sin(midAngle);
+              return (
+                <text
+                  key={li} x={lx} y={ly}
+                  textAnchor="middle" dominantBaseline="central"
+                  fontSize="8" fontWeight="800" fill={reward.color}
+                  fontFamily="'Cinzel', serif" opacity="0.85"
+                  transform={`rotate(${midAngleDeg}, ${lx}, ${ly})`}
+                >{letter}</text>
+              );
+            })}
           </g>
         );
       })}
 
-      {/* Center hub — layered metallic */}
-      <circle cx={cx} cy={cy} r="38" fill="#1a1a1a" stroke="#555" strokeWidth="2" />
-      <circle cx={cx} cy={cy} r="34" fill="url(#rimGrad)" stroke="#d4a843" strokeWidth="1" opacity="0.7" />
-      <circle cx={cx} cy={cy} r="28" fill="#141414" stroke="#3a3a3a" strokeWidth="1" />
-      {/* Roman numeral X (decorative) */}
-      <text
-        x={cx}
-        y={cy}
-        textAnchor="middle"
-        dominantBaseline="central"
-        fontSize="24"
-        fontWeight="900"
-        fill="#d4a843"
-        fontFamily="'Cinzel', serif"
-        opacity="0.6"
-      >
-        ✕
-      </text>
+      {/* Center hub ring */}
+      <circle cx={cx} cy={cy} r={r * 0.24} fill="#141414" stroke="#555" strokeWidth="1.5" />
+      <circle cx={cx} cy={cy} r={r * 0.23} fill="none" stroke="#d4a843" strokeWidth="0.5" opacity="0.25" />
     </svg>
   );
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   POINTER — blade/dagger style
+   POINTER
    ═══════════════════════════════════════════════════════════════════ */
 
 function Pointer() {
   return (
     <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1 z-20">
-      <svg width="36" height="52" viewBox="0 0 36 52">
-        {/* Blade */}
-        <polygon
-          points="18,48 8,12 18,0 28,12"
-          fill="#c62828"
-          stroke="#d4a843"
-          strokeWidth="1.5"
-        />
-        {/* Highlight */}
-        <polygon
-          points="18,44 13,14 18,4 18,44"
-          fill="rgba(255,255,255,0.12)"
-        />
-        {/* Blood drip detail — subtle */}
-        <ellipse cx="18" cy="49" rx="3" ry="2" fill="#8b0000" opacity="0.7" />
+      <svg width="32" height="48" viewBox="0 0 32 48">
+        <polygon points="16,44 6,12 16,0 26,12" fill="#c62828" stroke="#d4a843" strokeWidth="1.5" />
+        <polygon points="16,40 11,14 16,4 16,40" fill="rgba(255,255,255,0.12)" />
+        <ellipse cx="16" cy="45" rx="3" ry="2" fill="#8b0000" opacity="0.6" />
       </svg>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   WIN HISTORY PANEL
+   ═══════════════════════════════════════════════════════════════════ */
+
+function WinHistory({ history }: { history: HistoryEntry[] }) {
+  return (
+    <div className="flex flex-col h-full min-h-0">
+      <h3 className="font-[family-name:var(--font-display)] text-xs uppercase tracking-[0.2em] text-arena-gold/80 mb-3 shrink-0">
+        ⚔ Histórico
+      </h3>
+      <div className="flex-1 overflow-y-auto space-y-1 min-h-0 pr-1">
+        {history.length === 0 ? (
+          <p className="text-[11px] text-arena-ash/50 italic">Nenhum gladiador girou ainda...</p>
+        ) : (
+          history.map((entry, i) => (
+            <motion.div
+              key={`${entry.time}-${i}`}
+              initial={i === 0 ? { opacity: 0, x: 20 } : false}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3 }}
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.05]"
+            >
+              <span className="text-sm shrink-0">{entry.icon}</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] font-semibold text-arena-white truncate">{entry.player}</p>
+                <p className="text-[10px] truncate" style={{ color: entry.color }}>{entry.reward}</p>
+              </div>
+              <span className="text-[9px] text-arena-ash/50 shrink-0">{timeAgo(entry.time)}</span>
+            </motion.div>
+          ))
+        )}
+      </div>
     </div>
   );
 }
@@ -415,63 +412,46 @@ export function SpinWheel() {
   const [flash, setFlash] = useState(false);
   const [burstActive, setBurstActive] = useState(false);
   const [zoom, setZoom] = useState(false);
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
 
-  const wheelRef = useRef<HTMLDivElement>(null);
   const tickAudioRef = useRef<AudioContext | null>(null);
   const lastSegmentRef = useRef(-1);
   const spinAnimRef = useRef<number | null>(null);
 
-  // Countdown timer
+  useEffect(() => { setHistory(getHistory()); }, []);
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCooldown(getRemainingMs());
-    }, 1000);
+    const interval = setInterval(() => setCooldown(getRemainingMs()), 1000);
     return () => clearInterval(interval);
   }, []);
 
-  // Audio context for tick sounds
   const playTick = useCallback((frequency = 800, duration = 0.03) => {
     try {
-      if (!tickAudioRef.current) {
-        tickAudioRef.current = new AudioContext();
-      }
+      if (!tickAudioRef.current) tickAudioRef.current = new AudioContext();
       const ctx = tickAudioRef.current;
       if (ctx.state === "suspended") ctx.resume();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.frequency.value = frequency;
-      osc.type = "square";
-      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = frequency; osc.type = "square";
+      gain.gain.setValueAtTime(0.06, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + duration);
-    } catch {
-      // Audio not available
-    }
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + duration);
+    } catch { /* noop */ }
   }, []);
 
   const playImpact = useCallback(() => {
     try {
-      if (!tickAudioRef.current) {
-        tickAudioRef.current = new AudioContext();
-      }
+      if (!tickAudioRef.current) tickAudioRef.current = new AudioContext();
       const ctx = tickAudioRef.current;
       if (ctx.state === "suspended") ctx.resume();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.frequency.value = 120;
-      osc.type = "sawtooth";
-      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = 120; osc.type = "sawtooth";
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.2);
-    } catch {
-      // Audio not available
-    }
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.2);
+    } catch { /* noop */ }
   }, []);
 
   const triggerShake = useCallback(() => {
@@ -484,53 +464,33 @@ export function SpinWheel() {
     setTimeout(() => setFlash(false), 400);
   }, []);
 
-  /* ── SPIN LOGIC ─────────────────────────────────────────────── */
+  /* ── SPIN ────────────────────────────────────────────────── */
   const spin = useCallback(() => {
     if (spinning || !canSpin()) return;
+    if (!tickAudioRef.current) tickAudioRef.current = new AudioContext();
 
-    // Initialise audio context on user gesture
-    if (!tickAudioRef.current) {
-      tickAudioRef.current = new AudioContext();
-    }
-
-    setResult(null);
-    setShowResult(false);
-    setBurstActive(false);
-    setSpinning(true);
-    setZoom(true);
-
-    // Haptic: spin start
+    setResult(null); setShowResult(false); setBurstActive(false);
+    setSpinning(true); setZoom(true);
     if (hapticsEnabled) vibrate([40, 20, 60]);
 
-    // Pick winner
     const winnerIndex = Math.floor(Math.random() * SEGMENT_COUNT);
-    // Calculate target rotation:
-    // At least 5 full spins + offset so winner lands at the pointer (top = 0°)
     const extraSpins = 5 + Math.floor(Math.random() * 3);
     const targetSegAngle = winnerIndex * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
-    // Pointer is at top (0°), wheel rotates clockwise. To land segment at top:
-    const finalRotation = extraSpins * 360 + (360 - targetSegAngle);
+    const totalDelta = extraSpins * 360 + (360 - targetSegAngle);
     const startRotation = rotation % 360;
-    const totalDelta = finalRotation;
 
-    const DURATION = 6000; // ms
+    const DURATION = 6000;
     const startTime = performance.now();
     lastSegmentRef.current = -1;
 
-    function easeOutQuart(t: number) {
-      return 1 - Math.pow(1 - t, 4);
-    }
+    function easeOutQuart(t: number) { return 1 - Math.pow(1 - t, 4); }
 
     function animate(now: number) {
       const elapsed = now - startTime;
       const t = Math.min(elapsed / DURATION, 1);
-      const eased = easeOutQuart(t);
-      const currentDelta = totalDelta * eased;
-      const currentRotation = startRotation + currentDelta;
-
+      const currentRotation = startRotation + totalDelta * easeOutQuart(t);
       setRotation(currentRotation);
 
-      // Segment ticking
       const normalised = ((currentRotation % 360) + 360) % 360;
       const currentSegment = Math.floor(normalised / SEGMENT_ANGLE) % SEGMENT_COUNT;
       if (currentSegment !== lastSegmentRef.current) {
@@ -542,32 +502,28 @@ export function SpinWheel() {
       if (t < 1) {
         spinAnimRef.current = requestAnimationFrame(animate);
       } else {
-        // STOP — final impact
-        setSpinning(false);
-        setZoom(false);
-        setLastSpin(Date.now());
-        setCooldown(COOLDOWN_MS);
+        setSpinning(false); setZoom(false);
+        setLastSpin(Date.now()); setCooldown(COOLDOWN_MS);
 
         const winner = REWARDS[winnerIndex];
         setResult(winner);
-
-        playImpact();
-        triggerShake();
-
+        playImpact(); triggerShake();
         if (hapticsEnabled) vibrate([80, 30, 120]);
 
-        // Result feedback
+        addHistory({ player: randomGladiator(), reward: winner.label, icon: winner.icon, color: winner.color, time: Date.now() });
+        setHistory(getHistory());
+
         setTimeout(() => {
           triggerFlash();
-          if (winner.tier === "loss") {
-            if (hapticsEnabled) vibrate([30, 50, 30]);
-          } else {
+          if (winner.tier !== "loss") {
             setBurstActive(true);
             if (winner.tier === "legendary" || winner.tier === "epic") {
               if (hapticsEnabled) vibrate([50, 30, 50, 30, 100]);
             } else {
               if (hapticsEnabled) vibrate([60]);
             }
+          } else {
+            if (hapticsEnabled) vibrate([30, 50, 30]);
           }
           setShowResult(true);
         }, 300);
@@ -577,185 +533,121 @@ export function SpinWheel() {
     spinAnimRef.current = requestAnimationFrame(animate);
   }, [spinning, rotation, hapticsEnabled, playTick, playImpact, triggerShake, triggerFlash]);
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (spinAnimRef.current) cancelAnimationFrame(spinAnimRef.current);
-    };
-  }, []);
+  useEffect(() => { return () => { if (spinAnimRef.current) cancelAnimationFrame(spinAnimRef.current); }; }, []);
 
   const isOnCooldown = cooldown > 0 && !canSpin();
 
-  /* ── RESULT TEXT ──────────────────────────────────────────────── */
   const resultTitle = result
-    ? result.tier === "loss"
-      ? "DEFEAT"
-      : result.tier === "legendary"
-      ? "GLÓRIA SUPREMA!"
-      : result.tier === "epic"
-      ? "VITÓRIA ÉPICA!"
-      : "GANHÁSTE GLÓRIA"
+    ? result.tier === "loss" ? "DEFEAT"
+    : result.tier === "legendary" ? "GLÓRIA SUPREMA!"
+    : result.tier === "epic" ? "VITÓRIA ÉPICA!"
+    : "GANHÁSTE GLÓRIA"
     : "";
 
   return (
-    <div
-      className={`relative w-full max-w-lg mx-auto transition-transform duration-300 ${
-        screenShake ? "animate-[shake_0.3s_ease-in-out]" : ""
-      } ${zoom ? "scale-[1.03]" : "scale-100"}`}
-    >
-      {/* Ambient embers */}
-      <div className="absolute inset-0 -inset-x-20 -inset-y-20 overflow-hidden rounded-full pointer-events-none">
-        <EmberCanvas />
-      </div>
+    <div className={`h-full w-full flex flex-col lg:flex-row items-center lg:items-stretch gap-4 lg:gap-6 transition-transform duration-300 ${screenShake ? "animate-[shake_0.3s_ease-in-out]" : ""}`}>
 
-      {/* Vignette overlay */}
-      <div className="absolute inset-0 -inset-x-8 -inset-y-8 rounded-full pointer-events-none bg-[radial-gradient(circle,transparent_40%,rgba(0,0,0,0.6)_100%)]" />
+      {/* ── LEFT: Wheel + Controls ───────────────────────── */}
+      <div className="flex-1 flex flex-col items-center justify-center min-w-0 relative">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none"><EmberCanvas /></div>
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle,transparent_30%,rgba(0,0,0,0.5)_100%)]" />
 
-      {/* Flash overlay */}
-      <AnimatePresence>
-        {flash && (
-          <motion.div
-            initial={{ opacity: 0.8 }}
-            animate={{ opacity: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="absolute inset-0 z-30 rounded-full pointer-events-none"
-            style={{
-              background: result?.tier === "loss"
-                ? "radial-gradient(circle, rgba(139,0,0,0.5), transparent 70%)"
-                : "radial-gradient(circle, rgba(212,168,67,0.6), transparent 70%)",
-            }}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Burst particles */}
-      {burstActive && result && (
-        <div className="absolute inset-0 z-30 pointer-events-none">
-          <BurstCanvas active={burstActive} color={result.color} />
-        </div>
-      )}
-
-      {/* Wheel container */}
-      <div className="relative aspect-square" ref={wheelRef}>
-        {/* Pointer */}
-        <Pointer />
-
-        {/* Outer glow ring */}
-        <div
-          className="absolute inset-0 rounded-full transition-shadow duration-500"
-          style={{
-            boxShadow: spinning
-              ? "0 0 40px rgba(212,168,67,0.3), 0 0 80px rgba(139,0,0,0.2)"
-              : "0 0 20px rgba(0,0,0,0.5)",
-          }}
-        />
-
-        {/* Rotating wheel */}
-        <div
-          className="w-full h-full"
-          style={{
-            transform: `rotate(${rotation}deg)`,
-            willChange: spinning ? "transform" : "auto",
-          }}
-        >
-          <WheelSVG />
-        </div>
-      </div>
-
-      {/* Spin button */}
-      <div className="mt-8 flex flex-col items-center gap-4">
-        <button
-          onClick={spin}
-          disabled={spinning || isOnCooldown}
-          className={`
-            arena-btn-press relative px-10 py-4 rounded-xl font-[family-name:var(--font-display)]
-            text-lg font-black uppercase tracking-[0.15em] transition-all duration-300
-            border-2 overflow-hidden
-            ${
-              spinning || isOnCooldown
-                ? "border-arena-steel/30 bg-arena-dark text-arena-ash/50 cursor-not-allowed"
-                : "border-arena-gold/40 bg-gradient-to-b from-arena-charcoal to-arena-dark text-arena-gold hover:border-arena-gold/70 hover:shadow-[0_0_30px_rgba(212,168,67,0.2)] active:scale-95"
-            }
-          `}
-        >
-          {/* Shine sweep */}
-          {!spinning && !isOnCooldown && (
-            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-arena-gold/10 to-transparent animate-[shimmer_3s_infinite]" />
+        {/* Flash */}
+        <AnimatePresence>
+          {flash && (
+            <motion.div initial={{ opacity: 0.7 }} animate={{ opacity: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}
+              className="absolute inset-0 z-40 pointer-events-none"
+              style={{ background: result?.tier === "loss" ? "radial-gradient(circle, rgba(139,0,0,0.4), transparent 60%)" : "radial-gradient(circle, rgba(212,168,67,0.5), transparent 60%)" }}
+            />
           )}
-          <span className="relative z-10">
-            {spinning
-              ? "A GIRAR..."
-              : isOnCooldown
-              ? "ARENA FECHADA"
-              : "⚔ SPIN FOR GLORY ⚔"}
-          </span>
-        </button>
+        </AnimatePresence>
 
-        {/* Countdown */}
-        {isOnCooldown && !spinning && (
-          <div className="text-center">
-            <p className="text-xs uppercase tracking-[0.2em] text-arena-ash mb-1">
-              Próximo combate em
-            </p>
-            <p className="font-mono text-xl text-arena-gold font-bold tracking-wider">
-              {formatCountdown(cooldown)}
-            </p>
+        <div className="relative z-10 flex flex-col items-center">
+          {/* Wheel */}
+          <div className={`relative w-[min(68vw,310px)] lg:w-[min(46vh,350px)] aspect-square transition-transform duration-500 ${zoom ? "scale-[1.04]" : "scale-100"}`}>
+            <Pointer />
+
+            <div className="absolute inset-0 rounded-full transition-shadow duration-500"
+              style={{ boxShadow: spinning ? "0 0 50px rgba(212,168,67,0.25), 0 0 100px rgba(139,0,0,0.15)" : "0 0 25px rgba(0,0,0,0.5)" }}
+            />
+
+            {/* Rotating wheel disc */}
+            <div className="w-full h-full" style={{ transform: `rotate(${rotation}deg)`, willChange: spinning ? "transform" : "auto" }}>
+              <WheelSVG />
+            </div>
+
+            {/* Static center mascot — does NOT rotate */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+              <div className="w-[22%] h-[22%] rounded-full overflow-hidden border-2 border-arena-gold/30 shadow-[0_0_20px_rgba(212,168,67,0.15)] bg-arena-dark">
+                <Image src="/images/superbruta.png" alt="Superbruta" width={120} height={120} className="w-full h-full object-cover" priority />
+              </div>
+            </div>
+
+            {/* Burst */}
+            {burstActive && result && (
+              <div className="absolute inset-0 z-30 pointer-events-none">
+                <BurstCanvas active={burstActive} color={result.color} />
+              </div>
+            )}
+
+            {/* Win overlay ON TOP of wheel */}
+            <AnimatePresence>
+              {showResult && result && (
+                <motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  className="absolute inset-0 z-40 flex items-center justify-center"
+                >
+                  <div className="rounded-2xl px-5 py-4 text-center backdrop-blur-md border max-w-[75%]"
+                    style={{
+                      borderColor: result.tier === "loss" ? "rgba(139,0,0,0.5)" : "rgba(212,168,67,0.4)",
+                      background: result.tier === "loss" ? "rgba(20,10,10,0.93)" : "rgba(20,18,14,0.93)",
+                      boxShadow: `0 0 60px ${result.glowColor}, inset 0 0 30px rgba(0,0,0,0.3)`,
+                    }}
+                  >
+                    <p className="font-[family-name:var(--font-display)] text-[9px] uppercase tracking-[0.3em] mb-1"
+                      style={{ color: result.tier === "loss" ? "#8b0000" : "#cd7f32" }}
+                    >{result.tier === "loss" ? "O gladiador caiu..." : "O coliseu aclama!"}</p>
+                    <p className="text-3xl mb-1">{result.icon}</p>
+                    <h3 className="font-[family-name:var(--font-display)] text-lg font-black uppercase tracking-wide" style={{ color: result.color }}>{resultTitle}</h3>
+                    <p className="mt-0.5 text-sm font-bold" style={{ color: result.color }}>{result.label}</p>
+                    <button onClick={() => setShowResult(false)} className="mt-2 text-[9px] uppercase tracking-widest text-arena-ash hover:text-arena-smoke transition-colors">Fechar</button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
-        )}
 
-        {/* Haptics toggle */}
-        <button
-          onClick={() => setHapticsEnabled(!hapticsEnabled)}
-          className="text-xs text-arena-ash hover:text-arena-smoke transition-colors"
-        >
-          Vibrações: {hapticsEnabled ? "ON" : "OFF"}
-        </button>
+          {/* Button + cooldown */}
+          <div className="mt-3 flex flex-col items-center gap-1.5">
+            <button onClick={spin} disabled={spinning || isOnCooldown}
+              className={`arena-btn-press relative px-7 py-2.5 rounded-xl font-[family-name:var(--font-display)] text-xs font-black uppercase tracking-[0.15em] transition-all duration-300 border-2 overflow-hidden ${
+                spinning || isOnCooldown
+                  ? "border-arena-steel/30 bg-arena-dark text-arena-ash/50 cursor-not-allowed"
+                  : "border-arena-gold/40 bg-gradient-to-b from-arena-charcoal to-arena-dark text-arena-gold hover:border-arena-gold/70 hover:shadow-[0_0_30px_rgba(212,168,67,0.2)] active:scale-95"
+              }`}
+            >
+              {!spinning && !isOnCooldown && <span className="absolute inset-0 bg-gradient-to-r from-transparent via-arena-gold/10 to-transparent animate-[shimmer_3s_infinite]" />}
+              <span className="relative z-10">{spinning ? "A GIRAR..." : isOnCooldown ? "ARENA FECHADA" : "⚔ SPIN FOR GLORY ⚔"}</span>
+            </button>
+
+            {isOnCooldown && !spinning && (
+              <div className="text-center">
+                <p className="text-[9px] uppercase tracking-[0.2em] text-arena-ash">Próximo combate em</p>
+                <p className="font-mono text-sm text-arena-gold font-bold tracking-wider">{formatCountdown(cooldown)}</p>
+              </div>
+            )}
+
+            <button onClick={() => setHapticsEnabled(!hapticsEnabled)} className="text-[9px] text-arena-ash/50 hover:text-arena-smoke transition-colors">
+              Vibrações: {hapticsEnabled ? "ON" : "OFF"}
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Result display */}
-      <AnimatePresence>
-        {showResult && result && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.7, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: -10 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="mt-8 relative"
-          >
-            <div
-              className="rounded-2xl p-6 text-center border backdrop-blur-sm"
-              style={{
-                borderColor: result.tier === "loss" ? "rgba(139,0,0,0.4)" : "rgba(212,168,67,0.3)",
-                background: result.tier === "loss"
-                  ? "linear-gradient(180deg, rgba(139,0,0,0.15), rgba(20,20,20,0.95))"
-                  : "linear-gradient(180deg, rgba(212,168,67,0.1), rgba(20,20,20,0.95))",
-                boxShadow: `0 0 40px ${result.glowColor}`,
-              }}
-            >
-              <p
-                className="font-[family-name:var(--font-display)] text-xs uppercase tracking-[0.3em] mb-2"
-                style={{ color: result.tier === "loss" ? "#8b0000" : "#cd7f32" }}
-              >
-                {result.tier === "loss" ? "O gladiador caiu..." : "O coliseu aclama!"}
-              </p>
-              <p className="text-5xl mb-3">{result.icon}</p>
-              <h3
-                className="font-[family-name:var(--font-display)] text-2xl font-black uppercase tracking-wide"
-                style={{ color: result.color }}
-              >
-                {resultTitle}
-              </h3>
-              <p
-                className="mt-2 text-lg font-bold"
-                style={{ color: result.color }}
-              >
-                {result.label}
-              </p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* ── RIGHT: Win History ────────────────────────────── */}
+      <div className="w-full lg:w-56 xl:w-64 shrink-0 rounded-xl border border-arena-gold/10 bg-arena-dark/80 backdrop-blur-sm p-3 lg:p-4 flex flex-col max-h-[28vh] lg:max-h-full overflow-hidden">
+        <WinHistory history={history} />
+      </div>
     </div>
   );
 }
