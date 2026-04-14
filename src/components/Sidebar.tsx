@@ -7,10 +7,16 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
 /* ── Types ──────────────────────────────────────────────────────── */
+interface NavChild {
+  href: string;
+  label: string;
+  children?: NavChild[];
+}
+
 interface NavItem {
   href: string;
   label: string;
-  children?: { href: string; label: string }[];
+  children?: NavChild[];
 }
 
 /* ── Sidebar link definitions (custom order) ────────────────────── */
@@ -40,7 +46,25 @@ const MAIN_LINKS: NavItem[] = [
 ];
 
 const SECONDARY_LINKS: NavItem[] = [
-  { href: "/admin", label: "Admin Area" },
+  {
+    href: "/admin",
+    label: "Admin Area",
+    children: [
+      { href: "/admin/parcerias", label: "Parcerias" },
+      { href: "/admin/utilizadores", label: "Utilizadores" },
+      { href: "/admin/analitics", label: "Analitics" },
+      {
+        href: "/admin/outros",
+        label: "Outros",
+        children: [
+          { href: "/admin/outros/giveaways", label: "Giveaways" },
+          { href: "/admin/outros/bonus-hunt", label: "Bonus Hunt" },
+          { href: "/admin/outros/calendario", label: "Calendário" },
+          { href: "/admin/outros/daily-wheel", label: "Daily Wheel" },
+        ],
+      },
+    ],
+  },
   { href: "/moderador", label: "Moderador Area" },
 ];
 
@@ -108,9 +132,11 @@ export function Sidebar({ open, onClose }: SidebarProps) {
     setExpanded((prev) => ({ ...prev, [href]: !prev[href] }));
   };
 
-  /* Check if a parent or any of its children is active */
-  const isGroupActive = (item: NavItem) =>
-    pathname === item.href || item.children?.some((c) => pathname === c.href);
+  /* Check if a parent or any of its children (or grandchildren) is active */
+  const isGroupActive = (item: NavItem | NavChild): boolean =>
+    pathname === item.href ||
+    item.children?.some((c) => pathname === c.href || c.children?.some((gc) => pathname === gc.href)) ||
+    false;
 
   /* Render a single nav link */
   const renderLink = (link: { href: string; label: string }, indent = false) => {
@@ -222,7 +248,57 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               className="overflow-hidden"
             >
               <div className="mt-1 space-y-0.5">
-                {item.children!.map((child) => renderLink(child, true))}
+                {item.children!.map((child) =>
+                  child.children ? renderSubDropdown(child) : renderLink(child, true)
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  };
+
+  /* Render a nested sub-dropdown (e.g. Outros → Giveaways, etc.) */
+  const renderSubDropdown = (item: NavChild) => {
+    const subActive = isGroupActive(item);
+    const isSubOpen = expanded[item.href] ?? subActive;
+
+    return (
+      <div key={item.href}>
+        <div className="flex items-center ml-8">
+          <button
+            onClick={() => toggleExpand(item.href)}
+            className={`
+              group flex-1 flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
+              ${subActive
+                ? "text-arena-gold"
+                : "text-arena-smoke hover:text-arena-white hover:bg-white/[0.04]"}
+            `}
+          >
+            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${subActive ? "bg-arena-gold" : "bg-arena-steel"}`} />
+            <span className="truncate">{item.label}</span>
+            <motion.svg
+              animate={{ rotate: isSubOpen ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
+              className="w-3 h-3 ml-auto text-arena-ash"
+              fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </motion.svg>
+          </button>
+        </div>
+        <AnimatePresence initial={false}>
+          {isSubOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
+            >
+              <div className="mt-0.5 space-y-0.5 ml-5">
+                {item.children!.map((gc) => renderLink(gc, true))}
               </div>
             </motion.div>
           )}
