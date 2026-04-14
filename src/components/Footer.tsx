@@ -45,12 +45,20 @@ export function Footer() {
           <p className="text-[10px] text-arena-ash">
             &copy; {new Date().getFullYear()} BrutusPolus, Todos os direitos reservados
           </p>
-          <Link
-            href="/termos-e-condicoes"
-            className="text-[10px] text-arena-ash hover:text-arena-gold transition-colors duration-200"
-          >
-            Termos &amp; Condições
-          </Link>
+          <div className="flex gap-4">
+            <Link
+              href="/termos-e-condicoes"
+              className="text-[10px] text-arena-ash hover:text-arena-gold transition-colors duration-200"
+            >
+              Termos &amp; Condições
+            </Link>
+            <Link
+              href="/politica-de-privacidade"
+              className="text-[10px] text-arena-ash hover:text-arena-gold transition-colors duration-200"
+            >
+              Política de Privacidade
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
