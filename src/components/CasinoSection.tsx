@@ -82,7 +82,7 @@ export function CasinoSection() {
       {/* Background accent */}
       <div
         className="absolute inset-0 opacity-[0.05] bg-cover bg-center pointer-events-none"
-        style={{ backgroundImage: "url('/images/gladiator-arena.jpg')" }}
+        style={{ backgroundImage: "url('/images/pages/gladiator-arena.jpg')" }}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-arena-black via-arena-black/90 to-arena-black pointer-events-none" />
       <div className="relative max-w-6xl mx-auto">

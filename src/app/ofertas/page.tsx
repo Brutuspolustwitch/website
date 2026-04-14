@@ -18,7 +18,7 @@ export default function OfertasPage() {
       <div
         className="fixed inset-0 -z-10"
         style={{
-          backgroundImage: "url('/images/offers.jpg')",
+          backgroundImage: "url('/images/pages/offers.jpg')",
           backgroundSize: "100% 100%",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",

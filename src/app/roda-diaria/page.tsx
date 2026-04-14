@@ -10,7 +10,7 @@ export default function RodaDiariaPage() {
   return (
     <div className="h-screen overflow-hidden relative pt-16">
       {/* Background image */}
-      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/wheel-bg.jpg')" }} />
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/pages/wheel-bg.jpg')" }} />
       {/* Dark overlay to keep it moody */}
       <div className="absolute inset-0 bg-black/70" />
       {/* Ambient color gradients on top */}

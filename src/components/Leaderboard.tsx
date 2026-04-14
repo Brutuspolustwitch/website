@@ -34,7 +34,7 @@ export function Leaderboard() {
       {/* Background texture */}
       <div
         className="absolute inset-0 opacity-[0.07] bg-cover bg-center pointer-events-none"
-        style={{ backgroundImage: "url('/images/helmet-grunge.jpg')" }}
+        style={{ backgroundImage: "url('/images/pages/helmet-grunge.jpg')" }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-arena-dark/80 via-arena-dark/60 to-arena-dark/80 pointer-events-none" />
       <div className="relative max-w-5xl mx-auto">

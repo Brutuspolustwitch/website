@@ -68,7 +68,7 @@ export function StreamerHub() {
       {/* Background image */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/images/Stream.jpg')" }}
+        style={{ backgroundImage: "url('/images/pages/Stream.jpg')" }}
       />
       <div className="absolute inset-0 bg-arena-black/75" />
 

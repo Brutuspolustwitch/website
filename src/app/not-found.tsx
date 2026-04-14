@@ -8,7 +8,7 @@ export default function NotFound() {
       {/* Background image */}
       <div
         className="absolute inset-0 bg-cover bg-center opacity-20"
-        style={{ backgroundImage: "url('/images/helmet-still-life.jpg')" }}
+        style={{ backgroundImage: "url('/images/pages/helmet-still-life.jpg')" }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-arena-black/60 via-arena-black/40 to-arena-black" />
 
@@ -16,7 +16,7 @@ export default function NotFound() {
         {/* Gladiator portrait */}
         <div className="mx-auto w-32 h-32 sm:w-40 sm:h-40 mb-8 relative">
           <Image
-            src="/images/helmet-bronze.jpg"
+            src="/images/pages/helmet-bronze.jpg"
             alt="Fallen gladiator helmet"
             fill
             className="object-cover rounded-full border-2 border-arena-gold/30 opacity-80"

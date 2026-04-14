@@ -349,7 +349,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             className="opacity-60 hover:opacity-100 transition-opacity duration-200"
             aria-label="Instagram"
           >
-            <Image src="/images/fa-instagram.png" alt="Instagram" width={32} height={32} className="w-8 h-8 object-contain" />
+            <Image src="/images/icons/fa-instagram.png" alt="Instagram" width={32} height={32} className="w-8 h-8 object-contain" />
           </a>
           <a
             href="https://www.twitch.tv/arena_gladiator"
@@ -358,14 +358,14 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             className="opacity-60 hover:opacity-100 transition-opacity duration-200"
             aria-label="Twitch"
           >
-            <Image src="/images/fa-twitch.png" alt="Twitch" width={32} height={32} className="w-8 h-8 object-contain" />
+            <Image src="/images/icons/fa-twitch.png" alt="Twitch" width={32} height={32} className="w-8 h-8 object-contain" />
           </a>
           <a
             href="mailto:contact@arena-gladiator.gg"
             className="opacity-60 hover:opacity-100 transition-opacity duration-200"
             aria-label="Email"
           >
-            <Image src="/images/fa-gmail.png" alt="Email" width={24} height={24} className="w-6 h-6 object-contain" />
+            <Image src="/images/icons/fa-gmail.png" alt="Email" width={24} height={24} className="w-6 h-6 object-contain" />
           </a>
         </div>
       </div>

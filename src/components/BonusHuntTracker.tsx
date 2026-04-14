@@ -61,7 +61,7 @@ export function BonusHuntTracker() {
       {/* Background texture */}
       <div
         className="absolute inset-0 opacity-[0.06] bg-cover bg-right-bottom pointer-events-none"
-        style={{ backgroundImage: "url('/images/warrior-illustration.jpg')" }}
+        style={{ backgroundImage: "url('/images/pages/warrior-illustration.jpg')" }}
       />
       <div className="absolute inset-0 bg-gradient-to-r from-arena-dark via-arena-dark/85 to-arena-dark/70 pointer-events-none" />
       <div className="relative max-w-7xl mx-auto">
