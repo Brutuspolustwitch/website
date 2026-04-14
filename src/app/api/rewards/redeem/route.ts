@@ -117,11 +117,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Falha ao deduzir pontos" }, { status: 502 });
   }
 
-  // Record redemption
+  // Record redemption as pending
   await supabase.from("reward_redemptions").insert({
     reward_id: rewardId,
     user_twitch_id: session.id,
     cost: reward.cost,
+    status: "pending",
   });
 
   // Decrease stock if applicable

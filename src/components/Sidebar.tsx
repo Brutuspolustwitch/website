@@ -58,7 +58,14 @@ const SECONDARY_LINKS: NavItem[] = [
       { href: "/admin/parcerias", label: "Parcerias" },
       { href: "/admin/utilizadores", label: "Utilizadores" },
       { href: "/admin/analitics", label: "Analitics" },
-      { href: "/admin/loja", label: "Loja" },
+      {
+        href: "/admin/loja",
+        label: "Loja",
+        children: [
+          { href: "/admin/loja", label: "Criação" },
+          { href: "/admin/loja/gestao", label: "Gestão" },
+        ],
+      },
       {
         href: "/admin/outros",
         label: "Outros",

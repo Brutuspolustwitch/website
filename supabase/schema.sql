@@ -211,6 +211,9 @@ create table if not exists reward_redemptions (
   reward_id uuid not null references rewards(id) on delete cascade,
   user_twitch_id text not null references users(twitch_id) on delete cascade,
   cost integer not null,
+  status text not null default 'pending' check (status in ('pending', 'approved', 'denied')),
+  reviewed_by text,
+  reviewed_at timestamptz,
   created_at timestamptz not null default now()
 );
 
@@ -226,3 +229,4 @@ create policy "Admin delete rewards" on rewards for delete using (true);
 alter table reward_redemptions enable row level security;
 create policy "Public read redemptions" on reward_redemptions for select using (true);
 create policy "Insert redemptions" on reward_redemptions for insert with check (true);
+create policy "Admin update redemptions" on reward_redemptions for update using (true);
