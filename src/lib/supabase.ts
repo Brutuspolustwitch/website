@@ -12,12 +12,28 @@ export const supabase = createClient(supabaseUrl || "https://placeholder.supabas
    leaderboard: gladiator rank progression
 ──────────────────────────────────────────────────────────────────── */
 
+export interface BonusHuntSession {
+  id: string;
+  title: string;
+  status: "active" | "completed" | "upcoming";
+  total_buy: number;
+  total_result: number;
+  start_amount: number;
+  stop_amount: number;
+  target_amount: number;
+  created_at: string;
+  completed_at?: string;
+}
+
 export interface BonusHuntSlot {
   id: string;
   name: string;
+  provider?: string;
   buy_value: number;
   potential_multiplier: number;
   result?: number;
+  special?: string;
+  thumbnail_url?: string;
   status: "pending" | "active" | "completed";
   order_index: number;
   session_id: string;

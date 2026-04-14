@@ -10,6 +10,9 @@ create table if not exists bonus_hunt_sessions (
   status text not null default 'active' check (status in ('active', 'completed', 'upcoming')),
   total_buy numeric not null default 0,
   total_result numeric not null default 0,
+  start_amount numeric not null default 0,
+  stop_amount numeric not null default 0,
+  target_amount numeric not null default 0,
   created_at timestamptz not null default now(),
   completed_at timestamptz
 );
@@ -19,9 +22,12 @@ create table if not exists bonus_hunt_slots (
   id uuid primary key default gen_random_uuid(),
   session_id uuid not null references bonus_hunt_sessions(id) on delete cascade,
   name text not null,
+  provider text,
   buy_value numeric not null default 0,
   potential_multiplier numeric not null default 0,
   result numeric,
+  special text,
+  thumbnail_url text,
   status text not null default 'pending' check (status in ('pending', 'active', 'completed')),
   order_index integer not null default 0,
   created_at timestamptz not null default now()
