@@ -75,6 +75,18 @@ export async function GET(request: Request) {
         return NextResponse.json({ channelId });
       }
 
+      case "user-points": {
+        const username = searchParams.get("username");
+        if (!username) return NextResponse.json({ error: "username required" }, { status: 400 });
+        const res = await fetch(
+          `${SE_API}/points/${channelId}/${encodeURIComponent(username)}`,
+          { headers, next: { revalidate: 10 } }
+        );
+        if (!res.ok) throw new Error(`SE API ${res.status}`);
+        const data = await res.json();
+        return NextResponse.json(data);
+      }
+
       default:
         return NextResponse.json(
           { error: "Invalid endpoint. Use: leaderboard, tips, activities, store, channel" },
@@ -86,5 +98,38 @@ export async function GET(request: Request) {
       { error: "Failed to fetch from StreamElements" },
       { status: 502 }
     );
+  }
+}
+
+export async function PUT(request: Request) {
+  const headers = getHeaders();
+  const channelId = getChannelId();
+
+  if (!headers || !channelId) {
+    return NextResponse.json({ error: "StreamElements not configured" }, { status: 503 });
+  }
+
+  try {
+    const body = await request.json();
+    const { username, amount } = body;
+
+    if (!username || amount === undefined) {
+      return NextResponse.json({ error: "username and amount required" }, { status: 400 });
+    }
+
+    // Use the SE API to set points (PUT adjusts points by amount)
+    const res = await fetch(
+      `${SE_API}/points/${channelId}/${encodeURIComponent(username)}/${Math.abs(amount)}`,
+      {
+        method: "PUT",
+        headers: { ...headers, "Content-Type": "application/json" },
+      }
+    );
+
+    if (!res.ok) throw new Error(`SE API ${res.status}`);
+    const data = await res.json();
+    return NextResponse.json(data);
+  } catch {
+    return NextResponse.json({ error: "Failed to update points" }, { status: 502 });
   }
 }

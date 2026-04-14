@@ -32,94 +32,6 @@ export interface CasinoOffer {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   OFFERS DATA — update with your real data
-   ═══════════════════════════════════════════════════════════════════ */
-
-export const OFFERS: CasinoOffer[] = [
-  {
-    slug: "casikora",
-    name: "Casikora",
-    logo_bg: "#c026d3",
-    badge: "NEW",
-    tags: ["FREE SPINS", "MB"],
-    headline: "75 Free Spins on Signup (no deposit)",
-    bonus_value: "550%",
-    free_spins: "Up to 75",
-    min_deposit: "20€",
-    code: "GODMOTA",
-    withdraw_time: "Up to 48h",
-    license: "Curaçao",
-    established: "2023",
-    notes: [
-      "There MAY be a promotion of €10 free or another promotion on our Discord. Open a ticket to check if the promotion is active.",
-      "24/7 Live Support (for help with free spins)",
-    ],
-    affiliate_url: "#",
-  },
-  {
-    slug: "10black",
-    name: "10BLACK",
-    logo_bg: "#eab308",
-    badge: "HOT",
-    tags: ["FREE SPINS"],
-    headline: "150FS on Signup & Bonus 200% + 100FS",
-    bonus_value: "200%",
-    free_spins: "Up to 150",
-    min_deposit: "20€",
-    code: "GODMOTA",
-    withdraw_time: "Up to 48h",
-    license: "Curaçao",
-    established: "2023",
-    notes: [
-      "There MAY be a promotion of €10 free or another promotion on our Discord. Open a ticket to check if the promotion is active.",
-      "24/7 Live Support (for help with free spins)",
-    ],
-    affiliate_url: "#",
-  },
-  {
-    slug: "kairosbet",
-    name: "Kairosbet",
-    logo_bg: "#dc2626",
-    badge: "HOT",
-    tags: ["FREE SPINS", "MB"],
-    headline: "400% Bonus up to €2200 & 350FS",
-    bonus_value: "550%",
-    free_spins: "Up to 75",
-    min_deposit: "20€",
-    code: "GODMOTA",
-    withdraw_time: "Up to 48h",
-    license: "Curaçao",
-    established: "2023",
-    notes: [
-      "There MAY be a promotion of €10 free or another promotion on our Discord. Open a ticket to check if the promotion is active.",
-      "24/7 Live Support (for help with free spins)",
-    ],
-    affiliate_url: "#",
-  },
-  {
-    slug: "lollyspins",
-    name: "Lollyspins",
-    logo_bg: "#db2777",
-    badge: "HOT",
-    tags: ["FREE SPINS"],
-    headline: "400% Bonus up to €2200 & 350FS",
-    bonus_value: "400%",
-    free_spins: "Up to 350",
-    min_deposit: "25€",
-    code: "GODMOTA",
-    cashback: "35%",
-    withdraw_time: "Up to 48h",
-    license: "Curaçao",
-    established: "2023",
-    notes: [
-      "There MAY be a promotion of €10 free or another promotion on our Discord. Open a ticket to check if the promotion is active.",
-      "24/7 Live Support (for help with free spins)",
-    ],
-    affiliate_url: "#",
-  },
-];
-
-/* ═══════════════════════════════════════════════════════════════════
    FLIP CARD COMPONENT
    ═══════════════════════════════════════════════════════════════════ */
 
@@ -284,7 +196,8 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
 }
 
 export function OfferCards() {
-  const [offers, setOffers] = useState<CasinoOffer[]>(OFFERS);
+  const [offers, setOffers] = useState<CasinoOffer[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -293,7 +206,7 @@ export function OfferCards() {
         .select("*")
         .eq("visible", true)
         .order("sort_order", { ascending: true });
-      if (!error && data && data.length > 0) {
+      if (!error && data) {
         setOffers(
           (data as CasinoOfferRow[]).map((r) => ({
             slug: r.slug,
@@ -317,8 +230,24 @@ export function OfferCards() {
           }))
         );
       }
+      setLoading(false);
     })();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="mt-12 text-center text-arena-ash py-12">A carregar ofertas...</div>
+    );
+  }
+
+  if (offers.length === 0) {
+    return (
+      <div className="mt-12 text-center text-arena-ash py-12">
+        <p className="text-lg">Nenhuma oferta disponível de momento.</p>
+        <p className="text-sm mt-2">Volta em breve para novas promoções!</p>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

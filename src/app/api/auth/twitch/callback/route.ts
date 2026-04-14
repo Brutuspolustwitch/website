@@ -80,22 +80,34 @@ export async function GET(request: Request) {
     }
 
     // Upsert user into Supabase users table
+    const clientIp = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+      || request.headers.get("x-real-ip")
+      || null;
+
     let role: UserRole = "viewer";
     const { data: existingUser } = await supabase
       .from("users")
-      .select("role")
+      .select("role, role_expires_at")
       .eq("twitch_id", user.id)
       .single();
 
     if (existingUser) {
-      // User exists — update profile info, keep existing role
+      // Check if temporary role has expired
       role = existingUser.role as UserRole;
+      if (existingUser.role_expires_at && new Date(existingUser.role_expires_at) < new Date()) {
+        role = "viewer"; // expired → revert
+      }
+
       await supabase
         .from("users")
         .update({
           login: user.login,
           display_name: user.display_name,
           profile_image_url: user.profile_image_url,
+          email: user.email || null,
+          ip_address: clientIp,
+          role,
+          ...(role === "viewer" ? { role_expires_at: null } : {}),
           updated_at: new Date().toISOString(),
         })
         .eq("twitch_id", user.id);
@@ -106,6 +118,8 @@ export async function GET(request: Request) {
         login: user.login,
         display_name: user.display_name,
         profile_image_url: user.profile_image_url,
+        email: user.email || null,
+        ip_address: clientIp,
         role: "viewer",
       });
     }

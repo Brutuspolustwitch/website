@@ -79,7 +79,11 @@ export interface UserRow {
   login: string;
   display_name: string;
   profile_image_url: string | null;
+  email: string | null;
+  ip_address: string | null;
+  se_username: string | null;
   role: UserRole;
+  role_expires_at: string | null;
   created_at: string;
   updated_at: string;
 }

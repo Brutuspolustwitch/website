@@ -107,7 +107,11 @@ create table if not exists users (
   login text not null,
   display_name text not null,
   profile_image_url text,
+  email text,
+  ip_address text,
+  se_username text,
   role text not null default 'viewer' check (role in ('admin', 'configurador', 'moderador', 'viewer')),
+  role_expires_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
