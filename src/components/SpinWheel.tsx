@@ -702,8 +702,8 @@ export function SpinWheel() {
         </div>
       </div>
 
-      {/* ── FLOATING HISTORY — overlays top-right ────────── */}
-      <div className="absolute top-2 right-2 lg:top-4 lg:right-4 z-30 w-48 lg:w-52 max-h-[35vh] rounded-xl border border-arena-gold/10 bg-arena-dark/90 backdrop-blur-md p-2.5 lg:p-3 flex flex-col overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+      {/* ── HISTORY — below wheel on mobile, floating top-right on desktop ── */}
+      <div className="relative z-30 mx-4 mt-3 max-h-[25vh] rounded-xl border border-arena-gold/10 bg-arena-dark/90 backdrop-blur-md p-2.5 flex flex-col overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.5)] lg:absolute lg:top-4 lg:right-4 lg:mx-0 lg:mt-0 lg:w-52 lg:max-h-[35vh] lg:p-3">
         <WinHistory history={history} />
       </div>
     </div>
