@@ -1,21 +1,64 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useTwitchStatus } from "@/hooks/useTwitchStatus";
 import { TWITCH_CHANNEL } from "@/lib/constants";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
+interface TwitchClip {
+  id: string;
+  embed_url: string;
+  title: string;
+  creator_name: string;
+  view_count: number;
+}
+
 /**
  * STREAMER HUB — Live Twitch embed + chat side by side.
+ * When offline, plays a random clip from the channel.
  */
 export function StreamerHub() {
   const { isLive, loading } = useTwitchStatus(TWITCH_CHANNEL);
   const [hostname, setHostname] = useState("localhost");
+  const [clips, setClips] = useState<TwitchClip[]>([]);
+  const [activeClip, setActiveClip] = useState<TwitchClip | null>(null);
 
   useEffect(() => {
     setHostname(window.location.hostname);
   }, []);
+
+  // Fetch clips when we detect offline
+  useEffect(() => {
+    if (loading || isLive) return;
+
+    async function fetchClips() {
+      try {
+        const res = await fetch(
+          `/api/twitch-clips?channel=${encodeURIComponent(TWITCH_CHANNEL)}&limit=20`
+        );
+        const data = await res.json();
+        const fetched: TwitchClip[] = data.clips ?? [];
+        if (fetched.length > 0) {
+          setClips(fetched);
+          setActiveClip(fetched[Math.floor(Math.random() * fetched.length)]);
+        }
+      } catch {
+        /* silently fail — player stays on channel page */
+      }
+    }
+
+    fetchClips();
+  }, [loading, isLive]);
+
+  const shuffleClip = useCallback(() => {
+    if (clips.length < 2) return;
+    let next: TwitchClip;
+    do {
+      next = clips[Math.floor(Math.random() * clips.length)];
+    } while (next.id === activeClip?.id);
+    setActiveClip(next);
+  }, [clips, activeClip]);
 
   return (
     <section id="stream" className="py-12 px-4 sm:px-6 lg:px-8">
@@ -45,14 +88,53 @@ export function StreamerHub() {
         {/* Stream + Chat side by side */}
         <ScrollReveal delay={0.1}>
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-4">
-            {/* Stream player */}
+            {/* Stream / Clip player */}
             <div className="relative w-full aspect-video bg-arena-black rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/40">
-              <iframe
-                src={`https://player.twitch.tv/?channel=${TWITCH_CHANNEL}&parent=${hostname}`}
-                className="absolute inset-0 w-full h-full"
-                allowFullScreen
-                title={`${TWITCH_CHANNEL} live stream`}
-              />
+              {isLive || loading ? (
+                <iframe
+                  src={`https://player.twitch.tv/?channel=${TWITCH_CHANNEL}&parent=${hostname}`}
+                  className="absolute inset-0 w-full h-full"
+                  allowFullScreen
+                  title={`${TWITCH_CHANNEL} live stream`}
+                />
+              ) : activeClip ? (
+                <iframe
+                  key={activeClip.id}
+                  src={`${activeClip.embed_url}&parent=${hostname}&autoplay=true&muted=false`}
+                  className="absolute inset-0 w-full h-full"
+                  allowFullScreen
+                  title={activeClip.title}
+                />
+              ) : (
+                <iframe
+                  src={`https://player.twitch.tv/?channel=${TWITCH_CHANNEL}&parent=${hostname}`}
+                  className="absolute inset-0 w-full h-full"
+                  allowFullScreen
+                  title={`${TWITCH_CHANNEL} channel`}
+                />
+              )}
+
+              {/* Clip info overlay */}
+              {!isLive && !loading && activeClip && (
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 flex items-end justify-between pointer-events-none">
+                  <div className="min-w-0">
+                    <p className="text-white text-sm font-medium truncate">
+                      {activeClip.title}
+                    </p>
+                    <p className="text-arena-smoke text-xs">
+                      Clipped by {activeClip.creator_name} · {activeClip.view_count.toLocaleString()} views
+                    </p>
+                  </div>
+                  {clips.length > 1 && (
+                    <button
+                      onClick={shuffleClip}
+                      className="pointer-events-auto ml-3 shrink-0 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-medium tracking-wide uppercase transition-colors backdrop-blur-sm border border-white/10"
+                    >
+                      Próximo clip
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Chat */}
