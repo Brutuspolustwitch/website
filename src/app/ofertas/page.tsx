@@ -21,7 +21,7 @@ export default function OfertasPage() {
           src="/images/offers.jpg"
           alt=""
           fill
-          className="object-cover object-right scale-110"
+          className="object-cover object-center"
           priority
           quality={85}
         />
