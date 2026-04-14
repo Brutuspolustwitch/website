@@ -37,7 +37,7 @@ export default function OfertasPage() {
       <div className="relative pt-24 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ProfileBanner />
-          <SectionHeading title="Ofertas" subtitle="Bónus e promoções exclusivas — clica num cartão para ver detalhes" subtitleClassName="text-black opacity-100" />
+          <SectionHeading title="Ofertas" subtitle="Bónus e promoções exclusivas — clica num cartão para ver detalhes" subtitleClassName="!text-black !opacity-100" />
           <OfferCards emptyClassName="text-black" />
         </div>
       </div>
