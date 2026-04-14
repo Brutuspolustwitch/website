@@ -243,7 +243,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             className="opacity-60 hover:opacity-100 transition-opacity duration-200"
             aria-label="Instagram"
           >
-            <Image src="/images/fa-instagram.png" alt="Instagram" width={24} height={24} className="w-6 h-6 object-contain" />
+            <Image src="/images/fa-instagram.png" alt="Instagram" width={32} height={32} className="w-8 h-8 object-contain" />
           </a>
           <a
             href="https://www.twitch.tv/arena_gladiator"
@@ -252,7 +252,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             className="opacity-60 hover:opacity-100 transition-opacity duration-200"
             aria-label="Twitch"
           >
-            <Image src="/images/fa-twitch.png" alt="Twitch" width={24} height={24} className="w-6 h-6 object-contain" />
+            <Image src="/images/fa-twitch.png" alt="Twitch" width={32} height={32} className="w-8 h-8 object-contain" />
           </a>
           <a
             href="mailto:contact@arena-gladiator.gg"
@@ -264,12 +264,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         </div>
       </div>
 
-      {/* Decorative gladiator accent */}
-      <div className="p-4 text-center">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-arena-ash/50 font-[family-name:var(--font-display)]">
-          ⚔ Arena Gladiator ⚔
-        </p>
-      </div>
+
     </>
   );
 
