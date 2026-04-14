@@ -116,9 +116,9 @@ export default function LojaPage() {
 
         {/* Loading skeletons */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-72 rounded-xl bg-white/[0.03] animate-pulse border border-white/[0.05]" />
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {Array.from({ length: 10 }).map((_, i) => (
+              <div key={i} className="h-44 rounded-lg bg-white/[0.03] animate-pulse border border-white/[0.05]" />
             ))}
           </div>
         ) : rewards.length === 0 ? (
@@ -136,7 +136,7 @@ export default function LojaPage() {
                   🔥 Lendárias
                   <span className="h-px flex-1 bg-gradient-to-l from-arena-crimson/30 to-transparent" />
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {legendaryRewards.map((reward, i) => (
                     <motion.div
                       key={reward.id}
@@ -160,7 +160,7 @@ export default function LojaPage() {
 
             {/* Other rewards grid */}
             {otherRewards.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {otherRewards.map((reward, i) => (
                   <motion.div
                     key={reward.id}
