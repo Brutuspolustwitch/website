@@ -41,10 +41,16 @@ export function Footer() {
           </p>
         </div>
 
-        <div className="mt-4 pt-3 border-t border-arena-steel/30 text-center">
+        <div className="mt-4 pt-3 border-t border-arena-steel/30 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-[10px] text-arena-ash">
             &copy; {new Date().getFullYear()} BrutusPolus, Todos os direitos reservados
           </p>
+          <Link
+            href="/termos-e-condicoes"
+            className="text-[10px] text-arena-ash hover:text-arena-gold transition-colors duration-200"
+          >
+            Termos &amp; Condições
+          </Link>
         </div>
       </div>
     </footer>
