@@ -442,19 +442,22 @@ export function SpinWheel() {
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState<Reward | null>(null);
   const [showResult, setShowResult] = useState(false);
-  const [cooldown, setCooldown] = useState(getRemainingMs());
+  const [cooldown, setCooldown] = useState(0);
   const [hapticsEnabled, setHapticsEnabled] = useState(true);
   const [screenShake, setScreenShake] = useState(false);
   const [flash, setFlash] = useState(false);
   const [burstActive, setBurstActive] = useState(false);
   const [zoom, setZoom] = useState(false);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [mounted, setMounted] = useState(false);
 
   const tickAudioRef = useRef<AudioContext | null>(null);
   const lastSegmentRef = useRef(-1);
   const spinAnimRef = useRef<number | null>(null);
 
   useEffect(() => {
+    setMounted(true);
+    setCooldown(getRemainingMs());
     fetchHistory().then(setHistory);
 
     // Realtime: listen for new spins from other users
@@ -591,7 +594,7 @@ export function SpinWheel() {
 
   useEffect(() => { return () => { if (spinAnimRef.current) cancelAnimationFrame(spinAnimRef.current); }; }, []);
 
-  const isOnCooldown = cooldown > 0 && !canSpin();
+  const isOnCooldown = mounted && cooldown > 0 && !canSpin();
 
   const resultTitle = result
     ? result.tier === "loss" ? "DEFEAT"
