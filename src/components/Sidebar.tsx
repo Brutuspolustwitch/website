@@ -1,10 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { NAV_LINKS, SITE_NAME, TWITCH_CHANNEL } from "@/lib/constants";
+
+/* ── Sidebar link definitions (custom order) ────────────────────── */
+const MAIN_LINKS = [
+  { href: "/ofertas", label: "Ofertas" },
+  { href: "/stream", label: "Stream" },
+  { href: "/destaques", label: "Destaques" },
+  { href: "/torneio", label: "Comunidade" },
+  { href: "/sobre", label: "Sobre" },
+];
+
+const SECONDARY_LINKS = [
+  { href: "/liga-dos-brutus", label: "Liga dos Brutus" },
+  { href: "/loja", label: "Loja" },
+  { href: "/contactos", label: "Contactos" },
+];
 
 /* ── Icons per route ────────────────────────────────────────────── */
 const ICONS: Record<string, React.ReactNode> = {
@@ -62,25 +75,52 @@ export function Sidebar({ open, onClose }: SidebarProps) {
   /* shared nav content */
   const navContent = (
     <>
-      {/* Logo */}
-      <div className="p-4 flex items-center gap-2">
-        <Link href="/" onClick={onClose} className="group">
-          <Image
-            src="/images/logo.png"
-            alt={SITE_NAME}
-            width={140}
-            height={35}
-            className="h-7 w-auto brightness-100 group-hover:brightness-125 transition-all"
-          />
-        </Link>
-      </div>
-
-      {/* Divider */}
-      <div className="mx-4 h-px bg-gradient-to-r from-transparent via-arena-gold/20 to-transparent" />
+      {/* Spacer */}
+      <div className="h-3" />
 
       {/* Navigation links */}
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-        {NAV_LINKS.map((link) => {
+        {/* Main links */}
+        {MAIN_LINKS.map((link) => {
+          const isActive = pathname === link.href;
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={onClose}
+              className={`
+                group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
+                ${
+                  isActive
+                    ? "bg-arena-gold/10 text-arena-gold border border-arena-gold/20"
+                    : "text-arena-smoke hover:text-arena-white hover:bg-white/[0.04] border border-transparent"
+                }
+              `}
+            >
+              <span
+                className={`shrink-0 transition-colors duration-200 ${
+                  isActive ? "text-arena-gold" : "text-arena-ash group-hover:text-arena-gold/70"
+                }`}
+              >
+                {ICONS[link.href] || (
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.6}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                )}
+              </span>
+              <span className="truncate">{link.label}</span>
+              {isActive && (
+                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-arena-gold shadow-[0_0_6px_rgba(212,168,67,0.6)]" />
+              )}
+            </Link>
+          );
+        })}
+
+        {/* Divider */}
+        <div className="!my-3 mx-1 h-px bg-gradient-to-r from-transparent via-arena-steel/30 to-transparent" />
+
+        {/* Secondary links */}
+        {SECONDARY_LINKS.map((link) => {
           const isActive = pathname === link.href;
           return (
             <Link
@@ -116,29 +156,11 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         })}
       </nav>
 
-      {/* Divider */}
-      <div className="mx-4 h-px bg-gradient-to-r from-transparent via-arena-gold/20 to-transparent" />
-
-      {/* Bottom section — Twitch CTA */}
-      <div className="p-4 space-y-3">
-        <a
-          href={`https://www.twitch.tv/${TWITCH_CHANNEL}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg bg-[#9146FF]/10 border border-[#9146FF]/20 text-sm font-medium text-[#bf94ff] hover:bg-[#9146FF]/20 hover:text-white transition-all duration-200"
-        >
-          <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z" />
-          </svg>
-          <span className="truncate">Assistir na Twitch</span>
-        </a>
-
-        {/* Decorative gladiator accent */}
-        <div className="text-center">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-arena-ash/50 font-[family-name:var(--font-display)]">
-            ⚔ Arena Gladiator ⚔
-          </p>
-        </div>
+      {/* Decorative gladiator accent */}
+      <div className="p-4 text-center">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-arena-ash/50 font-[family-name:var(--font-display)]">
+          ⚔ Arena Gladiator ⚔
+        </p>
       </div>
     </>
   );
