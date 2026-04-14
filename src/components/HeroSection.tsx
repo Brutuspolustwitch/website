@@ -13,28 +13,29 @@ import Link from "next/link";
  * with GSAP slow-zoom, rain particles, ambient glow.
  */
 
-/* ── Rain ────────────────────────────────────────── */
-function RainField() {
+/* ── Snow ────────────────────────────────────────── */
+function SnowField() {
   const reduceMotion = useReducedMotion();
   if (reduceMotion) return null;
 
-  const drops = Array.from({ length: 42 }, (_, i) => ({
-    left: (i * 11.7 + (i % 5) * 4.2) % 100,
-    delay: (i % 7) * 0.18,
-    duration: 1.2 + (i % 6) * 0.16,
-    height: 12 + (i % 4) * 16,
-    offset: -10 + (i % 4) * 4,
+  const flakes = Array.from({ length: 50 }, (_, i) => ({
+    left: (i * 7.3 + (i % 5) * 6.1) % 100,
+    delay: (i % 9) * 0.6,
+    duration: 6 + (i % 5) * 2.5,
+    size: 3 + (i % 4) * 2,
+    drift: -30 + (i % 7) * 10,
+    opacity: 0.3 + (i % 4) * 0.15,
   }));
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {drops.map((drop, i) => (
+      {flakes.map((flake, i) => (
         <motion.span
           key={i}
-          className="absolute top-[-15%] block w-px rounded-full bg-gradient-to-b from-white/0 via-white/45 to-white/0"
-          style={{ left: `${drop.left}%`, height: `${drop.height}vh` }}
-          animate={{ y: [0, "130vh"], x: [drop.offset, drop.offset + 14], opacity: [0, 0.74, 0] }}
-          transition={{ duration: drop.duration, delay: drop.delay, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-[-5%] block rounded-full bg-white"
+          style={{ left: `${flake.left}%`, width: flake.size, height: flake.size }}
+          animate={{ y: [0, "110vh"], x: [0, flake.drift], opacity: [0, flake.opacity, 0] }}
+          transition={{ duration: flake.duration, delay: flake.delay, repeat: Infinity, ease: "linear" }}
         />
       ))}
     </div>
@@ -95,8 +96,8 @@ export function HeroSection() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_32%,rgba(201,164,76,0.14),transparent_26%),radial-gradient(circle_at_78%_20%,rgba(139,0,0,0.35),transparent_26%),linear-gradient(90deg,rgba(11,11,13,0.94)_0%,rgba(11,11,13,0.72)_34%,rgba(11,11,13,0.22)_62%,rgba(11,11,13,0.9)_100%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,11,13,0.28),rgba(11,11,13,0.66))]" />
 
-        {/* Rain */}
-        <RainField />
+        {/* Snow */}
+        <SnowField />
 
         {/* Ambient glow orb */}
         <motion.div
