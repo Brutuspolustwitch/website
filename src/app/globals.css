@@ -367,20 +367,49 @@ body {
 }
 
 /* ── Hover State — Lift + Paper Movement ────────────────── */
-.papyrus-scroll-wrapper {
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+.papyrus-flip-container {
+  perspective: 1000px;
+  width: 100%;
+  max-width: 340px;
   cursor: pointer;
 }
-.papyrus-scroll-wrapper:hover {
+.papyrus-flip-inner {
+  position: relative;
+  width: 100%;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-style: preserve-3d;
+}
+.papyrus-flip-inner.papyrus-flipped {
+  transform: rotateY(180deg);
+}
+.papyrus-flip-face {
+  width: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.papyrus-flip-front {
+  position: relative;
+}
+.papyrus-flip-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: rotateY(180deg);
+}
+.papyrus-flip-container:hover .papyrus-flip-inner:not(.papyrus-flipped) {
   transform: translateY(-5px) rotate(0.2deg);
 }
-.papyrus-scroll-wrapper:hover .papyrus-scroll {
-  box-shadow:
-    inset 0 0 60px 10px rgba(100, 70, 20, 0.12),
-    inset 0 0 30px 5px rgba(100, 70, 20, 0.08),
-    0 8px 12px rgba(60, 40, 10, 0.18),
-    0 20px 40px rgba(60, 40, 10, 0.15),
-    0 36px 72px rgba(60, 40, 10, 0.1);
+.papyrus-flip-container:hover .papyrus-flipped {
+  transform: rotateY(180deg) translateY(-5px);
+}
+.flip-hint {
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 0.5rem;
+  color: var(--ink-light);
+  text-align: center;
+  margin-top: 8px;
+  opacity: 0.5;
+  letter-spacing: 0.1em;
 }
 
 /* ── Scroll Content Container ────────────────────────────── */
@@ -890,11 +919,11 @@ body {
 }
 
 /* ── Scroll Unroll Animation on Hover ───────────────────── */
-.papyrus-scroll-wrapper:hover .papyrus-scroll-top::before {
+.papyrus-flip-container:hover .papyrus-scroll-top::before {
   height: 18px;
   transition: height 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.papyrus-scroll-wrapper:hover .papyrus-scroll-bottom::after {
+.papyrus-flip-container:hover .papyrus-scroll-bottom::after {
   height: 18px;
   transition: height 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }

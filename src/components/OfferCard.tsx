@@ -90,8 +90,10 @@ function CornerOrnament({ className }: { className: string }) {
 
 export function OfferCard({ offer }: { offer: CasinoOffer }) {
   const [copied, setCopied] = useState(false);
+  const [flipped, setFlipped] = useState(false);
 
-  const handleCopyCode = useCallback(() => {
+  const handleCopyCode = useCallback((e: React.MouseEvent | React.KeyboardEvent) => {
+    e.stopPropagation();
     navigator.clipboard?.writeText(offer.code).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -102,101 +104,124 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
   const perks = offer.tags.length > 0 ? offer.tags : ["🎰 Slots", "⚡ Instant Play", "🛡 SSL"];
 
   return (
-    <div className="papyrus-scroll-wrapper">
-      {/* ═══ Scroll Body ═══ */}
-      <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom">
-        {/* Corner Ornaments */}
-        <CornerOrnament className="top-left" />
-        <CornerOrnament className="top-right" />
-        <CornerOrnament className="bottom-left" />
-        <CornerOrnament className="bottom-right" />
+    <div className="papyrus-flip-container" onClick={() => setFlipped(!flipped)}>
+      <div className={`papyrus-flip-inner ${flipped ? "papyrus-flipped" : ""}`}>
 
-        {/* ═══ Content ═══ */}
-        <div className="scroll-content">
-
-          {/* ── Casino Banner ── */}
-          <div className="casino-banner">
-            <div className="casino-banner-inner">
-              {offer.banner_url ? (
-                <img
-                  src={offer.banner_url}
-                  alt={offer.name}
-                  style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
-                />
-              ) : null}
-              <span className="casino-banner-text">{offer.name}</span>
-            </div>
-          </div>
-
-          {/* ── Rating ── */}
-          <StarRating rating={4.8} />
-
-          {/* ── Stat Rows ── */}
-          <div className="stat-rows">
-            <div className="stat-row">
-              <span className="stat-label">Licença</span>
-              <span className="stat-value">{offer.license}</span>
-            </div>
-            <div className="stat-row">
-              <span className="stat-label">Levantamento</span>
-              <span className="stat-value">{offer.withdraw_time}</span>
-            </div>
-            <div className="stat-row">
-              <span className="stat-label">Depósito Mín.</span>
-              <span className="stat-value">{offer.min_deposit}</span>
-            </div>
-          </div>
-
-          {/* ── Perks ── */}
-          <div className="perks-list">
-            {perks.map((perk) => (
-              <span key={perk} className="perk-tag">{perk}</span>
-            ))}
-          </div>
-
-          {/* ── Engraved Divider ── */}
-          <div className="engraved-divider" />
-
-          {/* ── Promo Section ── */}
-          <div className="promo-section">
-            <p className="promo-label">✦ Oferta Exclusiva ✦</p>
-            <p className="promo-bonus">
-              {offer.headline}
-              <span className="promo-bonus-accent">{offer.bonus_value}</span>
-            </p>
-            <p className="promo-detail">
-              {offer.free_spins !== "—" ? `+ ${offer.free_spins} Free Spins` : ""}
-              {offer.cashback ? ` · ${offer.cashback} Cashback` : ""}
-            </p>
-
-            {/* Promo Code */}
-            {offer.code && offer.code !== "—" && (
-              <div className="promo-code-wrapper" onClick={handleCopyCode} role="button" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && handleCopyCode()}>
-                <span className="promo-code-label">Código</span>
-                <span className="promo-code-value">{offer.code}</span>
-                <span className="promo-code-copy">{copied ? "✓ Copiado" : "📋 Copiar"}</span>
+        {/* ═══ FRONT ═══ */}
+        <div className="papyrus-flip-face papyrus-flip-front">
+          <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom">
+            <CornerOrnament className="top-left" />
+            <CornerOrnament className="top-right" />
+            <CornerOrnament className="bottom-left" />
+            <CornerOrnament className="bottom-right" />
+            <div className="scroll-content">
+              {/* Banner */}
+              <div className="casino-banner">
+                <div className="casino-banner-inner">
+                  {offer.banner_url ? (
+                    <img
+                      src={offer.banner_url}
+                      alt={offer.name}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
+                    />
+                  ) : null}
+                  <span className="casino-banner-text">{offer.name}</span>
+                </div>
               </div>
-            )}
-          </div>
 
-          {/* ── Wax Seal ── */}
-          <div style={{ margin: "8px 0" }}>
-            <div className="wax-seal" />
-          </div>
+              {/* Rating */}
+              <StarRating rating={4.8} />
 
-          {/* ── CTA Button ── */}
-          <div className="cta-section">
-            <a href={offer.affiliate_url} target="_blank" rel="noopener noreferrer">
-              <button className="cta-button">
-                ⚔ Resgatar Bónus ⚔
-              </button>
-            </a>
-            <p className="cta-subtext">18+ · T&Cs Aplicáveis · Joga com responsabilidade</p>
+              {/* Stat Rows */}
+              <div className="stat-rows">
+                <div className="stat-row">
+                  <span className="stat-label">Licença</span>
+                  <span className="stat-value">{offer.license}</span>
+                </div>
+                <div className="stat-row">
+                  <span className="stat-label">Levantamento</span>
+                  <span className="stat-value">{offer.withdraw_time}</span>
+                </div>
+                <div className="stat-row">
+                  <span className="stat-label">Depósito Mín.</span>
+                  <span className="stat-value">{offer.min_deposit}</span>
+                </div>
+              </div>
+
+              {/* CTA */}
+              <div className="cta-section">
+                <a href={offer.affiliate_url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                  <button className="cta-button">⚔ Resgatar Bónus ⚔</button>
+                </a>
+                <p className="cta-subtext">18+ · T&Cs Aplicáveis · Joga com responsabilidade</p>
+              </div>
+
+              {/* Flip hint */}
+              <p className="flip-hint">Toca para ver detalhes ↻</p>
+            </div>
           </div>
         </div>
+
+        {/* ═══ BACK ═══ */}
+        <div className="papyrus-flip-face papyrus-flip-back">
+          <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom">
+            <CornerOrnament className="top-left" />
+            <CornerOrnament className="top-right" />
+            <CornerOrnament className="bottom-left" />
+            <CornerOrnament className="bottom-right" />
+            <div className="scroll-content">
+              {/* Promo Section */}
+              <div className="promo-section">
+                <p className="promo-label">✦ Oferta Exclusiva ✦</p>
+                <p className="promo-bonus">
+                  {offer.headline}
+                  <span className="promo-bonus-accent">{offer.bonus_value}</span>
+                </p>
+                <p className="promo-detail">
+                  {offer.free_spins !== "—" ? `+ ${offer.free_spins} Free Spins` : ""}
+                  {offer.cashback ? ` · ${offer.cashback} Cashback` : ""}
+                </p>
+
+                {offer.code && offer.code !== "—" && (
+                  <div className="promo-code-wrapper" onClick={handleCopyCode} role="button" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && handleCopyCode(e)}>
+                    <span className="promo-code-label">Código</span>
+                    <span className="promo-code-value">{offer.code}</span>
+                    <span className="promo-code-copy">{copied ? "✓ Copiado" : "📋 Copiar"}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Engraved Divider */}
+              <div className="engraved-divider" />
+
+              {/* Perks */}
+              <div className="perks-list">
+                {perks.map((perk) => (
+                  <span key={perk} className="perk-tag">{perk}</span>
+                ))}
+              </div>
+
+              {/* Wax Seal */}
+              <div style={{ margin: "8px 0" }}>
+                <div className="wax-seal" />
+              </div>
+
+              {/* CTA on back too */}
+              <div className="cta-section">
+                <a href={offer.affiliate_url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                  <button className="cta-button">⚔ Resgatar Bónus ⚔</button>
+                </a>
+              </div>
+
+              {/* Flip hint */}
+              <p className="flip-hint">Toca para voltar ↻</p>
+            </div>
+          </div>
+        </div>
+
       </div>
 
-      {/* ── Copy Toast ── */}
+      {/* Copy Toast */}
       <div className={`copy-toast ${copied ? "visible" : ""}`}>
         ✦ Código promocional copiado ✦
       </div>
