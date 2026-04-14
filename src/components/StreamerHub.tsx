@@ -140,12 +140,27 @@ export function StreamerHub() {
             </div>
 
             {/* Chat */}
-            <div className="relative bg-arena-dark rounded-2xl overflow-hidden arena-border-crimson shadow-2xl shadow-black/60 min-h-[400px] lg:min-h-0">
-              <iframe
-                src={`https://www.twitch.tv/embed/${TWITCH_CHANNEL}/chat?parent=${hostname}&darkpopout`}
-                className="w-full h-full absolute inset-0"
-                title="Twitch chat"
-              />
+            <div className="relative bg-arena-black rounded-2xl overflow-hidden arena-border-crimson metal-frame-glow shadow-2xl shadow-black/60 min-h-[400px] lg:min-h-0 flex flex-col">
+              {/* Emblem header */}
+              <div className="relative z-10 flex items-center justify-center gap-2.5 py-3 bg-gradient-to-b from-arena-charcoal to-arena-dark border-b border-white/5">
+                <img
+                  src="/images/BrutoEmblem.png"
+                  alt="BrutusPolus"
+                  className="w-7 h-7 object-contain"
+                />
+                <span className="font-[family-name:var(--font-display)] text-arena-gold text-xs font-bold tracking-[0.2em] uppercase arena-glow">
+                  Arena Chat
+                </span>
+              </div>
+
+              {/* Chat iframe */}
+              <div className="relative flex-1">
+                <iframe
+                  src={`https://www.twitch.tv/embed/${TWITCH_CHANNEL}/chat?parent=${hostname}&darkpopout`}
+                  className="w-full h-full absolute inset-0"
+                  title="Twitch chat"
+                />
+              </div>
             </div>
           </div>
         </ScrollReveal>
