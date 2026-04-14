@@ -58,6 +58,12 @@ export function Footer() {
             >
               Política de Privacidade
             </Link>
+            <Link
+              href="/politica-de-cookies"
+              className="text-[10px] text-arena-ash hover:text-arena-gold transition-colors duration-200"
+            >
+              Política de Cookies
+            </Link>
           </div>
         </div>
       </div>
