@@ -232,6 +232,717 @@ body {
     0 0 12px rgba(212, 168, 67, 0.2);
 }
 
+/* ══════════════════════════════════════════════════════════════════════
+   PAPYRUS SCROLL CASINO CARD
+   ══════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --parchment-light: #f5e6c8;
+  --parchment-mid: #ecd9b0;
+  --parchment-dark: #e8d3a3;
+  --parchment-edge: #d4b87a;
+  --scroll-shadow: #8b6914;
+  --ink-dark: #3a2a10;
+  --ink-mid: #5c4520;
+  --ink-light: #7a6340;
+  --gold-bright: #d4a017;
+  --gold-mid: #b8860b;
+  --gold-dark: #8b6914;
+  --gold-light: #f0d060;
+  --deep-red: #8b1a1a;
+  --deep-red-light: #c0392b;
+  --stone-dark: #4a3728;
+  --stone-mid: #6b5240;
+  --stone-light: #8a7060;
+  --scroll-radius: 18px;
+}
+
+/* ── Greek Key / Meander Pattern Border ─────────────────── */
+.greek-key-border {
+  position: relative;
+}
+.greek-key-border::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border: 2px solid var(--gold-dark);
+  border-radius: var(--scroll-radius);
+  pointer-events: none;
+  opacity: 0.4;
+}
+.greek-key-border::after {
+  content: '';
+  position: absolute;
+  top: 4px; left: 4px; right: 4px; bottom: 4px;
+  border: 1px solid var(--gold-dark);
+  border-radius: 14px;
+  pointer-events: none;
+  opacity: 0.25;
+}
+
+/* ── Scroll Body — Main Card ────────────────────────────── */
+.papyrus-scroll {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(139, 105, 20, 0.015) 2px,
+      rgba(139, 105, 20, 0.015) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 3px,
+      rgba(139, 105, 20, 0.01) 3px,
+      rgba(139, 105, 20, 0.01) 6px
+    ),
+    linear-gradient(
+      175deg,
+      var(--parchment-light) 0%,
+      var(--parchment-mid) 30%,
+      var(--parchment-dark) 70%,
+      var(--parchment-edge) 100%
+    );
+  border-radius: var(--scroll-radius);
+  box-shadow:
+    inset 0 0 60px 10px rgba(100, 70, 20, 0.12),
+    inset 0 0 30px 5px rgba(100, 70, 20, 0.08),
+    0 4px 6px rgba(60, 40, 10, 0.15),
+    0 12px 24px rgba(60, 40, 10, 0.12),
+    0 24px 48px rgba(60, 40, 10, 0.08);
+  overflow: hidden;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Rolled Top Edge ────────────────────────────────────── */
+.papyrus-scroll-top::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 28px;
+  background: linear-gradient(
+    180deg,
+    rgba(180, 140, 70, 0.35) 0%,
+    rgba(180, 140, 70, 0.15) 30%,
+    rgba(220, 180, 110, 0.08) 60%,
+    transparent 100%
+  );
+  border-radius: var(--scroll-radius) var(--scroll-radius) 0 0;
+  z-index: 2;
+  pointer-events: none;
+  box-shadow:
+    0 2px 4px rgba(80, 50, 10, 0.1),
+    inset 0 -1px 2px rgba(255, 240, 200, 0.3);
+}
+
+/* ── Rolled Bottom Edge ─────────────────────────────────── */
+.papyrus-scroll-bottom::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 28px;
+  background: linear-gradient(
+    0deg,
+    rgba(180, 140, 70, 0.35) 0%,
+    rgba(180, 140, 70, 0.15) 30%,
+    rgba(220, 180, 110, 0.08) 60%,
+    transparent 100%
+  );
+  border-radius: 0 0 var(--scroll-radius) var(--scroll-radius);
+  z-index: 2;
+  pointer-events: none;
+  box-shadow:
+    0 -2px 4px rgba(80, 50, 10, 0.1),
+    inset 0 1px 2px rgba(255, 240, 200, 0.3);
+}
+
+/* ── Hover State — Lift + Paper Movement ────────────────── */
+.papyrus-scroll-wrapper {
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  cursor: pointer;
+}
+.papyrus-scroll-wrapper:hover {
+  transform: translateY(-8px) rotate(0.3deg);
+}
+.papyrus-scroll-wrapper:hover .papyrus-scroll {
+  box-shadow:
+    inset 0 0 60px 10px rgba(100, 70, 20, 0.12),
+    inset 0 0 30px 5px rgba(100, 70, 20, 0.08),
+    0 8px 12px rgba(60, 40, 10, 0.18),
+    0 20px 40px rgba(60, 40, 10, 0.15),
+    0 36px 72px rgba(60, 40, 10, 0.1);
+}
+
+/* ── Scroll Content Container ────────────────────────────── */
+.scroll-content {
+  position: relative;
+  z-index: 1;
+  padding: 36px 28px 32px;
+}
+
+/* ── Header / Title Area ────────────────────────────────── */
+.scroll-header {
+  text-align: center;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.scroll-emblem {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, var(--gold-bright) 0%, var(--gold-dark) 100%);
+  border-radius: 50%;
+  box-shadow:
+    0 2px 8px rgba(139, 105, 20, 0.3),
+    inset 0 1px 2px rgba(255, 220, 100, 0.5);
+  position: relative;
+}
+.scroll-emblem::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border: 1.5px solid rgba(255, 220, 100, 0.4);
+  border-radius: 50%;
+}
+
+.scroll-title {
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ink-dark);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 rgba(255, 240, 200, 0.6);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.scroll-subtitle {
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 0.65rem;
+  font-weight: 400;
+  color: var(--ink-light);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-top: 4px;
+  opacity: 0.7;
+}
+
+/* ── Engraved Divider ───────────────────────────────────── */
+.engraved-divider {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--gold-dark) 15%,
+    var(--gold-mid) 50%,
+    var(--gold-dark) 85%,
+    transparent 100%
+  );
+  opacity: 0.4;
+  margin: 0 -4px;
+  position: relative;
+}
+.engraved-divider::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 240, 200, 0.4) 15%,
+    rgba(255, 240, 200, 0.6) 50%,
+    rgba(255, 240, 200, 0.4) 85%,
+    transparent 100%
+  );
+}
+
+/* ── Casino Banner / Logo Area ──────────────────────────── */
+.casino-banner {
+  position: relative;
+  margin: 16px 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow:
+    inset 0 2px 8px rgba(60, 40, 10, 0.2),
+    0 2px 4px rgba(60, 40, 10, 0.1);
+  border: 1px solid rgba(139, 105, 20, 0.2);
+}
+.casino-banner-inner {
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    #1a0a00 0%,
+    #2d1810 30%,
+    #4a2010 60%,
+    #2d1810 100%
+  );
+  position: relative;
+  overflow: hidden;
+}
+.casino-banner-inner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 30% 50%, rgba(212, 160, 23, 0.15) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 50%, rgba(139, 26, 26, 0.1) 0%, transparent 60%);
+}
+.casino-banner-text {
+  position: relative;
+  z-index: 1;
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--gold-light);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-shadow: 0 0 20px rgba(212, 160, 23, 0.3), 0 2px 4px rgba(0,0,0,0.5);
+}
+
+/* ── Rating Stars ───────────────────────────────────────── */
+.rating-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 14px 0;
+}
+.star-icon {
+  width: 20px;
+  height: 20px;
+  filter: drop-shadow(0 1px 2px rgba(139, 105, 20, 0.3));
+}
+.star-filled {
+  fill: var(--gold-bright);
+}
+.star-empty {
+  fill: rgba(139, 105, 20, 0.2);
+}
+.rating-number {
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ink-dark);
+  margin-left: 6px;
+}
+
+/* ── Stat Rows ──────────────────────────────────────────── */
+.stat-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 14px 0;
+}
+.stat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(139, 105, 20, 0.12);
+}
+.stat-row:last-child {
+  border-bottom: none;
+}
+.stat-label {
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--ink-light);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.stat-value {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-dark);
+  text-align: right;
+}
+.stat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: rgba(139, 105, 20, 0.08);
+  color: var(--ink-mid);
+  border: 1px solid rgba(139, 105, 20, 0.15);
+}
+
+/* ── Promo Section — Gold Frame Highlight ───────────────── */
+.promo-section {
+  position: relative;
+  margin: 18px -6px;
+  padding: 20px 18px;
+  border-radius: 12px;
+  background: linear-gradient(
+    135deg,
+    rgba(212, 160, 23, 0.08) 0%,
+    rgba(212, 160, 23, 0.12) 50%,
+    rgba(212, 160, 23, 0.08) 100%
+  );
+  border: 1.5px solid rgba(212, 160, 23, 0.35);
+  box-shadow:
+    0 0 20px rgba(212, 160, 23, 0.08),
+    inset 0 0 20px rgba(212, 160, 23, 0.04);
+  overflow: hidden;
+  text-align: center;
+}
+
+/* Shimmer animation overlay */
+.promo-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 220, 100, 0.12) 40%,
+    rgba(255, 220, 100, 0.2) 50%,
+    rgba(255, 220, 100, 0.12) 60%,
+    transparent 100%
+  );
+  animation: papyrus-shimmer 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes papyrus-shimmer {
+  0%, 100% { left: -100%; }
+  50% { left: 150%; }
+}
+
+.promo-label {
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--gold-dark);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  position: relative;
+  z-index: 2;
+}
+
+.promo-bonus {
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--deep-red);
+  line-height: 1.1;
+  margin: 0 0 4px;
+  text-shadow: 0 1px 0 rgba(255, 240, 200, 0.5);
+  position: relative;
+  z-index: 2;
+}
+.promo-bonus-accent {
+  display: block;
+  font-size: 2.2rem;
+  color: var(--deep-red-light);
+  text-shadow: 0 0 12px rgba(192, 57, 43, 0.15);
+}
+
+.promo-detail {
+  font-size: 0.78rem;
+  color: var(--ink-mid);
+  margin: 6px 0 12px;
+  position: relative;
+  z-index: 2;
+}
+
+/* ── Promo Code — Sealed Inscription ─────────────────────── */
+.promo-code-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(
+    135deg,
+    rgba(60, 40, 10, 0.06) 0%,
+    rgba(60, 40, 10, 0.1) 100%
+  );
+  border: 1.5px dashed var(--gold-dark);
+  border-radius: 6px;
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.promo-code-wrapper:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(60, 40, 10, 0.1) 0%,
+    rgba(60, 40, 10, 0.15) 100%
+  );
+}
+.promo-code-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--ink-light);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.promo-code-value {
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink-dark);
+  letter-spacing: 0.12em;
+}
+.promo-code-copy {
+  font-size: 0.6rem;
+  color: var(--gold-dark);
+  opacity: 0.6;
+  transition: opacity 0.3s;
+}
+.promo-code-wrapper:hover .promo-code-copy {
+  opacity: 1;
+}
+
+/* ── CTA Button — Carved Gold Plate ─────────────────────── */
+.cta-section {
+  margin-top: 20px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px 32px;
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    var(--gold-light) 0%,
+    var(--gold-bright) 30%,
+    var(--gold-mid) 70%,
+    var(--gold-dark) 100%
+  );
+  box-shadow:
+    0 4px 12px rgba(139, 105, 20, 0.35),
+    0 2px 4px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 240, 200, 0.5),
+    inset 0 -2px 4px rgba(80, 50, 10, 0.3);
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cta-button::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 240, 200, 0.25) 0%,
+    transparent 100%
+  );
+  border-radius: 10px 10px 0 0;
+  pointer-events: none;
+}
+
+.cta-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 100%
+  );
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 20px rgba(139, 105, 20, 0.45),
+    0 3px 8px rgba(0, 0, 0, 0.2),
+    0 0 30px rgba(212, 160, 23, 0.2),
+    inset 0 1px 0 rgba(255, 240, 200, 0.5),
+    inset 0 -2px 4px rgba(80, 50, 10, 0.3);
+}
+.cta-button:hover::after {
+  left: 150%;
+}
+
+.cta-button:active {
+  transform: translateY(0px);
+  box-shadow:
+    0 2px 6px rgba(139, 105, 20, 0.3),
+    inset 0 2px 4px rgba(80, 50, 10, 0.2);
+}
+
+.cta-subtext {
+  font-size: 0.65rem;
+  color: var(--ink-light);
+  margin-top: 8px;
+  opacity: 0.6;
+  letter-spacing: 0.05em;
+}
+
+/* ── Corner Ornaments ───────────────────────────────────── */
+.scroll-ornament {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  opacity: 0.2;
+  z-index: 1;
+  pointer-events: none;
+}
+.scroll-ornament.top-left { top: 12px; left: 12px; }
+.scroll-ornament.top-right { top: 12px; right: 12px; transform: scaleX(-1); }
+.scroll-ornament.bottom-left { bottom: 12px; left: 12px; transform: scaleY(-1); }
+.scroll-ornament.bottom-right { bottom: 12px; right: 12px; transform: scale(-1, -1); }
+
+/* ── Wax Seal Accent ────────────────────────────────────── */
+.wax-seal {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 40% 35%,
+    var(--deep-red-light) 0%,
+    var(--deep-red) 60%,
+    #5a1010 100%
+  );
+  box-shadow:
+    0 2px 6px rgba(139, 26, 26, 0.4),
+    inset 0 1px 2px rgba(255, 100, 100, 0.2),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  position: relative;
+}
+.wax-seal::after {
+  content: '⚔';
+  font-size: 14px;
+  color: rgba(255, 200, 150, 0.5);
+}
+
+/* ── Key Perks List ─────────────────────────────────────── */
+.perks-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 14px 0;
+  justify-content: center;
+}
+.perk-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--ink-mid);
+  background: rgba(139, 105, 20, 0.06);
+  border: 1px solid rgba(139, 105, 20, 0.12);
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+/* ── Scroll Unroll Animation on Hover ───────────────────── */
+.papyrus-scroll-wrapper:hover .papyrus-scroll-top::before {
+  height: 24px;
+  transition: height 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.papyrus-scroll-wrapper:hover .papyrus-scroll-bottom::after {
+  height: 24px;
+  transition: height 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Copy Toast ───────────────────────────────────────── */
+.copy-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  padding: 10px 20px;
+  background: var(--ink-dark);
+  color: var(--gold-light);
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  border-radius: 8px;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.copy-toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .scroll-content {
+    padding: 30px 20px 26px;
+  }
+  .scroll-title {
+    font-size: 1.25rem;
+  }
+  .promo-bonus {
+    font-size: 1.5rem;
+  }
+  .promo-bonus-accent {
+    font-size: 1.8rem;
+  }
+  .cta-button {
+    font-size: 0.88rem;
+    padding: 14px 24px;
+  }
+}
+
 /* ── Keyframes ──────────────────────────────────────────────────────── */
 
 @keyframes pulse-glow {
