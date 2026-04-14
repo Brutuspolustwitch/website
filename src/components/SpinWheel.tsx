@@ -570,10 +570,12 @@ export function SpinWheel() {
   return (
     <div className={`h-full w-full flex flex-col items-center justify-center transition-transform duration-300 relative ${screenShake ? "animate-[shake_0.3s_ease-in-out]" : ""}`}>
 
+      {/* ── FULL-AREA BACKGROUND ──────────────────────── */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none"><EmberCanvas /></div>
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle,transparent_30%,rgba(0,0,0,0.5)_100%)]" />
+
       {/* ── CENTER: Wheel + Controls ─────────────────────── */}
       <div className="flex-1 flex flex-col items-center justify-center min-w-0 relative w-full">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none"><EmberCanvas /></div>
-        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle,transparent_30%,rgba(0,0,0,0.5)_100%)]" />
 
         {/* Flash */}
         <AnimatePresence>
