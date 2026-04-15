@@ -57,8 +57,8 @@ const SECONDARY_LINKS: NavItem[] = [
     label: "Admin Area",
     minRole: "configurador",
     children: [
-      { href: "/admin/parcerias", label: "Parcerias" },
-      { href: "/admin/utilizadores", label: "Utilizadores" },
+      { href: "/admin/outros/daily-session", label: "Sessão do Dia" },
+      { href: "/admin/outros/bonus-hunt", label: "Bonus Hunt" },
       {
         href: "/admin/analitics",
         label: "Analitics",
@@ -72,6 +72,9 @@ const SECONDARY_LINKS: NavItem[] = [
           { href: "/admin/analitics/fraude", label: "Fraude" },
         ],
       },
+      { href: "/admin/outros/calendario", label: "Calendário" },
+      { href: "/admin/outros", label: "Outros" },
+      { href: "/admin/parcerias", label: "Parcerias" },
       {
         href: "/admin/loja",
         label: "Loja",
@@ -80,17 +83,9 @@ const SECONDARY_LINKS: NavItem[] = [
           { href: "/admin/loja/gestao", label: "Gestão" },
         ],
       },
-      {
-        href: "/admin/outros",
-        label: "Outros",
-        children: [
-          { href: "/admin/outros/giveaways", label: "Giveaways" },
-          { href: "/admin/outros/bonus-hunt", label: "Bonus Hunt" },
-          { href: "/admin/outros/calendario", label: "Calendário" },
-          { href: "/admin/outros/daily-wheel", label: "Daily Wheel" },
-          { href: "/admin/outros/daily-session", label: "Sessão do Dia" },
-        ],
-      },
+      { href: "/admin/outros/giveaways", label: "Giveaways" },
+      { href: "/admin/outros/daily-wheel", label: "Daily Wheel" },
+      { href: "/admin/utilizadores", label: "Utilizadores" },
     ],
   },
   { href: "/moderador", label: "Moderador Area", minRole: "moderador" },
