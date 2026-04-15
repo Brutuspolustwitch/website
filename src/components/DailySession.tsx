@@ -306,7 +306,7 @@ export default function DailySessionContent() {
           <div
             className="absolute inset-0"
             style={{
-              backgroundImage: "url('/images/gladiator-portrait.jpg')",
+              backgroundImage: "url('/images/pages/session.jpg')",
               backgroundSize: "cover",
               backgroundPosition: "center",
               filter: "brightness(0.2) saturate(0.3) sepia(0.3)",
@@ -352,7 +352,7 @@ export default function DailySessionContent() {
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: "url('/images/gladiator-portrait.jpg')",
+            backgroundImage: "url('/images/pages/session.jpg')",
             backgroundSize: "cover",
             backgroundPosition: "center",
             filter: "brightness(0.15) saturate(0.3) sepia(0.3) blur(2px)",
