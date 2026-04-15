@@ -20,13 +20,14 @@ export default function OfertasPage() {
         <div className="absolute inset-0 bg-black" />
         {/* Image on the right */}
         <div
-          className="absolute inset-0"
+          className="absolute inset-[-15%]"
           style={{
             backgroundImage: "url('/images/pages/offers.jpg')",
             backgroundSize: "cover",
             backgroundPosition: "right center",
             backgroundRepeat: "no-repeat",
             filter: "brightness(0.35) saturate(0.35) sepia(0.25) contrast(0.9) blur(2px)",
+            transform: "scale(0.7)",
           }}
         />
         {/* Fade from left (black) into image on right */}
