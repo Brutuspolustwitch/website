@@ -18,6 +18,45 @@ interface OfferStat {
   legitimate_clicks: number;
 }
 
+/* ── Click log types ─────────────────────────────────────────── */
+interface ClickEvent {
+  id: string;
+  offer_id: string;
+  metadata: { offer_name?: string } | null;
+  is_suspicious: boolean;
+  created_at: string;
+  ip_address: string | null;
+  country: string | null;
+  city: string | null;
+  analytics_sessions: {
+    id: string;
+    ip_address: string;
+    user_agent: string | null;
+    country: string | null;
+    city: string | null;
+    region: string | null;
+    isp: string | null;
+    referrer: string | null;
+    referrer_source: string | null;
+    is_suspicious: boolean;
+    users: {
+      display_name: string;
+      login: string;
+      profile_image_url: string | null;
+    } | null;
+  } | null;
+  casino_offers: {
+    name: string;
+    slug: string;
+  } | null;
+}
+
+interface OfferOption {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 export default function OfferPerformance() {
   const [offers, setOffers] = useState<OfferStat[]>([]);
   const [loading, setLoading] = useState(true);
@@ -223,7 +262,340 @@ export default function OfferPerformance() {
             </div>
           </>
         )}
+
+        {/* ═══════════════════════════════════════════════════════
+           DETAILED CLICK LOG
+           ═══════════════════════════════════════════════════════ */}
+        <OfferClickLog period={period} />
       </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   OFFER CLICK LOG — Detailed per-click view with filters & search
+   ═══════════════════════════════════════════════════════════════════ */
+function OfferClickLog({ period }: { period: string }) {
+  const [clicks, setClicks] = useState<ClickEvent[]>([]);
+  const [allOffers, setAllOffers] = useState<OfferOption[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [filterOffer, setFilterOffer] = useState("");
+  const [filterSuspicious, setFilterSuspicious] = useState<"" | "true" | "false">("");
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const limit = 25;
+
+  const fetchClicks = useCallback(async () => {
+    setLoading(true);
+    const params = new URLSearchParams({
+      period,
+      page: String(page),
+      limit: String(limit),
+    });
+    if (filterOffer) params.set("offer_id", filterOffer);
+    if (filterSuspicious) params.set("suspicious", filterSuspicious);
+    if (search) params.set("search", search);
+
+    try {
+      const r = await fetch(`/api/analytics/offer-clicks?${params}`);
+      const d = await r.json();
+      if (d.events) {
+        setClicks(d.events);
+        setTotal(d.total);
+        if (d.offers) setAllOffers(d.offers);
+      }
+    } catch { /* noop */ }
+    setLoading(false);
+  }, [period, page, filterOffer, filterSuspicious, search]);
+
+  useEffect(() => { setPage(1); }, [period, filterOffer, filterSuspicious, search]);
+  useEffect(() => { fetchClicks(); }, [fetchClicks]);
+
+  const totalPages = Math.ceil(total / limit);
+
+  const formatTime = (iso: string) => {
+    const d = new Date(iso);
+    return d.toLocaleString("pt-PT", {
+      day: "2-digit", month: "2-digit", year: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit",
+    });
+  };
+
+  const handleSearch = () => setSearch(searchInput);
+  const handleSearchKey = (e: React.KeyboardEvent) => { if (e.key === "Enter") handleSearch(); };
+
+  const referrerLabel = (src: string | null) => {
+    const map: Record<string, string> = {
+      direct: "Direto", twitch: "Twitch", social: "Redes Sociais",
+      search: "Pesquisa", other: "Outro",
+    };
+    return map[src || ""] || src || "—";
+  };
+
+  const getBrowser = (ua: string | null) => {
+    if (!ua) return "—";
+    if (ua.includes("Firefox")) return "Firefox";
+    if (ua.includes("Edg/")) return "Edge";
+    if (ua.includes("Chrome")) return "Chrome";
+    if (ua.includes("Safari")) return "Safari";
+    if (ua.includes("Opera") || ua.includes("OPR")) return "Opera";
+    return "Outro";
+  };
+
+  const getDevice = (ua: string | null) => {
+    if (!ua) return "—";
+    if (/mobile|android|iphone|ipad/i.test(ua)) return "📱 Mobile";
+    return "💻 Desktop";
+  };
+
+  return (
+    <div className="mt-12">
+      <h3 className="font-display text-xl uppercase tracking-wider text-arena-gold mb-6">
+        Registo Detalhado de Cliques
+      </h3>
+
+      {/* ── Filters Bar ────────────────────────────────────── */}
+      <div className="flex flex-wrap items-end gap-3 mb-6">
+        {/* Search */}
+        <div className="flex-1 min-w-[200px]">
+          <label className="text-xs text-arena-ash uppercase tracking-wider mb-1 block">Pesquisar</label>
+          <div className="flex">
+            <input
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={handleSearchKey}
+              placeholder="Utilizador, oferta, IP, cidade..."
+              className="flex-1 bg-white/[0.04] border border-white/10 rounded-l-lg px-3 py-2 text-sm text-arena-white placeholder:text-arena-ash/50 focus:border-arena-gold/50 focus:ring-1 focus:ring-arena-gold/20 outline-none"
+            />
+            <button
+              onClick={handleSearch}
+              className="px-3 py-2 bg-arena-gold/10 border border-l-0 border-white/10 rounded-r-lg text-arena-gold hover:bg-arena-gold/20 transition text-sm"
+            >🔍</button>
+          </div>
+        </div>
+
+        {/* Offer filter */}
+        <div className="min-w-[180px]">
+          <label className="text-xs text-arena-ash uppercase tracking-wider mb-1 block">Oferta</label>
+          <select
+            value={filterOffer}
+            onChange={(e) => setFilterOffer(e.target.value)}
+            className="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-sm text-arena-white focus:border-arena-gold/50 outline-none [color-scheme:dark]"
+          >
+            <option value="">Todas</option>
+            {allOffers.map((o) => (
+              <option key={o.id} value={o.id}>{o.name}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Suspicious filter */}
+        <div className="min-w-[140px]">
+          <label className="text-xs text-arena-ash uppercase tracking-wider mb-1 block">Estado</label>
+          <select
+            value={filterSuspicious}
+            onChange={(e) => setFilterSuspicious(e.target.value as "" | "true" | "false")}
+            className="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-sm text-arena-white focus:border-arena-gold/50 outline-none [color-scheme:dark]"
+          >
+            <option value="">Todos</option>
+            <option value="false">Legítimos</option>
+            <option value="true">Suspeitos</option>
+          </select>
+        </div>
+
+        {/* Clear filters */}
+        {(search || filterOffer || filterSuspicious) && (
+          <button
+            onClick={() => { setSearch(""); setSearchInput(""); setFilterOffer(""); setFilterSuspicious(""); }}
+            className="px-3 py-2 bg-white/[0.04] border border-white/10 rounded-lg text-arena-smoke text-sm hover:bg-white/[0.08] transition"
+          >✕ Limpar</button>
+        )}
+      </div>
+
+      {/* ── Results count ──────────────────────────────────── */}
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-sm text-arena-ash">
+          {total} clique{total !== 1 ? "s" : ""} encontrado{total !== 1 ? "s" : ""}
+          {search && <span className="text-arena-gold ml-1">para &quot;{search}&quot;</span>}
+        </span>
+        <span className="text-xs text-arena-ash">
+          Página {page} de {Math.max(1, totalPages)}
+        </span>
+      </div>
+
+      {/* ── Click Cards ────────────────────────────────────── */}
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <div className="w-8 h-8 border-2 border-arena-gold/30 border-t-arena-gold rounded-full animate-spin" />
+        </div>
+      ) : clicks.length === 0 ? (
+        <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-12 text-center">
+          <div className="text-4xl mb-3">📭</div>
+          <p className="text-arena-smoke">Nenhum clique encontrado</p>
+          <p className="text-sm text-arena-ash mt-1">Ajusta os filtros ou o período</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {clicks.map((click) => {
+            const session = click.analytics_sessions;
+            const user = session?.users;
+            const offer = click.casino_offers;
+            const isExpanded = expandedId === click.id;
+
+            return (
+              <div
+                key={click.id}
+                className={`bg-white/[0.03] border rounded-xl transition-all ${
+                  click.is_suspicious
+                    ? "border-red-500/20 hover:border-red-500/40"
+                    : "border-white/10 hover:border-white/20"
+                }`}
+              >
+                {/* Main row */}
+                <button
+                  onClick={() => setExpandedId(isExpanded ? null : click.id)}
+                  className="w-full p-4 flex items-center gap-4 text-left"
+                >
+                  {/* Status dot */}
+                  <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${
+                    click.is_suspicious ? "bg-red-400" : "bg-green-400"
+                  }`} />
+
+                  {/* User */}
+                  <div className="w-36 shrink-0 truncate">
+                    {user ? (
+                      <div>
+                        <span className="text-sm font-medium text-arena-white">{user.display_name}</span>
+                        <span className="text-xs text-arena-ash block">@{user.login}</span>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-arena-ash italic">Anónimo</span>
+                    )}
+                  </div>
+
+                  {/* Offer */}
+                  <div className="flex-1 min-w-0 truncate">
+                    <span className="text-sm text-arena-gold font-medium">
+                      {offer?.name || (click.metadata as Record<string, string> | null)?.offer_name || "—"}
+                    </span>
+                  </div>
+
+                  {/* Location */}
+                  <div className="w-28 shrink-0 text-right hidden sm:block">
+                    <span className="text-xs text-arena-ash">
+                      {session?.country || "—"}{session?.city ? `, ${session.city}` : ""}
+                    </span>
+                  </div>
+
+                  {/* Time */}
+                  <div className="w-32 shrink-0 text-right">
+                    <span className="text-xs text-arena-ash">{formatTime(click.created_at)}</span>
+                  </div>
+
+                  {/* Chevron */}
+                  <svg
+                    className={`w-4 h-4 text-arena-ash shrink-0 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {/* Expanded details */}
+                {isExpanded && (
+                  <div className="px-4 pb-4 pt-0 border-t border-white/5">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-3">
+                      <DetailItem label="IP" value={session?.ip_address || "—"} />
+                      <DetailItem label="País" value={session?.country || "—"} />
+                      <DetailItem label="Cidade" value={session?.city || "—"} />
+                      <DetailItem label="Região" value={session?.region || "—"} />
+                      <DetailItem label="ISP" value={session?.isp || "—"} />
+                      <DetailItem label="Origem" value={referrerLabel(session?.referrer_source || null)} />
+                      <DetailItem label="Browser" value={getBrowser(session?.user_agent || null)} />
+                      <DetailItem label="Dispositivo" value={getDevice(session?.user_agent || null)} />
+                      <DetailItem label="Oferta" value={offer?.name || "—"} />
+                      <DetailItem label="Slug" value={offer?.slug || "—"} />
+                      <DetailItem
+                        label="Estado"
+                        value={click.is_suspicious ? "⚠️ Suspeito" : "✅ Legítimo"}
+                        valueClass={click.is_suspicious ? "text-red-400" : "text-green-400"}
+                      />
+                      <DetailItem label="Sessão Suspeita" value={session?.is_suspicious ? "Sim" : "Não"} />
+                      {session?.referrer && (
+                        <div className="col-span-full">
+                          <DetailItem label="Referrer" value={session.referrer} />
+                        </div>
+                      )}
+                      {session?.user_agent && (
+                        <div className="col-span-full">
+                          <DetailItem label="User Agent" value={session.user_agent} mono />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ── Pagination ─────────────────────────────────────── */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-6">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page <= 1}
+            className="px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/10 text-sm text-arena-smoke hover:bg-white/[0.08] disabled:opacity-30 disabled:cursor-not-allowed transition"
+          >← Anterior</button>
+
+          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+            let pageNum: number;
+            if (totalPages <= 5) pageNum = i + 1;
+            else if (page <= 3) pageNum = i + 1;
+            else if (page >= totalPages - 2) pageNum = totalPages - 4 + i;
+            else pageNum = page - 2 + i;
+
+            return (
+              <button
+                key={pageNum}
+                onClick={() => setPage(pageNum)}
+                className={`w-8 h-8 rounded-lg text-sm font-medium transition ${
+                  page === pageNum
+                    ? "bg-arena-gold/20 text-arena-gold border border-arena-gold/30"
+                    : "bg-white/[0.04] text-arena-smoke border border-white/10 hover:bg-white/[0.08]"
+                }`}
+              >{pageNum}</button>
+            );
+          })}
+
+          <button
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page >= totalPages}
+            className="px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/10 text-sm text-arena-smoke hover:bg-white/[0.08] disabled:opacity-30 disabled:cursor-not-allowed transition"
+          >Seguinte →</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Detail item helper ────────────────────────────────────── */
+function DetailItem({ label, value, valueClass, mono }: {
+  label: string;
+  value: string;
+  valueClass?: string;
+  mono?: boolean;
+}) {
+  return (
+    <div>
+      <span className="text-[10px] text-arena-ash uppercase tracking-wider block mb-0.5">{label}</span>
+      <span className={`text-sm ${valueClass || "text-arena-smoke"} ${mono ? "font-mono text-xs break-all" : ""}`}>
+        {value}
+      </span>
     </div>
   );
 }
