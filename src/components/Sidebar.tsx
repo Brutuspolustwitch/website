@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/lib/auth-context";
 import { hasRole } from "@/lib/roles";
@@ -165,6 +165,7 @@ interface SidebarProps {
 
 export function Sidebar({ open, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const { user } = useAuth();
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
@@ -268,7 +269,12 @@ export function Sidebar({ open, onClose }: SidebarProps) {
 
           {/* Chevron toggle */}
           <button
-            onClick={() => toggleExpand(item.href)}
+            onClick={() => {
+              toggleExpand(item.href);
+              if (pathname !== item.href) {
+                router.push(item.href);
+              }
+            }}
             className="p-2 -mr-1 text-arena-ash hover:text-arena-white transition-colors"
             aria-label={`${isOpen ? "Colapsar" : "Expandir"} ${item.label}`}
           >
