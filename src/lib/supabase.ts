@@ -130,3 +130,26 @@ export interface CasinoOfferRow {
   created_at: string;
   updated_at: string;
 }
+
+export interface WheelSegmentRow {
+  id: string;
+  label: string;
+  icon: string;
+  color: string;
+  glow_color: string;
+  tier: "legendary" | "epic" | "rare" | "common" | "loss";
+  reward_type: "SE_POINTS" | "FREE_SPIN" | "CUSTOM";
+  reward_value: number;
+  weight: number;
+  is_active: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface WheelConfigRow {
+  id: string;
+  key: string;
+  value: string;
+  updated_at: string;
+}

@@ -4,7 +4,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
-import type { SpinHistoryRow } from "@/lib/supabase";
+import type { SpinHistoryRow, WheelSegmentRow } from "@/lib/supabase";
 
 /* ═══════════════════════════════════════════════════════════════════
    TYPES & CONFIG
@@ -16,23 +16,44 @@ interface Reward {
   color: string;
   glowColor: string;
   tier: "legendary" | "epic" | "rare" | "common" | "loss";
+  weight: number;
 }
 
-const REWARDS: Reward[] = [
-  { label: "Jackpot",     icon: "👑", color: "#d4a843", glowColor: "rgba(212,168,67,0.6)",  tier: "legendary" },
-  { label: "Free Spin",   icon: "🔄", color: "#cd7f32", glowColor: "rgba(205,127,50,0.5)",  tier: "rare" },
-  { label: "Bonus Coins", icon: "🪙", color: "#f0d78c", glowColor: "rgba(240,215,140,0.5)", tier: "common" },
-  { label: "XP Boost",    icon: "⚡", color: "#ff6f00", glowColor: "rgba(255,111,0,0.5)",   tier: "common" },
-  { label: "Mystery",     icon: "🎭", color: "#9c27b0", glowColor: "rgba(156,39,176,0.5)",  tier: "epic" },
-  { label: "Defeat",      icon: "💀", color: "#8b0000", glowColor: "rgba(139,0,0,0.5)",     tier: "loss" },
-  { label: "Bonus Coins", icon: "🪙", color: "#f0d78c", glowColor: "rgba(240,215,140,0.5)", tier: "common" },
-  { label: "Free Spin",   icon: "🔄", color: "#cd7f32", glowColor: "rgba(205,127,50,0.5)",  tier: "rare" },
-  { label: "XP Boost",    icon: "⚡", color: "#ff6f00", glowColor: "rgba(255,111,0,0.5)",   tier: "common" },
-  { label: "Defeat",      icon: "💀", color: "#8b0000", glowColor: "rgba(139,0,0,0.5)",     tier: "loss" },
+/* Fallback rewards used until DB segments load */
+const FALLBACK_REWARDS: Reward[] = [
+  { label: "Jackpot",     icon: "👑", color: "#d4a843", glowColor: "rgba(212,168,67,0.6)",  tier: "legendary", weight: 5 },
+  { label: "Free Spin",   icon: "🔄", color: "#cd7f32", glowColor: "rgba(205,127,50,0.5)",  tier: "rare",      weight: 10 },
+  { label: "Bonus Coins", icon: "🪙", color: "#f0d78c", glowColor: "rgba(240,215,140,0.5)", tier: "common",    weight: 20 },
+  { label: "XP Boost",    icon: "⚡", color: "#ff6f00", glowColor: "rgba(255,111,0,0.5)",   tier: "common",    weight: 20 },
+  { label: "Mystery",     icon: "🎭", color: "#9c27b0", glowColor: "rgba(156,39,176,0.5)",  tier: "epic",      weight: 8 },
+  { label: "Defeat",      icon: "💀", color: "#8b0000", glowColor: "rgba(139,0,0,0.5)",     tier: "loss",      weight: 15 },
+  { label: "Bonus Coins", icon: "🪙", color: "#f0d78c", glowColor: "rgba(240,215,140,0.5)", tier: "common",    weight: 20 },
+  { label: "Free Spin",   icon: "🔄", color: "#cd7f32", glowColor: "rgba(205,127,50,0.5)",  tier: "rare",      weight: 10 },
+  { label: "XP Boost",    icon: "⚡", color: "#ff6f00", glowColor: "rgba(255,111,0,0.5)",   tier: "common",    weight: 20 },
+  { label: "Defeat",      icon: "💀", color: "#8b0000", glowColor: "rgba(139,0,0,0.5)",     tier: "loss",      weight: 15 },
 ];
 
-const SEGMENT_COUNT = REWARDS.length;
-const SEGMENT_ANGLE = 360 / SEGMENT_COUNT;
+function segmentRowToReward(row: WheelSegmentRow): Reward {
+  return {
+    label: row.label,
+    icon: row.icon,
+    color: row.color,
+    glowColor: row.glow_color,
+    tier: row.tier,
+    weight: row.weight,
+  };
+}
+
+/** Pick a weighted-random index from the rewards array */
+function weightedRandom(rewards: Reward[]): number {
+  const totalWeight = rewards.reduce((sum, r) => sum + r.weight, 0);
+  let roll = Math.random() * totalWeight;
+  for (let i = 0; i < rewards.length; i++) {
+    roll -= rewards[i].weight;
+    if (roll <= 0) return i;
+  }
+  return rewards.length - 1;
+}
 
 const COOLDOWN_MS = 24 * 60 * 60 * 1000;
 const STORAGE_KEY = "arena-spin-last";
@@ -260,20 +281,23 @@ function BurstCanvas({ active, color }: { active: boolean; color: string }) {
    SVG WHEEL — vertical text in segments
    ═══════════════════════════════════════════════════════════════════ */
 
-function WheelSVG() {
+function WheelSVG({ rewards }: { rewards: Reward[] }) {
+  const segCount = rewards.length;
+  const segAngle = 360 / segCount;
   const size = 400;
   const cx = size / 2;
   const cy = size / 2;
   const r = size / 2 - 10;
 
   function segmentPath(index: number) {
-    const startAngle = (index * SEGMENT_ANGLE - 90) * (Math.PI / 180);
-    const endAngle = ((index + 1) * SEGMENT_ANGLE - 90) * (Math.PI / 180);
+    const startAngle = (index * segAngle - 90) * (Math.PI / 180);
+    const endAngle = ((index + 1) * segAngle - 90) * (Math.PI / 180);
     const x1 = cx + r * Math.cos(startAngle);
     const y1 = cy + r * Math.sin(startAngle);
     const x2 = cx + r * Math.cos(endAngle);
     const y2 = cy + r * Math.sin(endAngle);
-    return `M${cx},${cy} L${x1},${y1} A${r},${r} 0 0 1 ${x2},${y2} Z`;
+    const largeArc = segAngle > 180 ? 1 : 0;
+    return `M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${largeArc} 1 ${x2},${y2} Z`;
   }
 
   return (
@@ -295,8 +319,8 @@ function WheelSVG() {
       <circle cx={cx} cy={cy} r={r + 5} fill="none" stroke="#d4a843" strokeWidth="0.5" opacity="0.3" />
 
       {/* Rim tick marks */}
-      {Array.from({ length: SEGMENT_COUNT * 3 }).map((_, i) => {
-        const angle = (i * (360 / (SEGMENT_COUNT * 3)) - 90) * (Math.PI / 180);
+      {Array.from({ length: segCount * 3 }).map((_, i) => {
+        const angle = (i * (360 / (segCount * 3)) - 90) * (Math.PI / 180);
         const isMajor = i % 3 === 0;
         const outerR = r + 6;
         const innerR = isMajor ? r - 2 : r + 1;
@@ -311,8 +335,8 @@ function WheelSVG() {
       })}
 
       {/* Segments with vertical text */}
-      {REWARDS.map((reward, i) => {
-        const midAngleDeg = (i + 0.5) * SEGMENT_ANGLE;
+      {rewards.map((reward, i) => {
+        const midAngleDeg = (i + 0.5) * segAngle;
         const midAngle = (midAngleDeg - 90) * (Math.PI / 180);
         const segColors = ["rgba(18,18,18,0.97)", "rgba(28,26,22,0.97)"];
         const letters = reward.label.toUpperCase().split("");
@@ -438,6 +462,7 @@ function WinHistory({ history }: { history: HistoryEntry[] }) {
    ═══════════════════════════════════════════════════════════════════ */
 
 export function SpinWheel() {
+  const [rewards, setRewards] = useState<Reward[]>(FALLBACK_REWARDS);
   const [rotation, setRotation] = useState(0);
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState<Reward | null>(null);
@@ -451,6 +476,9 @@ export function SpinWheel() {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [mounted, setMounted] = useState(false);
 
+  const SEGMENT_COUNT = rewards.length;
+  const SEGMENT_ANGLE = 360 / SEGMENT_COUNT;
+
   const tickAudioRef = useRef<AudioContext | null>(null);
   const lastSegmentRef = useRef(-1);
   const spinAnimRef = useRef<number | null>(null);
@@ -459,6 +487,17 @@ export function SpinWheel() {
     setMounted(true);
     setCooldown(getRemainingMs());
     fetchHistory().then(setHistory);
+
+    // Fetch wheel segments from DB
+    fetch("/api/wheel-segments")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.segments && d.segments.length > 0) {
+          const active = (d.segments as WheelSegmentRow[]).filter((s) => s.is_active);
+          if (active.length > 0) setRewards(active.map(segmentRowToReward));
+        }
+      })
+      .catch(() => {/* use fallback */});
 
     // Realtime: listen for new spins from other users
     const channel = supabase
@@ -533,7 +572,7 @@ export function SpinWheel() {
     setSpinning(true); setZoom(true);
     if (hapticsEnabled) vibrate([40, 20, 60]);
 
-    const winnerIndex = Math.floor(Math.random() * SEGMENT_COUNT);
+    const winnerIndex = weightedRandom(rewards);
     const extraSpins = 5 + Math.floor(Math.random() * 3);
     const targetSegAngle = winnerIndex * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
     const totalDelta = extraSpins * 360 + (360 - targetSegAngle);
@@ -552,7 +591,7 @@ export function SpinWheel() {
       setRotation(currentRotation);
 
       const normalised = ((currentRotation % 360) + 360) % 360;
-      const currentSegment = Math.floor(normalised / SEGMENT_ANGLE) % SEGMENT_COUNT;
+      const currentSegment = Math.floor(normalised / SEGMENT_ANGLE) % rewards.length;
       if (currentSegment !== lastSegmentRef.current) {
         lastSegmentRef.current = currentSegment;
         playTick(600 + Math.random() * 400, 0.02 + t * 0.02);
@@ -565,7 +604,7 @@ export function SpinWheel() {
         setSpinning(false); setZoom(false);
         setLastSpin(Date.now()); setCooldown(COOLDOWN_MS);
 
-        const winner = REWARDS[winnerIndex];
+        const winner = rewards[winnerIndex];
         setResult(winner);
         playImpact(); triggerShake();
         if (hapticsEnabled) vibrate([80, 30, 120]);
@@ -590,7 +629,7 @@ export function SpinWheel() {
     }
 
     spinAnimRef.current = requestAnimationFrame(animate);
-  }, [spinning, rotation, hapticsEnabled, playTick, playImpact, triggerShake, triggerFlash]);
+  }, [spinning, rotation, hapticsEnabled, playTick, playImpact, triggerShake, triggerFlash, rewards, SEGMENT_ANGLE, SEGMENT_COUNT]);
 
   useEffect(() => { return () => { if (spinAnimRef.current) cancelAnimationFrame(spinAnimRef.current); }; }, []);
 
@@ -634,7 +673,7 @@ export function SpinWheel() {
 
             {/* Rotating wheel disc */}
             <div className="w-full h-full" style={{ transform: `rotate(${rotation}deg)`, willChange: spinning ? "transform" : "auto" }}>
-              <WheelSVG />
+              <WheelSVG rewards={rewards} />
             </div>
 
             {/* Static center mascot — does NOT rotate */}

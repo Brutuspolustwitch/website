@@ -409,3 +409,68 @@ create policy "Admin delete daily sessions" on daily_sessions for delete using (
 
 -- Enable realtime for live stat updates
 alter publication supabase_realtime add table daily_sessions;
+
+-- ============================================================
+-- Spin History (log of every wheel spin)
+-- ============================================================
+create table if not exists spin_history (
+  id uuid primary key default gen_random_uuid(),
+  player text not null,
+  reward text not null,
+  icon text not null default '',
+  color text not null default '',
+  tier text not null default 'common',
+  created_at timestamptz not null default now()
+);
+
+create index idx_spin_history_created on spin_history(created_at desc);
+
+-- ============================================================
+-- Wheel Segments — Admin-configurable wheel prizes
+-- ============================================================
+create table if not exists wheel_segments (
+  id uuid primary key default gen_random_uuid(),
+  label text not null,
+  icon text not null default '🎁',
+  color text not null default '#d4a843',
+  glow_color text not null default 'rgba(212,168,67,0.5)',
+  tier text not null default 'common' check (tier in ('legendary', 'epic', 'rare', 'common', 'loss')),
+  reward_type text not null default 'SE_POINTS' check (reward_type in ('SE_POINTS', 'FREE_SPIN', 'CUSTOM')),
+  reward_value numeric not null default 0,
+  weight integer not null default 10 check (weight >= 1),
+  is_active boolean not null default true,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index idx_wheel_segments_active on wheel_segments(is_active, sort_order);
+
+alter table wheel_segments enable row level security;
+create policy "Public read wheel segments" on wheel_segments for select using (true);
+create policy "Admin insert wheel segments" on wheel_segments for insert with check (true);
+create policy "Admin update wheel segments" on wheel_segments for update using (true);
+create policy "Admin delete wheel segments" on wheel_segments for delete using (true);
+
+-- Wheel Config — Global wheel settings
+create table if not exists wheel_config (
+  id uuid primary key default gen_random_uuid(),
+  key text not null unique,
+  value text not null,
+  updated_at timestamptz not null default now()
+);
+
+alter table wheel_config enable row level security;
+create policy "Public read wheel config" on wheel_config for select using (true);
+create policy "Admin insert wheel config" on wheel_config for insert with check (true);
+create policy "Admin update wheel config" on wheel_config for update using (true);
+
+-- Default wheel config
+insert into wheel_config (key, value) values
+  ('free_spin_enabled', 'true'),
+  ('max_free_spins_per_day', '1'),
+  ('chain_limit', '3')
+on conflict (key) do nothing;
+
+-- Enable realtime for wheel segments
+alter publication supabase_realtime add table wheel_segments;
