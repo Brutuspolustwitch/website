@@ -30,12 +30,6 @@ export default function OfertasPage() {
         />
         {/* Fade from left (black) into image on right */}
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/85 to-transparent" />
-        {/* Top/bottom fade for depth */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80" />
-        {/* Subtle warm tint */}
-        <div className="absolute inset-0 bg-gradient-to-br from-arena-crimson/5 via-transparent to-transparent" />
-        {/* Vignette */}
-        <div className="absolute inset-0" style={{ boxShadow: "inset 0 0 200px 60px rgba(0,0,0,0.7)" }} />
       </div>
 
       {/* Content */}

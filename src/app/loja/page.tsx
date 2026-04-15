@@ -95,17 +95,8 @@ export default function LojaPage() {
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
-            filter: "brightness(0.5) saturate(0.8) contrast(1.1)",
           }}
         />
-        {/* Dark gradient overlay for content readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/80" />
-        {/* Warm accent glow from top */}
-        <div className="absolute inset-0 bg-gradient-to-b from-arena-crimson/8 via-transparent to-transparent" />
-        {/* Side fades */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-black/50" />
-        {/* Vignette */}
-        <div className="absolute inset-0" style={{ boxShadow: "inset 0 0 200px 80px rgba(0,0,0,0.6)" }} />
         {/* Animated ember particles */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute w-1 h-1 rounded-full bg-arena-gold/30 animate-pulse" style={{ top: "20%", left: "15%", animationDelay: "0s", animationDuration: "3s" }} />
