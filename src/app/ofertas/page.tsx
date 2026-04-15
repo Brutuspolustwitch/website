@@ -15,7 +15,7 @@ export default function OfertasPage() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-black">
       {/* Background image — pinned to right side with fade */}
-      <div className="fixed inset-0 -z-10">
+      <div className="fixed inset-0 z-0">
         {/* Solid black base */}
         <div className="absolute inset-0 bg-black" />
         {/* Image on the right */}
@@ -33,7 +33,7 @@ export default function OfertasPage() {
       </div>
 
       {/* Content */}
-      <div className="relative pt-24 pb-16">
+      <div className="relative z-10 pt-24 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeading title="Ofertas" subtitle="Bónus e promoções exclusivas — clica num cartão para ver detalhes" />
           <OfferCards />

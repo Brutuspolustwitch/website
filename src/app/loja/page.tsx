@@ -86,7 +86,7 @@ export default function LojaPage() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-black">
       {/* Background */}
-      <div className="fixed inset-0 -z-10">
+      <div className="fixed inset-0 z-0">
         <div className="absolute inset-0 bg-black" />
         <div
           className="absolute inset-0"
@@ -108,7 +108,7 @@ export default function LojaPage() {
       </div>
 
       {/* Content */}
-      <div className="relative pt-24 pb-16">
+      <div className="relative z-10 pt-24 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading title="Armaria" subtitle="Recompensas forjadas para guerreiros" />
 
