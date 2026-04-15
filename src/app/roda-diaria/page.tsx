@@ -18,7 +18,7 @@ export default function RodaDiariaPage() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_80%,rgba(212,168,67,0.08),transparent_50%)]" />
 
       {/* Header — floats above the SpinWheel background */}
-      <div className="relative z-20 text-center pt-4 pb-2 lg:pt-6 lg:pb-3 pointer-events-none">
+      <div className="relative z-20 text-center pt-10 pb-6 lg:pt-14 lg:pb-8 pointer-events-none">
         <h1 className="gladiator-title text-xl lg:text-2xl">
           Arrebanha Daily
         </h1>
