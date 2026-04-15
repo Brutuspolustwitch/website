@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import type { CasinoOfferRow } from "@/lib/supabase";
+import { OfferCard } from "@/components/OfferCard";
+import type { CasinoOffer } from "@/components/OfferCard";
 
 /* ═══════════════════════════════════════════════════════════════════
    TYPES
@@ -63,7 +65,25 @@ function AnimatedCounter({ value, prefix = "", suffix = "", className = "" }: {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   STAT PLATE
+   CORNER ORNAMENT (reused from OfferCard)
+   ═══════════════════════════════════════════════════════════════════ */
+
+function CornerOrnament({ className }: { className: string }) {
+  return (
+    <svg className={`scroll-ornament ${className}`} viewBox="0 0 24 24" fill="none">
+      <path
+        d="M2 2 L2 10 M2 2 L10 2 M2 6 L6 2"
+        stroke="#8b6914"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <circle cx="4" cy="4" r="1.5" fill="#8b6914" />
+    </svg>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PAPYRUS STAT PLATE — medieval styled stat card
    ═══════════════════════════════════════════════════════════════════ */
 
 function StatPlate({ label, value, glow }: {
@@ -71,52 +91,70 @@ function StatPlate({ label, value, glow }: {
   value: number;
   glow: "green" | "red" | "gold";
 }) {
-  const glowStyles = {
-    green: "shadow-[0_0_30px_rgba(34,197,94,0.25)] border-green-500/30",
-    red: "shadow-[0_0_30px_rgba(239,68,68,0.25)] border-red-500/30",
-    gold: "shadow-[0_0_30px_rgba(212,168,67,0.2)] border-arena-gold/30",
-  };
-
-  const textColor = {
-    green: "text-green-400",
-    red: "text-red-400",
-    gold: "text-arena-gold",
+  const valueColor = {
+    green: "#2e7d32",
+    red: "#8b1a1a",
+    gold: "#8b6914",
   };
 
   return (
     <motion.div
-      className={`relative bg-gradient-to-b from-arena-iron/80 to-arena-dark/90 rounded-lg border ${glowStyles[glow]} p-4 sm:p-6 text-center overflow-hidden`}
-      whileHover={{ scale: 1.02 }}
+      className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom"
+      style={{ maxWidth: "100%", padding: 0 }}
+      whileHover={{ scale: 1.03 }}
       transition={{ type: "spring", stiffness: 300 }}
     >
-      {/* Engraved texture */}
-      <div className="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4xIi8+PC9zdmc+')] pointer-events-none" />
-      
-      <p className="text-xs sm:text-sm text-arena-smoke uppercase tracking-widest font-[family-name:var(--font-display)] mb-2">
-        {label}
-      </p>
-      <AnimatedCounter
-        value={value}
-        suffix="€"
-        className={`text-2xl sm:text-4xl font-bold ${textColor[glow]} font-[family-name:var(--font-ui)] tracking-wide`}
-      />
+      <CornerOrnament className="top-left" />
+      <CornerOrnament className="top-right" />
+      <CornerOrnament className="bottom-left" />
+      <CornerOrnament className="bottom-right" />
+      <div className="scroll-content" style={{ textAlign: "center", padding: "20px 12px" }}>
+        <p style={{
+          fontFamily: "var(--font-display)",
+          fontSize: "0.65rem",
+          fontWeight: 600,
+          color: "var(--ink-light)",
+          letterSpacing: "0.2em",
+          textTransform: "uppercase",
+          marginBottom: "6px",
+        }}>
+          {label}
+        </p>
+        <span style={{
+          fontFamily: "var(--font-ui)",
+          fontSize: "2rem",
+          fontWeight: 700,
+          color: valueColor[glow],
+          letterSpacing: "0.05em",
+          textShadow: "0 1px 2px rgba(0,0,0,0.1)",
+        }}>
+          <AnimatedCounter value={value} suffix="€" />
+        </span>
+      </div>
     </motion.div>
   );
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   SPOTIFY CONTAINER
+   PAPYRUS SPOTIFY CONTAINER
    ═══════════════════════════════════════════════════════════════════ */
 
 function SpotifyEmbed({ url }: { url: string | null }) {
   if (!url) {
     return (
-      <div className="relative rounded-lg border border-arena-gold/15 bg-gradient-to-b from-arena-iron/60 to-arena-dark/80 p-8 text-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-arena-gold/[0.02] to-transparent pointer-events-none" />
-        <svg className="w-10 h-10 mx-auto mb-3 text-arena-ash" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-        </svg>
-        <p className="text-arena-ash text-sm">Nenhuma playlist definida para esta sessão</p>
+      <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom" style={{ maxWidth: "100%" }}>
+        <CornerOrnament className="top-left" />
+        <CornerOrnament className="top-right" />
+        <CornerOrnament className="bottom-left" />
+        <CornerOrnament className="bottom-right" />
+        <div className="scroll-content" style={{ textAlign: "center", padding: "32px 16px" }}>
+          <svg style={{ width: 40, height: 40, margin: "0 auto 12px", color: "var(--ink-light)" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+          </svg>
+          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.85rem", color: "var(--ink-light)" }}>
+            Nenhuma playlist definida para esta sessão
+          </p>
+        </div>
       </div>
     );
   }
@@ -130,131 +168,52 @@ function SpotifyEmbed({ url }: { url: string | null }) {
 
   return (
     <motion.div
-      className="relative rounded-lg overflow-hidden group"
+      className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom"
+      style={{ maxWidth: "100%", overflow: "hidden" }}
       whileHover={{ scale: 1.01 }}
       transition={{ type: "spring", stiffness: 300 }}
     >
-      {/* Carved stone frame */}
-      <div className="absolute inset-0 rounded-lg border border-arena-gold/20 pointer-events-none z-10 shadow-[inset_0_2px_15px_rgba(0,0,0,0.5)] group-hover:border-arena-gold/40 transition-colors duration-300" />
-      <div className="absolute -inset-[1px] rounded-lg bg-gradient-to-b from-arena-gold/10 via-transparent to-arena-gold/5 pointer-events-none z-10 opacity-50 group-hover:opacity-100 transition-opacity duration-300" />
+      <CornerOrnament className="top-left" />
+      <CornerOrnament className="top-right" />
+      <CornerOrnament className="bottom-left" />
+      <CornerOrnament className="bottom-right" />
 
       {/* Header */}
-      <div className="bg-gradient-to-r from-arena-iron/90 to-arena-dark/90 px-4 py-3 flex items-center gap-2 border-b border-arena-gold/15">
-        <svg className="w-5 h-5 text-green-500" viewBox="0 0 24 24" fill="currentColor">
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        padding: "12px 16px",
+        borderBottom: "1px solid var(--gold-dark)",
+        opacity: 0.7,
+        background: "linear-gradient(135deg, rgba(139,105,20,0.08), transparent)",
+      }}>
+        <svg style={{ width: 20, height: 20, color: "#1DB954" }} viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
         </svg>
-        <span className="text-arena-gold-light text-sm font-[family-name:var(--font-display)] tracking-wider">Arena Playlist</span>
-      </div>
-
-      {/* Embed */}
-      <iframe
-        src={embedUrl}
-        width="100%"
-        height="352"
-        frameBorder="0"
-        allowFullScreen
-        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-        loading="lazy"
-        className="bg-arena-dark"
-      />
-    </motion.div>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════════════
-   CASINO CARD (REUSED OFFER STYLE)
-   ═══════════════════════════════════════════════════════════════════ */
-
-function ActiveCasinoCard({ casino }: { casino: CasinoOfferRow }) {
-  const externalUrl = casino.affiliate_url.startsWith("http") ? casino.affiliate_url : `https://${casino.affiliate_url}`;
-
-  return (
-    <motion.div
-      className="relative rounded-lg border border-arena-gold/20 bg-gradient-to-b from-arena-iron/60 to-arena-dark/80 overflow-hidden group shadow-[0_0_25px_rgba(212,168,67,0.1)]"
-      whileHover={{ scale: 1.01 }}
-      transition={{ type: "spring", stiffness: 300 }}
-    >
-      {/* Glow border effect */}
-      <div className="absolute -inset-[1px] rounded-lg bg-gradient-to-b from-arena-gold/15 via-transparent to-arena-gold/10 pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
-
-      {/* Playing Now badge */}
-      <div className="absolute top-3 right-3 z-20">
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-arena-crimson/80 border border-red-500/30 text-[11px] font-bold text-white uppercase tracking-wider">
-          <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
-          A Jogar
+        <span style={{
+          fontFamily: "var(--font-display)",
+          fontSize: "0.8rem",
+          color: "var(--ink-dark)",
+          letterSpacing: "0.15em",
+          textTransform: "uppercase",
+        }}>
+          Arena Playlist
         </span>
       </div>
 
-      {/* Banner */}
-      {casino.banner_url && (
-        <div className="relative h-36 sm:h-44 overflow-hidden">
-          <img
-            src={casino.banner_url}
-            alt={casino.name}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-arena-dark via-arena-dark/30 to-transparent" />
-        </div>
-      )}
-
-      {/* Content */}
-      <div className="relative p-4 sm:p-5 space-y-4">
-        {/* Name + Badge */}
-        <div className="flex items-center gap-3">
-          {casino.logo_url && (
-            <img src={casino.logo_url} alt="" className="w-10 h-10 rounded-lg object-cover" />
-          )}
-          <div>
-            <h3 className="text-lg font-bold text-arena-white font-[family-name:var(--font-display)]">
-              {casino.name}
-            </h3>
-            {casino.badge && (
-              <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
-                casino.badge === "HOT" ? "bg-red-500/20 text-red-400 border border-red-500/30" : "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-              }`}>
-                {casino.badge}
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Bonus Info */}
-        <div className="space-y-1">
-          <p className="text-arena-gold text-xs uppercase tracking-widest font-[family-name:var(--font-display)]">✦ Oferta Exclusiva ✦</p>
-          <p className="text-arena-white text-sm">
-            {casino.headline} <span className="text-arena-gold font-bold">{casino.bonus_value}</span>
-          </p>
-          {casino.free_spins && casino.free_spins !== "—" && (
-            <p className="text-arena-smoke text-xs">+ {casino.free_spins} Free Spins</p>
-          )}
-        </div>
-
-        {/* Stats row */}
-        <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="bg-arena-dark/60 rounded-md p-2 border border-arena-gold/10">
-            <p className="text-[10px] text-arena-ash uppercase">Levantamento</p>
-            <p className="text-xs text-arena-white font-bold">{casino.withdraw_time}</p>
-          </div>
-          <div className="bg-arena-dark/60 rounded-md p-2 border border-arena-gold/10">
-            <p className="text-[10px] text-arena-ash uppercase">Licença</p>
-            <p className="text-xs text-arena-white font-bold">{casino.license}</p>
-          </div>
-          <div className="bg-arena-dark/60 rounded-md p-2 border border-arena-gold/10">
-            <p className="text-[10px] text-arena-ash uppercase">Dep. Mín.</p>
-            <p className="text-xs text-arena-white font-bold">{casino.min_deposit}</p>
-          </div>
-        </div>
-
-        {/* CTA */}
-        <a
-          href={externalUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block w-full text-center py-3 px-4 rounded-lg bg-gradient-to-r from-arena-crimson to-red-800 hover:from-red-700 hover:to-red-600 text-white font-bold text-sm uppercase tracking-wider transition-all duration-300 border border-red-500/30 hover:shadow-[0_0_20px_rgba(239,68,68,0.3)] font-[family-name:var(--font-display)]"
-        >
-          ⚔ Resgatar Bónus ⚔
-        </a>
-        <p className="text-[10px] text-arena-ash text-center">18+ · T&Cs Aplicáveis · Joga com responsabilidade</p>
+      {/* Embed */}
+      <div style={{ position: "relative", zIndex: 1 }}>
+        <iframe
+          src={embedUrl}
+          width="100%"
+          height="352"
+          frameBorder="0"
+          allowFullScreen
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+          style={{ display: "block", borderRadius: "0 0 14px 14px" }}
+        />
       </div>
     </motion.div>
   );
@@ -450,15 +409,19 @@ export default function DailySessionContent() {
               className="flex justify-center gap-6 text-center"
             >
               {session.bonuses_count > 0 && (
-                <div className="px-4 py-2 rounded-lg bg-arena-dark/50 border border-arena-gold/10">
-                  <p className="text-[10px] text-arena-ash uppercase tracking-wider">Bónus Jogados</p>
-                  <p className="text-xl text-arena-gold font-bold">{session.bonuses_count}</p>
+                <div className="papyrus-scroll greek-key-border" style={{ maxWidth: "160px", padding: 0 }}>
+                  <div className="scroll-content" style={{ textAlign: "center", padding: "10px 16px" }}>
+                    <p style={{ fontFamily: "var(--font-display)", fontSize: "0.6rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase" }}>Bónus Jogados</p>
+                    <p style={{ fontFamily: "var(--font-ui)", fontSize: "1.25rem", fontWeight: 700, color: "var(--gold-dark)" }}>{session.bonuses_count}</p>
+                  </div>
                 </div>
               )}
               {session.biggest_win > 0 && (
-                <div className="px-4 py-2 rounded-lg bg-arena-dark/50 border border-arena-gold/10">
-                  <p className="text-[10px] text-arena-ash uppercase tracking-wider">Maior Vitória</p>
-                  <p className="text-xl text-green-400 font-bold">{session.biggest_win.toFixed(2)}€</p>
+                <div className="papyrus-scroll greek-key-border" style={{ maxWidth: "160px", padding: 0 }}>
+                  <div className="scroll-content" style={{ textAlign: "center", padding: "10px 16px" }}>
+                    <p style={{ fontFamily: "var(--font-display)", fontSize: "0.6rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase" }}>Maior Vitória</p>
+                    <p style={{ fontFamily: "var(--font-ui)", fontSize: "1.25rem", fontWeight: 700, color: "#2e7d32" }}>{session.biggest_win.toFixed(2)}€</p>
+                  </div>
                 </div>
               )}
             </motion.div>
@@ -469,15 +432,37 @@ export default function DailySessionContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6 justify-items-center"
           >
-            {/* LEFT: Casino Card */}
+            {/* LEFT: Casino Card — reuses the papyrus OfferCard */}
             <div>
               {session.casino ? (
-                <ActiveCasinoCard casino={session.casino} />
+                <OfferCard offer={{
+                  slug: session.casino.slug,
+                  name: session.casino.name,
+                  logo_url: session.casino.logo_url ?? undefined,
+                  logo_bg: session.casino.logo_bg,
+                  banner_url: session.casino.banner_url ?? undefined,
+                  badge: session.casino.badge ?? undefined,
+                  tags: session.casino.tags,
+                  headline: session.casino.headline,
+                  bonus_value: session.casino.bonus_value,
+                  free_spins: session.casino.free_spins,
+                  min_deposit: session.casino.min_deposit,
+                  code: session.casino.code,
+                  cashback: session.casino.cashback ?? undefined,
+                  withdraw_time: session.casino.withdraw_time,
+                  license: session.casino.license,
+                  established: session.casino.established,
+                  notes: session.casino.notes,
+                  affiliate_url: session.casino.affiliate_url,
+                  rating: session.casino.rating ?? 4.5,
+                }} />
               ) : (
-                <div className="rounded-lg border border-arena-gold/10 bg-arena-dark/50 p-8 text-center">
-                  <p className="text-arena-ash">Nenhum casino selecionado</p>
+                <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom" style={{ maxWidth: "400px" }}>
+                  <div className="scroll-content" style={{ textAlign: "center", padding: "32px 16px" }}>
+                    <p style={{ fontFamily: "var(--font-display)", fontSize: "0.85rem", color: "var(--ink-light)" }}>Nenhum casino selecionado</p>
+                  </div>
                 </div>
               )}
             </div>
