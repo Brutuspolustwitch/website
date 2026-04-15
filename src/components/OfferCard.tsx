@@ -152,21 +152,6 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
                 )}
               </div>
 
-              {/* Engraved Divider */}
-              <div className="engraved-divider" />
-
-              {/* Perks */}
-              <div className="perks-list">
-                {perks.map((perk) => (
-                  <span key={perk} className="perk-tag">{perk}</span>
-                ))}
-              </div>
-
-              {/* Wax Seal */}
-              <div style={{ margin: "8px 0" }}>
-                <div className="wax-seal" />
-              </div>
-
               {/* CTA */}
               <div className="cta-section">
                 <a href={externalUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
@@ -208,7 +193,22 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
                 </div>
               </div>
 
-              {/* CTA on back too */}
+              {/* Engraved Divider */}
+              <div className="engraved-divider" />
+
+              {/* Perks */}
+              <div className="perks-list">
+                {perks.map((perk) => (
+                  <span key={perk} className="perk-tag">{perk}</span>
+                ))}
+              </div>
+
+              {/* Wax Seal */}
+              <div style={{ margin: "8px 0" }}>
+                <div className="wax-seal" />
+              </div>
+
+              {/* CTA */}
               <div className="cta-section">
                 <a href={externalUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
                   <button className="cta-button">⚔ Resgatar Bónus ⚔</button>
