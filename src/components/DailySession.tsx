@@ -207,6 +207,14 @@ function SpotifyEmbed({ url }: { url: string | null }) {
   );
 }
 
+interface MonthlyStats {
+  deposits: number;
+  withdrawals: number;
+  sessions_count: number;
+  bonuses_count: number;
+  biggest_win: number;
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    MAIN COMPONENT
    ═══════════════════════════════════════════════════════════════════ */
@@ -215,6 +223,7 @@ export default function DailySessionContent() {
   const searchParams = useSearchParams();
   const isOverlay = searchParams.get("overlay") === "true";
   const [session, setSession] = useState<DailySessionData | null>(null);
+  const [monthly, setMonthly] = useState<MonthlyStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchSession = useCallback(async () => {
@@ -222,6 +231,7 @@ export default function DailySessionContent() {
       const res = await fetch("/api/daily-session");
       const data = await res.json();
       if (data.session) setSession(data.session);
+      if (data.monthly) setMonthly(data.monthly);
     } finally {
       setLoading(false);
     }
@@ -412,6 +422,54 @@ export default function DailySessionContent() {
                   </div>
                 </div>
               )}
+            </motion.div>
+          )}
+
+          {/* ── Monthly Summary Card ───────────────── */}
+          {monthly && monthly.sessions_count > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="flex justify-center"
+            >
+              <div className="papyrus-scroll greek-key-border" style={{ maxWidth: "520px", width: "100%", padding: 0 }}>
+                <div className="scroll-content" style={{ padding: "14px 20px 12px" }}>
+                  <p style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "0.6rem",
+                    fontWeight: 600,
+                    color: "var(--ink-light)",
+                    letterSpacing: "0.2em",
+                    textTransform: "uppercase",
+                    textAlign: "center",
+                    marginBottom: "10px",
+                  }}>
+                    Resumo do Mês · {monthly.sessions_count} {monthly.sessions_count === 1 ? "sessão" : "sessões"}
+                  </p>
+                  <div style={{ display: "flex", justifyContent: "space-around", gap: "12px", textAlign: "center" }}>
+                    <div>
+                      <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Depósitos</p>
+                      <p style={{ fontFamily: "var(--font-ui)", fontSize: "1.1rem", fontWeight: 700, color: "#8b1a1a" }}>{monthly.deposits.toFixed(2)}€</p>
+                    </div>
+                    <div>
+                      <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Levantamentos</p>
+                      <p style={{ fontFamily: "var(--font-ui)", fontSize: "1.1rem", fontWeight: 700, color: "#2e7d32" }}>{monthly.withdrawals.toFixed(2)}€</p>
+                    </div>
+                    <div>
+                      <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Resultado</p>
+                      <p style={{
+                        fontFamily: "var(--font-ui)",
+                        fontSize: "1.1rem",
+                        fontWeight: 700,
+                        color: (monthly.withdrawals - monthly.deposits) >= 0 ? "#2e7d32" : "#8b1a1a",
+                      }}>
+                        {(monthly.withdrawals - monthly.deposits).toFixed(2)}€
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </motion.div>
           )}
 

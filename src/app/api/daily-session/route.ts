@@ -4,8 +4,9 @@ import { supabase } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
-/** GET /api/daily-session — get the active session (public) */
+/** GET /api/daily-session — get the active session + monthly totals (public) */
 export async function GET() {
+  // Active session
   const { data, error } = await supabase
     .from("daily_sessions")
     .select("*, casino:casino_id(id, name, slug, logo_url, logo_bg, banner_url, headline, bonus_value, free_spins, min_deposit, code, cashback, withdraw_time, license, established, tags, notes, affiliate_url, rating, badge)")
@@ -15,7 +16,39 @@ export async function GET() {
     .maybeSingle();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ session: data });
+
+  // Monthly totals — all sessions in the current month
+  const now = new Date();
+  const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
+  const nextMonth = now.getMonth() === 11
+    ? `${now.getFullYear() + 1}-01-01`
+    : `${now.getFullYear()}-${String(now.getMonth() + 2).padStart(2, "0")}-01`;
+
+  const { data: monthRows } = await supabase
+    .from("daily_sessions")
+    .select("deposits, withdrawals, bonuses_count, biggest_win")
+    .gte("session_date", monthStart)
+    .lt("session_date", nextMonth);
+
+  const monthly = {
+    deposits: 0,
+    withdrawals: 0,
+    sessions_count: 0,
+    bonuses_count: 0,
+    biggest_win: 0,
+  };
+
+  if (monthRows) {
+    for (const r of monthRows) {
+      monthly.deposits += Number(r.deposits) || 0;
+      monthly.withdrawals += Number(r.withdrawals) || 0;
+      monthly.bonuses_count += Number(r.bonuses_count) || 0;
+      if ((Number(r.biggest_win) || 0) > monthly.biggest_win) monthly.biggest_win = Number(r.biggest_win);
+      monthly.sessions_count++;
+    }
+  }
+
+  return NextResponse.json({ session: data, monthly });
 }
 
 /** POST /api/daily-session — create or update session (admin only) */
