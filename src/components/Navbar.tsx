@@ -99,6 +99,9 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
                     <span className="hidden sm:inline text-sm font-medium text-arena-white">
                       {user.display_name}
                     </span>
+                    <span className="text-xs text-arena-gold font-semibold">
+                      ⭐ {points.toLocaleString()}
+                    </span>
                   </button>
                   <AnimatePresence>
                     {userMenuOpen && (
