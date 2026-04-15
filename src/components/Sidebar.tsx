@@ -32,6 +32,7 @@ const MAIN_LINKS: NavItem[] = [
     children: [
       { href: "/live", label: "Live" },
       { href: "/daily-session", label: "Sessão do Dia" },
+      { href: "/destaques", label: "Destaques" },
       { href: "/calendario", label: "Calendário" },
       { href: "/bonus-hunt", label: "Bonus Hunt" },
     ],
