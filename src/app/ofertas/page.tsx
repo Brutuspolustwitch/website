@@ -13,30 +13,36 @@ export const metadata: Metadata = {
 
 export default function OfertasPage() {
   return (
-    <div className="relative min-h-screen overflow-hidden">
-      {/* Background image — stretched to fill exactly */}
-      <div
-        className="fixed inset-0 -z-10"
-        style={{
-          backgroundImage: "url('/images/pages/offers.jpg')",
-          backgroundSize: "100% 100%",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      >
-        {/* Dark overlay for readability */}
-        <div className="absolute inset-0 bg-black/50" />
-        {/* Crimson tint for on-brand warmth */}
-        <div className="absolute inset-0 bg-gradient-to-br from-arena-crimson/10 via-transparent to-arena-black/60" />
+    <div className="relative min-h-screen overflow-hidden bg-black">
+      {/* Background image — pinned to right side with fade */}
+      <div className="fixed inset-0 -z-10">
+        {/* Solid black base */}
+        <div className="absolute inset-0 bg-black" />
+        {/* Image on the right */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: "url('/images/pages/offers.webp')",
+            backgroundSize: "cover",
+            backgroundPosition: "right center",
+            backgroundRepeat: "no-repeat",
+          }}
+        />
+        {/* Fade from left (black) into image on right */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/85 to-transparent" />
+        {/* Top/bottom fade for depth */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80" />
+        {/* Subtle warm tint */}
+        <div className="absolute inset-0 bg-gradient-to-br from-arena-crimson/5 via-transparent to-transparent" />
         {/* Vignette */}
-        <div className="absolute inset-0" style={{ boxShadow: "inset 0 0 150px 40px rgba(0,0,0,0.5)" }} />
+        <div className="absolute inset-0" style={{ boxShadow: "inset 0 0 200px 60px rgba(0,0,0,0.7)" }} />
       </div>
 
       {/* Content */}
       <div className="relative pt-24 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeading title="Ofertas" subtitle="Bónus e promoções exclusivas — clica num cartão para ver detalhes" subtitleClassName="!text-black !opacity-100 !font-sans !normal-case !tracking-normal" />
-          <OfferCards emptyClassName="text-black" />
+          <SectionHeading title="Ofertas" subtitle="Bónus e promoções exclusivas — clica num cartão para ver detalhes" />
+          <OfferCards />
         </div>
       </div>
     </div>

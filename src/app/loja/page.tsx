@@ -84,7 +84,40 @@ export default function LojaPage() {
   const otherRewards = rewards.filter((r) => r.tier !== "legendary");
 
   return (
-    <div className="pt-24 pb-16 min-h-screen">
+    <div className="relative min-h-screen overflow-hidden bg-black">
+      {/* Background */}
+      <div className="fixed inset-0 -z-10">
+        <div className="absolute inset-0 bg-black" />
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: "url('/images/pages/store.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            filter: "brightness(0.35) saturate(0.7) contrast(1.1)",
+          }}
+        />
+        {/* Dark gradient overlay for content readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/80" />
+        {/* Warm accent glow from top */}
+        <div className="absolute inset-0 bg-gradient-to-b from-arena-crimson/8 via-transparent to-transparent" />
+        {/* Side fades */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-black/50" />
+        {/* Vignette */}
+        <div className="absolute inset-0" style={{ boxShadow: "inset 0 0 200px 80px rgba(0,0,0,0.6)" }} />
+        {/* Animated ember particles */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute w-1 h-1 rounded-full bg-arena-gold/30 animate-pulse" style={{ top: "20%", left: "15%", animationDelay: "0s", animationDuration: "3s" }} />
+          <div className="absolute w-1.5 h-1.5 rounded-full bg-arena-crimson/20 animate-pulse" style={{ top: "60%", left: "80%", animationDelay: "1s", animationDuration: "4s" }} />
+          <div className="absolute w-1 h-1 rounded-full bg-arena-gold/20 animate-pulse" style={{ top: "40%", left: "50%", animationDelay: "2s", animationDuration: "3.5s" }} />
+          <div className="absolute w-0.5 h-0.5 rounded-full bg-arena-gold/40 animate-pulse" style={{ top: "75%", left: "30%", animationDelay: "0.5s", animationDuration: "2.5s" }} />
+          <div className="absolute w-1 h-1 rounded-full bg-arena-crimson/25 animate-pulse" style={{ top: "10%", left: "70%", animationDelay: "1.5s", animationDuration: "4.5s" }} />
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="relative pt-24 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading title="Armaria" subtitle="Recompensas forjadas para guerreiros" />
 
@@ -182,6 +215,8 @@ export default function LojaPage() {
             )}
           </>
         )}
+      </div>
+      </div>
       </div>
 
       {/* Toast notification */}
