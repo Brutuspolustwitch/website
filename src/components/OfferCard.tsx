@@ -105,7 +105,7 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
   const perks = offer.tags.length > 0 ? offer.tags : ["🎰 Slots", "⚡ Instant Play", "🛡 SSL"];
 
   return (
-    <div className="papyrus-flip-container" onClick={() => setFlipped(!flipped)}>
+    <div className="papyrus-flip-container" onClick={() => window.open(offer.affiliate_url, '_blank', 'noopener,noreferrer')}>
       <div className={`papyrus-flip-inner ${flipped ? "papyrus-flipped" : ""}`}>
 
         {/* ═══ FRONT ═══ */}
@@ -157,7 +157,7 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
               </div>
 
               {/* Flip hint */}
-              <p className="flip-hint">Toca para ver detalhes ↻</p>
+              <p className="flip-hint" onClick={(e) => { e.stopPropagation(); setFlipped(true); }}>Toca para ver detalhes ↻</p>
             </div>
           </div>
         </div>
@@ -214,7 +214,7 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
               </div>
 
               {/* Flip hint */}
-              <p className="flip-hint">Toca para voltar ↻</p>
+              <p className="flip-hint" onClick={(e) => { e.stopPropagation(); setFlipped(false); }}>Toca para voltar ↻</p>
             </div>
           </div>
         </div>
