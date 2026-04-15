@@ -217,7 +217,6 @@ export default function LojaPage() {
         )}
       </div>
       </div>
-      </div>
 
       {/* Toast notification */}
       {toast && (
