@@ -99,12 +99,12 @@ function StatPlate({ label, value, glow }: {
 
   return (
     <motion.div
-      className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom"
+      className="papyrus-scroll greek-key-border"
       style={{ maxWidth: "100%", padding: 0 }}
       whileHover={{ scale: 1.03 }}
       transition={{ type: "spring", stiffness: 300 }}
     >
-      <div className="scroll-content" style={{ textAlign: "center", padding: "26px 10px 24px" }}>
+      <div className="scroll-content" style={{ textAlign: "center", padding: "14px 10px 12px" }}>
         <p style={{
           fontFamily: "var(--font-display)",
           fontSize: "0.55rem",
@@ -138,11 +138,7 @@ function StatPlate({ label, value, glow }: {
 function SpotifyEmbed({ url }: { url: string | null }) {
   if (!url) {
     return (
-      <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom" style={{ maxWidth: "100%" }}>
-        <CornerOrnament className="top-left" />
-        <CornerOrnament className="top-right" />
-        <CornerOrnament className="bottom-left" />
-        <CornerOrnament className="bottom-right" />
+      <div className="papyrus-scroll greek-key-border" style={{ maxWidth: "100%" }}>
         <div className="scroll-content" style={{ textAlign: "center", padding: "32px 16px" }}>
           <svg style={{ width: 40, height: 40, margin: "0 auto 12px", color: "var(--ink-light)" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
@@ -164,15 +160,11 @@ function SpotifyEmbed({ url }: { url: string | null }) {
 
   return (
     <motion.div
-      className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom"
+      className="papyrus-scroll greek-key-border"
       style={{ maxWidth: "100%", overflow: "hidden" }}
       whileHover={{ scale: 1.01 }}
       transition={{ type: "spring", stiffness: 300 }}
     >
-      <CornerOrnament className="top-left" />
-      <CornerOrnament className="top-right" />
-      <CornerOrnament className="bottom-left" />
-      <CornerOrnament className="bottom-right" />
 
       {/* Header */}
       <div style={{
