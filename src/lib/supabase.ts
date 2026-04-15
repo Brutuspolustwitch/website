@@ -19,9 +19,8 @@ export interface BonusHuntSession {
   currency: string;
   total_buy: number;
   total_result: number;
-  start_amount: number;
-  stop_amount: number;
-  target_amount: number;
+  start_money: number;
+  stop_loss: number;
   profit: number;
   bonus_count: number;
   bonuses_opened: number;
