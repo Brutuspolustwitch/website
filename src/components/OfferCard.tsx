@@ -147,7 +147,6 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
                   <div className="promo-code-wrapper" onClick={handleCopyCode} role="button" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && handleCopyCode(e)}>
                     <span className="promo-code-label">Código</span>
                     <span className="promo-code-value">{offer.code}</span>
-                    <span className="promo-code-copy">{copied ? "✓ Copiado" : "📋 Copiar"}</span>
                   </div>
                 )}
               </div>

@@ -754,9 +754,10 @@ body {
 /* ── Promo Code — Sealed Inscription ─────────────────────── */
 .promo-code-wrapper {
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 5px 10px;
+  gap: 2px;
+  padding: 6px 14px;
   background: linear-gradient(
     135deg,
     rgba(60, 40, 10, 0.06) 0%,
@@ -777,7 +778,7 @@ body {
   );
 }
 .promo-code-label {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   font-weight: 600;
   color: var(--ink-light);
   letter-spacing: 0.15em;
@@ -788,16 +789,7 @@ body {
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--ink-dark);
-  letter-spacing: 0.12em;
-}
-.promo-code-copy {
-  font-size: 0.65rem;
-  color: var(--gold-dark);
-  opacity: 0.6;
-  transition: opacity 0.3s;
-}
-.promo-code-wrapper:hover .promo-code-copy {
-  opacity: 1;
+  letter-spacing: 0.08em;
 }
 
 /* ── CTA Button — Carved Gold Plate ─────────────────────── */
