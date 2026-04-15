@@ -609,8 +609,6 @@ body {
 .stat-row-stacked {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
   padding: 8px 0;
   border-bottom: 1px solid rgba(139, 105, 20, 0.12);
 }
@@ -618,10 +616,11 @@ body {
   border-bottom: none;
 }
 .stat-row-stacked .stat-label {
+  text-align: left;
   margin-bottom: 2px;
 }
 .stat-row-stacked .stat-value {
-  text-align: center;
+  text-align: right;
 }
 .stat-label {
   font-family: 'Cinzel', 'Georgia', serif;
