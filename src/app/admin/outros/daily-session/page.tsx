@@ -217,40 +217,14 @@ export default function AdminDailySessionPage() {
       )}
 
       <div className="max-w-7xl mx-auto h-full flex flex-col gap-3">
-        {/* ── Header + Session Selector ─────────────────── */}
-        <div className="flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-4">
-            <div>
-              <h1 className="text-xl sm:text-2xl font-bold font-[family-name:var(--font-display)] text-arena-gold">
-                Sessão do Dia
-              </h1>
-              <p className="text-xs text-arena-smoke">
-                {session ? `A editar: ${session.session_date}` : "Nova sessão"}
-              </p>
-            </div>
-
-            {/* Session History Dropdown */}
-            <select
-              value={session?.id || ""}
-              onChange={(e) => handleSelectSession(e.target.value)}
-              className="bg-arena-iron/60 border border-arena-gold/20 rounded-lg px-3 py-2 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors [color-scheme:dark] max-w-xs"
-            >
-              <option value="" disabled>Histórico de sessões...</option>
-              {allSessions.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.session_date} — {s.title}{s.is_active ? " 🔴 LIVE" : ""}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <button
-            onClick={handleNewSession}
-            disabled={saving}
-            className="px-4 py-2 text-sm rounded-lg bg-arena-iron border border-arena-gold/20 text-arena-gold hover:bg-arena-gold/10 transition-colors font-[family-name:var(--font-display)] disabled:opacity-50"
-          >
-            + Nova Sessão
-          </button>
+        {/* ── Header ─────────────────── */}
+        <div className="shrink-0">
+          <h1 className="text-xl sm:text-2xl font-bold font-[family-name:var(--font-display)] text-arena-gold">
+            Sessão do Dia
+          </h1>
+          <p className="text-xs text-arena-smoke">
+            {session ? `A editar: ${session.session_date}` : "Nova sessão"}
+          </p>
         </div>
 
         {/* ── 2-Column Layout ──────────────────────────── */}
@@ -493,6 +467,29 @@ export default function AdminDailySessionPage() {
                 />
               </div>
             )}
+
+            {/* Session History + New Session */}
+            <div className="flex items-center gap-3">
+              <select
+                value={session?.id || ""}
+                onChange={(e) => handleSelectSession(e.target.value)}
+                className="flex-1 bg-arena-iron/60 border border-arena-gold/20 rounded-lg px-3 py-2 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors [color-scheme:dark]"
+              >
+                <option value="" disabled>Histórico de sessões...</option>
+                {allSessions.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.session_date} — {s.title}{s.is_active ? " 🔴 LIVE" : ""}
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={handleNewSession}
+                disabled={saving}
+                className="shrink-0 px-4 py-2 text-sm rounded-lg bg-arena-iron border border-arena-gold/20 text-arena-gold hover:bg-arena-gold/10 transition-colors font-[family-name:var(--font-display)] disabled:opacity-50"
+              >
+                + Nova Sessão
+              </button>
+            </div>
           </div>
         </div>
       </div>
