@@ -380,148 +380,32 @@ end;
 $$ language plpgsql security definer;
 
 -- ============================================================
--- Analytics System — Session, Event, and Fraud Tracking
+-- Daily Sessions — "Sessão do Dia" Tracking
 -- ============================================================
 
--- Analytics Sessions (visitor tracking)
-create table if not exists analytics_sessions (
+create table if not exists daily_sessions (
   id uuid primary key default gen_random_uuid(),
-  user_id uuid references users(id) on delete set null,
-  session_token text not null unique,
-  ip_address text not null,
-  user_agent text,
-  country text,
-  city text,
-  region text,
-  isp text,
-  referrer text,
-  referrer_source text check (referrer_source in ('direct', 'twitch', 'social', 'search', 'other')),
-  is_suspicious boolean not null default false,
+  title text not null default 'Sessão do Dia',
+  session_date date not null default current_date,
+  casino_id uuid references casino_offers(id) on delete set null,
+  spotify_url text,
+  deposits numeric(12,2) not null default 0,
+  withdrawals numeric(12,2) not null default 0,
+  bonuses_count integer not null default 0,
+  biggest_win numeric(12,2) not null default 0,
+  is_active boolean not null default false,
   created_at timestamptz not null default now(),
-  last_seen_at timestamptz not null default now()
-);
-
-create index idx_analytics_sessions_token on analytics_sessions(session_token);
-create index idx_analytics_sessions_user on analytics_sessions(user_id);
-create index idx_analytics_sessions_ip on analytics_sessions(ip_address);
-create index idx_analytics_sessions_created on analytics_sessions(created_at desc);
-create index idx_analytics_sessions_country on analytics_sessions(country);
-
--- Analytics Events (page views, clicks, conversions)
-create table if not exists analytics_events (
-  id uuid primary key default gen_random_uuid(),
-  session_id uuid not null references analytics_sessions(id) on delete cascade,
-  user_id uuid references users(id) on delete set null,
-  event_type text not null check (event_type in ('pageview', 'click', 'offer_click', 'external_link', 'conversion', 'button_click')),
-  page_url text,
-  offer_id uuid references casino_offers(id) on delete set null,
-  metadata jsonb not null default '{}',
-  ip_address text,
-  country text,
-  city text,
-  is_suspicious boolean not null default false,
-  created_at timestamptz not null default now()
-);
-
-create index idx_analytics_events_session on analytics_events(session_id);
-create index idx_analytics_events_user on analytics_events(user_id);
-create index idx_analytics_events_type on analytics_events(event_type);
-create index idx_analytics_events_created on analytics_events(created_at desc);
-create index idx_analytics_events_offer on analytics_events(offer_id) where offer_id is not null;
-create index idx_analytics_events_page on analytics_events(page_url);
-
--- Fraud Logs (suspicious activity records)
-create table if not exists fraud_logs (
-  id uuid primary key default gen_random_uuid(),
-  session_id uuid references analytics_sessions(id) on delete set null,
-  user_id uuid references users(id) on delete set null,
-  ip_address text not null,
-  reason text not null,
-  risk_score integer not null default 0 check (risk_score >= 0 and risk_score <= 100),
-  metadata jsonb not null default '{}',
-  resolved boolean not null default false,
-  created_at timestamptz not null default now()
-);
-
-create index idx_fraud_logs_session on fraud_logs(session_id);
-create index idx_fraud_logs_ip on fraud_logs(ip_address);
-create index idx_fraud_logs_score on fraud_logs(risk_score desc);
-create index idx_fraud_logs_created on fraud_logs(created_at desc);
-
--- IP Geolocation Cache (avoid repeated API calls)
-create table if not exists geo_cache (
-  ip_address text primary key,
-  country text,
-  city text,
-  region text,
-  isp text,
-  cached_at timestamptz not null default now()
-);
-
--- Fraud Detection Config (adjustable thresholds)
-create table if not exists fraud_config (
-  id uuid primary key default gen_random_uuid(),
-  key text not null unique,
-  value integer not null,
-  description text,
   updated_at timestamptz not null default now()
 );
 
--- Default fraud thresholds
-insert into fraud_config (key, value, description) values
-  ('max_clicks_per_10s', 10, 'Max clicks allowed in 10 seconds per session'),
-  ('max_same_offer_clicks_per_hour', 5, 'Max clicks on same offer per hour'),
-  ('max_sessions_per_ip_per_hour', 10, 'Max new sessions from same IP in 1 hour'),
-  ('risk_threshold_flag', 50, 'Risk score to auto-flag as suspicious'),
-  ('risk_threshold_block', 80, 'Risk score to block session')
-on conflict (key) do nothing;
+create index idx_daily_sessions_active on daily_sessions(is_active) where is_active = true;
+create index idx_daily_sessions_date on daily_sessions(session_date desc);
 
--- RLS for analytics tables
-alter table analytics_sessions enable row level security;
-create policy "Admin read sessions" on analytics_sessions for select using (true);
-create policy "Insert sessions" on analytics_sessions for insert with check (true);
-create policy "Update sessions" on analytics_sessions for update using (true);
+alter table daily_sessions enable row level security;
+create policy "Public read daily sessions" on daily_sessions for select using (true);
+create policy "Admin insert daily sessions" on daily_sessions for insert with check (true);
+create policy "Admin update daily sessions" on daily_sessions for update using (true);
+create policy "Admin delete daily sessions" on daily_sessions for delete using (true);
 
-alter table analytics_events enable row level security;
-create policy "Admin read events" on analytics_events for select using (true);
-create policy "Insert events" on analytics_events for insert with check (true);
-
-alter table fraud_logs enable row level security;
-create policy "Admin read fraud" on fraud_logs for select using (true);
-create policy "Insert fraud" on fraud_logs for insert with check (true);
-create policy "Update fraud" on fraud_logs for update using (true);
-
-alter table geo_cache enable row level security;
-create policy "Read geo cache" on geo_cache for select using (true);
-create policy "Insert geo cache" on geo_cache for insert with check (true);
-create policy "Update geo cache" on geo_cache for update using (true);
-
-alter table fraud_config enable row level security;
-create policy "Read fraud config" on fraud_config for select using (true);
-create policy "Admin update fraud config" on fraud_config for update using (true);
-
--- Enable realtime for live dashboard
-alter publication supabase_realtime add table analytics_events;
-alter publication supabase_realtime add table analytics_sessions;
-alter publication supabase_realtime add table fraud_logs;
-
--- GDPR: data deletion function
-create or replace function delete_user_analytics(target_user_id uuid)
-returns void as $$
-begin
-  delete from analytics_events where user_id = target_user_id;
-  delete from fraud_logs where user_id = target_user_id;
-  delete from analytics_sessions where user_id = target_user_id;
-end;
-$$ language plpgsql security definer;
-
--- GDPR: delete by IP
-create or replace function delete_ip_analytics(target_ip text)
-returns void as $$
-begin
-  delete from analytics_events where ip_address = target_ip;
-  delete from fraud_logs where ip_address = target_ip;
-  delete from analytics_sessions where ip_address = target_ip;
-  delete from geo_cache where ip_address = target_ip;
-end;
-$$ language plpgsql security definer;
+-- Enable realtime for live stat updates
+alter publication supabase_realtime add table daily_sessions;
