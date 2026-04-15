@@ -28,9 +28,6 @@ const MAIN_LINKS: NavItem[] = [
   {
     href: "/ofertas",
     label: "Ofertas",
-    children: [
-      { href: "/reviews", label: "Reviews" },
-    ],
   },
   {
     href: "/stream",
