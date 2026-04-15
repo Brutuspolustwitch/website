@@ -95,7 +95,7 @@ export default function LojaPage() {
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
-            filter: "brightness(0.35) saturate(0.35) sepia(0.25) contrast(0.9) blur(2px)",
+            filter: "brightness(0.38) saturate(0.5) sepia(0.15) contrast(0.9) blur(2px)",
           }}
         />
         {/* Animated ember particles */}
