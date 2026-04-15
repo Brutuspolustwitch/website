@@ -1395,6 +1395,9 @@ body {
 .armaria-legendary-flame {
   animation: armaria-flame-border 3s ease-in-out infinite;
 }
+
+/* Winner name (continued) */
+.liga-winner {
   letter-spacing: 0.05em;
   display: flex;
   align-items: center;
