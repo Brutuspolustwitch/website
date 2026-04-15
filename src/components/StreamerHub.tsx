@@ -95,9 +95,9 @@ export function StreamerHub() {
           </div>
         </ScrollReveal>
 
-        {/* Stream + Chat side by side */}
+        {/* Stream + Chat side by side (chat hidden when offline) */}
         <ScrollReveal delay={0.1}>
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-4">
+          <div className={`grid grid-cols-1 gap-4 ${isLive ? "lg:grid-cols-[1fr_380px]" : "max-w-5xl mx-auto"}`}>
             {/* Stream / Clip player */}
             <div className="relative w-full aspect-video bg-arena-black rounded-2xl overflow-hidden arena-border-crimson metal-frame-glow shadow-2xl shadow-black/60">
               {(isLive || loading) && (
@@ -150,7 +150,8 @@ export function StreamerHub() {
               )}
             </div>
 
-            {/* Chat */}
+            {/* Chat — only visible when live */}
+            {isLive && (
             <div className="relative bg-arena-black rounded-2xl overflow-hidden arena-border-crimson metal-frame-glow shadow-2xl shadow-black/60 min-h-[400px] lg:min-h-0 flex flex-col">
               {/* Emblem header — overlays Twitch's "Stream Chat" bar */}
               <div className="relative z-20 flex items-center justify-center gap-2 py-0 bg-gradient-to-b from-arena-charcoal to-arena-dark border-b border-white/5">
@@ -173,6 +174,7 @@ export function StreamerHub() {
                 />
               </div>
             </div>
+            )}
           </div>
         </ScrollReveal>
       </div>

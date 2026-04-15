@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function RodaDiariaPage() {
   return (
-    <div className="h-screen overflow-hidden relative pt-16">
+    <div className="min-h-screen relative pt-16">
       {/* Background image */}
       <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/pages/wheel-bg.jpg')" }} />
       {/* Dark overlay to keep it moody */}

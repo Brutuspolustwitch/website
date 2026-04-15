@@ -405,7 +405,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
   return (
     <>
       {/* ── Desktop sidebar (always visible, lg+) ─────────────────── */}
-      <aside className="hidden lg:flex flex-col fixed top-16 left-0 bottom-0 w-60 bg-arena-dark/95 backdrop-blur-sm border-r border-arena-gold/10 z-40">
+      <aside className="hidden lg:flex flex-col fixed top-16 left-0 bottom-0 w-56 bg-arena-dark/95 backdrop-blur-sm border-r border-arena-gold/10 z-40">
         {navContent}
       </aside>
 
