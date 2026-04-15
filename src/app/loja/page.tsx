@@ -95,7 +95,7 @@ export default function LojaPage() {
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
-            filter: "brightness(0.35) saturate(0.7) contrast(1.1)",
+            filter: "brightness(0.5) saturate(0.8) contrast(1.1)",
           }}
         />
         {/* Dark gradient overlay for content readability */}
