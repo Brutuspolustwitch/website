@@ -99,12 +99,12 @@ function StatPlate({ label, value, glow }: {
 
   return (
     <motion.div
-      className="papyrus-scroll greek-key-border"
+      className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom"
       style={{ maxWidth: "100%", padding: 0 }}
       whileHover={{ scale: 1.03 }}
       transition={{ type: "spring", stiffness: 300 }}
     >
-      <div className="scroll-content" style={{ textAlign: "center", padding: "14px 10px 12px" }}>
+      <div className="scroll-content" style={{ textAlign: "center", padding: "26px 10px 24px" }}>
         <p style={{
           fontFamily: "var(--font-display)",
           fontSize: "0.55rem",
