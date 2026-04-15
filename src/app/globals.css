@@ -1253,6 +1253,148 @@ body {
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--deep-red);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   ARMARIA — Gladiator Armory Shop
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* Floating embers */
+@keyframes armaria-ember-rise {
+  0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 0.6; }
+  100% { transform: translateY(-100vh) translateX(40px) scale(0); opacity: 0; }
+}
+
+@keyframes armaria-ember-drift {
+  0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+  10% { opacity: 0.8; }
+  50% { transform: translateY(-50vh) translateX(-30px) scale(0.8); }
+  90% { opacity: 0.4; }
+  100% { transform: translateY(-100vh) translateX(20px) scale(0); opacity: 0; }
+}
+
+/* Volumetric fog / mist layer */
+@keyframes armaria-fog-drift {
+  0% { transform: translateX(-30%) scaleX(1.5); opacity: 0.03; }
+  50% { transform: translateX(10%) scaleX(1.3); opacity: 0.06; }
+  100% { transform: translateX(-30%) scaleX(1.5); opacity: 0.03; }
+}
+
+/* Torch flicker glow */
+@keyframes armaria-torch-flicker {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  25% { opacity: 0.25; transform: scale(1.05); }
+  50% { opacity: 0.12; transform: scale(0.97); }
+  75% { opacity: 0.22; transform: scale(1.03); }
+}
+
+/* Subtle breathing pulse for cards */
+@keyframes armaria-breathe {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  50% { box-shadow: 0 0 20px 2px rgba(212, 168, 67, 0.06); }
+}
+
+/* Gold shimmer sweep on relic cards */
+@keyframes armaria-shimmer {
+  0% { left: -100%; }
+  100% { left: 200%; }
+}
+
+/* Forging strike impact */
+@keyframes armaria-strike {
+  0% { transform: scale(1); }
+  15% { transform: scale(0.96); }
+  30% { transform: scale(1.02); }
+  50% { transform: scale(0.99); }
+  100% { transform: scale(1); }
+}
+
+/* Spark burst on click */
+@keyframes armaria-spark {
+  0% { transform: scale(0); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.6; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+/* Relic card hover gold outline glow */
+.armaria-relic-card {
+  animation: armaria-breathe 4s ease-in-out infinite;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.3s ease;
+}
+
+.armaria-relic-card:hover {
+  animation: none;
+}
+
+/* Shimmer sweep effect */
+.armaria-shimmer-sweep {
+  position: relative;
+  overflow: hidden;
+}
+
+.armaria-shimmer-sweep::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(212, 168, 67, 0.04),
+    rgba(212, 168, 67, 0.1),
+    rgba(212, 168, 67, 0.04),
+    transparent
+  );
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.armaria-shimmer-sweep:hover::after {
+  opacity: 1;
+  animation: armaria-shimmer 1.2s ease forwards;
+}
+
+/* Metallic engraved badge */
+.armaria-badge {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(212, 168, 67, 0.2);
+  background: linear-gradient(135deg, rgba(30, 28, 24, 0.9), rgba(20, 18, 14, 0.95));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Forging strike on button press */
+.armaria-forge-btn {
+  transition: transform 0.15s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.15s ease;
+}
+
+.armaria-forge-btn:active {
+  animation: armaria-strike 0.3s ease forwards;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 16px rgba(212, 168, 67, 0.15);
+}
+
+/* Legendary flame border */
+@keyframes armaria-flame-border {
+  0%, 100% { border-color: rgba(139, 0, 0, 0.3); box-shadow: 0 0 20px rgba(139, 0, 0, 0.1), 0 0 40px rgba(255, 111, 0, 0.05); }
+  33% { border-color: rgba(255, 111, 0, 0.3); box-shadow: 0 0 25px rgba(255, 111, 0, 0.12), 0 0 50px rgba(139, 0, 0, 0.06); }
+  66% { border-color: rgba(212, 168, 67, 0.25); box-shadow: 0 0 22px rgba(212, 168, 67, 0.1), 0 0 45px rgba(139, 0, 0, 0.05); }
+}
+
+.armaria-legendary-flame {
+  animation: armaria-flame-border 3s ease-in-out infinite;
+}
   letter-spacing: 0.05em;
   display: flex;
   align-items: center;
