@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Sessão inválida" }, { status: 401 });
   }
 
-  if (session.role !== "admin") {
+  if (session.role !== "admin" && session.role !== "configurador") {
     return NextResponse.json({ error: "Acesso negado" }, { status: 403 });
   }
 

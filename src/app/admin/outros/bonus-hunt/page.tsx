@@ -37,7 +37,7 @@ export default function AdminBonusHuntPage() {
   const [result, setResult] = useState<ImportResult | null>(null);
   const [error, setError] = useState("");
 
-  const isAdmin = user?.role === "admin";
+  const isAdmin = user?.role === "admin" || user?.role === "configurador";
 
   const parseFile = useCallback((file: File) => {
     setError("");
@@ -152,7 +152,7 @@ export default function AdminBonusHuntPage() {
       <div className="pt-24 pb-16 min-h-screen">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <SectionHeading title="Bonus Hunt" subtitle="Acesso negado" />
-          <p className="mt-8 text-arena-smoke/60">Apenas administradores podem importar bonus hunts.</p>
+          <p className="mt-8 text-arena-smoke/60">Apenas administradores e configuradores podem importar bonus hunts.</p>
         </div>
       </div>
     );
