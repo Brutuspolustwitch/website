@@ -7,12 +7,14 @@ import { Footer } from "@/components/Footer";
 import { AgeGate } from "@/components/AgeGate";
 import { CookieConsent } from "@/components/CookieConsent";
 import { AuthProvider } from "@/lib/auth-context";
+import PageViewTracker from "@/components/PageViewTracker";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <AuthProvider>
+      <PageViewTracker />
       <Navbar onMenuToggle={() => setSidebarOpen((v) => !v)} />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 

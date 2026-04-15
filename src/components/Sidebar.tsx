@@ -58,7 +58,19 @@ const SECONDARY_LINKS: NavItem[] = [
     children: [
       { href: "/admin/parcerias", label: "Parcerias" },
       { href: "/admin/utilizadores", label: "Utilizadores" },
-      { href: "/admin/analitics", label: "Analitics" },
+      {
+        href: "/admin/analitics",
+        label: "Analitics",
+        children: [
+          { href: "/admin/analitics", label: "Visão Geral" },
+          { href: "/admin/analitics/utilizadores", label: "Utilizadores" },
+          { href: "/admin/analitics/ofertas", label: "Ofertas" },
+          { href: "/admin/analitics/tempo-real", label: "Tempo Real" },
+          { href: "/admin/analitics/trafego", label: "Tráfego" },
+          { href: "/admin/analitics/geo", label: "Geo" },
+          { href: "/admin/analitics/fraude", label: "Fraude" },
+        ],
+      },
       {
         href: "/admin/loja",
         label: "Loja",
