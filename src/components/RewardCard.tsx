@@ -105,7 +105,7 @@ export function RewardCard({ reward, userPoints, userVipLevel, onRedeem, onHover
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-t from-arena-crimson/5 via-transparent to-transparent animate-pulse" />
         </div>
-      )}}
+      )}
 
       {/* VIP Lock overlay */}
       {isLocked && (
