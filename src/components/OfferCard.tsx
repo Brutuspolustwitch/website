@@ -104,8 +104,10 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
   // Build perks from tags
   const perks = offer.tags.length > 0 ? offer.tags : ["🎰 Slots", "⚡ Instant Play", "🛡 SSL"];
 
+  const externalUrl = offer.affiliate_url.startsWith("http") ? offer.affiliate_url : `https://${offer.affiliate_url}`;
+
   return (
-    <div className="papyrus-flip-container" onClick={() => { if (flipped) { setFlipped(false); } else { window.open(offer.affiliate_url, '_blank', 'noopener,noreferrer'); } }}>
+    <div className="papyrus-flip-container" onClick={() => { if (flipped) { setFlipped(false); } else { window.open(externalUrl, '_blank', 'noopener,noreferrer'); } }}>
       <div className={`papyrus-flip-inner ${flipped ? "papyrus-flipped" : ""}`}>
 
         {/* ═══ FRONT ═══ */}
@@ -150,7 +152,7 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
 
               {/* CTA */}
               <div className="cta-section">
-                <a href={offer.affiliate_url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                <a href={externalUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
                   <button className="cta-button">⚔ Resgatar Bónus ⚔</button>
                 </a>
                 <p className="cta-subtext">18+ · T&Cs Aplicáveis · Joga com responsabilidade</p>
@@ -208,7 +210,7 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
 
               {/* CTA on back too */}
               <div className="cta-section">
-                <a href={offer.affiliate_url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                <a href={externalUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
                   <button className="cta-button">⚔ Resgatar Bónus ⚔</button>
                 </a>
               </div>
