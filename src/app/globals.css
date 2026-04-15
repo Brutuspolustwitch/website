@@ -394,7 +394,18 @@ body {
   position: absolute;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
   transform: rotateY(180deg);
+}
+.papyrus-flip-back .papyrus-scroll {
+  height: 100%;
+}
+.papyrus-flip-back .scroll-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .papyrus-flip-container:hover .papyrus-flip-inner:not(.papyrus-flipped) {
   transform: translateY(-5px) rotate(0.2deg);
