@@ -22,7 +22,7 @@ export default function OfertasPage() {
         <div
           className="absolute inset-[-15%]"
           style={{
-            backgroundImage: "url('/images/pages/offers.jpg')",
+            backgroundImage: "url('/images/offers.jpg')",
             backgroundSize: "cover",
             backgroundPosition: "right center",
             backgroundRepeat: "no-repeat",
