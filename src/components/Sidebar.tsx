@@ -73,19 +73,24 @@ const SECONDARY_LINKS: NavItem[] = [
         ],
       },
       { href: "/admin/outros/calendario", label: "Calendário" },
-      { href: "/admin/outros", label: "Outros" },
-      { href: "/admin/parcerias", label: "Parcerias" },
       {
-        href: "/admin/loja",
-        label: "Loja",
+        href: "/admin/outros",
+        label: "Outros",
         children: [
-          { href: "/admin/loja", label: "Criação" },
-          { href: "/admin/loja/gestao", label: "Gestão" },
+          { href: "/admin/parcerias", label: "Parcerias" },
+          {
+            href: "/admin/loja",
+            label: "Loja",
+            children: [
+              { href: "/admin/loja", label: "Criação" },
+              { href: "/admin/loja/gestao", label: "Gestão" },
+            ],
+          },
+          { href: "/admin/outros/giveaways", label: "Giveaways" },
+          { href: "/admin/outros/daily-wheel", label: "Daily Wheel" },
+          { href: "/admin/utilizadores", label: "Utilizadores" },
         ],
       },
-      { href: "/admin/outros/giveaways", label: "Giveaways" },
-      { href: "/admin/outros/daily-wheel", label: "Daily Wheel" },
-      { href: "/admin/utilizadores", label: "Utilizadores" },
     ],
   },
   { href: "/moderador", label: "Moderador Area", minRole: "moderador" },
@@ -333,7 +338,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               className="overflow-hidden"
             >
               <div className="mt-0.5 space-y-0.5 ml-5">
-                {item.children!.map((gc) => renderLink(gc, true))}
+                {item.children!.map((gc) => gc.children ? renderSubDropdown(gc) : renderLink(gc, true))}
               </div>
             </motion.div>
           )}
