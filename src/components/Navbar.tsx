@@ -6,6 +6,7 @@ import { useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { NAV_LINKS, SITE_NAME } from "@/lib/constants";
 import { useAuth } from "@/lib/auth-context";
+import { VipBadge, getVipLevel } from "@/components/VipBadge";
 
 interface NavbarProps {
   onMenuToggle?: () => void;
@@ -13,8 +14,20 @@ interface NavbarProps {
 
 export function Navbar({ onMenuToggle }: NavbarProps) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [points, setPoints] = useState(0);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const { user, loading, login, logout } = useAuth();
+
+  const vipLevel = getVipLevel(points);
+
+  // Fetch user points
+  useEffect(() => {
+    if (!user) return;
+    fetch(`/api/streamelements?endpoint=user-points&username=${encodeURIComponent(user.login)}`)
+      .then((r) => r.json())
+      .then((d) => { if (typeof d.points === "number") setPoints(d.points); })
+      .catch(() => {});
+  }, [user]);
 
   // Close user menu on outside click
   useEffect(() => {
@@ -99,6 +112,12 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
                         <div className="px-4 py-3 border-b border-arena-steel/20">
                           <p className="text-sm font-semibold text-arena-white">{user.display_name}</p>
                           <p className="text-xs text-arena-ash">@{user.login}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className="text-xs text-arena-gold font-semibold">
+                              ⭐ {points.toLocaleString()} pts
+                            </span>
+                            <VipBadge level={vipLevel} />
+                          </div>
                         </div>
                         <Link
                           href="/perfil"

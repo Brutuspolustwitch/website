@@ -9,7 +9,7 @@ import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 
 export default function LojaPage() {
-  const { user, loading: authLoading, login } = useAuth();
+  const { user } = useAuth();
   const { init, play, vibrate } = useArmorySound();
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [points, setPoints] = useState(0);
@@ -120,32 +120,6 @@ export default function LojaPage() {
       <div className="relative pt-24 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading title="Armaria" subtitle="Recompensas forjadas para guerreiros" />
-
-        {/* Points Bar */}
-        {user ? (
-          <div className="flex items-center justify-center gap-4 mb-10">
-            <div className="flex items-center gap-3 bg-black/40 backdrop-blur-md border border-arena-gold/20 rounded-xl px-5 py-2.5">
-              <span className="gladiator-label text-sm text-arena-gold">
-                ⭐ {points.toLocaleString()} pontos
-              </span>
-              <div className="w-px h-5 bg-arena-gold/20" />
-              <VipBadge level={vipLevel} />
-            </div>
-          </div>
-        ) : !authLoading ? (
-          <div className="text-center mb-10">
-            <p className="text-arena-smoke text-sm mb-3">Entra com Twitch para ver os teus pontos e resgatar recompensas</p>
-            <button
-              onClick={login}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#9146FF] hover:bg-[#7c3aed] text-white text-sm font-semibold transition-all cursor-pointer"
-            >
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z" />
-              </svg>
-              Login com Twitch
-            </button>
-          </div>
-        ) : null}
 
         {/* Loading skeletons */}
         {loading ? (
