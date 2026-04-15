@@ -118,6 +118,19 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
             <CornerOrnament className="bottom-left" />
             <CornerOrnament className="bottom-right" />
             <div className="scroll-content">
+              {/* Banner */}
+              <div className="casino-banner">
+                <div className="casino-banner-inner">
+                  {offer.banner_url ? (
+                    <img
+                      src={offer.banner_url}
+                      alt={offer.name}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
+                    />
+                  ) : null}
+                </div>
+              </div>
+
               {/* Promo Section */}
               <div className="promo-section">
                 <p className="promo-label">✦ Oferta Exclusiva ✦</p>
@@ -176,19 +189,6 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
             <CornerOrnament className="bottom-left" />
             <CornerOrnament className="bottom-right" />
             <div className="scroll-content">
-              {/* Banner */}
-              <div className="casino-banner">
-                <div className="casino-banner-inner">
-                  {offer.banner_url ? (
-                    <img
-                      src={offer.banner_url}
-                      alt={offer.name}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
-                    />
-                  ) : null}
-                </div>
-              </div>
-
               {/* Rating */}
               <StarRating rating={offer.rating ?? 4.5} />
 
