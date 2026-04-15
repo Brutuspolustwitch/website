@@ -86,10 +86,10 @@ export function CookiePolicy() {
             <p className="mt-1">
               Para questões contacte{" "}
               <a
-                href="mailto:support@brutuspolus.com"
+                href="mailto:info@brutuspolus.com"
                 className="text-arena-gold hover:underline"
               >
-                support@brutuspolus.com
+                info@brutuspolus.com
               </a>
             </p>
           </div>

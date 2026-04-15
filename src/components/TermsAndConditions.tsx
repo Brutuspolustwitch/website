@@ -6,7 +6,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 const sections = [
   {
     title: "1. Introdução",
-    content: `Bem-vindo ao BrutusPolus! Antes de começar, pedimos que leia os Termos e Condições (T&C) antes de usar o nosso website. Leia atentamente para evitar confusões e para que a sua experiência de utilizador seja a melhor possível! Se não concordar em aceitar e seguir todas as condições, não abra uma conta e/ou use o website. A continuação do uso do website indicará a aceitação das condições. As condições foram promulgadas em 03.07.2024. Queremos que desfrute do tempo que passa aqui, e porque este é um website onde discutimos, mostramos vídeos e oferecemos ofertas relacionadas com casinos que envolvem jogo, existe um conjunto de leis e regulamentos que regulam as nossas atividades. Estes termos são explicados da forma mais clara possível. Os termos do BrutusPolus são a forma que temos de o informar sobre o que pode e não pode fazer no BrutusPolus, como usaremos a sua informação pessoal e como gerimos o website. Se ainda tiver dúvidas após ler os T&C, contacte a equipa de suporte através do seguinte formato: Envie um email para support@brutuspolus.com que se encontra no separador "Contacto" no fundo do website BrutusPolus.`,
+    content: `Bem-vindo ao BrutusPolus! Antes de começar, pedimos que leia os Termos e Condições (T&C) antes de usar o nosso website. Leia atentamente para evitar confusões e para que a sua experiência de utilizador seja a melhor possível! Se não concordar em aceitar e seguir todas as condições, não abra uma conta e/ou use o website. A continuação do uso do website indicará a aceitação das condições. As condições foram promulgadas em 03.07.2024. Queremos que desfrute do tempo que passa aqui, e porque este é um website onde discutimos, mostramos vídeos e oferecemos ofertas relacionadas com casinos que envolvem jogo, existe um conjunto de leis e regulamentos que regulam as nossas atividades. Estes termos são explicados da forma mais clara possível. Os termos do BrutusPolus são a forma que temos de o informar sobre o que pode e não pode fazer no BrutusPolus, como usaremos a sua informação pessoal e como gerimos o website. Se ainda tiver dúvidas após ler os T&C, contacte a equipa de suporte através do seguinte formato: Envie um email para info@brutuspolus.com que se encontra no separador "Contacto" no fundo do website BrutusPolus.`,
   },
   {
     title: "2. Os Princípios Básicos",
@@ -98,7 +98,7 @@ const sections = [
   },
   {
     title: "24. Contacto",
-    content: `Para qualquer pedido ou dúvida: envolvendo o esclarecimento ou problema de qualquer questão relacionada com estes termos e condições e/ou o site, ou um problema com os sites de casino que promovemos, pode contactar-nos pelo seguinte email: support@brutuspolus.com. Para qualquer questão envolvendo marketing e/ou interesse em colaboração, poderá usar o mesmo email.`,
+    content: `Para qualquer pedido ou dúvida: envolvendo o esclarecimento ou problema de qualquer questão relacionada com estes termos e condições e/ou o site, ou um problema com os sites de casino que promovemos, pode contactar-nos pelo seguinte email: info@brutuspolus.com. Para qualquer questão envolvendo marketing e/ou interesse em colaboração, poderá usar o mesmo email.`,
   },
   {
     title: "25. Uso Proibido da Conta",
@@ -138,10 +138,10 @@ export function TermsAndConditions() {
             <p className="mt-1">
               Para questões contacte{" "}
               <a
-                href="mailto:support@brutuspolus.com"
+                href="mailto:info@brutuspolus.com"
                 className="text-arena-gold hover:underline"
               >
-                support@brutuspolus.com
+                info@brutuspolus.com
               </a>
             </p>
           </div>
