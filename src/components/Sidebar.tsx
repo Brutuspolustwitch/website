@@ -91,6 +91,7 @@ const SECONDARY_LINKS: NavItem[] = [
           },
           { href: "/admin/outros/giveaways", label: "Giveaways" },
           { href: "/admin/outros/daily-wheel", label: "Daily Wheel" },
+          { href: "/admin/outros/liga", label: "Liga dos Brutus" },
           { href: "/admin/utilizadores", label: "Utilizadores" },
         ],
       },

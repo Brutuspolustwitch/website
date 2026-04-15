@@ -1,56 +1,24 @@
 import type { Metadata } from "next";
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { SELeaderboard } from "@/components/SELeaderboard";
-import { SEActivityFeed } from "@/components/SEActivityFeed";
-import { SETipsFeed } from "@/components/SETipsFeed";
+import { Suspense } from "react";
+import LigaDosBrutusContent from "@/components/LigaDosBrutus";
 
 export const metadata: Metadata = {
   title: "Liga dos Brutus",
-  description: "Junta-te à Liga dos Brutus — a liga competitiva da comunidade. Rankings, pontos e prémios.",
+  description: "Hall of Fame da comunidade — vencedores mensais da Liga dos Brutus.",
   openGraph: {
     title: "Liga dos Brutus | Arena Gladiator",
-    description: "A liga competitiva da comunidade Arena Gladiator.",
+    description: "Hall of Fame — os vencedores mensais da Liga dos Brutus.",
   },
 };
 
 export default function LigaDosBrutusPage() {
   return (
-    <div className="pt-24 pb-16 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionHeading title="Liga dos Brutus" subtitle="A liga competitiva da comunidade" />
-
-        <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Leaderboard - main column */}
-          <div className="lg:col-span-2">
-            <div className="mb-4">
-              <h2 className="gladiator-title text-xl flex items-center gap-2">
-                <span className="text-arena-gold">🏆</span> Top Gladiadores
-              </h2>
-              <p className="text-sm text-white/50 mt-1">Ranking por pontos de lealdade StreamElements</p>
-            </div>
-            <SELeaderboard />
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-8">
-            {/* Tips */}
-            <div>
-              <h2 className="gladiator-title text-xl flex items-center gap-2 mb-4">
-                <span>💰</span> Últimas Doações
-              </h2>
-              <SETipsFeed />
-            </div>
-
-            {/* Activity */}
-            <div>
-              <h2 className="gladiator-title text-xl flex items-center gap-2 mb-4">
-                <span>📡</span> Atividade Recente
-              </h2>
-              <SEActivityFeed />
-            </div>
-          </div>
-        </div>
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="w-8 h-8 border-2 border-arena-gold/30 border-t-arena-gold rounded-full animate-spin" />
       </div>
-    </div>
+    }>
+      <LigaDosBrutusContent />
+    </Suspense>
   );
 }

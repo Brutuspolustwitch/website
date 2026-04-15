@@ -154,6 +154,40 @@ export interface WheelConfigRow {
   updated_at: string;
 }
 
+export interface LeaderboardYearRow {
+  id: string;
+  year: number;
+  is_active: boolean;
+  is_locked: boolean;
+  created_at: string;
+}
+
+export interface LeaderboardEntryRow {
+  id: string;
+  year_id: string;
+  month: number;
+  winner_name: string;
+  winner_avatar: string | null;
+  updated_at: string;
+}
+
+export interface LeaderboardYearRow {
+  id: string;
+  year: number;
+  is_active: boolean;
+  is_locked: boolean;
+  created_at: string;
+}
+
+export interface LeaderboardEntryRow {
+  id: string;
+  year_id: string;
+  month: number;
+  winner_name: string;
+  winner_avatar: string | null;
+  updated_at: string;
+}
+
 export interface ScheduledStreamRow {
   id: string;
   title: string;

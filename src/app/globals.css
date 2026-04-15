@@ -1090,3 +1090,251 @@ body {
 .metal-frame-glow {
   animation: pulse-glow 3s ease-in-out infinite;
 }
+
+/* ── Liga dos Brutus — Parchment Scroll ─────────────────── */
+.liga-scroll {
+  position: relative;
+  background:
+    linear-gradient(135deg, var(--parchment-light) 0%, var(--parchment-mid) 40%, var(--parchment-dark) 70%, var(--parchment-edge) 100%);
+  border: 2px solid var(--parchment-edge);
+  border-radius: var(--scroll-radius);
+  padding: 2.5rem 2rem 2rem;
+  box-shadow:
+    0 0 40px rgba(0,0,0,0.6),
+    inset 0 0 60px rgba(58,42,16,0.08),
+    0 4px 20px rgba(139,105,20,0.15);
+  overflow: hidden;
+}
+.liga-scroll::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%233a2a10' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.5;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Burned edges */
+.liga-scroll::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(ellipse at top left, rgba(80,40,0,0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at top right, rgba(80,40,0,0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom left, rgba(80,40,0,0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom right, rgba(80,40,0,0.3) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Corner ornaments */
+.scroll-ornament {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  z-index: 5;
+  opacity: 0.6;
+}
+.scroll-ornament.top-left { top: 10px; left: 10px; }
+.scroll-ornament.top-right { top: 10px; right: 10px; transform: scaleX(-1); }
+.scroll-ornament.bottom-left { bottom: 10px; left: 10px; transform: scaleY(-1); }
+.scroll-ornament.bottom-right { bottom: 10px; right: 10px; transform: scale(-1); }
+
+/* Header */
+.liga-scroll-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  position: relative;
+  z-index: 2;
+}
+.liga-scroll-title {
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--deep-red);
+  letter-spacing: 0.25em;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+}
+.liga-scroll-title-ornament {
+  color: var(--gold-dark);
+  font-size: 1.2rem;
+  opacity: 0.7;
+}
+
+/* Divider */
+.liga-divider {
+  height: 1px;
+  margin: 1.2rem 0;
+  background: linear-gradient(90deg, transparent, var(--parchment-edge), var(--gold-dark), var(--parchment-edge), transparent);
+  position: relative;
+  z-index: 2;
+}
+
+/* Top player badge */
+.liga-top-player {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  background: rgba(139,105,20,0.1);
+  border: 1px solid rgba(139,105,20,0.2);
+  border-radius: 8px;
+  position: relative;
+  z-index: 2;
+}
+.liga-top-player-icon {
+  font-size: 1rem;
+}
+.liga-top-player-text {
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 0.8rem;
+  color: var(--ink-dark);
+  letter-spacing: 0.05em;
+}
+.liga-top-player-text strong {
+  color: var(--gold-dark);
+}
+
+/* Entries list */
+.liga-entries {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.liga-entry {
+  display: flex;
+  align-items: center;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+.liga-entry:hover {
+  background: rgba(139,105,20,0.08);
+}
+.liga-entry-current {
+  background: rgba(139,105,20,0.12);
+  border: 1px solid rgba(139,105,20,0.2);
+}
+
+/* Month label */
+.liga-month {
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--ink-dark);
+  letter-spacing: 0.15em;
+  min-width: 100px;
+  flex-shrink: 0;
+}
+
+/* Dot leader */
+.liga-dots {
+  flex: 1;
+  border-bottom: 1px dotted var(--parchment-edge);
+  margin: 0 0.75rem;
+  min-width: 20px;
+  position: relative;
+  top: -2px;
+}
+
+/* Winner name */
+.liga-winner {
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--deep-red);
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.liga-winner-empty {
+  color: var(--ink-light);
+  font-weight: 400;
+  font-style: italic;
+}
+.liga-winner-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--parchment-edge);
+}
+
+/* Empty state */
+.liga-empty {
+  text-align: center;
+  padding: 2rem;
+  color: var(--ink-light);
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+/* Footer */
+.liga-scroll-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+  z-index: 2;
+}
+.liga-wax-seal {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #c0392b, #8b1a1a 60%, #5a0f0f);
+  box-shadow: 0 2px 8px rgba(139,26,26,0.4), inset 0 1px 2px rgba(255,255,255,0.15);
+}
+.liga-footer-text {
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 0.65rem;
+  color: var(--ink-light);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* Dust particles */
+.liga-dust {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: var(--gold-dark);
+  border-radius: 50%;
+  opacity: 0;
+  animation: liga-float linear infinite;
+}
+@keyframes liga-float {
+  0% { opacity: 0; transform: translateY(0) translateX(0); }
+  20% { opacity: 0.4; }
+  80% { opacity: 0.2; }
+  100% { opacity: 0; transform: translateY(-60px) translateX(20px); }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .liga-scroll {
+    padding: 1.5rem 1rem 1.2rem;
+  }
+  .liga-scroll-title {
+    font-size: 1.3rem;
+    letter-spacing: 0.15em;
+  }
+  .liga-month {
+    min-width: 70px;
+    font-size: 0.6rem;
+  }
+  .liga-winner {
+    font-size: 0.75rem;
+  }
+}

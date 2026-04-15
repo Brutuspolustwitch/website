@@ -502,3 +502,43 @@ create policy "Admin update scheduled streams" on scheduled_streams for update u
 create policy "Admin delete scheduled streams" on scheduled_streams for delete using (true);
 
 alter publication supabase_realtime add table scheduled_streams;
+
+-- ============================================================
+-- Liga dos Brutus — Yearly Leaderboard Hall of Fame
+-- ============================================================
+
+-- Leaderboard Years
+create table if not exists leaderboard_years (
+  id uuid primary key default gen_random_uuid(),
+  year integer not null unique,
+  is_active boolean not null default false,
+  is_locked boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists idx_leaderboard_years_year on leaderboard_years(year desc);
+
+-- Leaderboard Entries (12 months per year)
+create table if not exists leaderboard_entries (
+  id uuid primary key default gen_random_uuid(),
+  year_id uuid not null references leaderboard_years(id) on delete cascade,
+  month integer not null check (month >= 1 and month <= 12),
+  winner_name text not null default '',
+  winner_avatar text,
+  updated_at timestamptz not null default now(),
+  unique(year_id, month)
+);
+
+create index if not exists idx_leaderboard_entries_year on leaderboard_entries(year_id, month);
+
+alter table leaderboard_years enable row level security;
+create policy "Public read leaderboard years" on leaderboard_years for select using (true);
+create policy "Admin insert leaderboard years" on leaderboard_years for insert with check (true);
+create policy "Admin update leaderboard years" on leaderboard_years for update using (true);
+create policy "Admin delete leaderboard years" on leaderboard_years for delete using (true);
+
+alter table leaderboard_entries enable row level security;
+create policy "Public read leaderboard entries" on leaderboard_entries for select using (true);
+create policy "Admin insert leaderboard entries" on leaderboard_entries for insert with check (true);
+create policy "Admin update leaderboard entries" on leaderboard_entries for update using (true);
+create policy "Admin delete leaderboard entries" on leaderboard_entries for delete using (true);
