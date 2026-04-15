@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function RodaDiariaPage() {
   return (
-    <div className="min-h-screen relative pt-16">
+    <div className="min-h-screen relative pt-16 flex flex-col">
       {/* Background image */}
       <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/pages/wheel-bg.jpg')" }} />
       {/* Dark overlay to keep it moody */}
@@ -18,7 +18,7 @@ export default function RodaDiariaPage() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_80%,rgba(212,168,67,0.08),transparent_50%)]" />
 
       {/* Header — floats above the SpinWheel background */}
-      <div className="absolute top-16 left-0 right-0 z-20 text-center py-3 lg:py-4 pointer-events-none">
+      <div className="relative z-20 text-center pt-4 pb-2 lg:pt-6 lg:pb-3 pointer-events-none">
         <h1 className="gladiator-title text-xl lg:text-2xl">
           Arrebanha Daily
         </h1>
@@ -27,8 +27,8 @@ export default function RodaDiariaPage() {
         </p>
       </div>
 
-      {/* SpinWheel — fills full area, background covers everything */}
-      <div className="relative h-full">
+      {/* SpinWheel — fills remaining area */}
+      <div className="relative flex-1">
         <SpinWheel />
       </div>
     </div>
