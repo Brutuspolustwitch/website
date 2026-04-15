@@ -59,9 +59,20 @@ function ReviewDetail({ casino }: { casino: (typeof reviewsData)[number] }) {
           <div className="bg-white/[0.03] rounded-lg p-4 border border-white/5">
             <h4 className="text-arena-gold text-xs font-bold uppercase tracking-wider mb-3">Pagamentos</h4>
             <dl className="space-y-2 text-sm">
-              <div><dt className="text-arena-ash text-xs">Métodos de pagamento</dt><dd className="text-arena-smoke">{casino.payment.methods_count}</dd></div>
               <div><dt className="text-arena-ash text-xs">Limite de levantamento</dt><dd className="text-arena-smoke">{casino.payment.withdrawal_limit}</dd></div>
               <div><dt className="text-arena-ash text-xs">Ganho máximo</dt><dd className="text-arena-smoke">{casino.payment.max_win_limit}</dd></div>
+              {"methods" in casino.payment && (casino.payment as { methods?: string[] }).methods && (
+                <div>
+                  <dt className="text-arena-ash text-xs mb-1.5">Métodos ({casino.payment.methods_count})</dt>
+                  <dd className="flex flex-wrap gap-1">
+                    {((casino.payment as { methods: string[] }).methods).map((m) => (
+                      <span key={m} className="px-1.5 py-0.5 rounded bg-white/5 text-arena-smoke text-[10px] border border-white/5">
+                        {m}
+                      </span>
+                    ))}
+                  </dd>
+                </div>
+              )}
             </dl>
           </div>
 
@@ -82,19 +93,40 @@ function ReviewDetail({ casino }: { casino: (typeof reviewsData)[number] }) {
         {casino.bonuses.length > 0 && (
           <div>
             <h4 className="text-arena-gold text-xs font-bold uppercase tracking-wider mb-3">Bónus</h4>
-            <div className="flex flex-wrap gap-2">
-              {casino.bonuses.map((b, i) => (
-                <span
-                  key={i}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border ${
-                    b.type === "Sem Depósito"
-                      ? "bg-arena-gold/10 border-arena-gold/30 text-arena-gold"
-                      : "bg-white/5 border-white/10 text-arena-smoke"
-                  }`}
-                >
-                  <span className="font-bold">{b.type}:</span> {b.value}
-                </span>
-              ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {casino.bonuses.map((b, i) => {
+                const bonus = b as Record<string, unknown>;
+                if (bonus.value === "Indisponível") return null;
+                return (
+                  <div
+                    key={i}
+                    className={`rounded-lg p-3 border ${
+                      bonus.type === "Sem Depósito"
+                        ? "bg-arena-gold/10 border-arena-gold/30"
+                        : "bg-white/[0.03] border-white/10"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className={`text-xs font-bold uppercase tracking-wider ${bonus.type === "Sem Depósito" ? "text-arena-gold" : "text-arena-smoke"}`}>
+                        {String(bonus.type)}
+                      </span>
+                      {bonus.promo_code ? (
+                        <span className="text-[10px] font-mono bg-arena-gold/20 text-arena-gold px-2 py-0.5 rounded border border-arena-gold/30">
+                          {String(bonus.promo_code)}
+                        </span>
+                      ) : null}
+                    </div>
+                    <p className="text-arena-white text-sm font-semibold">{String(bonus.value)}</p>
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-[11px] text-arena-ash">
+                      {bonus.wagering ? <span>Wagering: <span className="text-arena-smoke">{String(bonus.wagering)}</span></span> : null}
+                      {bonus.min_deposit ? <span>Depósito mín: <span className="text-arena-smoke">{String(bonus.min_deposit)}</span></span> : null}
+                      {bonus.expiry ? <span>Expira: <span className="text-arena-smoke">{String(bonus.expiry)}</span></span> : null}
+                      {bonus.max_withdrawal ? <span>Levant. máx: <span className="text-arena-smoke">{String(bonus.max_withdrawal)}</span></span> : null}
+                      {bonus.sticky ? <span className="text-yellow-500">Sticky</span> : null}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
@@ -141,13 +173,6 @@ function ReviewDetail({ casino }: { casino: (typeof reviewsData)[number] }) {
           )}
         </div>
 
-        {/* T&Cs + Complaints */}
-        <div className="flex flex-wrap gap-4 text-xs text-arena-ash">
-          <span>📜 T&C: <span className="text-arena-smoke">{casino.terms_and_conditions.verdict}</span></span>
-          <span>⚠️ Reclamações: <span className="text-arena-smoke">{casino.complaints.total}</span></span>
-          <span>📅 Atualizado: <span className="text-arena-smoke">{casino.last_updated}</span></span>
-          <span>✍️ Autor: <span className="text-arena-smoke">{casino.author}</span></span>
-        </div>
       </div>
     </motion.div>
   );

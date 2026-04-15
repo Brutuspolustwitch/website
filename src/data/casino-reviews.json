@@ -26,19 +26,37 @@
     "bonuses": [
       {
         "type": "Sem Depósito",
-        "value": "5 € Bónus sem depósito"
+        "value": "5 € Bónus sem depósito",
+        "wagering": "60x",
+        "max_withdrawal": "100 €",
+        "expiry": "10 dias",
+        "notes": "Requer verificação de identidade"
       },
       {
-        "type": "Com Depósito",
-        "value": "100% até 200 €"
+        "type": "1º Depósito",
+        "value": "100% até 200 €",
+        "min_deposit": "10 €",
+        "wagering": "60x bónus",
+        "expiry": "10 dias"
       },
       {
-        "type": "Com Depósito",
-        "value": "50% até 150 €"
+        "type": "2º Depósito",
+        "value": "50% até 150 €",
+        "min_deposit": "10 €",
+        "wagering": "60x bónus",
+        "expiry": "10 dias"
+      },
+      {
+        "type": "3º Depósito",
+        "value": "50% até 150 €",
+        "min_deposit": "10 €",
+        "wagering": "60x bónus",
+        "expiry": "10 dias"
       }
     ],
     "payment": {
       "methods_count": 9,
+      "methods": ["Neteller", "Skrill", "PaysafeCard", "Mastercard", "VISA", "PayPal", "Multibanco", "Transferência bancária", "MB Way"],
       "withdrawal_limit": "Ilimitado",
       "max_win_limit": "Sem limite de ganhos"
     },
@@ -97,19 +115,38 @@
     "bonuses": [
       {
         "type": "Sem Depósito",
-        "value": "25 Rondas Grátis em vários jogos"
+        "value": "25 Rondas Grátis em vários jogos",
+        "wagering": "1x",
+        "sticky": true,
+        "expiry": "2 dias"
       },
       {
-        "type": "Com Depósito",
-        "value": "100% até 100 € e até 25 rondas extra"
+        "type": "1º Depósito (Exclusivo)",
+        "value": "100% até 100 € e até 25 rondas extra",
+        "min_deposit": "10 €",
+        "wagering": "27x bónus",
+        "sticky": true,
+        "expiry": "2 dias",
+        "promo_code": "GURUVIP",
+        "free_spins": {
+          "amount": 25,
+          "value_per_spin": "0.10 €",
+          "total_value": "2.50 €",
+          "wagering": "1x"
+        }
       },
       {
-        "type": "Com Depósito",
-        "value": "100% até 100 €"
+        "type": "1º Depósito",
+        "value": "100% até 100 €",
+        "min_deposit": "10 €",
+        "wagering": "27x bónus",
+        "sticky": true,
+        "expiry": "2 dias"
       }
     ],
     "payment": {
       "methods_count": 13,
+      "methods": ["Skrill", "Neteller", "Mastercard", "VISA", "PayPal", "Multibanco", "PaysafeCard", "Maestro", "Transferência bancária", "Apple Pay", "Revolut", "Rapid Transfer", "MB Way"],
       "withdrawal_limit": "170,000 EUR por dia",
       "max_win_limit": "Sem limite de ganhos"
     },
@@ -172,12 +209,17 @@
         "value": "Indisponível"
       },
       {
-        "type": "Com Depósito",
-        "value": "Saldo bónus: 40 €"
+        "type": "1º Depósito",
+        "value": "Saldo bónus: 40 €",
+        "min_deposit": "10 €",
+        "wagering": "25x bónus",
+        "expiry": "30 dias",
+        "notes": "Processo imediato"
       }
     ],
     "payment": {
       "methods_count": 8,
+      "methods": ["Skrill", "PaysafeCard", "VISA", "Mastercard", "Multibanco", "Transferência bancária", "Apple Pay", "MB Way"],
       "withdrawal_limit": "Ilimitado",
       "max_win_limit": "500,000 EUR por ronda"
     },
@@ -239,12 +281,25 @@
         "value": "Indisponível"
       },
       {
-        "type": "Com Depósito",
-        "value": "100% até 500 € e 25 rondas extra"
+        "type": "1º Depósito (Exclusivo)",
+        "value": "100% até 500 € e 25 rondas extra",
+        "min_deposit": "10 €",
+        "wagering": "30x bónus",
+        "max_bet": "5 € ou 10% do bónus",
+        "expiry": "30 dias",
+        "free_spins": {
+          "amount": 25,
+          "game": "Book of Dead",
+          "value_per_spin": "0.10 €",
+          "total_value": "2.50 €",
+          "wagering": "60x",
+          "expiry": "1 dia"
+        }
       }
     ],
     "payment": {
       "methods_count": 5,
+      "methods": ["VISA", "Mastercard", "Multibanco", "PaysafeCard", "MB Way"],
       "withdrawal_limit": "Ilimitado",
       "max_win_limit": "Sem limite de ganhos"
     },
@@ -299,19 +354,35 @@
     "bonuses": [
       {
         "type": "Sem Depósito",
-        "value": "50 Rondas Grátis em Golden Lucky Tiger"
+        "value": "50 Rondas Grátis em Golden Lucky Tiger",
+        "wagering": "1x",
+        "total_value": "2.50 €",
+        "expiry": "1 dia"
       },
       {
-        "type": "Com Depósito",
-        "value": "100% até 100 €"
+        "type": "1º Depósito",
+        "value": "50 Rondas Extra em Sweet Bonanza",
+        "min_deposit": "10 €",
+        "wagering": "1x",
+        "expiry": "1 dia",
+        "free_spins": {
+          "amount": 50,
+          "game": "Sweet Bonanza",
+          "value_per_spin": "0.20 €",
+          "total_value": "10.00 €"
+        }
       },
       {
-        "type": "Com Depósito",
-        "value": "50 Rondas Extra em Sweet Bonanza"
+        "type": "2º Depósito",
+        "value": "100% até 100 €",
+        "min_deposit": "10 €",
+        "wagering": "30x (bónus + depósito)",
+        "expiry": "7 dias"
       }
     ],
     "payment": {
       "methods_count": 9,
+      "methods": ["Skrill", "Neteller", "VISA", "Mastercard", "Multibanco", "Transferência bancária", "Apple Pay", "MB Way", "Google Pay"],
       "withdrawal_limit": "Ilimitado",
       "max_win_limit": "Sem limite de ganhos"
     },
@@ -367,7 +438,9 @@
     "bonuses": [
       {
         "type": "Sem Depósito",
-        "value": "20 Rondas Grátis em vários jogos"
+        "value": "20 Rondas Grátis em vários jogos",
+        "wagering": "Sem requisito de apostas",
+        "expiry": "1 dia"
       },
       {
         "type": "Com Depósito",
@@ -376,6 +449,7 @@
     ],
     "payment": {
       "methods_count": 12,
+      "methods": ["Neteller", "Skrill", "PaysafeCard", "Mastercard", "VISA", "PayPal", "Multibanco", "Transferência bancária", "Apple Pay", "MEO Wallet", "ATM Bersama", "MB Way"],
       "withdrawal_limit": "25,000 EUR por dia",
       "max_win_limit": "Sem limite de ganhos"
     },
