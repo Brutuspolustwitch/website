@@ -116,15 +116,6 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
             <CornerOrnament className="bottom-left" />
             <CornerOrnament className="bottom-right" />
             <div className="scroll-content">
-              {/* Header */}
-              <div className="scroll-header">
-                <h2 className="scroll-title" style={{ fontSize: '1rem' }}>{offer.name}</h2>
-                <p className="scroll-subtitle">{offer.license}</p>
-              </div>
-
-              {/* Engraved Divider */}
-              <div className="engraved-divider" />
-
               {/* Banner */}
               <div className="casino-banner">
                 <div className="casino-banner-inner">
@@ -141,17 +132,17 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
               {/* Rating */}
               <StarRating rating={offer.rating ?? 4.5} />
 
-              {/* Stat Rows */}
+              {/* Stat Rows — stacked label/value */}
               <div className="stat-rows">
-                <div className="stat-row">
+                <div className="stat-row-stacked">
                   <span className="stat-label">Licença</span>
                   <span className="stat-value">{offer.license}</span>
                 </div>
-                <div className="stat-row">
+                <div className="stat-row-stacked">
                   <span className="stat-label">Levantamento</span>
                   <span className="stat-value">{offer.withdraw_time}</span>
                 </div>
-                <div className="stat-row">
+                <div className="stat-row-stacked">
                   <span className="stat-label">Depósito Mín.</span>
                   <span className="stat-value">{offer.min_deposit}</span>
                 </div>

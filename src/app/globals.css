@@ -606,6 +606,23 @@ body {
 .stat-row:last-child {
   border-bottom: none;
 }
+.stat-row-stacked {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(139, 105, 20, 0.12);
+}
+.stat-row-stacked:last-child {
+  border-bottom: none;
+}
+.stat-row-stacked .stat-label {
+  margin-bottom: 2px;
+}
+.stat-row-stacked .stat-value {
+  text-align: center;
+}
 .stat-label {
   font-family: 'Cinzel', 'Georgia', serif;
   font-size: 0.8rem;
