@@ -25,7 +25,13 @@ interface NavItem {
 
 /* ── Sidebar link definitions (custom order) ────────────────────── */
 const MAIN_LINKS: NavItem[] = [
-  { href: "/ofertas", label: "Ofertas" },
+  {
+    href: "/ofertas",
+    label: "Ofertas",
+    children: [
+      { href: "/reviews", label: "Reviews" },
+    ],
+  },
   {
     href: "/stream",
     label: "Stream",
@@ -41,7 +47,6 @@ const MAIN_LINKS: NavItem[] = [
     href: "/torneio",
     label: "Comunidade",
     children: [
-      { href: "/reviews", label: "Reviews" },
       { href: "/roda-diaria", label: "Roda Diária" },
       { href: "/giveaways", label: "Giveaways" },
       { href: "/liga-dos-brutus", label: "Liga dos Brutus" },
@@ -234,7 +239,10 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         <div className="flex items-center">
           <Link
             href={item.href}
-            onClick={onClose}
+            onClick={() => {
+              setExpanded((prev) => ({ ...prev, [item.href]: true }));
+              onClose();
+            }}
             className={`
               group flex-1 flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
               ${
