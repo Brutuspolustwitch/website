@@ -133,7 +133,7 @@ export default function LigaDosBrutusContent() {
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: "url('/images/pages/liga.jpg')",
+            backgroundImage: "url('/images/pages/brutusleague.png')",
             backgroundSize: "cover",
             backgroundPosition: "center",
             filter: "brightness(0.12) saturate(0.3) sepia(0.4) blur(2px)",
@@ -144,13 +144,13 @@ export default function LigaDosBrutusContent() {
 
       {/* Content */}
       <div className="relative z-10 pt-24 pb-16">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* ── Header ──────────────────────────── */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-left mb-10"
+            className="mb-10"
           >
             <h1 className="text-3xl sm:text-5xl font-bold font-[family-name:var(--font-display)] bg-gradient-to-r from-arena-gold via-arena-gold-light to-arena-gold bg-clip-text text-transparent tracking-wider">
               LIGA DOS BRUTUS
@@ -161,7 +161,7 @@ export default function LigaDosBrutusContent() {
 
             {/* Year Selector */}
             {years.length > 1 && (
-              <div className="mt-6 flex justify-start gap-2 flex-wrap">
+              <div className="mt-6 flex gap-2 flex-wrap">
                 {years.map((y) => (
                   <button
                     key={y.id}
@@ -187,7 +187,7 @@ export default function LigaDosBrutusContent() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.97 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
-              className="relative max-w-md"
+              className="relative max-w-sm"
             >
               <div className="liga-scroll">
                 <CornerOrnament className="top-left" />

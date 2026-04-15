@@ -1154,11 +1154,12 @@ body {
 }
 .liga-scroll-title {
   font-family: 'Cinzel', 'Georgia', serif;
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: var(--deep-red);
-  letter-spacing: 0.25em;
+  letter-spacing: 0.2em;
   text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+  text-align: center;
 }
 .liga-scroll-title-ornament {
   color: var(--gold-dark);
