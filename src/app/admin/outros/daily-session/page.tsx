@@ -203,7 +203,7 @@ export default function AdminDailySessionPage() {
   }
 
   return (
-    <div className="h-screen bg-arena-black p-3 sm:p-4 lg:p-5 overflow-hidden">
+    <div className="min-h-screen bg-arena-black p-3 sm:p-4 lg:p-5">
       {/* Toast */}
       {toast && (
         <motion.div

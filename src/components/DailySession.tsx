@@ -300,8 +300,8 @@ export default function DailySessionContent() {
   /* ── No Active Session ─────────────────────────────────── */
   if (!session) {
     return (
-      <div className="relative min-h-screen overflow-hidden bg-black">
-        <div className="fixed inset-0 z-0">
+      <div className="relative min-h-screen bg-black">
+        <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-black" />
           <div
             className="absolute inset-0"
@@ -345,9 +345,9 @@ export default function DailySessionContent() {
   });
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-black">
+    <div className="relative min-h-screen bg-black">
       {/* Background */}
-      <div className="fixed inset-0 z-0">
+      <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-black" />
         <div
           className="absolute inset-0"
