@@ -16,11 +16,19 @@ export interface BonusHuntSession {
   id: string;
   title: string;
   status: "active" | "completed" | "upcoming";
+  currency: string;
   total_buy: number;
   total_result: number;
   start_amount: number;
   stop_amount: number;
   target_amount: number;
+  profit: number;
+  bonus_count: number;
+  bonuses_opened: number;
+  avg_multi: number;
+  best_multi: number;
+  best_slot_name?: string;
+  hunt_date?: string;
   created_at: string;
   completed_at?: string;
 }
@@ -32,6 +40,13 @@ export interface BonusHuntSlot {
   buy_value: number;
   potential_multiplier: number;
   result?: number;
+  bet_size?: number;
+  rtp?: number;
+  volatility?: string;
+  is_super_bonus: boolean;
+  is_extreme_bonus: boolean;
+  opened: boolean;
+  payout?: number;
   special?: string;
   thumbnail_url?: string;
   status: "pending" | "active" | "completed";
