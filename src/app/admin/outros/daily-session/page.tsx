@@ -30,20 +30,21 @@ interface DailySessionRow {
 
 export default function AdminDailySessionPage() {
   const [session, setSession] = useState<DailySessionRow | null>(null);
+  const [allSessions, setAllSessions] = useState<DailySessionRow[]>([]);
   const [casinos, setCasinos] = useState<CasinoOfferRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
-  // Form state
-  const [title, setTitle] = useState("Sessão do Dia");
-  const [sessionDate, setSessionDate] = useState(new Date().toISOString().split("T")[0]);
+  // Form state — empty by default for new sessions
+  const [title, setTitle] = useState("");
+  const [sessionDate, setSessionDate] = useState("");
   const [casinoId, setCasinoId] = useState("");
   const [spotifyUrl, setSpotifyUrl] = useState("");
-  const [deposits, setDeposits] = useState("0");
-  const [withdrawals, setWithdrawals] = useState("0");
-  const [bonusesCount, setBonusesCount] = useState("0");
-  const [biggestWin, setBiggestWin] = useState("0");
+  const [deposits, setDeposits] = useState("");
+  const [withdrawals, setWithdrawals] = useState("");
+  const [bonusesCount, setBonusesCount] = useState("");
+  const [biggestWin, setBiggestWin] = useState("");
   const [isActive, setIsActive] = useState(true);
 
   const showToast = (msg: string) => {
@@ -51,29 +52,35 @@ export default function AdminDailySessionPage() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  // Load active session + all casinos
+  const populateForm = (s: DailySessionRow) => {
+    setSession(s);
+    setTitle(s.title);
+    setSessionDate(s.session_date);
+    setCasinoId(s.casino_id || "");
+    setSpotifyUrl(s.spotify_url || "");
+    setDeposits(s.deposits ? String(s.deposits) : "");
+    setWithdrawals(s.withdrawals ? String(s.withdrawals) : "");
+    setBonusesCount(s.bonuses_count ? String(s.bonuses_count) : "");
+    setBiggestWin(s.biggest_win ? String(s.biggest_win) : "");
+    setIsActive(s.is_active);
+  };
+
+  // Load all sessions + casinos
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const [sessionRes, casinoRes] = await Promise.all([
-        supabase.from("daily_sessions").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(1).maybeSingle(),
+      const [sessionsRes, casinoRes] = await Promise.all([
+        supabase.from("daily_sessions").select("*").order("session_date", { ascending: false }),
         supabase.from("casino_offers").select("*").eq("visible", true).order("sort_order"),
       ]);
 
       if (casinoRes.data) setCasinos(casinoRes.data);
 
-      if (sessionRes.data) {
-        const s = sessionRes.data;
-        setSession(s);
-        setTitle(s.title);
-        setSessionDate(s.session_date);
-        setCasinoId(s.casino_id || "");
-        setSpotifyUrl(s.spotify_url || "");
-        setDeposits(String(s.deposits));
-        setWithdrawals(String(s.withdrawals));
-        setBonusesCount(String(s.bonuses_count));
-        setBiggestWin(String(s.biggest_win));
-        setIsActive(s.is_active);
+      if (sessionsRes.data) {
+        setAllSessions(sessionsRes.data);
+        const active = sessionsRes.data.find((s) => s.is_active);
+        if (active) populateForm(active);
+        else if (sessionsRes.data.length > 0) populateForm(sessionsRes.data[0]);
       }
     } finally {
       setLoading(false);
@@ -82,14 +89,20 @@ export default function AdminDailySessionPage() {
 
   useEffect(() => { loadData(); }, [loadData]);
 
+  // Refresh sessions list from DB
+  const refreshSessions = async () => {
+    const { data } = await supabase.from("daily_sessions").select("*").order("session_date", { ascending: false });
+    if (data) setAllSessions(data);
+  };
+
   // Save session
   const handleSave = async () => {
     setSaving(true);
     try {
       const body = {
         id: session?.id,
-        title,
-        session_date: sessionDate,
+        title: title || "Sessão do Dia",
+        session_date: sessionDate || new Date().toISOString().split("T")[0],
         casino_id: casinoId || null,
         spotify_url: spotifyUrl || null,
         deposits: parseFloat(deposits) || 0,
@@ -112,29 +125,65 @@ export default function AdminDailySessionPage() {
       }
 
       setSession(data.session);
+      await refreshSessions();
       showToast("Sessão guardada com sucesso!");
     } finally {
       setSaving(false);
     }
   };
 
-  // New session
-  const handleNewSession = () => {
+  // New session — auto-save immediately
+  const handleNewSession = async () => {
+    const today = new Date().toISOString().split("T")[0];
     setSession(null);
-    setTitle("Sessão do Dia");
-    setSessionDate(new Date().toISOString().split("T")[0]);
+    setTitle("");
+    setSessionDate(today);
     setCasinoId("");
     setSpotifyUrl("");
-    setDeposits("0");
-    setWithdrawals("0");
-    setBonusesCount("0");
-    setBiggestWin("0");
+    setDeposits("");
+    setWithdrawals("");
+    setBonusesCount("");
+    setBiggestWin("");
     setIsActive(true);
+
+    setSaving(true);
+    try {
+      const res = await fetch("/api/daily-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: "Sessão do Dia",
+          session_date: today,
+          casino_id: null,
+          spotify_url: null,
+          deposits: 0,
+          withdrawals: 0,
+          bonuses_count: 0,
+          biggest_win: 0,
+          is_active: true,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.session) {
+        setSession(data.session);
+        await refreshSessions();
+        showToast("Nova sessão criada!");
+      }
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const net = (parseFloat(withdrawals) || 0) - (parseFloat(deposits) || 0);
+  // Switch session from history dropdown
+  const handleSelectSession = (id: string) => {
+    const found = allSessions.find((s) => s.id === id);
+    if (found) populateForm(found);
+  };
+
+  const depVal = parseFloat(deposits) || 0;
+  const witVal = parseFloat(withdrawals) || 0;
+  const net = witVal - depVal;
   const netColor = net > 0 ? "text-green-400" : net < 0 ? "text-red-400" : "text-arena-gold";
-  const netGlow = net > 0 ? "shadow-[0_0_15px_rgba(34,197,94,0.2)]" : net < 0 ? "shadow-[0_0_15px_rgba(239,68,68,0.2)]" : "";
 
   const selectedCasino = casinos.find((c) => c.id === casinoId);
 
@@ -167,67 +216,86 @@ export default function AdminDailySessionPage() {
         </motion.div>
       )}
 
-      <div className="max-w-6xl mx-auto space-y-3 h-full flex flex-col">
-        {/* Header */}
+      <div className="max-w-7xl mx-auto h-full flex flex-col gap-3">
+        {/* ── Header + Session Selector ─────────────────── */}
         <div className="flex items-center justify-between shrink-0">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold font-[family-name:var(--font-display)] text-arena-gold">
-              Sessão do Dia
-            </h1>
-            <p className="text-xs text-arena-smoke">
-              {session ? "A editar sessão ativa" : "Criar nova sessão"}
-            </p>
+          <div className="flex items-center gap-4">
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold font-[family-name:var(--font-display)] text-arena-gold">
+                Sessão do Dia
+              </h1>
+              <p className="text-xs text-arena-smoke">
+                {session ? `A editar: ${session.session_date}` : "Nova sessão"}
+              </p>
+            </div>
+
+            {/* Session History Dropdown */}
+            <select
+              value={session?.id || ""}
+              onChange={(e) => handleSelectSession(e.target.value)}
+              className="bg-arena-iron/60 border border-arena-gold/20 rounded-lg px-3 py-2 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors [color-scheme:dark] max-w-xs"
+            >
+              <option value="" disabled>Histórico de sessões...</option>
+              {allSessions.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.session_date} — {s.title}{s.is_active ? " 🔴 LIVE" : ""}
+                </option>
+              ))}
+            </select>
           </div>
+
           <button
             onClick={handleNewSession}
-            className="px-3 py-1.5 text-xs rounded-lg bg-arena-iron border border-arena-gold/20 text-arena-gold hover:bg-arena-gold/10 transition-colors font-[family-name:var(--font-display)]"
+            disabled={saving}
+            className="px-4 py-2 text-sm rounded-lg bg-arena-iron border border-arena-gold/20 text-arena-gold hover:bg-arena-gold/10 transition-colors font-[family-name:var(--font-display)] disabled:opacity-50"
           >
             + Nova Sessão
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1 min-h-0">
-          {/* ── LEFT: Form Fields ────────────────────────── */}
-          <div className="space-y-3 overflow-y-auto">
+        {/* ── 2-Column Layout ──────────────────────────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 flex-1 min-h-0">
+          {/* LEFT: Form */}
+          <div className="space-y-4 overflow-y-auto">
 
-            {/* Session Settings + Casino — combined */}
-            <div className="bg-arena-dark/80 rounded-lg border border-arena-gold/15 p-3 space-y-3">
+            {/* Session Settings */}
+            <div className="bg-arena-dark/80 rounded-lg border border-arena-gold/15 p-4 space-y-4">
               <h2 className="text-xs font-bold text-arena-gold uppercase tracking-wider font-[family-name:var(--font-display)]">
                 Definições da Sessão
               </h2>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] text-arena-smoke mb-0.5">Título</label>
+                  <label className="block text-xs text-arena-smoke mb-1">Título</label>
                   <input
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded px-2 py-1.5 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors"
+                    className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded-lg px-3 py-2.5 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors"
                     placeholder="Sessão do Dia"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-arena-smoke mb-0.5">Data</label>
+                  <label className="block text-xs text-arena-smoke mb-1">Data</label>
                   <input
                     type="date"
                     value={sessionDate}
                     onChange={(e) => setSessionDate(e.target.value)}
-                    className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded px-2 py-1.5 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors [color-scheme:dark]"
+                    className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded-lg px-3 py-2.5 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors [color-scheme:dark]"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <label className="text-[10px] text-arena-smoke">Sessão Ativa</label>
+              <div className="flex items-center gap-3">
+                <label className="text-xs text-arena-smoke">Sessão Ativa</label>
                 <button
                   onClick={() => setIsActive(!isActive)}
-                  className={`relative w-10 h-5 rounded-full transition-colors duration-300 ${
+                  className={`relative w-11 h-6 rounded-full transition-colors duration-300 ${
                     isActive ? "bg-green-600" : "bg-arena-iron"
                   }`}
                 >
                   <span
-                    className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform duration-300 ${
+                    className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform duration-300 ${
                       isActive ? "translate-x-5" : ""
                     }`}
                   />
@@ -235,38 +303,36 @@ export default function AdminDailySessionPage() {
               </div>
             </div>
 
-            {/* Casino + Spotify — side by side */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-arena-dark/80 rounded-lg border border-arena-gold/15 p-3 space-y-2">
+            {/* Casino + Spotify */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-arena-dark/80 rounded-lg border border-arena-gold/15 p-4 space-y-3">
                 <h2 className="text-xs font-bold text-arena-gold uppercase tracking-wider font-[family-name:var(--font-display)]">
                   Casino Ativo
                 </h2>
                 <select
                   value={casinoId}
                   onChange={(e) => setCasinoId(e.target.value)}
-                  className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded px-2 py-1.5 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors [color-scheme:dark]"
+                  className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded-lg px-3 py-2.5 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors [color-scheme:dark]"
                 >
                   <option value="">Selecionar casino...</option>
                   {casinos.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
+                    <option key={c.id} value={c.id}>{c.name}</option>
                   ))}
                 </select>
                 {selectedCasino && (
-                  <div className="rounded border border-arena-gold/10 bg-arena-iron/40 p-2 flex items-center gap-2">
+                  <div className="rounded-lg border border-arena-gold/10 bg-arena-iron/40 p-2.5 flex items-center gap-2.5">
                     {selectedCasino.logo_url && (
-                      <img src={selectedCasino.logo_url} alt="" className="w-8 h-8 rounded object-cover" />
+                      <img src={selectedCasino.logo_url} alt="" className="w-9 h-9 rounded-lg object-cover" />
                     )}
                     <div className="min-w-0">
-                      <p className="text-xs text-arena-white font-bold truncate">{selectedCasino.name}</p>
-                      <p className="text-[10px] text-arena-smoke truncate">{selectedCasino.headline}</p>
+                      <p className="text-sm text-arena-white font-bold truncate">{selectedCasino.name}</p>
+                      <p className="text-xs text-arena-smoke truncate">{selectedCasino.headline}</p>
                     </div>
                   </div>
                 )}
               </div>
 
-              <div className="bg-arena-dark/80 rounded-lg border border-arena-gold/15 p-3 space-y-2">
+              <div className="bg-arena-dark/80 rounded-lg border border-arena-gold/15 p-4 space-y-3">
                 <h2 className="text-xs font-bold text-arena-gold uppercase tracking-wider font-[family-name:var(--font-display)]">
                   Spotify Playlist
                 </h2>
@@ -274,11 +340,11 @@ export default function AdminDailySessionPage() {
                   type="url"
                   value={spotifyUrl}
                   onChange={(e) => setSpotifyUrl(e.target.value)}
-                  className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded px-2 py-1.5 text-xs text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors"
+                  className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded-lg px-3 py-2.5 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors"
                   placeholder="https://open.spotify.com/playlist/..."
                 />
                 {spotifyUrl && (
-                  <div className="rounded overflow-hidden border border-arena-gold/10">
+                  <div className="rounded-lg overflow-hidden border border-arena-gold/10">
                     <iframe
                       src={spotifyEmbed}
                       width="100%"
@@ -294,53 +360,57 @@ export default function AdminDailySessionPage() {
             </div>
 
             {/* Financial Tracking */}
-            <div className="bg-arena-dark/80 rounded-lg border border-arena-gold/15 p-3 space-y-2">
+            <div className="bg-arena-dark/80 rounded-lg border border-arena-gold/15 p-4 space-y-3">
               <h2 className="text-xs font-bold text-arena-gold uppercase tracking-wider font-[family-name:var(--font-display)]">
                 Financeiro
               </h2>
 
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-4 gap-3">
                 <div>
-                  <label className="block text-[10px] text-arena-smoke mb-0.5">Depósitos (€)</label>
+                  <label className="block text-xs text-arena-smoke mb-1">Depósitos (€)</label>
                   <input
                     type="number"
                     step="0.01"
                     min="0"
                     value={deposits}
                     onChange={(e) => setDeposits(e.target.value)}
-                    className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded px-2 py-1.5 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors"
+                    placeholder="0.00"
+                    className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded-lg px-3 py-2.5 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-arena-smoke mb-0.5">Levantamentos (€)</label>
+                  <label className="block text-xs text-arena-smoke mb-1">Levantamentos (€)</label>
                   <input
                     type="number"
                     step="0.01"
                     min="0"
                     value={withdrawals}
                     onChange={(e) => setWithdrawals(e.target.value)}
-                    className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded px-2 py-1.5 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors"
+                    placeholder="0.00"
+                    className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded-lg px-3 py-2.5 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-arena-smoke mb-0.5">Bónus Jogados</label>
+                  <label className="block text-xs text-arena-smoke mb-1">Bónus Jogados</label>
                   <input
                     type="number"
                     min="0"
                     value={bonusesCount}
                     onChange={(e) => setBonusesCount(e.target.value)}
-                    className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded px-2 py-1.5 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors"
+                    placeholder="0"
+                    className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded-lg px-3 py-2.5 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-arena-smoke mb-0.5">Maior Vitória (€)</label>
+                  <label className="block text-xs text-arena-smoke mb-1">Maior Vitória (€)</label>
                   <input
                     type="number"
                     step="0.01"
                     min="0"
                     value={biggestWin}
                     onChange={(e) => setBiggestWin(e.target.value)}
-                    className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded px-2 py-1.5 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors"
+                    placeholder="0.00"
+                    className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded-lg px-3 py-2.5 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors"
                   />
                 </div>
               </div>
@@ -350,31 +420,31 @@ export default function AdminDailySessionPage() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="w-full py-2 rounded-lg bg-gradient-to-r from-arena-crimson to-red-800 hover:from-red-700 hover:to-red-600 text-white font-bold text-sm uppercase tracking-wider transition-all duration-300 border border-red-500/30 hover:shadow-[0_0_20px_rgba(239,68,68,0.3)] disabled:opacity-50 disabled:cursor-not-allowed font-[family-name:var(--font-display)]"
+              className="w-full py-3 rounded-lg bg-gradient-to-r from-arena-crimson to-red-800 hover:from-red-700 hover:to-red-600 text-white font-bold text-sm uppercase tracking-wider transition-all duration-300 border border-red-500/30 hover:shadow-[0_0_20px_rgba(239,68,68,0.3)] disabled:opacity-50 disabled:cursor-not-allowed font-[family-name:var(--font-display)]"
             >
               {saving ? "A guardar..." : session ? "⚔ Atualizar Sessão ⚔" : "⚔ Criar Sessão ⚔"}
             </button>
           </div>
 
-          {/* ── RIGHT: Live Preview ──────────────────────── */}
-          <div className="space-y-3">
+          {/* RIGHT: Live Preview */}
+          <div className="space-y-4">
             <h2 className="text-xs font-bold text-arena-gold uppercase tracking-wider font-[family-name:var(--font-display)]">
               Pré-visualização
             </h2>
 
             {/* Stats Preview */}
-            <div className="grid grid-cols-3 gap-2">
-              <div className={`rounded-lg bg-arena-iron/60 border border-red-500/20 p-2 text-center ${parseFloat(deposits) > 0 ? "shadow-[0_0_15px_rgba(239,68,68,0.15)]" : ""}`}>
+            <div className="grid grid-cols-3 gap-3">
+              <div className={`rounded-lg bg-arena-iron/60 border border-red-500/20 p-3 text-center ${depVal > 0 ? "shadow-[0_0_15px_rgba(239,68,68,0.15)]" : ""}`}>
                 <p className="text-[10px] text-arena-ash uppercase tracking-wider">Depósitos</p>
-                <p className="text-base font-bold text-red-400">{parseFloat(deposits || "0").toFixed(2)}€</p>
+                <p className="text-lg font-bold text-red-400">{depVal.toFixed(2)}€</p>
               </div>
-              <div className={`rounded-lg bg-arena-iron/60 border border-green-500/20 p-2 text-center ${parseFloat(withdrawals) > 0 ? "shadow-[0_0_15px_rgba(34,197,94,0.15)]" : ""}`}>
+              <div className={`rounded-lg bg-arena-iron/60 border border-green-500/20 p-3 text-center ${witVal > 0 ? "shadow-[0_0_15px_rgba(34,197,94,0.15)]" : ""}`}>
                 <p className="text-[10px] text-arena-ash uppercase tracking-wider">Levantamentos</p>
-                <p className="text-base font-bold text-green-400">{parseFloat(withdrawals || "0").toFixed(2)}€</p>
+                <p className="text-lg font-bold text-green-400">{witVal.toFixed(2)}€</p>
               </div>
-              <div className={`rounded-lg bg-arena-iron/60 border p-2 text-center ${net > 0 ? "border-green-500/20 shadow-[0_0_15px_rgba(34,197,94,0.15)]" : net < 0 ? "border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.15)]" : "border-arena-gold/20"}`}>
+              <div className={`rounded-lg bg-arena-iron/60 border p-3 text-center ${net > 0 ? "border-green-500/20 shadow-[0_0_15px_rgba(34,197,94,0.15)]" : net < 0 ? "border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.15)]" : "border-arena-gold/20"}`}>
                 <p className="text-[10px] text-arena-ash uppercase tracking-wider">Resultado</p>
-                <p className={`text-base font-bold ${netColor}`}>{net >= 0 ? "+" : ""}{net.toFixed(2)}€</p>
+                <p className={`text-lg font-bold ${netColor}`}>{net >= 0 ? "+" : ""}{net.toFixed(2)}€</p>
               </div>
             </div>
 
@@ -382,7 +452,7 @@ export default function AdminDailySessionPage() {
             {selectedCasino && (
               <div className="rounded-lg border border-arena-gold/20 bg-gradient-to-b from-arena-iron/60 to-arena-dark/80 overflow-hidden">
                 {selectedCasino.banner_url && (
-                  <div className="relative h-24 overflow-hidden">
+                  <div className="relative h-28 overflow-hidden">
                     <img src={selectedCasino.banner_url} alt="" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-arena-dark via-arena-dark/30 to-transparent" />
                   </div>
@@ -390,7 +460,7 @@ export default function AdminDailySessionPage() {
                 <div className="p-3 space-y-1">
                   <div className="flex items-center gap-2">
                     {selectedCasino.logo_url && (
-                      <img src={selectedCasino.logo_url} alt="" className="w-7 h-7 rounded-lg object-cover" />
+                      <img src={selectedCasino.logo_url} alt="" className="w-8 h-8 rounded-lg object-cover" />
                     )}
                     <p className="text-sm text-arena-white font-bold font-[family-name:var(--font-display)]">{selectedCasino.name}</p>
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-arena-crimson/60 text-[10px] text-white uppercase">
