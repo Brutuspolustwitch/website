@@ -39,6 +39,7 @@ const MAIN_LINKS: NavItem[] = [
     href: "/torneio",
     label: "Comunidade",
     children: [
+      { href: "/reviews", label: "Reviews" },
       { href: "/roda-diaria", label: "Roda Diária" },
       { href: "/giveaways", label: "Giveaways" },
       { href: "/liga-dos-brutus", label: "Liga dos Brutus" },
