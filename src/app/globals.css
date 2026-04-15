@@ -371,11 +371,13 @@ body {
   perspective: 1000px;
   width: 100%;
   max-width: 400px;
+  height: 520px;
   cursor: pointer;
 }
 .papyrus-flip-inner {
   position: relative;
   width: 100%;
+  height: 100%;
   transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   transform-style: preserve-3d;
 }
@@ -384,11 +386,21 @@ body {
 }
 .papyrus-flip-face {
   width: 100%;
+  height: 100%;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
 .papyrus-flip-front {
   position: relative;
+}
+.papyrus-flip-front .papyrus-scroll {
+  height: 100%;
+}
+.papyrus-flip-front .scroll-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .papyrus-flip-back {
   position: absolute;

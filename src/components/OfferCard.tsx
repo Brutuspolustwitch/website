@@ -118,60 +118,6 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
             <CornerOrnament className="bottom-left" />
             <CornerOrnament className="bottom-right" />
             <div className="scroll-content">
-              {/* Banner */}
-              <div className="casino-banner">
-                <div className="casino-banner-inner">
-                  {offer.banner_url ? (
-                    <img
-                      src={offer.banner_url}
-                      alt={offer.name}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
-                    />
-                  ) : null}
-                </div>
-              </div>
-
-              {/* Rating */}
-              <StarRating rating={offer.rating ?? 4.5} />
-
-              {/* Stat Rows — stacked label/value */}
-              <div className="stat-rows">
-                <div className="stat-row-stacked">
-                  <span className="stat-label">Licença</span>
-                  <span className="stat-value">{offer.license}</span>
-                </div>
-                <div className="stat-row-stacked">
-                  <span className="stat-label">Levantamento</span>
-                  <span className="stat-value">{offer.withdraw_time}</span>
-                </div>
-                <div className="stat-row-stacked">
-                  <span className="stat-label">Depósito Mín.</span>
-                  <span className="stat-value">{offer.min_deposit}</span>
-                </div>
-              </div>
-
-              {/* CTA */}
-              <div className="cta-section">
-                <a href={externalUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
-                  <button className="cta-button">⚔ Resgatar Bónus ⚔</button>
-                </a>
-                <p className="cta-subtext">18+ · T&Cs Aplicáveis · Joga com responsabilidade</p>
-              </div>
-
-              {/* Flip hint */}
-              <p className="flip-hint" onClick={(e) => { e.stopPropagation(); setFlipped(true); }}>Toca para ver detalhes ↻</p>
-            </div>
-          </div>
-        </div>
-
-        {/* ═══ BACK ═══ */}
-        <div className="papyrus-flip-face papyrus-flip-back">
-          <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom">
-            <CornerOrnament className="top-left" />
-            <CornerOrnament className="top-right" />
-            <CornerOrnament className="bottom-left" />
-            <CornerOrnament className="bottom-right" />
-            <div className="scroll-content">
               {/* Promo Section */}
               <div className="promo-section">
                 <p className="promo-label">✦ Oferta Exclusiva ✦</p>
@@ -206,6 +152,60 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
               {/* Wax Seal */}
               <div style={{ margin: "8px 0" }}>
                 <div className="wax-seal" />
+              </div>
+
+              {/* CTA */}
+              <div className="cta-section">
+                <a href={externalUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                  <button className="cta-button">⚔ Resgatar Bónus ⚔</button>
+                </a>
+                <p className="cta-subtext">18+ · T&Cs Aplicáveis · Joga com responsabilidade</p>
+              </div>
+
+              {/* Flip hint */}
+              <p className="flip-hint" onClick={(e) => { e.stopPropagation(); setFlipped(true); }}>Toca para ver detalhes ↻</p>
+            </div>
+          </div>
+        </div>
+
+        {/* ═══ BACK ═══ */}
+        <div className="papyrus-flip-face papyrus-flip-back">
+          <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom">
+            <CornerOrnament className="top-left" />
+            <CornerOrnament className="top-right" />
+            <CornerOrnament className="bottom-left" />
+            <CornerOrnament className="bottom-right" />
+            <div className="scroll-content">
+              {/* Banner */}
+              <div className="casino-banner">
+                <div className="casino-banner-inner">
+                  {offer.banner_url ? (
+                    <img
+                      src={offer.banner_url}
+                      alt={offer.name}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
+                    />
+                  ) : null}
+                </div>
+              </div>
+
+              {/* Rating */}
+              <StarRating rating={offer.rating ?? 4.5} />
+
+              {/* Stat Rows — stacked label/value */}
+              <div className="stat-rows">
+                <div className="stat-row-stacked">
+                  <span className="stat-label">Licença</span>
+                  <span className="stat-value">{offer.license}</span>
+                </div>
+                <div className="stat-row-stacked">
+                  <span className="stat-label">Levantamento</span>
+                  <span className="stat-value">{offer.withdraw_time}</span>
+                </div>
+                <div className="stat-row-stacked">
+                  <span className="stat-label">Depósito Mín.</span>
+                  <span className="stat-value">{offer.min_deposit}</span>
+                </div>
               </div>
 
               {/* CTA on back too */}
