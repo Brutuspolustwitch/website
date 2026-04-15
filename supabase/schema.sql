@@ -423,7 +423,7 @@ create table if not exists spin_history (
   created_at timestamptz not null default now()
 );
 
-create index idx_spin_history_created on spin_history(created_at desc);
+create index if not exists idx_spin_history_created on spin_history(created_at desc);
 
 -- ============================================================
 -- Wheel Segments — Admin-configurable wheel prizes
@@ -444,7 +444,7 @@ create table if not exists wheel_segments (
   updated_at timestamptz not null default now()
 );
 
-create index idx_wheel_segments_active on wheel_segments(is_active, sort_order);
+create index if not exists idx_wheel_segments_active on wheel_segments(is_active, sort_order);
 
 alter table wheel_segments enable row level security;
 create policy "Public read wheel segments" on wheel_segments for select using (true);
