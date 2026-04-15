@@ -98,6 +98,7 @@ create table if not exists casino_offers (
   established text not null default '2023',
   notes text[] not null default '{}',
   affiliate_url text not null default '#',
+  rating numeric(2,1) not null default 4.5 check (rating >= 0 and rating <= 5),
   visible boolean not null default true,
   sort_order integer not null default 0,
   created_at timestamptz not null default now(),

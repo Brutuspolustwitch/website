@@ -27,6 +27,7 @@ const EMPTY_OFFER: Omit<CasinoOfferRow, "id" | "created_at" | "updated_at"> = {
   established: "2023",
   notes: [],
   affiliate_url: "#",
+  rating: 4.5,
   visible: true,
   sort_order: 0,
 };
@@ -293,6 +294,7 @@ function OfferForm({ initial, onSave, saving, nextOrder }: OfferFormProps) {
     established: initial.established,
     notes: initial.notes.join("\n"),
     affiliate_url: initial.affiliate_url,
+    rating: (initial as any).rating ?? 4.5,
     visible: initial.visible,
     sort_order: initial.sort_order || nextOrder,
   });
@@ -324,6 +326,7 @@ function OfferForm({ initial, onSave, saving, nextOrder }: OfferFormProps) {
       established: form.established,
       notes: form.notes.split("\n").filter(Boolean),
       affiliate_url: form.affiliate_url,
+      rating: form.rating,
       visible: form.visible,
       sort_order: form.sort_order,
     });
@@ -406,8 +409,11 @@ function OfferForm({ initial, onSave, saving, nextOrder }: OfferFormProps) {
           </select>
         </div>
         <div>
-          <label className={labelCls}>Tags (separadas por vírgula)</label>
-          <input className={inputCls} value={form.tags} onChange={(e) => set("tags", e.target.value)} placeholder="FREE SPINS, MB" />
+          <label className={labelCls}>Rating (0-5)</label>
+          <div className="flex items-center gap-3">
+            <input type="range" min="0" max="5" step="0.5" value={form.rating} onChange={(e) => set("rating", parseFloat(e.target.value))} className="flex-1 accent-arena-gold" />
+            <span className="text-white text-sm font-bold w-8">{form.rating}</span>
+          </div>
         </div>
         <div>
           <label className={labelCls}>Cor do Logo</label>
@@ -420,6 +426,10 @@ function OfferForm({ initial, onSave, saving, nextOrder }: OfferFormProps) {
 
       {/* URLs */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div>
+          <label className={labelCls}>Tags (separadas por vírgula)</label>
+          <input className={inputCls} value={form.tags} onChange={(e) => set("tags", e.target.value)} placeholder="FREE SPINS, MB" />
+        </div>
         <div>
           <label className={labelCls}>Logo URL</label>
           <input className={inputCls} value={form.logo_url} onChange={(e) => set("logo_url", e.target.value)} placeholder="/images/logo.png" />
