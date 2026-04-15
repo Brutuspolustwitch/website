@@ -195,35 +195,32 @@ export default function LojaPage() {
             </div>
           </div>
 
-          {/* Loading skeletons — relic card style */}
+          {/* Loading skeletons — papyrus style */}
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="rounded-xl bg-gradient-to-b from-[#1a1a1a] to-[#111] border border-white/[0.06] overflow-hidden">
-                  {/* Image skeleton */}
-                  <div className="aspect-[16/10] bg-white/[0.03] animate-pulse" />
-                  <div className="p-4 space-y-3">
-                    {/* Badge skeleton */}
-                    <div className="h-5 w-20 bg-white/[0.04] rounded animate-pulse" />
-                    {/* Title skeleton */}
-                    <div className="h-4 w-3/4 bg-white/[0.04] rounded animate-pulse" />
-                    {/* Description skeleton */}
-                    <div className="h-3 w-full bg-white/[0.03] rounded animate-pulse" />
-                    {/* Cost skeleton */}
-                    <div className="h-8 w-28 bg-white/[0.04] rounded animate-pulse" />
-                    {/* Button skeleton */}
-                    <div className="h-10 w-full bg-white/[0.04] rounded-lg animate-pulse mt-1" />
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {Array.from({ length: 10 }).map((_, i) => (
+                <div key={i} className="papyrus-scroll greek-key-border" style={{ maxWidth: "100%", padding: 0 }}>
+                  <div className="aspect-[16/9] w-full" style={{ background: "rgba(139,105,20,0.08)", borderRadius: "var(--scroll-radius) var(--scroll-radius) 0 0" }}>
+                    <div className="h-full w-full animate-pulse" style={{ background: "rgba(139,105,20,0.06)" }} />
+                  </div>
+                  <div style={{ padding: "10px 16px 14px" }}>
+                    <div className="animate-pulse" style={{ height: 14, width: "60%", background: "rgba(139,105,20,0.1)", borderRadius: 4, marginBottom: 6 }} />
+                    <div className="animate-pulse" style={{ height: 10, width: "90%", background: "rgba(139,105,20,0.07)", borderRadius: 4, marginBottom: 8 }} />
+                    <div className="animate-pulse" style={{ height: 24, width: "50%", background: "rgba(139,105,20,0.08)", borderRadius: 4, marginBottom: 8 }} />
+                    <div className="animate-pulse" style={{ height: 28, width: "100%", background: "rgba(139,26,26,0.1)", borderRadius: 4 }} />
                   </div>
                 </div>
               ))}
             </div>
           ) : rewards.length === 0 ? (
-            <div className="rounded-xl border border-white/[0.06] bg-gradient-to-b from-[#1a1a1a] to-[#111] p-12 text-center">
-              <div className="text-4xl mb-4 opacity-30">🏛️</div>
-              <p className="font-[family-name:var(--font-display)] text-arena-smoke/60 text-lg tracking-wide">
-                A armaria está vazia de momento.
-              </p>
-              <p className="text-arena-smoke/30 text-sm mt-2">Volta em breve para novas recompensas forjadas!</p>
+            <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom" style={{ maxWidth: 500, margin: "0 auto" }}>
+              <div className="scroll-content" style={{ textAlign: "center", padding: "2rem" }}>
+                <div style={{ fontSize: "2rem", marginBottom: "0.75rem", opacity: 0.5 }}>🏛️</div>
+                <p style={{ fontFamily: "'Cinzel', serif", fontSize: "0.9rem", color: "var(--ink-dark)", letterSpacing: "0.08em" }}>
+                  A armaria está vazia de momento.
+                </p>
+                <p style={{ fontSize: "0.7rem", color: "var(--ink-light)", marginTop: "0.5rem" }}>Volta em breve para novas recompensas forjadas!</p>
+              </div>
             </div>
           ) : (
             <>
@@ -239,7 +236,7 @@ export default function LojaPage() {
                     </h3>
                     <div className="h-px flex-1 bg-gradient-to-l from-transparent to-arena-crimson/20" />
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                     {legendaryRewards.map((reward, i) => (
                       <motion.div
                         key={reward.id}
@@ -275,7 +272,7 @@ export default function LojaPage() {
                       <div className="h-px flex-1 bg-gradient-to-l from-transparent to-arena-gold/15" />
                     </div>
                   )}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                     {otherRewards.map((reward, i) => (
                       <motion.div
                         key={reward.id}
