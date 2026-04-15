@@ -4,6 +4,8 @@ import DailySessionContent from "@/components/DailySession";
 import { DestaquesContent } from "@/components/DestaquesContent";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Live Stream",
   description: "Watch the gladiator battle live on Twitch. Real-time casino streaming, bonus hunts, and slot battles.",
