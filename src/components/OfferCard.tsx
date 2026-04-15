@@ -105,7 +105,7 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
   const perks = offer.tags.length > 0 ? offer.tags : ["🎰 Slots", "⚡ Instant Play", "🛡 SSL"];
 
   return (
-    <div className="papyrus-flip-container" onClick={() => window.open(offer.affiliate_url, '_blank', 'noopener,noreferrer')}>
+    <div className="papyrus-flip-container" onClick={() => { if (flipped) { setFlipped(false); } else { window.open(offer.affiliate_url, '_blank', 'noopener,noreferrer'); } }}>
       <div className={`papyrus-flip-inner ${flipped ? "papyrus-flipped" : ""}`}>
 
         {/* ═══ FRONT ═══ */}
