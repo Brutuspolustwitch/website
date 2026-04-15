@@ -474,3 +474,31 @@ on conflict (key) do nothing;
 
 -- Enable realtime for wheel segments
 alter publication supabase_realtime add table wheel_segments;
+
+-- ============================================================
+-- Scheduled Streams — Calendar of upcoming live streams
+-- ============================================================
+create table if not exists scheduled_streams (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  description text not null default '',
+  stream_date date not null,
+  start_time time not null default '18:00',
+  end_time time,
+  category text not null default 'Slots' check (category in ('Slots', 'Bonus Hunt', 'Torneio', 'Especial', 'Giveaway', 'Outro')),
+  casino text,
+  is_special boolean not null default false,
+  is_cancelled boolean not null default false,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists idx_scheduled_streams_date on scheduled_streams(stream_date desc);
+
+alter table scheduled_streams enable row level security;
+create policy "Public read scheduled streams" on scheduled_streams for select using (true);
+create policy "Admin insert scheduled streams" on scheduled_streams for insert with check (true);
+create policy "Admin update scheduled streams" on scheduled_streams for update using (true);
+create policy "Admin delete scheduled streams" on scheduled_streams for delete using (true);
+
+alter publication supabase_realtime add table scheduled_streams;

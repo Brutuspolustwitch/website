@@ -153,3 +153,18 @@ export interface WheelConfigRow {
   value: string;
   updated_at: string;
 }
+
+export interface ScheduledStreamRow {
+  id: string;
+  title: string;
+  description: string;
+  stream_date: string;
+  start_time: string;
+  end_time: string | null;
+  category: "Slots" | "Bonus Hunt" | "Torneio" | "Especial" | "Giveaway" | "Outro";
+  casino: string | null;
+  is_special: boolean;
+  is_cancelled: boolean;
+  created_at: string;
+  updated_at: string;
+}
