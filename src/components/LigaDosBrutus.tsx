@@ -134,12 +134,13 @@ export default function LigaDosBrutusContent() {
           className="absolute inset-0"
           style={{
             backgroundImage: "url('/images/pages/brutusleague.png')",
-            backgroundSize: "cover",
+            backgroundSize: "80%",
             backgroundPosition: "center",
-            filter: "brightness(0.12) saturate(0.3) sepia(0.4) blur(2px)",
+            backgroundRepeat: "no-repeat",
+            filter: "brightness(0.3) saturate(0.5) sepia(0.3)",
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-black" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/70" />
       </div>
 
       {/* Content */}
