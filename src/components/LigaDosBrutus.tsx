@@ -134,8 +134,8 @@ export default function LigaDosBrutusContent() {
           className="absolute inset-0"
           style={{
             backgroundImage: "url('/images/pages/brutusleague.png')",
-            backgroundSize: "80%",
-            backgroundPosition: "center",
+            backgroundSize: "60%",
+            backgroundPosition: "bottom right",
             backgroundRepeat: "no-repeat",
             filter: "brightness(0.3) saturate(0.5) sepia(0.3)",
           }}
