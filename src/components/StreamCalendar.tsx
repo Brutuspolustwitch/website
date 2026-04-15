@@ -162,15 +162,17 @@ export function StreamCalendar() {
             </div>
 
             <div className="shrink-0 text-center">
-              {(() => {
-                const cat = CATEGORY_COLORS[nextStream.category] || CATEGORY_COLORS["Outro"];
-                return (
-                  <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl border ${cat.bg} ${cat.text} ${cat.border}`}>
-                    <span className="text-lg">{CATEGORY_ICONS[nextStream.category]}</span>
-                    <span className="font-bold text-sm">{nextStream.category}</span>
-                  </div>
-                );
-              })()}
+              <div className="flex flex-wrap gap-2 justify-end">
+                {(nextStream.categories || ["Outro"]).map((catName) => {
+                  const cat = CATEGORY_COLORS[catName] || CATEGORY_COLORS["Outro"];
+                  return (
+                    <div key={catName} className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl border ${cat.bg} ${cat.text} ${cat.border}`}>
+                      <span className="text-lg">{CATEGORY_ICONS[catName]}</span>
+                      <span className="font-bold text-sm">{catName}</span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </motion.div>
@@ -234,7 +236,8 @@ export function StreamCalendar() {
                   {/* Streams for this date */}
                   <div className="space-y-3 ml-2">
                     {groupedByDate[date].map((stream, i) => {
-                      const cat = CATEGORY_COLORS[stream.category] || CATEGORY_COLORS["Outro"];
+                      const cats = stream.categories || ["Outro"];
+                      const firstCat = CATEGORY_COLORS[cats[0]] || CATEGORY_COLORS["Outro"];
                       return (
                         <motion.div
                           key={stream.id}
@@ -243,19 +246,24 @@ export function StreamCalendar() {
                           transition={{ delay: i * 0.05 }}
                           className={`group relative bg-white/[0.03] border border-white/10 rounded-xl p-5 transition-all
                                      hover:bg-white/[0.05] hover:border-white/20 ${
-                                       stream.is_special ? `hover:shadow-lg ${cat.glow}` : ""
+                                       stream.is_special ? `hover:shadow-lg ${firstCat.glow}` : ""
                                      }`}
                         >
                           {/* Left accent bar */}
-                          <div className={`absolute left-0 top-3 bottom-3 w-1 rounded-full ${cat.text.replace("text-", "bg-")}`} />
+                          <div className={`absolute left-0 top-3 bottom-3 w-1 rounded-full ${firstCat.text.replace("text-", "bg-")}`} />
 
                           <div className="pl-4">
                             <div className="flex items-start justify-between gap-3">
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 flex-wrap mb-1.5">
-                                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium border ${cat.bg} ${cat.text} ${cat.border}`}>
-                                    {CATEGORY_ICONS[stream.category]} {stream.category}
-                                  </span>
+                                  {cats.map((catName) => {
+                                    const c = CATEGORY_COLORS[catName] || CATEGORY_COLORS["Outro"];
+                                    return (
+                                      <span key={catName} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium border ${c.bg} ${c.text} ${c.border}`}>
+                                        {CATEGORY_ICONS[catName]} {catName}
+                                      </span>
+                                    );
+                                  })}
                                   {stream.is_special && (
                                     <span className="px-2 py-0.5 rounded-md text-xs font-medium bg-arena-gold/10 text-arena-gold border border-arena-gold/30">
                                       ⭐ Especial
@@ -363,14 +371,14 @@ export function StreamCalendar() {
                     {dayStreams.length > 0 && (
                       <div className="mt-0.5 space-y-0.5">
                         {dayStreams.slice(0, 2).map((s) => {
-                          const cat = CATEGORY_COLORS[s.category] || CATEGORY_COLORS["Outro"];
+                          const firstCat = CATEGORY_COLORS[(s.categories || [])[0] || "Outro"] || CATEGORY_COLORS["Outro"];
                           return (
                             <div
                               key={s.id}
-                              className={`truncate rounded px-1 py-px text-[10px] leading-tight font-medium ${cat.bg} ${cat.text}`}
+                              className={`truncate rounded px-1 py-px text-[10px] leading-tight font-medium ${firstCat.bg} ${firstCat.text}`}
                               title={`${s.start_time.slice(0, 5)} — ${s.title}`}
                             >
-                              {CATEGORY_ICONS[s.category]} {s.start_time.slice(0, 5)}
+                              {(s.categories || []).map((c) => CATEGORY_ICONS[c]).join("")} {s.start_time.slice(0, 5)}
                             </div>
                           );
                         })}

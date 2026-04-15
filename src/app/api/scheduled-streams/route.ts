@@ -36,7 +36,7 @@ export async function POST(request: Request) {
   if (!admin) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   const body = await request.json();
-  const { title, description, stream_date, start_time, end_time, category, casino, is_special } = body;
+  const { title, description, stream_date, start_time, end_time, categories, casino, is_special } = body;
 
   if (!title || !stream_date || !start_time) {
     return NextResponse.json({ error: "Title, stream_date and start_time are required" }, { status: 400 });
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
       stream_date,
       start_time,
       end_time: end_time || null,
-      category: category || "Slots",
+      categories: Array.isArray(categories) && categories.length > 0 ? categories : ["Slots"],
       casino: casino || null,
       is_special: is_special || false,
       is_cancelled: false,

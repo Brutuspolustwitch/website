@@ -485,7 +485,7 @@ create table if not exists scheduled_streams (
   stream_date date not null,
   start_time time not null default '18:00',
   end_time time,
-  category text not null default 'Slots' check (category in ('Slots', 'Bonus Hunt', 'Torneio', 'Especial', 'Giveaway', 'Outro')),
+  categories text[] not null default '{Slots}',
   casino text,
   is_special boolean not null default false,
   is_cancelled boolean not null default false,

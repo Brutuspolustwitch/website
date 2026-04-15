@@ -13,7 +13,7 @@ interface Stream {
   stream_date: string;
   start_time: string;
   end_time: string | null;
-  category: string;
+  categories: string[];
   casino: string | null;
   is_special: boolean;
   is_cancelled: boolean;
@@ -45,7 +45,7 @@ const EMPTY_STREAM: Omit<Stream, "id"> = {
   stream_date: "",
   start_time: "18:00",
   end_time: null,
-  category: "Slots",
+  categories: ["Slots"],
   casino: null,
   is_special: false,
   is_cancelled: false,
@@ -161,7 +161,7 @@ export default function AdminCalendarioConfig() {
       stream_date: stream.stream_date,
       start_time: stream.start_time.slice(0, 5),
       end_time: stream.end_time?.slice(0, 5) || null,
-      category: stream.category,
+      categories: stream.categories || ["Slots"],
       casino: stream.casino,
       is_special: stream.is_special,
       is_cancelled: stream.is_cancelled,
@@ -299,18 +299,21 @@ export default function AdminCalendarioConfig() {
                       </div>
                       {dayStreams.length > 0 && (
                         <div className="mt-0.5 space-y-0.5">
-                          {dayStreams.slice(0, 2).map((s) => (
-                            <div
-                              key={s.id}
-                              className={`truncate rounded px-0.5 text-[10px] leading-tight ${
-                                s.is_cancelled
-                                  ? "text-red-400/60 line-through"
-                                  : CATEGORY_COLORS[s.category]?.text || "text-arena-smoke"
-                              }`}
-                            >
-                              {CATEGORY_ICONS[s.category]} {s.start_time.slice(0, 5)}
-                            </div>
-                          ))}
+                          {dayStreams.slice(0, 2).map((s) => {
+                            const firstCat = (s.categories || [])[0] || "Outro";
+                            return (
+                              <div
+                                key={s.id}
+                                className={`truncate rounded px-0.5 text-[10px] leading-tight ${
+                                  s.is_cancelled
+                                    ? "text-red-400/60 line-through"
+                                    : CATEGORY_COLORS[firstCat]?.text || "text-arena-smoke"
+                                }`}
+                              >
+                                {(s.categories || []).map((c) => CATEGORY_ICONS[c]).join("")} {s.start_time.slice(0, 5)}
+                              </div>
+                            );
+                          })}
                           {dayStreams.length > 2 && (
                             <div className="text-[10px] text-arena-ash">+{dayStreams.length - 2}</div>
                           )}
@@ -332,7 +335,8 @@ export default function AdminCalendarioConfig() {
                 </div>
               ) : (
                 streams.map((stream) => {
-                  const cat = CATEGORY_COLORS[stream.category] || CATEGORY_COLORS["Outro"];
+                  const cats = stream.categories || ["Outro"];
+                  const firstCat = CATEGORY_COLORS[cats[0]] || CATEGORY_COLORS["Outro"];
                   return (
                     <motion.div
                       key={stream.id}
@@ -346,9 +350,14 @@ export default function AdminCalendarioConfig() {
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap mb-1">
-                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium border ${cat.bg} ${cat.text} ${cat.border}`}>
-                              {CATEGORY_ICONS[stream.category]} {stream.category}
-                            </span>
+                            {cats.map((catName) => {
+                              const c = CATEGORY_COLORS[catName] || CATEGORY_COLORS["Outro"];
+                              return (
+                                <span key={catName} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium border ${c.bg} ${c.text} ${c.border}`}>
+                                  {CATEGORY_ICONS[catName]} {catName}
+                                </span>
+                              );
+                            })}
                             {stream.is_special && (
                               <span className="px-2 py-0.5 rounded-md text-xs font-medium bg-arena-gold/10 text-arena-gold border border-arena-gold/30">
                                 ⭐ Especial
@@ -458,18 +467,24 @@ export default function AdminCalendarioConfig() {
                   </div>
                 </div>
 
-                {/* Category */}
+                {/* Category (multi-select) */}
                 <div>
                   <label className="text-xs text-arena-ash uppercase tracking-wider">Categoria</label>
                   <div className="mt-1 grid grid-cols-3 gap-2">
                     {CATEGORIES.map((cat) => {
                       const c = CATEGORY_COLORS[cat];
+                      const isSelected = draft.categories.includes(cat);
                       return (
                         <button
                           key={cat}
-                          onClick={() => setDraft((p) => ({ ...p, category: cat }))}
+                          onClick={() => setDraft((p) => {
+                            const cats = p.categories.includes(cat)
+                              ? p.categories.filter((c) => c !== cat)
+                              : [...p.categories, cat];
+                            return { ...p, categories: cats.length > 0 ? cats : [cat] };
+                          })}
                           className={`px-2 py-1.5 rounded-lg text-xs font-medium border transition-all ${
-                            draft.category === cat
+                            isSelected
                               ? `${c.bg} ${c.text} ${c.border}`
                               : "bg-white/[0.02] text-arena-ash border-white/10 hover:bg-white/[0.05]"
                           }`}
@@ -543,10 +558,10 @@ export default function AdminCalendarioConfig() {
             ) : (
               <div className="space-y-2">
                 {upcomingStreams.map((s) => {
-                  const cat = CATEGORY_COLORS[s.category];
+                  const firstCat = CATEGORY_COLORS[(s.categories || [])[0] || "Outro"];
                   return (
                     <div key={s.id} className="flex items-center gap-3 text-sm">
-                      <span className={`w-2 h-2 rounded-full shrink-0 ${cat?.text?.replace("text-", "bg-") || "bg-arena-ash"}`} />
+                      <span className={`w-2 h-2 rounded-full shrink-0 ${firstCat?.text?.replace("text-", "bg-") || "bg-arena-ash"}`} />
                       <div className="flex-1 min-w-0">
                         <span className="text-arena-white truncate block">{s.title}</span>
                         <span className="text-xs text-arena-ash">

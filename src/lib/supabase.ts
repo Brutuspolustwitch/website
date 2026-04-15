@@ -161,7 +161,7 @@ export interface ScheduledStreamRow {
   stream_date: string;
   start_time: string;
   end_time: string | null;
-  category: "Slots" | "Bonus Hunt" | "Torneio" | "Especial" | "Giveaway" | "Outro";
+  categories: string[];
   casino: string | null;
   is_special: boolean;
   is_cancelled: boolean;
