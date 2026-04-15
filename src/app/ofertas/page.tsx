@@ -26,7 +26,7 @@ export default function OfertasPage() {
             backgroundSize: "cover",
             backgroundPosition: "right center",
             backgroundRepeat: "no-repeat",
-            filter: "brightness(0.35) saturate(0.35) sepia(0.25) contrast(0.9) blur(2px)",
+            filter: "brightness(0.35) saturate(0.7) sepia(0.1) contrast(0.95) blur(2px)",
           }}
         />
         {/* Fade from left (black) into image on right */}
