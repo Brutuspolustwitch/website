@@ -16,7 +16,7 @@ const PROTECTED: { prefix: string; role: Role }[] = [
   { prefix: "/moderador", role: "moderador" },
 ];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Find matching protection rule
