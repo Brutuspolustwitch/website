@@ -15,6 +15,7 @@ interface NavbarProps {
 export function Navbar({ onMenuToggle }: NavbarProps) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [points, setPoints] = useState(0);
+  const [unreadCount, setUnreadCount] = useState(0);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const { user, loading, login, logout } = useAuth();
 
@@ -27,6 +28,24 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
       .then((r) => r.json())
       .then((d) => { if (typeof d.points === "number") setPoints(d.points); })
       .catch(() => {});
+  }, [user]);
+
+  // Fetch unread notification count
+  useEffect(() => {
+    if (!user) return;
+    const fetchCount = () => {
+      fetch("/api/notifications")
+        .then((r) => r.json())
+        .then((d) => {
+          if (Array.isArray(d.notifications)) {
+            setUnreadCount(d.notifications.filter((n: { read: boolean }) => !n.read).length);
+          }
+        })
+        .catch(() => {});
+    };
+    fetchCount();
+    const interval = setInterval(fetchCount, 30000);
+    return () => clearInterval(interval);
   }, [user]);
 
   // Close user menu on outside click
@@ -91,11 +110,18 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
                     className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-arena-steel/30 hover:border-purple-500/50 transition-all duration-200"
                   >
-                    <img
-                      src={user.profile_image_url}
-                      alt={user.display_name}
-                      className="w-6 h-6 rounded-full"
-                    />
+                    <div className="relative">
+                      <img
+                        src={user.profile_image_url}
+                        alt={user.display_name}
+                        className="w-6 h-6 rounded-full"
+                      />
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white ring-2 ring-arena-black animate-pulse">
+                          {unreadCount > 9 ? "9+" : unreadCount}
+                        </span>
+                      )}
+                    </div>
                     <span className="hidden sm:inline text-sm font-medium text-arena-white">
                       {user.display_name}
                     </span>
