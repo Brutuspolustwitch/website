@@ -284,7 +284,7 @@ body {
 .papyrus-scroll {
   position: relative;
   width: 100%;
-  max-width: 340px;
+  max-width: 400px;
   margin: 0 auto;
   background:
     repeating-linear-gradient(
@@ -370,7 +370,7 @@ body {
 .papyrus-flip-container {
   perspective: 1000px;
   width: 100%;
-  max-width: 340px;
+  max-width: 400px;
   cursor: pointer;
 }
 .papyrus-flip-inner {
@@ -427,7 +427,7 @@ body {
 .scroll-content {
   position: relative;
   z-index: 1;
-  padding: 22px 18px 20px;
+  padding: 28px 24px 24px;
 }
 
 /* ── Header / Title Area ────────────────────────────────── */
@@ -462,7 +462,7 @@ body {
 
 .scroll-title {
   font-family: 'Cinzel', 'Georgia', serif;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--ink-dark);
   letter-spacing: 0.15em;
@@ -474,7 +474,7 @@ body {
 
 .scroll-subtitle {
   font-family: 'Cinzel', 'Georgia', serif;
-  font-size: 0.55rem;
+  font-size: 0.65rem;
   font-weight: 400;
   color: var(--ink-light);
   letter-spacing: 0.2em;
@@ -570,8 +570,8 @@ body {
   margin: 8px 0;
 }
 .star-icon {
-  width: 15px;
-  height: 15px;
+  width: 18px;
+  height: 18px;
   filter: drop-shadow(0 1px 2px rgba(139, 105, 20, 0.3));
 }
 .star-filled {
@@ -582,7 +582,7 @@ body {
 }
 .rating-number {
   font-family: 'Cinzel', 'Georgia', serif;
-  font-size: 0.85rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--ink-dark);
   margin-left: 4px;
@@ -599,7 +599,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 5px 0;
+  padding: 7px 0;
   border-bottom: 1px solid rgba(139, 105, 20, 0.12);
 }
 .stat-row:last-child {
@@ -607,14 +607,14 @@ body {
 }
 .stat-label {
   font-family: 'Cinzel', 'Georgia', serif;
-  font-size: 0.6rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--ink-light);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 .stat-value {
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--ink-dark);
   text-align: right;
@@ -636,7 +636,7 @@ body {
 .promo-section {
   position: relative;
   margin: 10px -4px;
-  padding: 14px 12px;
+  padding: 18px 16px;
   border-radius: 8px;
   background: linear-gradient(
     135deg,
@@ -692,7 +692,7 @@ body {
 
 .promo-bonus {
   font-family: 'Cinzel', 'Georgia', serif;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   font-weight: 700;
   color: var(--deep-red);
   line-height: 1.15;
@@ -703,7 +703,7 @@ body {
 }
 .promo-bonus-accent {
   display: block;
-  font-size: 1.35rem;
+  font-size: 1.55rem;
   color: var(--deep-red-light);
   text-shadow: 0 0 12px rgba(192, 57, 43, 0.15);
 }
@@ -750,7 +750,7 @@ body {
 }
 .promo-code-value {
   font-family: 'Cinzel', 'Georgia', serif;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: var(--ink-dark);
   letter-spacing: 0.12em;
@@ -779,9 +779,9 @@ body {
   justify-content: center;
   gap: 6px;
   width: 100%;
-  padding: 10px 20px;
+  padding: 12px 24px;
   font-family: 'Cinzel', 'Georgia', serif;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -919,8 +919,8 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  padding: 2px 7px;
-  font-size: 0.6rem;
+  padding: 3px 9px;
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--ink-mid);
   background: rgba(139, 105, 20, 0.06);
