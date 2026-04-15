@@ -22,7 +22,7 @@ export default function OfertasPage() {
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: "url('/images/pages/offers.webp')",
+            backgroundImage: "url('/images/pages/offers.jpg')",
             backgroundSize: "cover",
             backgroundPosition: "right center",
             backgroundRepeat: "no-repeat",
