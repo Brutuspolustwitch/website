@@ -22,7 +22,7 @@ export default function ReviewsPage() {
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: "url('/images/pages/gladiator-arena.jpg')",
+            backgroundImage: "url('/images/pages/reviews.jpg')",
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
