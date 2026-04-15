@@ -15,22 +15,11 @@ export const metadata: Metadata = {
 
 export default function ReviewsPage() {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-black">
-      {/* Background */}
-      <div className="fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-black" />
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: "url('/images/pages/reviews.jpg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            filter:
-              "brightness(0.3) saturate(0.35) sepia(0.25) contrast(0.9) blur(2px)",
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/85 to-transparent" />
+    <div className="relative min-h-screen bg-gradient-to-b from-arena-black via-arena-dark to-arena-black">
+      {/* Subtle ambient gradients */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(139,0,0,0.08),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(212,168,67,0.05),transparent_50%)]" />
       </div>
 
       {/* Content */}

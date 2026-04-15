@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import reviewsData from "@/data/casino-reviews.json";
+import { supabase } from "@/lib/supabase";
 
 /* ── Safety badge colour mapping ──────────────────────────── */
 function safetyColor(index: number) {
@@ -181,6 +182,22 @@ function ReviewDetail({ casino }: { casino: (typeof reviewsData)[number] }) {
 /* ── Main Reviews Component ──────────────────────────────── */
 export function CasinoReviews() {
   const [expandedSlug, setExpandedSlug] = useState<string | null>(null);
+  const [affiliateUrls, setAffiliateUrls] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("casino_affiliates")
+        .select("slug, affiliate_url");
+      if (data) {
+        const map: Record<string, string> = {};
+        for (const row of data) {
+          map[row.slug] = row.affiliate_url;
+        }
+        setAffiliateUrls(map);
+      }
+    })();
+  }, []);
 
   const sorted = [...reviewsData].sort((a, b) => b.safety_index - a.safety_index);
 
@@ -189,6 +206,7 @@ export function CasinoReviews() {
       {sorted.map((casino, idx) => {
         const sc = safetyColor(casino.safety_index);
         const isOpen = expandedSlug === casino.slug;
+        const affiliateUrl = affiliateUrls[casino.slug];
 
         return (
           <motion.div
@@ -203,62 +221,73 @@ export function CasinoReviews() {
             }`}
           >
             {/* Header row */}
-            <button
-              onClick={() => setExpandedSlug(isOpen ? null : casino.slug)}
-              className="w-full flex items-center gap-4 px-4 sm:px-6 py-5 text-left cursor-pointer"
-            >
-              {/* Rank */}
-              <span className="text-arena-gold/40 font-display text-2xl font-bold w-8 text-center shrink-0">
-                {idx + 1}
-              </span>
-
-              {/* Safety badge */}
-              <div
-                className={`shrink-0 flex flex-col items-center justify-center w-14 h-14 rounded-lg border ${sc.bg} ${sc.border}`}
+            <div className="flex items-center">
+              {/* Clickable area → affiliate URL */}
+              <a
+                href={affiliateUrl || "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 flex items-center gap-4 px-4 sm:px-6 py-5 text-left cursor-pointer min-w-0"
               >
-                <span className={`text-lg font-bold leading-none ${sc.text}`}>{casino.safety_index}</span>
-                <span className={`text-[9px] uppercase font-bold tracking-wider mt-0.5 ${sc.text}`}>
-                  {casino.safety_index >= 9 ? "Top" : casino.safety_index >= 8 ? "Alto" : "Med"}
+                {/* Rank */}
+                <span className="text-arena-gold/40 font-display text-2xl font-bold w-8 text-center shrink-0">
+                  {idx + 1}
                 </span>
-              </div>
 
-              {/* Name + meta */}
-              <div className="flex-1 min-w-0">
-                <h3 className="text-arena-white font-display text-lg sm:text-xl font-semibold truncate">
-                  {casino.name}
-                </h3>
-                <div className="flex items-center gap-3 mt-1">
-                  <Stars rating={casino.safety_index} />
-                  <span className="text-arena-ash text-xs">{casino.safety_label}</span>
-                  {casino.user_rating && (
-                    <span className="text-arena-smoke text-xs">
-                      · {casino.user_reviews_count} avaliações
-                    </span>
-                  )}
+                {/* Safety badge */}
+                <div
+                  className={`shrink-0 flex flex-col items-center justify-center w-14 h-14 rounded-lg border ${sc.bg} ${sc.border}`}
+                >
+                  <span className={`text-lg font-bold leading-none ${sc.text}`}>{casino.safety_index}</span>
+                  <span className={`text-[9px] uppercase font-bold tracking-wider mt-0.5 ${sc.text}`}>
+                    {casino.safety_index >= 9 ? "Top" : casino.safety_index >= 8 ? "Alto" : "Med"}
+                  </span>
                 </div>
-              </div>
 
-              {/* Bonus preview */}
-              <div className="hidden md:block text-right shrink-0">
-                {casino.bonuses[0] && casino.bonuses[0].value !== "Indisponível" && (
-                  <span className="text-arena-gold text-sm font-medium">{casino.bonuses[0].value}</span>
-                )}
-                <div className="text-arena-ash text-xs mt-0.5">{casino.games.providers_count} fornecedores</div>
-              </div>
+                {/* Name + meta */}
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-arena-white font-display text-lg sm:text-xl font-semibold truncate">
+                    {casino.name}
+                  </h3>
+                  <div className="flex items-center gap-3 mt-1">
+                    <Stars rating={casino.safety_index} />
+                    <span className="text-arena-ash text-xs">{casino.safety_label}</span>
+                    {casino.user_rating && (
+                      <span className="text-arena-smoke text-xs">
+                        · {casino.user_reviews_count} avaliações
+                      </span>
+                    )}
+                  </div>
+                </div>
 
-              {/* Chevron */}
-              <motion.svg
-                animate={{ rotate: isOpen ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
-                className="w-5 h-5 text-arena-ash shrink-0"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
+                {/* Bonus preview */}
+                <div className="hidden md:block text-right shrink-0">
+                  {casino.bonuses[0] && casino.bonuses[0].value !== "Indisponível" && (
+                    <span className="text-arena-gold text-sm font-medium">{casino.bonuses[0].value}</span>
+                  )}
+                  <div className="text-arena-ash text-xs mt-0.5">{casino.games.providers_count} fornecedores</div>
+                </div>
+              </a>
+
+              {/* Chevron toggle — expands details */}
+              <button
+                onClick={() => setExpandedSlug(isOpen ? null : casino.slug)}
+                className="p-4 text-arena-ash hover:text-arena-white transition-colors shrink-0"
+                aria-label={`${isOpen ? "Colapsar" : "Expandir"} ${casino.name}`}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-              </motion.svg>
-            </button>
+                <motion.svg
+                  animate={{ rotate: isOpen ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </motion.svg>
+              </button>
+            </div>
 
             {/* Expandable detail */}
             <AnimatePresence>
