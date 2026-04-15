@@ -99,30 +99,26 @@ function StatPlate({ label, value, glow }: {
 
   return (
     <motion.div
-      className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom"
+      className="papyrus-scroll greek-key-border"
       style={{ maxWidth: "100%", padding: 0 }}
       whileHover={{ scale: 1.03 }}
       transition={{ type: "spring", stiffness: 300 }}
     >
-      <CornerOrnament className="top-left" />
-      <CornerOrnament className="top-right" />
-      <CornerOrnament className="bottom-left" />
-      <CornerOrnament className="bottom-right" />
-      <div className="scroll-content" style={{ textAlign: "center", padding: "20px 12px" }}>
+      <div className="scroll-content" style={{ textAlign: "center", padding: "14px 10px 12px" }}>
         <p style={{
           fontFamily: "var(--font-display)",
-          fontSize: "0.65rem",
+          fontSize: "0.55rem",
           fontWeight: 600,
           color: "var(--ink-light)",
-          letterSpacing: "0.2em",
+          letterSpacing: "0.18em",
           textTransform: "uppercase",
-          marginBottom: "6px",
+          marginBottom: "4px",
         }}>
           {label}
         </p>
         <span style={{
           fontFamily: "var(--font-ui)",
-          fontSize: "2rem",
+          fontSize: "1.5rem",
           fontWeight: 700,
           color: valueColor[glow],
           letterSpacing: "0.05em",
