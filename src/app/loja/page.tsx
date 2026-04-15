@@ -115,9 +115,17 @@ export default function LojaPage() {
 
         {/* Loading skeletons */}
         {loading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <div key={i} className="h-44 rounded-lg bg-white/[0.03] animate-pulse border border-white/[0.05]" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="rounded-2xl bg-white/[0.03] border border-white/[0.06] overflow-hidden">
+                <div className="h-36 bg-white/[0.04] animate-pulse" />
+                <div className="p-4 space-y-3">
+                  <div className="h-3 w-16 bg-white/[0.06] rounded animate-pulse" />
+                  <div className="h-4 w-3/4 bg-white/[0.05] rounded animate-pulse" />
+                  <div className="h-3 w-full bg-white/[0.04] rounded animate-pulse" />
+                  <div className="h-8 w-full bg-white/[0.05] rounded-lg animate-pulse mt-2" />
+                </div>
+              </div>
             ))}
           </div>
         ) : rewards.length === 0 ? (
@@ -135,7 +143,7 @@ export default function LojaPage() {
                   🔥 Lendárias
                   <span className="h-px flex-1 bg-gradient-to-l from-arena-crimson/30 to-transparent" />
                 </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
                   {legendaryRewards.map((reward, i) => (
                     <motion.div
                       key={reward.id}
@@ -159,7 +167,7 @@ export default function LojaPage() {
 
             {/* Other rewards grid */}
             {otherRewards.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
                 {otherRewards.map((reward, i) => (
                   <motion.div
                     key={reward.id}
