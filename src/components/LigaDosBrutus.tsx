@@ -152,7 +152,7 @@ export default function LigaDosBrutusContent() {
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-10"
+            className="text-center mb-10"
           >
             <h1 className="text-3xl sm:text-5xl font-bold font-[family-name:var(--font-display)] bg-gradient-to-r from-arena-gold via-arena-gold-light to-arena-gold bg-clip-text text-transparent tracking-wider">
               LIGA DOS BRUTUS
