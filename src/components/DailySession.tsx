@@ -481,7 +481,7 @@ export default function DailySessionContent() {
             className="grid grid-cols-1 lg:grid-cols-2 gap-6 justify-items-center"
           >
             {/* LEFT: Casino Card — reuses the papyrus OfferCard */}
-            <div>
+            <div className="daily-session-card">
               {session.casino ? (
                 <OfferCard offer={{
                   slug: session.casino.slug,

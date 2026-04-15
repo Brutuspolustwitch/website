@@ -374,6 +374,46 @@ body {
   height: 520px;
   cursor: pointer;
 }
+
+/* ── Compact card variant for Daily Session ─────────────── */
+.daily-session-card .papyrus-flip-container {
+  max-width: 260px;
+  height: 400px;
+}
+.daily-session-card .casino-banner-inner {
+  height: 70px;
+}
+.daily-session-card .promo-section {
+  padding: 8px 12px 6px;
+}
+.daily-session-card .promo-label {
+  font-size: 0.55rem;
+  margin-bottom: 2px;
+}
+.daily-session-card .promo-bonus {
+  font-size: 0.95rem;
+}
+.daily-session-card .promo-bonus-accent {
+  font-size: 1.6rem;
+}
+.daily-session-card .promo-detail {
+  font-size: 0.6rem;
+}
+.daily-session-card .promo-code-wrapper {
+  padding: 4px 10px;
+  margin-top: 4px;
+}
+.daily-session-card .cta-button {
+  padding: 8px 16px;
+  font-size: 0.75rem;
+}
+.daily-session-card .cta-subtext {
+  font-size: 0.5rem;
+}
+.daily-session-card .flip-hint {
+  font-size: 0.6rem;
+  margin-top: 2px;
+}
 .papyrus-flip-inner {
   position: relative;
   width: 100%;
