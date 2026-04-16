@@ -370,8 +370,8 @@ body {
 .papyrus-flip-container {
   perspective: 1000px;
   width: 100%;
-  max-width: 340px;
-  height: 560px;
+  max-width: 400px;
+  height: 480px;
   cursor: pointer;
 }
 
