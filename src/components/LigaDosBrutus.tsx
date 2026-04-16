@@ -189,7 +189,7 @@ export default function LigaDosBrutusContent() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.97 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
-              className="relative max-w-lg w-full"
+              className="relative max-w-xl w-full"
             >
               <div className="liga-scroll">
                 <CornerOrnament className="top-left" />
