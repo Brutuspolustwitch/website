@@ -195,7 +195,7 @@ function SpotifyEmbed({ url }: { url: string | null }) {
         <iframe
           src={embedUrl}
           width="100%"
-          height="352"
+          height="152"
           frameBorder="0"
           allowFullScreen
           allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
@@ -473,15 +473,26 @@ export default function DailySessionContent() {
             </motion.div>
           )}
 
-          {/* ── 2-Column Layout ─────────────────────── */}
+          {/* ── Spotify Playlist (wide) ────────────── */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-6 justify-items-center"
+            className="flex justify-center"
           >
-            {/* LEFT: Casino Card — reuses the papyrus OfferCard */}
-            <div className="daily-session-card w-full max-w-[380px]">
+            <div className="w-full max-w-3xl">
+              <SpotifyEmbed url={session.spotify_url} />
+            </div>
+          </motion.div>
+
+          {/* ── Casino Offer Card ──────────────────── */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="flex justify-center"
+          >
+            <div className="daily-session-card">
               {session.casino ? (
                 <OfferCard offer={{
                   slug: session.casino.slug,
@@ -511,11 +522,6 @@ export default function DailySessionContent() {
                   </div>
                 </div>
               )}
-            </div>
-
-            {/* RIGHT: Spotify */}
-            <div className="w-full max-w-[380px]">
-              <SpotifyEmbed url={session.spotify_url} />
             </div>
           </motion.div>
         </div>
