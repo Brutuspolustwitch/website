@@ -30,13 +30,7 @@ const MOCK_LEADERBOARD: LeaderboardEntry[] = [
 
 export function Leaderboard({ hideTitle = false }: { hideTitle?: boolean } = {}) {
   return (
-    <section id="leaderboard" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-arena-dark/50 overflow-hidden">
-      {/* Background texture */}
-      <div
-        className="absolute inset-0 opacity-[0.07] bg-cover bg-center pointer-events-none"
-        style={{ backgroundImage: "url('/images/pages/helmet-grunge.jpg')" }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-arena-dark/80 via-arena-dark/60 to-arena-dark/80 pointer-events-none" />
+    <section id="leaderboard" className="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
       <div className="relative max-w-5xl mx-auto">
         {!hideTitle && (
           <ScrollReveal>

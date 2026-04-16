@@ -301,21 +301,7 @@ export default function DailySessionContent() {
   /* ── No Active Session ─────────────────────────────────── */
   if (!session) {
     return (
-      <div className="relative min-h-screen bg-black">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-black" />
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: "url('/images/pages/session.jpg')",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              filter: "brightness(0.85) saturate(0.9)",
-            }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
-        </div>
-
+      <div className="relative min-h-screen">
         <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -340,22 +326,7 @@ export default function DailySessionContent() {
   /* ── Active Session ────────────────────────────────────── */
 
   return (
-    <div className="relative min-h-screen bg-black">
-      {/* Background */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-black" />
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: "url('/images/pages/session.jpg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            filter: "brightness(0.85) saturate(0.9)",
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
-        <div className="absolute inset-0 bg-gradient-to-t from-transparent via-arena-crimson/[0.03] to-transparent pointer-events-none" />
-      </div>
+    <div className="relative min-h-screen">
 
       {/* Content */}
       <div className="relative z-10 pt-20 pb-8">

@@ -126,24 +126,7 @@ export default function LigaDosBrutusContent({ hideTitle = false }: { hideTitle?
   }
 
   return (
-    <div className="relative min-h-screen bg-black">
-      {/* Background */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-black" />
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: "url('/images/pages/brutusleague.png')",
-            backgroundSize: "60%",
-            backgroundPosition: "right 0 bottom 0",
-            backgroundRepeat: "no-repeat",
-            backgroundAttachment: "fixed",
-            filter: "brightness(0.3) saturate(0.5) sepia(0.3)",
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/70" />
-      </div>
-
+    <div className="relative min-h-screen">
       {/* Content */}
       <div className="relative z-10 pt-24 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

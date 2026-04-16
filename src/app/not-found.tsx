@@ -5,12 +5,6 @@ import { ArenaButton } from "@/components/ui/ArenaButton";
 export default function NotFound() {
   return (
     <div className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden">
-      {/* Background image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-20"
-        style={{ backgroundImage: "url('/images/pages/helmet-still-life.jpg')" }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-arena-black/60 via-arena-black/40 to-arena-black" />
 
       <div className="relative text-center z-10">
         {/* Gladiator portrait */}

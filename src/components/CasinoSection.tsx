@@ -79,12 +79,6 @@ function StarRating({ rating }: { rating: number }) {
 export function CasinoSection({ hideTitle = false }: { hideTitle?: boolean } = {}) {
   return (
     <section id="casinos" className="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      {/* Background accent */}
-      <div
-        className="absolute inset-0 opacity-[0.05] bg-cover bg-center pointer-events-none"
-        style={{ backgroundImage: "url('/images/pages/gladiator-arena.jpg')" }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-arena-black via-arena-black/90 to-arena-black pointer-events-none" />
       <div className="relative max-w-6xl mx-auto">
         {!hideTitle && (
           <ScrollReveal>

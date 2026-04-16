@@ -88,69 +88,7 @@ export default function LojaPage() {
   const otherRewards = rewards.filter((r) => r.tier !== "legendary");
 
   return (
-    <div className="relative min-h-screen bg-black overflow-hidden">
-      {/* ── Background: Cinematic Armory ── */}
-      <div className="fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-black" />
-        {/* Store background with dark cinematic treatment */}
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: "url('/images/pages/store.jpg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            filter: "brightness(0.25) saturate(0.4) sepia(0.2) contrast(0.85)",
-          }}
-        />
-
-        {/* Volumetric fog layers */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ animation: "armaria-fog-drift 20s ease-in-out infinite" }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.02] to-transparent" />
-        </div>
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ animation: "armaria-fog-drift 28s ease-in-out infinite 8s" }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-l from-transparent via-arena-ember/[0.01] to-transparent" />
-        </div>
-
-        {/* Torch glow — left side */}
-        <div
-          className="absolute top-[15%] -left-[5%] w-[300px] h-[400px] rounded-full pointer-events-none"
-          style={{
-            background: "radial-gradient(circle, rgba(255,111,0,0.06) 0%, transparent 70%)",
-            animation: "armaria-torch-flicker 2s ease-in-out infinite",
-          }}
-        />
-        {/* Torch glow — right side */}
-        <div
-          className="absolute top-[25%] -right-[5%] w-[350px] h-[450px] rounded-full pointer-events-none"
-          style={{
-            background: "radial-gradient(circle, rgba(212,168,67,0.05) 0%, transparent 70%)",
-            animation: "armaria-torch-flicker 2.4s ease-in-out infinite 0.8s",
-          }}
-        />
-        {/* Bottom warm glow */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-[40%] pointer-events-none"
-          style={{
-            background: "linear-gradient(to top, rgba(139,0,0,0.06), transparent)",
-          }}
-        />
-
-        {/* Edge vignette */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            boxShadow: "inset 0 0 150px 60px rgba(0,0,0,0.7), inset 0 0 300px 100px rgba(0,0,0,0.4)",
-          }}
-        />
-      </div>
-
+    <div className="relative min-h-screen overflow-hidden">
       {/* Ember particle canvas (reuses existing useParticles hook) */}
       <canvas
         ref={canvasRef}

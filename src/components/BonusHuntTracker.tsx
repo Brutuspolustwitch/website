@@ -436,12 +436,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
 
   /* ── Full page mode ─────────────────────────────────── */
   return (
-    <section id="bonus-hunt" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-arena-dark/50 overflow-hidden">
-      <div
-        className="absolute inset-0 opacity-[0.06] bg-cover bg-right-bottom pointer-events-none"
-        style={{ backgroundImage: "url('/images/pages/warrior-illustration.jpg')" }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-r from-arena-dark via-arena-dark/85 to-arena-dark/70 pointer-events-none" />
+    <section id="bonus-hunt" className="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
 
       <div className="relative max-w-4xl mx-auto">
         {!hideTitle && (

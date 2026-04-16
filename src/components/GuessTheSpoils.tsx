@@ -86,13 +86,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
   /* ── Render ──────────────────────────────────────────────────────── */
 
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 min-h-screen bg-arena-dark/50">
-      {/* Background */}
-      <div
-        className="absolute inset-0 opacity-[0.06] bg-cover bg-right-bottom pointer-events-none"
-        style={{ backgroundImage: "url('/images/pages/warrior-illustration.jpg')" }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-r from-arena-dark via-arena-dark/85 to-arena-dark/70 pointer-events-none" />
+    <section className="py-16 px-4 sm:px-6 lg:px-8 min-h-screen relative">
 
       <div className="relative max-w-[1400px] mx-auto">
 
