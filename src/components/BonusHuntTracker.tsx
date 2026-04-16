@@ -412,8 +412,6 @@ export function BonusHuntTracker() {
                   );
                 })}
               </div>
-
-              </div>
             </div>
           </motion.div>
         </ScrollReveal>
