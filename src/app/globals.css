@@ -592,6 +592,9 @@ body {
 .papyrus-flip-front {
   position: relative;
 }
+.papyrus-flipped .papyrus-flip-front {
+  pointer-events: none;
+}
 .papyrus-flip-front .papyrus-scroll {
   height: 100%;
 }
@@ -607,6 +610,9 @@ body {
   right: 0;
   bottom: 0;
   transform: rotateY(180deg);
+}
+.papyrus-flip-inner:not(.papyrus-flipped) .papyrus-flip-back {
+  pointer-events: none;
 }
 .papyrus-flip-back .papyrus-scroll {
   height: 100%;
