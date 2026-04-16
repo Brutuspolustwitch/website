@@ -72,17 +72,7 @@ function StarRating({ rating }: { rating: number }) {
 
 /* ── Corner Ornament SVG ────────────────────────────────── */
 function CornerOrnament({ className }: { className: string }) {
-  return (
-    <svg className={`scroll-ornament ${className}`} viewBox="0 0 24 24" fill="none">
-      <path
-        d="M2 2 L2 10 M2 2 L10 2 M2 6 L6 2"
-        stroke="#8b6914"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <circle cx="4" cy="4" r="1.5" fill="#8b6914" />
-    </svg>
-  );
+  return <div className={`card-corner ${className}`} />;
 }
 
 /* ═══════════════════════════════════════════════════════════════════

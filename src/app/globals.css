@@ -269,6 +269,7 @@ body {
   border-radius: var(--scroll-radius);
   pointer-events: none;
   opacity: 0.4;
+  transition: opacity 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
 }
 .greek-key-border::after {
   content: '';
@@ -278,6 +279,7 @@ body {
   border-radius: 14px;
   pointer-events: none;
   opacity: 0.25;
+  transition: opacity 0.4s ease, border-color 0.4s ease;
 }
 
 /* ── Scroll Body — Main Card ────────────────────────────── */
@@ -622,6 +624,18 @@ body {
 .papyrus-flip-container:hover .papyrus-flipped {
   transform: rotateY(180deg) translateY(-5px);
 }
+
+/* Gold border glow on hover */
+.papyrus-flip-container:hover .greek-key-border::before {
+  opacity: 0.7;
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 12px rgba(212, 160, 23, 0.15);
+}
+.papyrus-flip-container:hover .greek-key-border::after {
+  opacity: 0.4;
+  border-color: var(--gold-bright);
+}
+
 .flip-hint {
   font-family: 'Cinzel', 'Georgia', serif;
   font-size: 0.75rem;
@@ -1065,19 +1079,41 @@ body {
   letter-spacing: 0.05em;
 }
 
-/* ── Corner Ornaments ───────────────────────────────────── */
-.scroll-ornament {
+/* ── Corner Ornaments — Expanding Brackets ──────────────── */
+.card-corner {
   position: absolute;
-  width: 18px;
-  height: 18px;
-  opacity: 0.2;
-  z-index: 1;
+  width: 2em;
+  height: 2em;
+  border: 2px solid var(--gold-dark);
+  opacity: 0.5;
+  z-index: 3;
   pointer-events: none;
+  transition: width 0.4s ease, height 0.4s ease, opacity 0.4s ease, border-color 0.4s ease;
 }
-.scroll-ornament.top-left { top: 8px; left: 8px; }
-.scroll-ornament.top-right { top: 8px; right: 8px; transform: scaleX(-1); }
-.scroll-ornament.bottom-left { bottom: 8px; left: 8px; transform: scaleY(-1); }
-.scroll-ornament.bottom-right { bottom: 8px; right: 8px; transform: scale(-1, -1); }
+.card-corner.top-left {
+  top: 6px; left: 6px;
+  border-right: none; border-bottom: none;
+}
+.card-corner.top-right {
+  top: 6px; right: 6px;
+  border-left: none; border-bottom: none;
+}
+.card-corner.bottom-left {
+  bottom: 6px; left: 6px;
+  border-right: none; border-top: none;
+}
+.card-corner.bottom-right {
+  bottom: 6px; right: 6px;
+  border-left: none; border-top: none;
+}
+
+/* Hover — corners expand to form a full frame */
+.papyrus-flip-container:hover .card-corner {
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+  opacity: 0.8;
+  border-color: var(--gold-bright);
+}
 
 /* ── Wax Seal Accent ────────────────────────────────────── */
 .wax-seal {
