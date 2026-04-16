@@ -237,20 +237,25 @@ body {
    ══════════════════════════════════════════════════════════════════════ */
 
 :root {
-  --parchment-light: #f5e6c8;
-  --parchment-mid: #ecd9b0;
-  --parchment-dark: #e8d3a3;
-  --parchment-edge: #d4b87a;
-  --scroll-shadow: #8b6914;
-  --ink-dark: #3a2a10;
-  --ink-mid: #5c4520;
-  --ink-light: #7a6340;
-  --gold-bright: #d4a017;
-  --gold-mid: #b8860b;
-  --gold-dark: #8b6914;
-  --gold-light: #f0d060;
+  /* Parchment — warmer beige, less yellow, more realistic */
+  --parchment-light: #f0e4cb;
+  --parchment-mid: #e8d8b4;
+  --parchment-dark: #e0cda0;
+  --parchment-edge: #c9b07a;
+  --scroll-shadow: #8A6A2F;
+  /* Ink — deeper browns for readability */
+  --ink-dark: #4A3A1A;
+  --ink-mid: #6B5230;
+  --ink-light: #7A6230;
+  /* Gold — richer imperial gold palette */
+  --gold-bright: #C9A44D;
+  --gold-mid: #A8832F;
+  --gold-dark: #8A6A2F;
+  --gold-light: #E6C873;
+  /* Accent reds */
   --deep-red: #8b1a1a;
   --deep-red-light: #c0392b;
+  /* Stone tones */
   --stone-dark: #4a3728;
   --stone-mid: #6b5240;
   --stone-light: #8a7060;
@@ -265,19 +270,21 @@ body {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  border: 2px solid var(--gold-dark);
+  /* Gradient border glow — richer gold shimmer */
+  border: 2px solid var(--gold-bright);
   border-radius: var(--scroll-radius);
   pointer-events: none;
-  opacity: 0.4;
+  opacity: 0.45;
 }
 .greek-key-border::after {
   content: '';
   position: absolute;
   top: 4px; left: 4px; right: 4px; bottom: 4px;
-  border: 1px solid var(--gold-dark);
+  /* Inner engraved frame line */
+  border: 1px solid var(--gold-bright);
   border-radius: 14px;
   pointer-events: none;
-  opacity: 0.25;
+  opacity: 0.2;
 }
 
 /* ── Scroll Body — Main Card ────────────────────────────── */
@@ -310,11 +317,15 @@ body {
     );
   border-radius: var(--scroll-radius);
   box-shadow:
-    inset 0 0 60px 10px rgba(100, 70, 20, 0.12),
-    inset 0 0 30px 5px rgba(100, 70, 20, 0.08),
-    0 4px 6px rgba(60, 40, 10, 0.15),
-    0 12px 24px rgba(60, 40, 10, 0.12),
-    0 24px 48px rgba(60, 40, 10, 0.08);
+    /* Inner edge vignette — darker parchment toward edges */
+    inset 0 0 70px 15px rgba(90, 60, 15, 0.16),
+    inset 0 0 30px 5px rgba(90, 60, 15, 0.10),
+    /* Warm outer shadow — no gray/blue, only amber */
+    0 4px 8px rgba(80, 55, 15, 0.2),
+    0 12px 28px rgba(80, 55, 15, 0.15),
+    0 28px 56px rgba(60, 40, 10, 0.10),
+    /* Faint gold rim glow */
+    0 0 1px rgba(201, 164, 77, 0.3);
   overflow: hidden;
   transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1);
@@ -747,12 +758,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Darker logo backdrop — more contrast against parchment */
   background: linear-gradient(
     135deg,
-    #1a0a00 0%,
-    #2d1810 30%,
-    #4a2010 60%,
-    #2d1810 100%
+    #100800 0%,
+    #1e100a 30%,
+    #30180c 60%,
+    #1e100a 100%
   );
   position: relative;
   overflow: hidden;
@@ -870,16 +882,17 @@ body {
   margin: 10px -4px;
   padding: 18px 16px;
   border-radius: 8px;
+  /* Gold-tinted highlight frame */
   background: linear-gradient(
     135deg,
-    rgba(212, 160, 23, 0.08) 0%,
-    rgba(212, 160, 23, 0.12) 50%,
-    rgba(212, 160, 23, 0.08) 100%
+    rgba(201, 164, 77, 0.07) 0%,
+    rgba(201, 164, 77, 0.12) 50%,
+    rgba(201, 164, 77, 0.07) 100%
   );
-  border: 1.5px solid rgba(212, 160, 23, 0.35);
+  border: 1.5px solid rgba(201, 164, 77, 0.35);
   box-shadow:
-    0 0 20px rgba(212, 160, 23, 0.08),
-    inset 0 0 20px rgba(212, 160, 23, 0.04);
+    0 0 20px rgba(201, 164, 77, 0.08),
+    inset 0 0 24px rgba(201, 164, 77, 0.05);
   overflow: hidden;
   text-align: center;
 }
@@ -1009,8 +1022,9 @@ body {
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  /* Premium iGaming gold button */
   color: #fff;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -1018,16 +1032,21 @@ body {
   overflow: hidden;
   background: linear-gradient(
     180deg,
-    var(--gold-light) 0%,
-    var(--gold-bright) 30%,
-    var(--gold-mid) 70%,
-    var(--gold-dark) 100%
+    #E6C873 0%,
+    #C9A44D 35%,
+    #A8832F 70%,
+    #8A6A2F 100%
   );
   box-shadow:
-    0 4px 12px rgba(139, 105, 20, 0.35),
-    0 2px 4px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 240, 200, 0.5),
-    inset 0 -2px 4px rgba(80, 50, 10, 0.3);
+    /* Depth shadow — warm, not gray */
+    0 4px 14px rgba(138, 106, 47, 0.4),
+    0 2px 6px rgba(0, 0, 0, 0.2),
+    /* Subtle outer glow */
+    0 0 18px rgba(201, 164, 77, 0.15),
+    /* Top shine inset */
+    inset 0 1px 0 rgba(255, 240, 200, 0.55),
+    /* Bottom depth inset */
+    inset 0 -2px 5px rgba(60, 40, 10, 0.35);
   transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -1065,11 +1084,12 @@ body {
 .cta-button:hover {
   transform: translateY(-2px);
   box-shadow:
-    0 6px 20px rgba(139, 105, 20, 0.45),
-    0 3px 8px rgba(0, 0, 0, 0.2),
-    0 0 30px rgba(212, 160, 23, 0.2),
-    inset 0 1px 0 rgba(255, 240, 200, 0.5),
-    inset 0 -2px 4px rgba(80, 50, 10, 0.3);
+    0 6px 22px rgba(138, 106, 47, 0.5),
+    0 3px 8px rgba(0, 0, 0, 0.25),
+    /* Stronger gold glow on hover */
+    0 0 32px rgba(201, 164, 77, 0.25),
+    inset 0 1px 0 rgba(255, 240, 200, 0.55),
+    inset 0 -2px 5px rgba(60, 40, 10, 0.35);
 }
 .cta-button:hover::after {
   left: 150%;
@@ -1095,7 +1115,8 @@ body {
   position: absolute;
   width: 18px;
   height: 18px;
-  opacity: 0.2;
+  /* Richer ornament visibility */
+  opacity: 0.3;
   z-index: 1;
   pointer-events: none;
 }

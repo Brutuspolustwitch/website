@@ -76,11 +76,11 @@ function CornerOrnament({ className }: { className: string }) {
     <svg className={`scroll-ornament ${className}`} viewBox="0 0 24 24" fill="none">
       <path
         d="M2 2 L2 10 M2 2 L10 2 M2 6 L6 2"
-        stroke="#8b6914"
+        stroke="#C9A44D"
         strokeWidth="1.5"
         strokeLinecap="round"
       />
-      <circle cx="4" cy="4" r="1.5" fill="#8b6914" />
+      <circle cx="4" cy="4" r="1.5" fill="#C9A44D" />
     </svg>
   );
 }
