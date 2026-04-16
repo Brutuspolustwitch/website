@@ -87,14 +87,12 @@ export function CasinoSection({ hideTitle = false }: { hideTitle?: boolean } = {
       <div className="absolute inset-0 bg-gradient-to-t from-arena-black via-arena-black/90 to-arena-black pointer-events-none" />
       <div className="relative max-w-6xl mx-auto">
         {!hideTitle && (
-        {!hideTitle && (
-        <ScrollReveal>
-          <SectionHeading
-            title="Battle Arenas"
-            subtitle="Handpicked casinos for gladiators. Honest reviews, verified bonuses."
-          />
-        </ScrollReveal>
-        )}
+          <ScrollReveal>
+            <SectionHeading
+              title="Battle Arenas"
+              subtitle="Handpicked casinos for gladiators. Honest reviews, verified bonuses."
+            />
+          </ScrollReveal>
         )}
 
         <motion.div

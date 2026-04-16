@@ -39,14 +39,12 @@ export function Leaderboard({ hideTitle = false }: { hideTitle?: boolean } = {})
       <div className="absolute inset-0 bg-gradient-to-b from-arena-dark/80 via-arena-dark/60 to-arena-dark/80 pointer-events-none" />
       <div className="relative max-w-5xl mx-auto">
         {!hideTitle && (
-        {!hideTitle && (
-        <ScrollReveal>
-          <SectionHeading
-            title="Gladiator Ranks"
-            subtitle="Rise through the ranks. Prove your worth in the arena."
-          />
-        </ScrollReveal>
-        )}
+          <ScrollReveal>
+            <SectionHeading
+              title="Gladiator Ranks"
+              subtitle="Rise through the ranks. Prove your worth in the arena."
+            />
+          </ScrollReveal>
         )}
 
         {/* Rank legend */}

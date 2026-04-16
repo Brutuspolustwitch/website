@@ -111,14 +111,12 @@ export function TermsAndConditions({ hideTitle = false }: { hideTitle?: boolean 
     <section className="py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {!hideTitle && (
-        {!hideTitle && (
-        <ScrollReveal>
-          <SectionHeading
-            title="Termos & Condições"
-            subtitle="Leia atentamente antes de utilizar o website"
-          />
-        </ScrollReveal>
-        )}
+          <ScrollReveal>
+            <SectionHeading
+              title="Termos & Condições"
+              subtitle="Leia atentamente antes de utilizar o website"
+            />
+          </ScrollReveal>
         )}
 
         <div className="mt-10 space-y-8">

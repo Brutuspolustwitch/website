@@ -98,14 +98,12 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
 
         {/* ── Heading ──────────────────────────────────────────────── */}
         {!hideTitle && (
-        {!hideTitle && (
-        <ScrollReveal>
-          <SectionHeading
-            title="Guess the Spoils"
-            subtitle="Survive the Arena and Claim Your Glory!"
-          />
-        </ScrollReveal>
-        )}
+          <ScrollReveal>
+            <SectionHeading
+              title="Guess the Spoils"
+              subtitle="Survive the Arena and Claim Your Glory!"
+            />
+          </ScrollReveal>
         )}
 
         {/* ── Loading / Empty ──────────────────────────────────────── */}
