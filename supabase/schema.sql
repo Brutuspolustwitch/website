@@ -604,3 +604,79 @@ insert into page_settings (page_slug, page_name) values
   ('politica-de-cookies', 'Política de Cookies'),
   ('termos-e-condicoes', 'Termos e Condições')
 on conflict (page_slug) do nothing;
+
+-- ============================================================
+-- Giveaway System — Arena Giveaways with SE Points + Twitch Chat
+-- ============================================================
+
+-- Giveaways
+create table if not exists giveaways (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  description text not null default '',
+  mode text not null default 'single' check (mode in ('single', 'tickets')),
+  ticket_cost integer not null default 0,
+  max_entries_per_user integer,
+  prize text not null default '',
+  prize_image text,
+  duration_seconds integer not null default 300,
+  start_time timestamptz,
+  end_time timestamptz,
+  is_active boolean not null default false,
+  is_ended boolean not null default false,
+  chat_command text not null default '!enter',
+  require_live boolean not null default true,
+  created_by text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index idx_giveaways_active on giveaways(is_active) where is_active = true;
+create index idx_giveaways_created on giveaways(created_at desc);
+
+-- Giveaway Participants
+create table if not exists giveaway_participants (
+  id uuid primary key default gen_random_uuid(),
+  giveaway_id uuid not null references giveaways(id) on delete cascade,
+  twitch_id text not null,
+  twitch_username text not null,
+  tickets integer not null default 1,
+  total_points_spent integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique(giveaway_id, twitch_id)
+);
+
+create index idx_giveaway_participants_giveaway on giveaway_participants(giveaway_id);
+create index idx_giveaway_participants_user on giveaway_participants(twitch_id);
+
+-- Giveaway Winners
+create table if not exists giveaway_winners (
+  id uuid primary key default gen_random_uuid(),
+  giveaway_id uuid not null references giveaways(id) on delete cascade,
+  twitch_id text not null,
+  twitch_username text not null,
+  selected_at timestamptz not null default now()
+);
+
+create index idx_giveaway_winners_giveaway on giveaway_winners(giveaway_id);
+
+-- RLS
+alter table giveaways enable row level security;
+create policy "Public read giveaways" on giveaways for select using (true);
+create policy "Admin insert giveaways" on giveaways for insert with check (true);
+create policy "Admin update giveaways" on giveaways for update using (true);
+create policy "Admin delete giveaways" on giveaways for delete using (true);
+
+alter table giveaway_participants enable row level security;
+create policy "Public read giveaway participants" on giveaway_participants for select using (true);
+create policy "Insert giveaway participants" on giveaway_participants for insert with check (true);
+create policy "Update giveaway participants" on giveaway_participants for update using (true);
+
+alter table giveaway_winners enable row level security;
+create policy "Public read giveaway winners" on giveaway_winners for select using (true);
+create policy "Admin insert giveaway winners" on giveaway_winners for insert with check (true);
+
+-- Enable realtime for live participant updates
+alter publication supabase_realtime add table giveaway_participants;
+alter publication supabase_realtime add table giveaways;
