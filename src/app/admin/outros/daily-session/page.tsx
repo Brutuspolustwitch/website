@@ -47,6 +47,9 @@ export default function AdminDailySessionPage() {
   const [biggestWin, setBiggestWin] = useState("");
   const [isActive, setIsActive] = useState(true);
 
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
+
   const showToast = (msg: string) => {
     setToast(msg);
     setTimeout(() => setToast(null), 3000);
@@ -177,7 +180,42 @@ export default function AdminDailySessionPage() {
   // Switch session from history dropdown
   const handleSelectSession = (id: string) => {
     const found = allSessions.find((s) => s.id === id);
-    if (found) populateForm(found);
+    if (found) {
+      populateForm(found);
+      setHistoryOpen(false);
+    }
+  };
+
+  // Delete a session
+  const handleDeleteSession = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm("Tens a certeza que queres apagar esta sessão?")) return;
+    setDeleting(id);
+    try {
+      const res = await fetch(`/api/daily-session?id=${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json();
+        showToast(`Erro: ${data.error}`);
+        return;
+      }
+      // If we deleted the currently loaded session, clear the form
+      if (session?.id === id) {
+        setSession(null);
+        setTitle("");
+        setSessionDate(new Date().toISOString().split("T")[0]);
+        setCasinoId("");
+        setSpotifyUrl("");
+        setDeposits("");
+        setWithdrawals("");
+        setBonusesCount("");
+        setBiggestWin("");
+        setIsActive(true);
+      }
+      await refreshSessions();
+      showToast("Sessão apagada!");
+    } finally {
+      setDeleting(null);
+    }
   };
 
   const depVal = parseFloat(deposits) || 0;
@@ -470,18 +508,56 @@ export default function AdminDailySessionPage() {
 
             {/* Session History + New Session */}
             <div className="flex items-center gap-3">
-              <select
-                value={session?.id || ""}
-                onChange={(e) => handleSelectSession(e.target.value)}
-                className="flex-1 bg-arena-iron/60 border border-arena-gold/20 rounded-lg px-3 py-2 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors [color-scheme:dark]"
-              >
-                <option value="" disabled>Histórico de sessões...</option>
-                {allSessions.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.session_date} — {s.title}{s.is_active ? " 🔴 LIVE" : ""}
-                  </option>
-                ))}
-              </select>
+              {/* Custom dropdown with delete buttons */}
+              <div className="relative flex-1">
+                <button
+                  onClick={() => setHistoryOpen(!historyOpen)}
+                  className="w-full bg-arena-iron/60 border border-arena-gold/20 rounded-lg px-3 py-2 text-sm text-arena-white text-left focus:outline-none focus:border-arena-gold/40 transition-colors flex items-center justify-between"
+                >
+                  <span className="truncate">
+                    {session ? `${session.session_date} — ${session.title}` : "Histórico de sessões..."}
+                  </span>
+                  <svg className={`w-4 h-4 text-arena-smoke transition-transform ${historyOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                </button>
+                {historyOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setHistoryOpen(false)} />
+                    <div className="absolute top-full left-0 right-0 mt-1 z-50 bg-arena-dark border border-arena-gold/20 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                      <div className="px-3 py-1.5 text-[10px] text-arena-smoke uppercase tracking-wider border-b border-arena-gold/10">
+                        Histórico de sessões
+                      </div>
+                      {allSessions.map((s) => (
+                        <div
+                          key={s.id}
+                          onClick={() => handleSelectSession(s.id)}
+                          className={`flex items-center justify-between px-3 py-2 text-sm cursor-pointer transition-colors hover:bg-arena-gold/10 ${
+                            session?.id === s.id ? "bg-arena-gold/15 text-arena-gold" : "text-arena-white"
+                          }`}
+                        >
+                          <span className="truncate mr-2">
+                            {s.session_date} — {s.title}{s.is_active ? " 🔴" : ""}
+                          </span>
+                          <button
+                            onClick={(e) => handleDeleteSession(s.id, e)}
+                            disabled={deleting === s.id}
+                            className="shrink-0 p-1 rounded text-arena-smoke hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-30"
+                            title="Apagar sessão"
+                          >
+                            {deleting === s.id ? (
+                              <div className="w-4 h-4 border-2 border-red-400/30 border-t-red-400 rounded-full animate-spin" />
+                            ) : (
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            )}
+                          </button>
+                        </div>
+                      ))}
+                      {allSessions.length === 0 && (
+                        <div className="px-3 py-3 text-sm text-arena-smoke text-center">Sem sessões</div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
               <button
                 onClick={handleNewSession}
                 disabled={saving}

@@ -119,3 +119,28 @@ export async function POST(request: Request) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ session: data }, { status: 201 });
 }
+
+/** DELETE /api/daily-session — delete a session by id (admin only) */
+export async function DELETE(request: Request) {
+  const cookieStore = await cookies();
+  const raw = cookieStore.get("twitch_session")?.value;
+  if (!raw) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+
+  let session: { id: string; role: string };
+  try { session = JSON.parse(raw); } catch { return NextResponse.json({ error: "Invalid session" }, { status: 401 }); }
+
+  if (session.role !== "admin" && session.role !== "configurador") {
+    return NextResponse.json({ error: "Insufficient permissions" }, { status: 403 });
+  }
+
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
+  if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+    return NextResponse.json({ error: "Invalid session ID" }, { status: 400 });
+  }
+
+  const { error } = await supabase.from("daily_sessions").delete().eq("id", id);
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  return NextResponse.json({ ok: true });
+}
