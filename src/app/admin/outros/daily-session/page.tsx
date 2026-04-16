@@ -50,6 +50,13 @@ export default function AdminDailySessionPage() {
   const [deleting, setDeleting] = useState<string | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
 
+  // "Outros" casino quick-add form
+  const [showOutros, setShowOutros] = useState(false);
+  const [outrosName, setOutrosName] = useState("");
+  const [outrosUrl, setOutrosUrl] = useState("");
+  const [outrosLogo, setOutrosLogo] = useState("");
+  const [savingOutros, setSavingOutros] = useState(false);
+
   const showToast = (msg: string) => {
     setToast(msg);
     setTimeout(() => setToast(null), 3000);
@@ -218,6 +225,40 @@ export default function AdminDailySessionPage() {
     }
   };
 
+  // Save custom "Outros" casino
+  const handleSaveOutros = async () => {
+    if (!outrosName.trim()) { showToast("Nome é obrigatório"); return; }
+    setSavingOutros(true);
+    try {
+      const res = await fetch("/api/casino-offers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: outrosName.trim(),
+          affiliate_url: outrosUrl.trim() || "#",
+          logo_url: outrosLogo.trim() || null,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) { showToast(`Erro: ${data.error}`); return; }
+
+      // Reload casinos and auto-select the new one
+      const { data: updatedCasinos } = await supabase
+        .from("casino_offers").select("*").eq("visible", true).order("sort_order");
+      if (updatedCasinos) setCasinos(updatedCasinos);
+      setCasinoId(data.casino.id);
+
+      // Reset form
+      setShowOutros(false);
+      setOutrosName("");
+      setOutrosUrl("");
+      setOutrosLogo("");
+      showToast(`Casino "${data.casino.name}" adicionado!`);
+    } finally {
+      setSavingOutros(false);
+    }
+  };
+
   const depVal = parseFloat(deposits) || 0;
   const witVal = parseFloat(withdrawals) || 0;
   const net = witVal - depVal;
@@ -322,16 +363,69 @@ export default function AdminDailySessionPage() {
                   Casino Ativo
                 </h2>
                 <select
-                  value={casinoId}
-                  onChange={(e) => setCasinoId(e.target.value)}
+                  value={showOutros ? "__outros__" : casinoId}
+                  onChange={(e) => {
+                    if (e.target.value === "__outros__") {
+                      setShowOutros(true);
+                      setCasinoId("");
+                    } else {
+                      setShowOutros(false);
+                      setCasinoId(e.target.value);
+                    }
+                  }}
                   className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded-lg px-3 py-2.5 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors [color-scheme:dark]"
                 >
                   <option value="">Selecionar casino...</option>
                   {casinos.map((c) => (
                     <option key={c.id} value={c.id}>{c.name}</option>
                   ))}
+                  <option value="__outros__">➕ Outros (adicionar novo)</option>
                 </select>
-                {selectedCasino && (
+
+                {/* "Outros" quick-add form */}
+                {showOutros && (
+                  <div className="space-y-2 p-3 rounded-lg border border-arena-gold/20 bg-arena-iron/40">
+                    <p className="text-[10px] text-arena-gold uppercase tracking-wider font-bold font-[family-name:var(--font-display)]">Novo Casino</p>
+                    <input
+                      type="text"
+                      value={outrosName}
+                      onChange={(e) => setOutrosName(e.target.value)}
+                      placeholder="Nome do casino *"
+                      className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded-lg px-3 py-2 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors"
+                    />
+                    <input
+                      type="url"
+                      value={outrosUrl}
+                      onChange={(e) => setOutrosUrl(e.target.value)}
+                      placeholder="Link de afiliado (URL)"
+                      className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded-lg px-3 py-2 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors"
+                    />
+                    <input
+                      type="url"
+                      value={outrosLogo}
+                      onChange={(e) => setOutrosLogo(e.target.value)}
+                      placeholder="URL do logo (opcional)"
+                      className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded-lg px-3 py-2 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors"
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleSaveOutros}
+                        disabled={savingOutros || !outrosName.trim()}
+                        className="flex-1 py-1.5 text-xs rounded-lg bg-arena-gold/20 border border-arena-gold/30 text-arena-gold hover:bg-arena-gold/30 transition-colors font-bold uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        {savingOutros ? "A guardar..." : "Adicionar"}
+                      </button>
+                      <button
+                        onClick={() => { setShowOutros(false); setOutrosName(""); setOutrosUrl(""); setOutrosLogo(""); }}
+                        className="px-3 py-1.5 text-xs rounded-lg bg-arena-iron border border-arena-gold/10 text-arena-smoke hover:text-arena-white transition-colors"
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {selectedCasino && !showOutros && (
                   <div className="rounded-lg border border-arena-gold/10 bg-arena-iron/40 p-2.5 flex items-center gap-2.5">
                     {selectedCasino.logo_url && (
                       <img src={selectedCasino.logo_url} alt="" className="w-9 h-9 rounded-lg object-cover" />
