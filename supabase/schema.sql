@@ -600,6 +600,7 @@ insert into page_settings (page_slug, page_name) values
   ('daily-session', 'Sessão do Dia'),
   ('adivinha-o-resultado', 'Adivinha o Resultado'),
   ('perfil', 'Perfil'),
+  ('moderador', 'Moderador'),
   ('politica-de-privacidade', 'Política de Privacidade'),
   ('politica-de-cookies', 'Política de Cookies'),
   ('termos-e-condicoes', 'Termos e Condições')

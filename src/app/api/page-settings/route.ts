@@ -18,7 +18,35 @@ async function requireAdmin() {
   }
 }
 
-/* ── GET — fetch all page settings ─────────────────────────── */
+/* ── Canonical pages — auto-seeded if missing ──────────────── */
+const CANONICAL_PAGES: { slug: string; name: string }[] = [
+  { slug: "home", name: "Página Inicial" },
+  { slug: "ofertas", name: "Ofertas" },
+  { slug: "casinos", name: "Casinos" },
+  { slug: "destaques", name: "Destaques" },
+  { slug: "stream", name: "Stream" },
+  { slug: "liga-dos-brutus", name: "Liga dos Brutus" },
+  { slug: "torneio", name: "Torneio" },
+  { slug: "loja", name: "Loja" },
+  { slug: "contactos", name: "Contactos" },
+  { slug: "sobre", name: "Sobre" },
+  { slug: "bonus-hunt", name: "Bonus Hunt" },
+  { slug: "roda-diaria", name: "Roda Diária" },
+  { slug: "leaderboard", name: "Leaderboard" },
+  { slug: "giveaways", name: "Giveaways" },
+  { slug: "live", name: "Live" },
+  { slug: "slots", name: "Slots" },
+  { slug: "calendario", name: "Calendário" },
+  { slug: "daily-session", name: "Sessão do Dia" },
+  { slug: "adivinha-o-resultado", name: "Adivinha o Resultado" },
+  { slug: "perfil", name: "Perfil" },
+  { slug: "moderador", name: "Moderador" },
+  { slug: "politica-de-privacidade", name: "Política de Privacidade" },
+  { slug: "politica-de-cookies", name: "Política de Cookies" },
+  { slug: "termos-e-condicoes", name: "Termos e Condições" },
+];
+
+/* ── GET — fetch all page settings (auto-seeds missing) ────── */
 export async function GET() {
   const { data, error } = await supabase
     .from("page_settings")
@@ -26,7 +54,23 @@ export async function GET() {
     .order("page_name", { ascending: true });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ settings: data ?? [] });
+
+  const existing = data ?? [];
+  const existingSlugs = new Set(existing.map((s) => s.page_slug));
+  const missing = CANONICAL_PAGES.filter((p) => !existingSlugs.has(p.slug));
+
+  if (missing.length > 0) {
+    const rows = missing.map((p) => ({ page_slug: p.slug, page_name: p.name }));
+    const { data: inserted } = await supabase
+      .from("page_settings")
+      .upsert(rows, { onConflict: "page_slug", ignoreDuplicates: true })
+      .select();
+
+    if (inserted) existing.push(...inserted);
+    existing.sort((a, b) => a.page_name.localeCompare(b.page_name));
+  }
+
+  return NextResponse.json({ settings: existing });
 }
 
 /* ── PUT — update a single page setting ────────────────────── */

@@ -26,6 +26,8 @@ const DEFAULT_BACKGROUNDS: Record<string, string> = {
   calendario: "/images/pages/arena-gladiator.jpg",
   "daily-session": "/images/pages/session.jpg",
   "adivinha-o-resultado": "/images/pages/warrior-illustration.jpg",
+  perfil: "/images/pages/helmet-bronze.jpg",
+  moderador: "/images/pages/helmet-grunge.jpg",
   "politica-de-privacidade": "/images/pages/helmet-bronze.jpg",
   "politica-de-cookies": "/images/pages/helmet-bronze.jpg",
   "termos-e-condicoes": "/images/pages/helmet-bronze.jpg",
