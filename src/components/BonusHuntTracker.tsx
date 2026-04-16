@@ -145,6 +145,7 @@ export function BonusHuntTracker({ compact = false }: { compact?: boolean } = {}
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
             {/* ── Header bar (outside card) ──────────── */}
+            {!compact && (
             <div style={{
               display: "flex",
               alignItems: "center",
@@ -155,7 +156,6 @@ export function BonusHuntTracker({ compact = false }: { compact?: boolean } = {}
               {/* Left: hunt title + session nav */}
               <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                 <span style={{ fontSize: "1.5rem" }}>⚔️</span>
-                {!compact && (
                   <span style={{
                     fontFamily: "var(--font-display)",
                     fontSize: "1.1rem",
@@ -165,7 +165,6 @@ export function BonusHuntTracker({ compact = false }: { compact?: boolean } = {}
                   }}>
                     {selectedSession?.title}
                   </span>
-                )}
               </div>
 
               {/* Right: navigation + status */}
@@ -219,6 +218,7 @@ export function BonusHuntTracker({ compact = false }: { compact?: boolean } = {}
                 </span>
               </div>
             </div>
+            )}
 
             <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom bonus-hunt-scroll">
               <CornerOrnament className="absolute top-2 left-2 w-5 h-5" />
