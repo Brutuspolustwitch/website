@@ -599,7 +599,6 @@ body {
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
 }
 .papyrus-flip-back {
   position: absolute;
@@ -647,6 +646,7 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: opacity 0.3s, color 0.3s;
+  flex-shrink: 0;
 }
 .flip-hint:hover {
   opacity: 1;
@@ -754,6 +754,7 @@ body {
     inset 0 2px 8px rgba(60, 40, 10, 0.2),
     0 2px 4px rgba(60, 40, 10, 0.1);
   border: 1px solid rgba(139, 105, 20, 0.2);
+  flex-shrink: 0;
 }
 .casino-banner-inner {
   width: 100%;
@@ -884,6 +885,11 @@ body {
   margin: 10px -4px;
   padding: 18px 16px;
   border-radius: 8px;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   background: linear-gradient(
     135deg,
     rgba(212, 160, 23, 0.08) 0%,
@@ -1009,6 +1015,7 @@ body {
   text-align: center;
   position: relative;
   z-index: 1;
+  flex-shrink: 0;
 }
 
 .cta-button {

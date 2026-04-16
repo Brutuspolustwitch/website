@@ -133,10 +133,15 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
                   {offer.cashback ? ` · ${offer.cashback} Cashback` : ""}
                 </p>
 
-                {offer.code && offer.code !== "—" && (
+                {offer.code && offer.code !== "—" ? (
                   <div className="promo-code-wrapper" onClick={handleCopyCode} role="button" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && handleCopyCode(e)}>
                     <span className="promo-code-label">Código</span>
                     <span className="promo-code-value">{offer.code}</span>
+                  </div>
+                ) : (
+                  <div className="promo-code-wrapper" style={{ visibility: 'hidden' }}>
+                    <span className="promo-code-label">Código</span>
+                    <span className="promo-code-value">&nbsp;</span>
                   </div>
                 )}
               </div>
