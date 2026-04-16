@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function SlotsPage() {
   return (
     <div className="pt-16">
-      <SlotRequestSystem />
+      <SlotRequestSystem hideTitle />
     </div>
   );
 }

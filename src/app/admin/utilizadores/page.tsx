@@ -96,9 +96,6 @@ export default function UtilizadoresPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="gladiator-title text-2xl">
-              Utilizadores
-            </h1>
             <p className="text-sm text-arena-ash mt-1">{users.length} registados</p>
           </div>
         </div>

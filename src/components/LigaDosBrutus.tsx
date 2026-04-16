@@ -56,7 +56,7 @@ function DustParticles() {
 }
 
 /* ── Main Component ────────────────────────────────────── */
-export default function LigaDosBrutusContent() {
+export default function LigaDosBrutusContent({ hideTitle = false }: { hideTitle?: boolean } = {}) {
   const [years, setYears] = useState<LeaderboardYear[]>([]);
   const [selectedYear, setSelectedYear] = useState<LeaderboardYear | null>(null);
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
@@ -199,11 +199,13 @@ export default function LigaDosBrutusContent() {
                 <DustParticles />
 
                 {/* Scroll Header */}
+                {!hideTitle && (
                 <div className="liga-scroll-header">
                   <div className="liga-scroll-title-ornament">⚔</div>
                   <h2 className="liga-scroll-title">HALL OF FAME</h2>
                   <div className="liga-scroll-title-ornament">⚔</div>
                 </div>
+                )}
 
                 <div className="liga-divider" />
 

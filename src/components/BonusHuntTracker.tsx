@@ -24,7 +24,7 @@ function CornerOrnament({ className }: { className: string }) {
   );
 }
 
-export function BonusHuntTracker({ compact = false }: { compact?: boolean } = {}) {
+export function BonusHuntTracker({ compact = false, hideTitle = false }: { compact?: boolean; hideTitle?: boolean } = {}) {
   const [sessions, setSessions] = useState<BonusHuntSession[]>([]);
   const [selectedSession, setSelectedSession] = useState<BonusHuntSession | null>(null);
   const [slots, setSlots] = useState<BonusHuntSlot[]>([]);
@@ -100,7 +100,7 @@ export function BonusHuntTracker({ compact = false }: { compact?: boolean } = {}
     return (
       <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-arena-dark/50">
         <div className="max-w-4xl mx-auto text-center">
-          <SectionHeading title="Bonus Hunt" subtitle="A carregar..." />
+          {!hideTitle && <SectionHeading title="Bonus Hunt" subtitle="A carregar..." />}
           <div className="papyrus-scroll greek-key-border" style={{ maxWidth: "100%", padding: "32px" }}>
             <div className="animate-pulse space-y-3">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -126,7 +126,7 @@ export function BonusHuntTracker({ compact = false }: { compact?: boolean } = {}
     return (
       <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-arena-dark/50">
         <div className="max-w-4xl mx-auto text-center">
-          <SectionHeading title="Bonus Hunt" subtitle="Sem bonus hunts registados" />
+          {!hideTitle && <SectionHeading title="Bonus Hunt" subtitle="Sem bonus hunts registados" />}
           <div className="papyrus-scroll greek-key-border" style={{ maxWidth: "100%", padding: "32px", textAlign: "center" }}>
             <p style={{ fontFamily: "var(--font-display)", color: "var(--ink-light)", fontSize: "0.9rem" }}>
               Os bonus hunts importados aparecerão aqui.
@@ -444,12 +444,14 @@ export function BonusHuntTracker({ compact = false }: { compact?: boolean } = {}
       <div className="absolute inset-0 bg-gradient-to-r from-arena-dark via-arena-dark/85 to-arena-dark/70 pointer-events-none" />
 
       <div className="relative max-w-4xl mx-auto">
+        {!hideTitle && (
         <ScrollReveal>
           <SectionHeading
             title="Bonus Hunt"
             subtitle={selectedSession?.title || "Acompanha cada bónus em tempo real"}
           />
         </ScrollReveal>
+        )}
         <ScrollReveal delay={0.1}>
           {tableContent}
         </ScrollReveal>

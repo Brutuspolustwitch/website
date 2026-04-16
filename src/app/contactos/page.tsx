@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 
 export const metadata: Metadata = {
   title: "Contactos",
@@ -14,8 +13,7 @@ export default function ContactosPage() {
   return (
     <div className="pt-24 pb-16 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionHeading title="Contactos" subtitle="Fala connosco" />
-        <div className="mt-12 max-w-xl mx-auto">
+        <div className="mt-4 max-w-xl mx-auto">
           <form className="space-y-6">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-arena-smoke mb-2">Nome</label>

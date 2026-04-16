@@ -162,39 +162,6 @@ export default function LojaPage() {
       <div className="relative z-10 pt-24 pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-          {/* ── Section Header: ARMARIA ── */}
-          <div className="text-center mb-16">
-            {/* Decorative top ornament */}
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <div className="h-px w-16 bg-gradient-to-r from-transparent to-arena-gold/30" />
-              <div className="flex items-center gap-2">
-                <span className="text-arena-gold/40 text-xs">⚔</span>
-                <span className="text-arena-gold/20 text-[10px] font-[family-name:var(--font-display)] tracking-[0.3em] uppercase">
-                  Arena Store
-                </span>
-                <span className="text-arena-gold/40 text-xs">⚔</span>
-              </div>
-              <div className="h-px w-16 bg-gradient-to-l from-transparent to-arena-gold/30" />
-            </div>
-
-            <h1 className="gladiator-title text-4xl sm:text-5xl lg:text-6xl mb-4" data-text="ARMARIA">
-              ARMARIA
-            </h1>
-
-            <p className="font-[family-name:var(--font-display)] text-sm sm:text-base text-arena-smoke/50 tracking-[0.25em] uppercase">
-              Recompensas forjadas para guerreiros
-            </p>
-
-            {/* Decorative sword divider */}
-            <div className="mt-8 flex items-center justify-center gap-3">
-              <div className="h-px w-20 sm:w-32 bg-gradient-to-r from-transparent via-arena-gold/30 to-arena-gold/10" />
-              <div className="relative">
-                <span className="text-arena-gold/50 text-base">🗡️</span>
-              </div>
-              <div className="h-px w-20 sm:w-32 bg-gradient-to-l from-transparent via-arena-gold/30 to-arena-gold/10" />
-            </div>
-          </div>
-
           {/* Loading skeletons — papyrus style */}
           {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">

@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function CasinosPage() {
   return (
     <div className="pt-16">
-      <CasinoSection />
+      <CasinoSection hideTitle />
     </div>
   );
 }

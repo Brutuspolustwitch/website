@@ -17,18 +17,8 @@ export default function RodaDiariaPage() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(139,0,0,0.12),transparent_70%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_80%,rgba(212,168,67,0.08),transparent_50%)]" />
 
-      {/* Header — floats above the SpinWheel background */}
-      <div className="relative z-20 text-center pt-10 pb-6 lg:pt-14 lg:pb-8 pointer-events-none">
-        <h1 className="gladiator-title text-xl lg:text-2xl">
-          Arrebanha Daily
-        </h1>
-        <p className="gladiator-subtitle text-[11px] mt-0.5">
-          Gira a roda dos campeões e arrebanha a tua glória
-        </p>
-      </div>
-
       {/* SpinWheel — fills remaining area */}
-      <div className="relative flex-1">
+      <div className="relative flex-1 pt-24">
         <SpinWheel />
       </div>
     </div>

@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function LeaderboardPage() {
   return (
     <div className="pt-16">
-      <Leaderboard />
+      <Leaderboard hideTitle />
     </div>
   );
 }

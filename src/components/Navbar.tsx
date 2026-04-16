@@ -24,8 +24,47 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
 
   const vipLevel = getVipLevel(points);
 
-  /* ── Daily Session info for navbar ──────────── */
+  /* ── Page title map ─────────────────────────── */
+  const PAGE_TITLES: Record<string, string> = {
+    "/calendario": "Calendário",
+    "/torneio": "Torneio Liga dos Brutus",
+    "/sobre": "Sobre Nós",
+    "/contactos": "Contactos",
+    "/giveaways": "Giveaways",
+    "/ofertas": "Ofertas",
+    "/destaques": "Destaques",
+    "/loja": "Armaria",
+    "/roda-diaria": "Arrebanha Daily",
+    "/bonus-hunt": "Bonus Hunt",
+    "/leaderboard": "Gladiator Ranks",
+    "/liga-dos-brutus": "Hall of Fame",
+    "/live": "Em Direto",
+    "/slots": "Slot Request",
+    "/casinos": "Battle Arenas",
+    "/adivinha-o-resultado": "Guess the Spoils",
+    "/termos-e-condicoes": "Termos & Condições",
+    "/politica-de-privacidade": "Política de Privacidade",
+    "/politica-de-cookies": "Política de Cookies",
+    "/perfil": "Perfil",
+    "/moderador": "Moderador",
+    "/admin": "Admin",
+    "/admin/outros": "Outros",
+    "/admin/outros/calendario": "Calendário",
+    "/admin/outros/bonus-hunt": "Bonus Hunt",
+    "/admin/outros/giveaways": "Giveaways",
+    "/admin/outros/daily-wheel": "Daily Wheel",
+    "/admin/outros/daily-session": "Daily Session",
+    "/admin/loja": "Gestão de Recompensas",
+    "/admin/loja/gestao": "Gestão de Resgates",
+    "/admin/utilizadores": "Utilizadores",
+    "/admin/parcerias": "Parcerias",
+    "/admin/analitics": "Analytics",
+  };
+
+  const pageTitle = PAGE_TITLES[pathname] ?? null;
   const isDailySession = pathname === "/daily-session";
+
+  /* ── Daily Session live info ──────────────────── */
   const [sessionInfo, setSessionInfo] = useState<{ title: string; date: string; is_active: boolean } | null>(null);
 
   useEffect(() => {
@@ -114,7 +153,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
             </Link>
           </div>
 
-          {/* Center: session info on daily-session page, nav links on other pages */}
+          {/* Center: page title or daily session info */}
           {isDailySession && sessionInfo ? (
             <div className="hidden sm:flex items-center gap-3">
               <h1 className="text-lg sm:text-xl font-bold font-[family-name:var(--font-display)] bg-gradient-to-r from-arena-gold via-arena-gold-light to-arena-gold bg-clip-text text-transparent">
@@ -129,6 +168,12 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
               <span className="text-arena-smoke/70 text-xs capitalize hidden md:inline">
                 {sessionInfo.date}
               </span>
+            </div>
+          ) : pageTitle ? (
+            <div className="hidden sm:flex items-center">
+              <h1 className="text-lg sm:text-xl font-bold font-[family-name:var(--font-display)] bg-gradient-to-r from-arena-gold via-arena-gold-light to-arena-gold bg-clip-text text-transparent uppercase tracking-wider">
+                {pageTitle}
+              </h1>
             </div>
           ) : (
             <div className="hidden md:flex lg:hidden items-center gap-1">

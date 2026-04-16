@@ -121,8 +121,6 @@ export default function AdminRewardsPage() {
   return (
     <div className="pt-24 pb-16 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionHeading title="Gestão de Recompensas" subtitle="Administra a armaria" />
-
         <div className="flex justify-end mb-6">
           <button
             onClick={() => setEditing(editing ? null : { ...emptyReward })}

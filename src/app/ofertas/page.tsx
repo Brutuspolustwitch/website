@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 import { OfferCards } from "@/components/OfferCard";
 
 export const metadata: Metadata = {
@@ -36,7 +35,6 @@ export default function OfertasPage() {
       {/* Content */}
       <div className="relative z-10 pt-24 pb-16">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-6">
-          <SectionHeading title="Ofertas" subtitle="Bónus e promoções exclusivas — clica num cartão para ver detalhes" />
           <OfferCards />
         </div>
       </div>

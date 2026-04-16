@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function BonusHuntPage() {
   return (
     <div className="pt-16">
-      <BonusHuntTracker />
+      <BonusHuntTracker hideTitle />
     </div>
   );
 }

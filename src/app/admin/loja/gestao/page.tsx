@@ -107,8 +107,6 @@ export default function AdminGestaoPage() {
   return (
     <div className="pt-24 pb-16 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionHeading title="Gestão de Resgates" subtitle="Aprovar ou recusar resgates da loja" />
-
         {/* Filter tabs */}
         <div className="flex gap-2 mb-6">
           {filterButtons.map((f) => (

@@ -38,7 +38,7 @@ type StatsTab = "war-stats" | "treasury" | "favor" | "records";
 
 /* ── Component ──────────────────────────────────────────────────────── */
 
-export function GuessTheSpoils() {
+export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = {}) {
   const [campaigns, setCampaigns] = useState<BonusHuntSession[]>([]);
   const [idx, setIdx] = useState(0);
   const [slots, setSlots] = useState<BonusHuntSlot[]>([]);
@@ -97,12 +97,16 @@ export function GuessTheSpoils() {
       <div className="relative max-w-[1400px] mx-auto">
 
         {/* ── Heading ──────────────────────────────────────────────── */}
+        {!hideTitle && (
+        {!hideTitle && (
         <ScrollReveal>
           <SectionHeading
             title="Guess the Spoils"
             subtitle="Survive the Arena and Claim Your Glory!"
           />
         </ScrollReveal>
+        )}
+        )}
 
         {/* ── Loading / Empty ──────────────────────────────────────── */}
         {loading ? (

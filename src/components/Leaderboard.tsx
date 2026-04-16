@@ -28,7 +28,7 @@ const MOCK_LEADERBOARD: LeaderboardEntry[] = [
   { id: "8", user_name: "coliseum_kid", display_name: "ColiseumKid", total_points: 80, biggest_win: 150, rank: "recruit", created_at: "" },
 ];
 
-export function Leaderboard() {
+export function Leaderboard({ hideTitle = false }: { hideTitle?: boolean } = {}) {
   return (
     <section id="leaderboard" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-arena-dark/50 overflow-hidden">
       {/* Background texture */}
@@ -38,12 +38,16 @@ export function Leaderboard() {
       />
       <div className="absolute inset-0 bg-gradient-to-b from-arena-dark/80 via-arena-dark/60 to-arena-dark/80 pointer-events-none" />
       <div className="relative max-w-5xl mx-auto">
+        {!hideTitle && (
+        {!hideTitle && (
         <ScrollReveal>
           <SectionHeading
             title="Gladiator Ranks"
             subtitle="Rise through the ranks. Prove your worth in the arena."
           />
         </ScrollReveal>
+        )}
+        )}
 
         {/* Rank legend */}
         <ScrollReveal delay={0.1}>

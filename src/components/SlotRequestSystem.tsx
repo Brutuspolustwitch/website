@@ -51,7 +51,7 @@ interface ChatMessage {
   timestamp: Date;
 }
 
-export function SlotRequestSystem() {
+export function SlotRequestSystem({ hideTitle = false }: { hideTitle?: boolean } = {}) {
   const [input, setInput] = useState("");
   const [queue, setQueue] = useState<QueueItem[]>([
     { id: "demo1", user: "GladiatorMax", slot: "gates", matchedSlot: "Gates of Olympus", timestamp: new Date(), status: "playing" },
@@ -118,12 +118,16 @@ export function SlotRequestSystem() {
   return (
     <section id="slot-request" className="py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
+        {!hideTitle && (
+        {!hideTitle && (
         <ScrollReveal>
           <SectionHeading
             title="Slot Request"
             subtitle="Command the arena. Request your slots using !sr."
           />
         </ScrollReveal>
+        )}
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Chat panel */}

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 import { StreamCalendar } from "@/components/StreamCalendar";
 
 export const metadata: Metadata = {
@@ -15,8 +14,7 @@ export default function CalendarioPage() {
   return (
     <div className="pt-24 pb-16 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionHeading title="Calendário" subtitle="Agenda de streams e eventos — nunca percas uma live" />
-        <div className="mt-10">
+        <div className="mt-4">
           <StreamCalendar />
         </div>
       </div>

@@ -76,7 +76,7 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
-export function CasinoSection() {
+export function CasinoSection({ hideTitle = false }: { hideTitle?: boolean } = {}) {
   return (
     <section id="casinos" className="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
       {/* Background accent */}
@@ -86,12 +86,16 @@ export function CasinoSection() {
       />
       <div className="absolute inset-0 bg-gradient-to-t from-arena-black via-arena-black/90 to-arena-black pointer-events-none" />
       <div className="relative max-w-6xl mx-auto">
+        {!hideTitle && (
+        {!hideTitle && (
         <ScrollReveal>
           <SectionHeading
             title="Battle Arenas"
             subtitle="Handpicked casinos for gladiators. Honest reviews, verified bonuses."
           />
         </ScrollReveal>
+        )}
+        )}
 
         <motion.div
           variants={STAGGER_CONTAINER}

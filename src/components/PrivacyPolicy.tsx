@@ -86,16 +86,20 @@ const sections = [
   },
 ];
 
-export function PrivacyPolicy() {
+export function PrivacyPolicy({ hideTitle = false }: { hideTitle?: boolean } = {}) {
   return (
     <section className="py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
+        {!hideTitle && (
+        {!hideTitle && (
         <ScrollReveal>
           <SectionHeading
             title="Política de Privacidade"
             subtitle="Como recolhemos, usamos e protegemos os seus dados"
           />
         </ScrollReveal>
+        )}
+        )}
 
         <div className="mt-10 space-y-8">
           {sections.map((section, i) => (
