@@ -237,25 +237,20 @@ body {
    ══════════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* Parchment — darker base so gold pops hard */
-  --parchment-light: #E8D8A8;
-  --parchment-mid: #DECE98;
-  --parchment-dark: #D4C48A;
-  --parchment-edge: #BFA86E;
-  --scroll-shadow: #8A6A2F;
-  /* Ink — deep brown for max readability */
-  --ink-dark: #3A2810;
-  --ink-mid: #5C4020;
-  --ink-light: #6E5530;
-  /* Gold — BRIGHT metallic imperial gold */
-  --gold-bright: #D4AF37;
-  --gold-mid: #B8942A;
-  --gold-dark: #9C7A1C;
-  --gold-light: #F5D97A;
-  /* Accent reds */
+  --parchment-light: #f5e6c8;
+  --parchment-mid: #ecd9b0;
+  --parchment-dark: #e8d3a3;
+  --parchment-edge: #d4b87a;
+  --scroll-shadow: #8b6914;
+  --ink-dark: #3a2a10;
+  --ink-mid: #5c4520;
+  --ink-light: #7a6340;
+  --gold-bright: #d4a017;
+  --gold-mid: #b8860b;
+  --gold-dark: #8b6914;
+  --gold-light: #f0d060;
   --deep-red: #8b1a1a;
   --deep-red-light: #c0392b;
-  /* Stone tones */
   --stone-dark: #4a3728;
   --stone-mid: #6b5240;
   --stone-light: #8a7060;
@@ -270,26 +265,19 @@ body {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  /* Metallic gold gradient border — visible and premium */
-  border: 2.5px solid transparent;
+  border: 2px solid var(--gold-dark);
   border-radius: var(--scroll-radius);
-  background: linear-gradient(var(--parchment-mid), var(--parchment-mid)) padding-box,
-              linear-gradient(135deg, #F5D97A 0%, #D4AF37 25%, #9C7A1C 50%, #D4AF37 75%, #F5D97A 100%) border-box;
   pointer-events: none;
-  /* Gold glow around the entire card */
-  box-shadow:
-    0 0 8px rgba(212, 175, 55, 0.2),
-    inset 0 0 8px rgba(212, 175, 55, 0.08);
+  opacity: 0.4;
 }
 .greek-key-border::after {
   content: '';
   position: absolute;
-  top: 5px; left: 5px; right: 5px; bottom: 5px;
-  /* Inner engraved frame — subtle carved line */
-  border: 1px solid rgba(212, 175, 55, 0.3);
-  border-radius: 12px;
+  top: 4px; left: 4px; right: 4px; bottom: 4px;
+  border: 1px solid var(--gold-dark);
+  border-radius: 14px;
   pointer-events: none;
-  box-shadow: inset 0 0 4px rgba(212, 175, 55, 0.06);
+  opacity: 0.25;
 }
 
 /* ── Scroll Body — Main Card ────────────────────────────── */
@@ -322,16 +310,11 @@ body {
     );
   border-radius: var(--scroll-radius);
   box-shadow:
-    /* Strong edge burn — darkens parchment edges for depth */
-    inset 0 0 80px 20px rgba(80, 50, 10, 0.22),
-    inset 0 0 40px 8px rgba(80, 50, 10, 0.14),
-    /* Warm amber drop shadows */
-    0 4px 10px rgba(80, 55, 15, 0.25),
-    0 14px 32px rgba(80, 55, 15, 0.18),
-    0 28px 60px rgba(60, 40, 10, 0.12),
-    /* Visible gold rim glow — catches the light */
-    0 0 6px rgba(212, 175, 55, 0.25),
-    0 0 20px rgba(212, 175, 55, 0.08);
+    inset 0 0 60px 10px rgba(100, 70, 20, 0.12),
+    inset 0 0 30px 5px rgba(100, 70, 20, 0.08),
+    0 4px 6px rgba(60, 40, 10, 0.15),
+    0 12px 24px rgba(60, 40, 10, 0.12),
+    0 24px 48px rgba(60, 40, 10, 0.08);
   overflow: hidden;
   transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1);
@@ -672,27 +655,24 @@ body {
 }
 
 .scroll-emblem {
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   margin: 0 auto 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Metallic gold medallion — light catching metal */
-  background: radial-gradient(circle at 40% 35%, var(--gold-light) 0%, var(--gold-bright) 40%, var(--gold-dark) 100%);
+  background: radial-gradient(circle, var(--gold-bright) 0%, var(--gold-dark) 100%);
   border-radius: 50%;
   box-shadow:
-    0 3px 10px rgba(156, 122, 28, 0.45),
-    0 0 16px rgba(212, 175, 55, 0.15),
-    inset 0 2px 3px rgba(255, 245, 210, 0.6),
-    inset 0 -1px 3px rgba(90, 60, 10, 0.3);
+    0 2px 8px rgba(139, 105, 20, 0.3),
+    inset 0 1px 2px rgba(255, 220, 100, 0.5);
   position: relative;
 }
 .scroll-emblem::after {
   content: '';
   position: absolute;
   inset: 3px;
-  border: 1.5px solid rgba(245, 217, 122, 0.5);
+  border: 1.5px solid rgba(255, 220, 100, 0.4);
   border-radius: 50%;
 }
 
@@ -720,20 +700,17 @@ body {
 }
 
 /* ── Engraved Divider ───────────────────────────────────── */
-/* Metallic gold divider — carved line with light reflection */
 .engraved-divider {
   height: 1px;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    #9C7A1C 10%,
-    #D4AF37 35%,
-    #F5D97A 50%,
-    #D4AF37 65%,
-    #9C7A1C 90%,
+    var(--gold-dark) 15%,
+    var(--gold-mid) 50%,
+    var(--gold-dark) 85%,
     transparent 100%
   );
-  opacity: 0.55;
+  opacity: 0.4;
   margin: 0 -4px;
   position: relative;
 }
@@ -743,13 +720,12 @@ body {
   top: 1px;
   left: 0; right: 0;
   height: 1px;
-  /* Bright highlight line — simulates light catching carved groove */
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 240, 200, 0.5) 10%,
-    rgba(255, 240, 200, 0.7) 50%,
-    rgba(255, 240, 200, 0.5) 90%,
+    rgba(255, 240, 200, 0.4) 15%,
+    rgba(255, 240, 200, 0.6) 50%,
+    rgba(255, 240, 200, 0.4) 85%,
     transparent 100%
   );
 }
@@ -760,12 +736,10 @@ body {
   margin: 10px 0;
   border-radius: 8px;
   overflow: hidden;
-  /* Gold-trimmed logo panel */
   box-shadow:
-    inset 0 2px 10px rgba(60, 40, 10, 0.3),
-    0 3px 8px rgba(60, 40, 10, 0.15),
-    0 0 6px rgba(212, 175, 55, 0.1);
-  border: 1.5px solid rgba(212, 175, 55, 0.35);
+    inset 0 2px 8px rgba(60, 40, 10, 0.2),
+    0 2px 4px rgba(60, 40, 10, 0.1);
+  border: 1px solid rgba(139, 105, 20, 0.2);
 }
 .casino-banner-inner {
   width: 100%;
@@ -773,13 +747,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Deep dark logo backdrop — maximum contrast */
   background: linear-gradient(
     135deg,
-    #0a0400 0%,
-    #140a04 30%,
-    #1e1008 60%,
-    #140a04 100%
+    #1a0a00 0%,
+    #2d1810 30%,
+    #4a2010 60%,
+    #2d1810 100%
   );
   position: relative;
   overflow: hidden;
@@ -788,10 +761,9 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  /* Gold + red ambient light on logo area */
   background:
-    radial-gradient(ellipse at 30% 50%, rgba(212, 175, 55, 0.18) 0%, transparent 55%),
-    radial-gradient(ellipse at 70% 50%, rgba(139, 26, 26, 0.12) 0%, transparent 55%);
+    radial-gradient(ellipse at 30% 50%, rgba(212, 160, 23, 0.15) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 50%, rgba(139, 26, 26, 0.1) 0%, transparent 60%);
 }
 .casino-banner-text {
   position: relative;
@@ -816,14 +788,13 @@ body {
 .star-icon {
   width: 18px;
   height: 18px;
-  /* Gold stars with visible glow */
-  filter: drop-shadow(0 1px 3px rgba(212, 175, 55, 0.4));
+  filter: drop-shadow(0 1px 2px rgba(139, 105, 20, 0.3));
 }
 .star-filled {
-  fill: #D4AF37;
+  fill: var(--gold-bright);
 }
 .star-empty {
-  fill: rgba(156, 122, 28, 0.2);
+  fill: rgba(139, 105, 20, 0.2);
 }
 .rating-number {
   font-family: 'Cinzel', 'Georgia', serif;
@@ -899,24 +870,21 @@ body {
   margin: 10px -4px;
   padding: 18px 16px;
   border-radius: 8px;
-  /* STRONG gold frame — unmistakably premium */
   background: linear-gradient(
     135deg,
-    rgba(212, 175, 55, 0.10) 0%,
-    rgba(212, 175, 55, 0.16) 50%,
-    rgba(212, 175, 55, 0.10) 100%
+    rgba(212, 160, 23, 0.08) 0%,
+    rgba(212, 160, 23, 0.12) 50%,
+    rgba(212, 160, 23, 0.08) 100%
   );
-  border: 1.5px solid rgba(212, 175, 55, 0.50);
+  border: 1.5px solid rgba(212, 160, 23, 0.35);
   box-shadow:
-    0 0 16px rgba(212, 175, 55, 0.15),
-    0 0 40px rgba(212, 175, 55, 0.06),
-    inset 0 0 30px rgba(212, 175, 55, 0.08),
-    inset 0 1px 0 rgba(245, 217, 122, 0.25);
+    0 0 20px rgba(212, 160, 23, 0.08),
+    inset 0 0 20px rgba(212, 160, 23, 0.04);
   overflow: hidden;
   text-align: center;
 }
 
-/* BRIGHT shimmer sweep — clearly visible gold light pass */
+/* Light shimmer sweep across promo section */
 .promo-section::before {
   content: '';
   position: absolute;
@@ -927,12 +895,12 @@ body {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 220, 100, 0.18) 35%,
-    rgba(255, 220, 100, 0.30) 50%,
-    rgba(255, 220, 100, 0.18) 65%,
+    rgba(255, 220, 100, 0.12) 40%,
+    rgba(255, 220, 100, 0.2) 50%,
+    rgba(255, 220, 100, 0.12) 60%,
     transparent 100%
   );
-  animation: papyrus-shimmer 3.5s ease-in-out infinite;
+  animation: papyrus-shimmer 4s ease-in-out infinite;
   pointer-events: none;
   z-index: 1;
 }
@@ -989,26 +957,22 @@ body {
   padding: 6px 14px;
   background: linear-gradient(
     135deg,
-    rgba(60, 40, 10, 0.08) 0%,
-    rgba(60, 40, 10, 0.14) 100%
+    rgba(60, 40, 10, 0.06) 0%,
+    rgba(60, 40, 10, 0.1) 100%
   );
-  /* Gold dashed border — visible but not harsh */
-  border: 1.5px dashed rgba(212, 175, 55, 0.55);
+  border: 1.5px dashed var(--gold-dark);
   border-radius: 6px;
   position: relative;
   z-index: 2;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 8px rgba(212, 175, 55, 0.06);
+  transition: background 0.3s ease;
 }
 .promo-code-wrapper:hover {
   background: linear-gradient(
     135deg,
-    rgba(60, 40, 10, 0.12) 0%,
-    rgba(60, 40, 10, 0.18) 100%
+    rgba(60, 40, 10, 0.1) 0%,
+    rgba(60, 40, 10, 0.15) 100%
   );
-  border-color: rgba(212, 175, 55, 0.75);
-  box-shadow: 0 0 12px rgba(212, 175, 55, 0.12);
 }
 .promo-code-label {
   font-size: 0.6rem;
@@ -1033,100 +997,80 @@ body {
   z-index: 1;
 }
 
-/* ★★★ CTA BUTTON — POLISHED GOLD PLATE ★★★ */
 .cta-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   width: 100%;
-  padding: 13px 24px;
+  padding: 12px 24px;
   font-family: 'Cinzel', 'Georgia', serif;
   font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #fff;
-  text-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.6),
-    0 0 10px rgba(0, 0, 0, 0.15);
-  /* Thin metallic gold rim */
-  border: 1px solid rgba(245, 217, 122, 0.5);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  border: none;
   border-radius: 8px;
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  /* HIGH-CONTRAST gold gradient — bright top, deep shadow bottom */
   background: linear-gradient(
     180deg,
-    #F5D97A 0%,
-    #EBCC5A 15%,
-    #D4AF37 40%,
-    #B8942A 65%,
-    #9C7A1C 85%,
-    #7A5F14 100%
+    var(--gold-light) 0%,
+    var(--gold-bright) 30%,
+    var(--gold-mid) 70%,
+    var(--gold-dark) 100%
   );
   box-shadow:
-    /* Strong warm drop shadow */
-    0 6px 20px rgba(156, 122, 28, 0.5),
-    0 3px 8px rgba(0, 0, 0, 0.3),
-    /* VISIBLE gold outer glow */
-    0 0 24px rgba(212, 175, 55, 0.30),
-    0 0 48px rgba(212, 175, 55, 0.10),
-    /* Top shine bevel — glossy metallic highlight */
-    inset 0 2px 0 rgba(255, 245, 210, 0.65),
-    inset 0 3px 6px rgba(255, 240, 190, 0.20),
-    /* Bottom bevel depth — embossed metal edge */
-    inset 0 -2px 0 rgba(90, 60, 10, 0.4),
-    inset 0 -4px 8px rgba(60, 40, 5, 0.25);
+    0 4px 12px rgba(139, 105, 20, 0.35),
+    0 2px 4px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 240, 200, 0.5),
+    inset 0 -2px 4px rgba(80, 50, 10, 0.3);
   transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Glossy top highlight — looks like light reflecting on polished metal */
 .cta-button::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 45%;
+  height: 50%;
   background: linear-gradient(
     180deg,
-    rgba(255, 250, 220, 0.40) 0%,
-    rgba(255, 240, 200, 0.15) 40%,
+    rgba(255, 240, 200, 0.25) 0%,
     transparent 100%
   );
-  border-radius: 8px 8px 0 0;
+  border-radius: 10px 10px 0 0;
   pointer-events: none;
 }
 
-/* Shine sweep on hover — bright flash across button */
+/* Light sweep on hover */
 .cta-button::after {
   content: '';
   position: absolute;
   top: 0;
   left: -100%;
-  width: 50%;
+  width: 60%;
   height: 100%;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.2) 50%,
     transparent 100%
   );
-  transition: left 0.5s ease;
+  transition: left 0.6s ease;
   pointer-events: none;
 }
 
 .cta-button:hover {
-  transform: translateY(-3px);
-  /* On hover: STRONG gold glow + elevated shadow */
+  transform: translateY(-2px);
   box-shadow:
-    0 8px 28px rgba(156, 122, 28, 0.55),
-    0 4px 12px rgba(0, 0, 0, 0.3),
-    /* Bright gold halo */
-    0 0 40px rgba(212, 175, 55, 0.40),
-    0 0 80px rgba(212, 175, 55, 0.12),
-    inset 0 2px 0 rgba(255, 245, 210, 0.65),
-    inset 0 -2px 0 rgba(90, 60, 10, 0.4);
+    0 6px 20px rgba(139, 105, 20, 0.45),
+    0 3px 8px rgba(0, 0, 0, 0.2),
+    0 0 30px rgba(212, 160, 23, 0.2),
+    inset 0 1px 0 rgba(255, 240, 200, 0.5),
+    inset 0 -2px 4px rgba(80, 50, 10, 0.3);
 }
 .cta-button:hover::after {
   left: 150%;
@@ -1135,9 +1079,8 @@ body {
 .cta-button:active {
   transform: translateY(0px);
   box-shadow:
-    0 2px 8px rgba(156, 122, 28, 0.35),
-    0 0 16px rgba(212, 175, 55, 0.15),
-    inset 0 3px 6px rgba(80, 50, 10, 0.3);
+    0 2px 6px rgba(139, 105, 20, 0.3),
+    inset 0 2px 4px rgba(80, 50, 10, 0.2);
 }
 
 .cta-subtext {
@@ -1151,13 +1094,11 @@ body {
 /* ── Corner Ornaments ───────────────────────────────────── */
 .scroll-ornament {
   position: absolute;
-  width: 20px;
-  height: 20px;
-  /* Bold ornament — engraved gold detail */
-  opacity: 0.45;
+  width: 18px;
+  height: 18px;
+  opacity: 0.2;
   z-index: 1;
   pointer-events: none;
-  filter: drop-shadow(0 0 2px rgba(212, 175, 55, 0.3));
 }
 .scroll-ornament.top-left { top: 8px; left: 8px; }
 .scroll-ornament.top-right { top: 8px; right: 8px; transform: scaleX(-1); }
