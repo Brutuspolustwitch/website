@@ -224,6 +224,11 @@ export default function AdminSettingsPage() {
                           background_image: "",
                         } as Partial<PageSetting>)
                       }
+                      onSelectPreset={(url) =>
+                        saveField(page.id, {
+                          background_image: url,
+                        } as Partial<PageSetting>)
+                      }
                     />
 
                     {/* Hero Image — ONLY for home page */}
@@ -245,6 +250,11 @@ export default function AdminSettingsPage() {
                         onClear={() =>
                           saveField(page.id, {
                             hero_image: "",
+                          } as Partial<PageSetting>)
+                        }
+                        onSelectPreset={(url) =>
+                          saveField(page.id, {
+                            hero_image: url,
                           } as Partial<PageSetting>)
                         }
                       />
@@ -390,20 +400,53 @@ export default function AdminSettingsPage() {
   );
 }
 
-/* ── Image field with upload + preview ─────────────────────── */
+/* ── Preset images from /public/images/pages/ ──────────────── */
+const PRESET_IMAGES = [
+  { name: "Arena Gladiador", file: "/images/pages/gladiator-arena.jpg" },
+  { name: "Retrato Gladiador", file: "/images/pages/gladiator-portrait.jpg" },
+  { name: "Hero Gladiador", file: "/images/pages/hero-gladiator.jpg" },
+  { name: "Guerreiro", file: "/images/pages/warrior-illustration.jpg" },
+  { name: "Arena", file: "/images/pages/arena-gladiator.jpg" },
+  { name: "Murmillo", file: "/images/pages/murmillo-murmillon-gladiator.jpg" },
+  { name: "Provocator", file: "/images/pages/provocator-provokator.jpg" },
+  { name: "Elmo Bronze", file: "/images/pages/helmet-bronze.jpg" },
+  { name: "Elmo Grunge", file: "/images/pages/helmet-grunge.jpg" },
+  { name: "Elmo Still Life", file: "/images/pages/helmet-still-life.jpg" },
+  { name: "Stream", file: "/images/pages/Stream.jpg" },
+  { name: "Liga dos Brutus", file: "/images/pages/brutusleague.png" },
+  { name: "Roda", file: "/images/pages/wheel-bg.jpg" },
+  { name: "Sessão", file: "/images/pages/session.jpg" },
+  { name: "Loja", file: "/images/pages/store.jpg" },
+  { name: "Ofertas", file: "/images/pages/offers.jpg" },
+  { name: "Armas Medieval", file: "/images/pages/imgi_87_medieval-weapons-display-stockcake.jpg" },
+  { name: "Arsenal Medieval", file: "/images/pages/imgi_136_medieval-arsenal-collection-stockcake.jpg" },
+  { name: "Steel & Shadow", file: "/images/pages/imgi_132_steel-and-shadow-stockcake.jpg" },
+  { name: "Coliseu I", file: "/images/pages/imgi_4_947087.jpg" },
+  { name: "Coliseu II", file: "/images/pages/imgi_15_947098.jpg" },
+  { name: "Coliseu III", file: "/images/pages/imgi_30_947112.jpg" },
+  { name: "Gladiador I", file: "/images/pages/imgi_260_1000_F_728430557_wVTjNVRC4Q4eGHPSN0iIX64N2Aawi3H0.jpg" },
+  { name: "Gladiador II", file: "/images/pages/imgi_272_1000_F_728565783_EjGmr9YhcX5dfNT0fWe3db4SnBmoqMnk.jpg" },
+  { name: "OG Warrior", file: "/images/pages/og-image-warrior.jpg" },
+];
+
+/* ── Image field with preset gallery + upload ──────────────── */
 function ImageField({
   label,
   value,
   isUploading,
   onUpload,
   onClear,
+  onSelectPreset,
 }: {
   label: string;
   value: string | null;
   isUploading: boolean;
   onUpload: () => void;
   onClear: () => void;
+  onSelectPreset: (url: string) => void;
 }) {
+  const [showGallery, setShowGallery] = useState(false);
+
   return (
     <div className="space-y-2">
       <label className="text-xs font-medium text-arena-smoke/70 uppercase tracking-wider">
@@ -420,7 +463,7 @@ function ImageField({
             />
             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
               <button
-                onClick={onUpload}
+                onClick={() => setShowGallery(true)}
                 className="px-3 py-1.5 rounded-md bg-arena-gold/80 text-black text-xs font-medium hover:bg-arena-gold transition-colors"
               >
                 Alterar
@@ -442,7 +485,7 @@ function ImageField({
         </div>
       ) : (
         <button
-          onClick={onUpload}
+          onClick={() => setShowGallery(true)}
           disabled={isUploading}
           className="w-full h-24 rounded-lg border-2 border-dashed border-white/15 hover:border-arena-gold/40 bg-white/[0.02] hover:bg-white/[0.04] transition-all flex flex-col items-center justify-center gap-2 group"
         >
@@ -460,15 +503,104 @@ function ImageField({
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+                  d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z"
                 />
               </svg>
               <span className="text-xs text-arena-smoke/40 group-hover:text-arena-smoke/60 transition-colors">
-                Carregar imagem
+                Escolher imagem
               </span>
             </>
           )}
         </button>
+      )}
+
+      {/* Gallery Modal */}
+      {showGallery && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm"
+          onClick={() => setShowGallery(false)}
+        >
+          <div
+            className="bg-arena-dark border border-white/10 rounded-2xl w-full max-w-3xl max-h-[80vh] overflow-hidden shadow-2xl mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+              <div>
+                <h3 className="text-lg font-semibold text-arena-gold font-[family-name:var(--font-display)]">
+                  Escolher Imagem
+                </h3>
+                <p className="text-xs text-arena-smoke/60 mt-0.5">
+                  Seleciona uma imagem predefinida ou faz upload da tua
+                </p>
+              </div>
+              <button
+                onClick={() => setShowGallery(false)}
+                className="text-arena-smoke/60 hover:text-white text-xl px-2"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Gallery grid */}
+            <div className="overflow-y-auto max-h-[55vh] p-4">
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+                {PRESET_IMAGES.map((img) => {
+                  const isSelected = value === img.file;
+                  return (
+                    <button
+                      key={img.file}
+                      onClick={() => {
+                        onSelectPreset(img.file);
+                        setShowGallery(false);
+                      }}
+                      className={`group relative rounded-lg overflow-hidden border-2 transition-all aspect-[4/3] ${
+                        isSelected
+                          ? "border-arena-gold ring-2 ring-arena-gold/30"
+                          : "border-white/10 hover:border-arena-gold/50"
+                      }`}
+                    >
+                      <img
+                        src={img.file}
+                        alt={img.name}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <span className="absolute bottom-0 left-0 right-0 text-[10px] text-white font-medium px-1.5 py-1 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity truncate text-center">
+                        {img.name}
+                      </span>
+                      {isSelected && (
+                        <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-arena-gold flex items-center justify-center">
+                          <span className="text-black text-xs font-bold">✓</span>
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Footer: Upload custom */}
+            <div className="px-5 py-4 border-t border-white/10 flex items-center justify-between">
+              <p className="text-xs text-arena-smoke/50">
+                Nenhuma serve? Faz upload da tua imagem (máx. 5 MB)
+              </p>
+              <button
+                onClick={() => {
+                  setShowGallery(false);
+                  onUpload();
+                }}
+                className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-arena-smoke text-xs font-medium transition-colors flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                </svg>
+                Carregar imagem
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
