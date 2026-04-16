@@ -350,7 +350,7 @@ export default function DailySessionContent() {
             backgroundImage: "url('/images/pages/session.jpg')",
             backgroundSize: "cover",
             backgroundPosition: "center",
-            filter: "brightness(0.15) saturate(0.3) sepia(0.3) blur(2px)",
+            filter: "brightness(0.35) saturate(0.5) sepia(0.2) blur(1px)",
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black" />
@@ -472,20 +472,11 @@ export default function DailySessionContent() {
             {/* RIGHT — Sidebar (1/3) */}
             <div className="lg:col-span-1 space-y-4">
 
-              {/* Spotify Playlist */}
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <SpotifyEmbed url={session.spotify_url} />
-              </motion.div>
-
               {/* Casino Offer Card */}
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25 }}
+                transition={{ delay: 0.2 }}
               >
                 <div className="daily-session-card">
                   {session.casino ? (
@@ -518,6 +509,15 @@ export default function DailySessionContent() {
                     </div>
                   )}
                 </div>
+              </motion.div>
+
+              {/* Spotify Playlist */}
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+              >
+                <SpotifyEmbed url={session.spotify_url} />
               </motion.div>
             </div>
           </div>
