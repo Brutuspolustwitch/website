@@ -596,5 +596,11 @@ insert into page_settings (page_slug, page_name) values
   ('giveaways', 'Giveaways'),
   ('live', 'Live'),
   ('slots', 'Slots'),
-  ('calendario', 'Calendário')
+  ('calendario', 'Calendário'),
+  ('daily-session', 'Sessão do Dia'),
+  ('adivinha-o-resultado', 'Adivinha o Resultado'),
+  ('perfil', 'Perfil'),
+  ('politica-de-privacidade', 'Política de Privacidade'),
+  ('politica-de-cookies', 'Política de Cookies'),
+  ('termos-e-condicoes', 'Termos e Condições')
 on conflict (page_slug) do nothing;
