@@ -148,8 +148,8 @@ export function BonusHuntTracker() {
               <CornerOrnament className="absolute bottom-2 right-2 w-5 h-5 -scale-x-100 -scale-y-100" />
 
               {/* ── Header bar ────────────────────────── */}
-              <div className="scroll-content" style={{ padding: "16px 20px 0" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+              <div className="scroll-content" style={{ padding: "10px 20px 0" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
                   {/* Left: hunt title + session nav */}
                   <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                     <span style={{ fontSize: "1.5rem" }}>⚔️</span>
@@ -225,7 +225,7 @@ export function BonusHuntTracker() {
               </div>
 
               {/* ── Slot rows ────────────────────────── */}
-              <div className="scroll-content" style={{ padding: "0 20px 16px" }}>
+              <div className="scroll-content" style={{ padding: "0 20px 8px" }}>
                 {slots.map((slot, i) => {
                   const multi = slot.bet_size && slot.bet_size > 0 && slot.payout
                     ? (slot.payout / slot.bet_size)
@@ -357,7 +357,7 @@ export function BonusHuntTracker() {
               <div style={{
                 borderTop: "2px solid rgba(139,105,20,0.2)",
                 margin: "0 20px",
-                padding: "12px 0 16px",
+                padding: "8px 0 10px",
                 display: "flex",
                 justifyContent: "space-around",
                 textAlign: "center",
@@ -403,7 +403,7 @@ export function BonusHuntTracker() {
               {selectedSession?.best_slot_name && (
                 <div style={{
                   textAlign: "center",
-                  padding: "0 20px 16px",
+                  padding: "0 20px 10px",
                 }}>
                   <span style={{
                     fontFamily: "var(--font-display)",
