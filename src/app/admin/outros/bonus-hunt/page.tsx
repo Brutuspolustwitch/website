@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 import { useAuth } from "@/lib/auth-context";
+import { supabase } from "@/lib/supabase";
 
 interface ImportResult {
   success: boolean;
@@ -27,6 +27,22 @@ interface ParsedPreview {
   bonuses: { slotName: string; betSize: number; payout: number; opened: boolean; provider?: string; isSuperBonus?: boolean; isExtremeBonus?: boolean }[];
 }
 
+interface HistorySession {
+  id: string;
+  title: string;
+  status: string;
+  currency: string;
+  total_buy: number;
+  total_result: number;
+  profit: number;
+  bonus_count: number;
+  avg_multi: number;
+  best_multi: number;
+  best_slot_name: string | null;
+  hunt_date: string | null;
+  created_at: string;
+}
+
 export default function AdminBonusHuntPage() {
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -36,8 +52,44 @@ export default function AdminBonusHuntPage() {
   const [importing, setImporting] = useState(false);
   const [result, setResult] = useState<ImportResult | null>(null);
   const [error, setError] = useState("");
+  const [history, setHistory] = useState<HistorySession[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(true);
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
   const isAdmin = user?.role === "admin" || user?.role === "configurador";
+
+  const fetchHistory = useCallback(async () => {
+    setHistoryLoading(true);
+    const { data, error: err } = await supabase
+      .from("bonus_hunt_sessions")
+      .select("id, title, status, currency, total_buy, total_result, profit, bonus_count, avg_multi, best_multi, best_slot_name, hunt_date, created_at")
+      .order("created_at", { ascending: false });
+    if (!err && data) setHistory(data as HistorySession[]);
+    setHistoryLoading(false);
+  }, []);
+
+  useEffect(() => {
+    if (isAdmin) fetchHistory();
+  }, [isAdmin, fetchHistory]);
+
+  async function handleDelete(id: string) {
+    setDeleting(id);
+    try {
+      const res = await fetch(`/api/bonus-hunt/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setHistory((prev) => prev.filter((s) => s.id !== id));
+        setDeleteConfirm(null);
+      } else {
+        const data = await res.json();
+        setError(data.error || "Erro ao eliminar.");
+      }
+    } catch {
+      setError("Erro de rede ao eliminar.");
+    } finally {
+      setDeleting(null);
+    }
+  }
 
   const parseFile = useCallback((file: File) => {
     setError("");
@@ -131,6 +183,7 @@ export default function AdminBonusHuntPage() {
         setResult(data);
         setPreview(null);
         setRawData(null);
+        fetchHistory();
       }
     } catch {
       setError("Erro de rede ao importar.");
@@ -358,6 +411,102 @@ export default function AdminBonusHuntPage() {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* ── History ── */}
+          <div className="mt-10">
+            <h3 className="font-[family-name:var(--font-display)] text-arena-gold text-lg tracking-wide mb-4">
+              Histórico de Bonus Hunts
+            </h3>
+
+            {historyLoading ? (
+              <div className="text-arena-smoke/50 text-sm py-8 text-center">A carregar...</div>
+            ) : history.length === 0 ? (
+              <div className="text-arena-smoke/40 text-sm py-8 text-center">
+                Nenhum bonus hunt importado.
+              </div>
+            ) : (
+              <div className="rounded-xl bg-arena-charcoal/60 border border-arena-steel/20 overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-arena-smoke/50 text-xs uppercase tracking-wider border-b border-arena-steel/10">
+                        <th className="px-4 py-3">Nome</th>
+                        <th className="px-4 py-3">Data</th>
+                        <th className="px-4 py-3">Estado</th>
+                        <th className="px-4 py-3">Bónus</th>
+                        <th className="px-4 py-3">Total Buy</th>
+                        <th className="px-4 py-3">Total Win</th>
+                        <th className="px-4 py-3">Profit</th>
+                        <th className="px-4 py-3">Avg Multi</th>
+                        <th className="px-4 py-3">Best Multi</th>
+                        <th className="px-4 py-3">Best Slot</th>
+                        <th className="px-4 py-3 text-right">Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {history.map((s) => (
+                        <tr key={s.id} className="border-b border-arena-steel/5 hover:bg-white/[0.02]">
+                          <td className="px-4 py-3 text-arena-smoke font-medium max-w-[180px] truncate">{s.title}</td>
+                          <td className="px-4 py-3 text-arena-smoke/60">
+                            {s.hunt_date
+                              ? new Date(s.hunt_date).toLocaleDateString("pt-PT")
+                              : new Date(s.created_at).toLocaleDateString("pt-PT")}
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className={`inline-block px-2 py-0.5 text-[10px] rounded-full font-bold uppercase tracking-wider ${
+                              s.status === "completed"
+                                ? "bg-green-500/15 text-green-400"
+                                : s.status === "active"
+                                  ? "bg-arena-gold/15 text-arena-gold"
+                                  : "bg-arena-steel/15 text-arena-smoke/50"
+                            }`}>
+                              {s.status === "completed" ? "Concluído" : s.status === "active" ? "Ativo" : "Próximo"}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-arena-smoke">{s.bonus_count}</td>
+                          <td className="px-4 py-3 text-red-400">{s.currency}{s.total_buy.toFixed(2)}</td>
+                          <td className="px-4 py-3 text-green-400">{s.currency}{s.total_result.toFixed(2)}</td>
+                          <td className={`px-4 py-3 font-bold ${s.profit >= 0 ? "text-green-400" : "text-red-400"}`}>
+                            {s.profit >= 0 ? "+" : ""}{s.currency}{s.profit.toFixed(2)}
+                          </td>
+                          <td className="px-4 py-3 text-arena-smoke">{s.avg_multi.toFixed(1)}x</td>
+                          <td className="px-4 py-3 text-arena-gold">{s.best_multi.toFixed(1)}x</td>
+                          <td className="px-4 py-3 text-arena-smoke/60 max-w-[120px] truncate">{s.best_slot_name || "—"}</td>
+                          <td className="px-4 py-3 text-right">
+                            {deleteConfirm === s.id ? (
+                              <div className="flex items-center justify-end gap-2">
+                                <button
+                                  onClick={() => handleDelete(s.id)}
+                                  disabled={deleting === s.id}
+                                  className="px-3 py-1 text-xs rounded bg-red-600/80 text-white hover:bg-red-600 transition-all disabled:opacity-50 cursor-pointer"
+                                >
+                                  {deleting === s.id ? "..." : "Confirmar"}
+                                </button>
+                                <button
+                                  onClick={() => setDeleteConfirm(null)}
+                                  className="px-3 py-1 text-xs rounded border border-arena-steel/30 text-arena-smoke/50 hover:text-arena-smoke transition-all cursor-pointer"
+                                >
+                                  Não
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => setDeleteConfirm(s.id)}
+                                className="px-3 py-1.5 text-xs rounded border border-red-500/20 text-red-400/70 hover:border-red-500/40 hover:text-red-400 hover:bg-red-500/5 transition-all cursor-pointer"
+                                title="Eliminar bonus hunt"
+                              >
+                                Eliminar
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
