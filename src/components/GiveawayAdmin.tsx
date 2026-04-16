@@ -94,7 +94,7 @@ export default function GiveawayAdmin() {
     max_entries_per_user: "",
     prize: "",
     prize_image: "",
-    duration_seconds: 300,
+    scheduled_end: "",
     chat_command: "!enter",
     require_live: true,
   });
@@ -206,6 +206,7 @@ export default function GiveawayAdmin() {
         ...form,
         prize_image: form.prize_image || null,
         max_entries_per_user: form.max_entries_per_user ? parseInt(form.max_entries_per_user) : null,
+        scheduled_end: form.scheduled_end || null,
       }),
     });
     const data = await res.json();
@@ -213,7 +214,7 @@ export default function GiveawayAdmin() {
     if (data.giveaway) {
       showToast("Giveaway criado ✓");
       setShowCreate(false);
-      setForm({ title: "", description: "", mode: "single", ticket_cost: 0, max_entries_per_user: "", prize: "", prize_image: "", duration_seconds: 300, chat_command: "!enter", require_live: true });
+      setForm({ title: "", description: "", mode: "single", ticket_cost: 0, max_entries_per_user: "", prize: "", prize_image: "", scheduled_end: "", chat_command: "!enter", require_live: true });
       loadGiveaways();
     } else {
       showToast(data.error || "Erro");
@@ -344,17 +345,12 @@ export default function GiveawayAdmin() {
                   )}
 
                   <div className="space-y-1">
-                    <label className="text-xs text-arena-smoke/70 uppercase tracking-wider font-medium">
-                      Duração: {Math.floor(form.duration_seconds / 60)}:{(form.duration_seconds % 60).toString().padStart(2, "0")}
-                    </label>
+                    <label className="text-xs text-arena-smoke/70 uppercase tracking-wider font-medium">Data/Hora de Fim</label>
                     <input
-                      type="range"
-                      min={30}
-                      max={3600}
-                      step={30}
-                      value={form.duration_seconds}
-                      onChange={(e) => setForm({ ...form, duration_seconds: parseInt(e.target.value) })}
-                      className="w-full accent-[var(--arena-gold,#d4a843)]"
+                      type="datetime-local"
+                      value={form.scheduled_end}
+                      onChange={(e) => setForm({ ...form, scheduled_end: e.target.value })}
+                      className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-arena-smoke text-sm focus:border-arena-gold/40 focus:outline-none transition-colors [color-scheme:dark]"
                     />
                   </div>
 

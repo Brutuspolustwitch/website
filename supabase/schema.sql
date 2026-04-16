@@ -620,6 +620,7 @@ create table if not exists giveaways (
   prize text not null default '',
   prize_image text,
   duration_seconds integer not null default 300,
+  scheduled_end timestamptz,
   start_time timestamptz,
   end_time timestamptz,
   is_active boolean not null default false,

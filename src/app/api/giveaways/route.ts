@@ -96,7 +96,7 @@ export async function POST(request: Request) {
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await request.json();
-  const { title, description, mode, ticket_cost, max_entries_per_user, prize, prize_image, duration_seconds, chat_command, require_live } = body;
+  const { title, description, mode, ticket_cost, max_entries_per_user, prize, prize_image, scheduled_end, chat_command, require_live } = body;
 
   if (!title) return NextResponse.json({ error: "Title required" }, { status: 400 });
 
@@ -110,7 +110,7 @@ export async function POST(request: Request) {
       max_entries_per_user: max_entries_per_user || null,
       prize: prize || "",
       prize_image: prize_image || null,
-      duration_seconds: duration_seconds || 300,
+      scheduled_end: scheduled_end || null,
       chat_command: chat_command || "!enter",
       require_live: require_live !== false,
       created_by: admin.login,
@@ -135,8 +135,14 @@ export async function PUT(request: Request) {
   // Handle special actions
   if (action === "start") {
     const now = new Date();
-    const { data: giveaway } = await supabase.from("giveaways").select("duration_seconds").eq("id", id).single();
-    const endTime = new Date(now.getTime() + (giveaway?.duration_seconds ?? 300) * 1000);
+    const { data: giveaway } = await supabase.from("giveaways").select("scheduled_end, duration_seconds").eq("id", id).single();
+    
+    let endTime: Date;
+    if (giveaway?.scheduled_end) {
+      endTime = new Date(giveaway.scheduled_end);
+    } else {
+      endTime = new Date(now.getTime() + (giveaway?.duration_seconds ?? 300) * 1000);
+    }
 
     const { data, error } = await supabase
       .from("giveaways")
