@@ -97,7 +97,7 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
   const externalUrl = offer.affiliate_url.startsWith("http") ? offer.affiliate_url : `https://${offer.affiliate_url}`;
 
   return (
-    <div className="papyrus-flip-container" onClick={() => { if (flipped) { setFlipped(false); } else { window.open(externalUrl, '_blank', 'noopener,noreferrer'); } }}>
+    <div className="papyrus-flip-container" onClick={() => { window.open(externalUrl, '_blank', 'noopener,noreferrer'); }}>
       <div className={`papyrus-flip-inner ${flipped ? "papyrus-flipped" : ""}`}>
 
         {/* ═══ FRONT ═══ */}
