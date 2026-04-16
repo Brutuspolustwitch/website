@@ -390,10 +390,10 @@ export default function DailySessionContent() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-4"
+            className="grid grid-cols-1 lg:grid-cols-3 gap-4"
           >
             {/* Session stats */}
-            <div className="papyrus-scroll greek-key-border" style={{ padding: 0 }}>
+            <div className="papyrus-scroll greek-key-border lg:col-span-2" style={{ padding: 0 }}>
               <div className="scroll-content" style={{ padding: "10px 16px" }}>
                 <div className="flex flex-wrap items-center justify-around gap-x-6 gap-y-2 text-center">
                   <div>

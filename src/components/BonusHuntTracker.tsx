@@ -155,15 +155,17 @@ export function BonusHuntTracker({ compact = false }: { compact?: boolean } = {}
               {/* Left: hunt title + session nav */}
               <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                 <span style={{ fontSize: "1.5rem" }}>⚔️</span>
-                <span style={{
-                  fontFamily: "var(--font-display)",
-                  fontSize: "1.1rem",
-                  fontWeight: 700,
-                  color: "var(--arena-smoke, #e0ddd4)",
-                  letterSpacing: "0.08em",
-                }}>
-                  {selectedSession?.title}
-                </span>
+                {!compact && (
+                  <span style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "1.1rem",
+                    fontWeight: 700,
+                    color: "var(--arena-smoke, #e0ddd4)",
+                    letterSpacing: "0.08em",
+                  }}>
+                    {selectedSession?.title}
+                  </span>
+                )}
               </div>
 
               {/* Right: navigation + status */}
