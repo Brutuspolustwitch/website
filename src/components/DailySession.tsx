@@ -470,7 +470,7 @@ export default function DailySessionContent() {
             </motion.div>
 
             {/* RIGHT — Sidebar (1/3) */}
-            <div className="lg:col-span-1 space-y-4">
+            <div className="lg:col-span-1 space-y-1">
 
               {/* Casino Offer Card */}
               <motion.div
