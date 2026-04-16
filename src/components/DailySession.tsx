@@ -310,10 +310,10 @@ export default function DailySessionContent() {
               backgroundImage: "url('/images/pages/session.jpg')",
               backgroundSize: "cover",
               backgroundPosition: "center",
-              filter: "brightness(0.2) saturate(0.3) sepia(0.3)",
+              filter: "brightness(0.85) saturate(0.9)",
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
         </div>
 
         <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
@@ -350,10 +350,10 @@ export default function DailySessionContent() {
             backgroundImage: "url('/images/pages/session.jpg')",
             backgroundSize: "cover",
             backgroundPosition: "center",
-            filter: "brightness(0.35) saturate(0.5) sepia(0.2) blur(1px)",
+            filter: "brightness(0.85) saturate(0.9)",
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
         <div className="absolute inset-0 bg-gradient-to-t from-transparent via-arena-crimson/[0.03] to-transparent pointer-events-none" />
       </div>
 
