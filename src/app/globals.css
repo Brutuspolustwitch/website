@@ -1181,6 +1181,33 @@ body {
   transition: height 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* ── Banner pulse on hover ──────────────────────────────── */
+.casino-banner-inner img {
+  transition: transform 0.4s ease;
+}
+.papyrus-flip-container:hover .casino-banner-inner img {
+  animation: bannerPulse 2.5s ease-in-out infinite;
+}
+@keyframes bannerPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+/* ── Promo section trill on hover ───────────────────────── */
+.promo-section {
+  transition: transform 0.3s ease;
+}
+.papyrus-flip-container:hover .promo-section {
+  animation: promoTrill 0.6s ease-in-out 0.15s 1;
+}
+@keyframes promoTrill {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-1.5px); }
+  40% { transform: translateX(1.5px); }
+  60% { transform: translateX(-1px); }
+  80% { transform: translateX(1px); }
+}
+
 /* ── Copy Toast ───────────────────────────────────────── */
 .copy-toast {
   position: fixed;
