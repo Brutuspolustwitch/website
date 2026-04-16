@@ -1,19 +1,35 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArenaCard } from "@/components/ui/ArenaCard";
+import { motion } from "framer-motion";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { STAGGER_CONTAINER, STAGGER_ITEM } from "@/lib/animations";
 import { supabase } from "@/lib/supabase";
 import type { BonusHuntSession, BonusHuntSlot } from "@/lib/supabase";
+
+/* ═══════════════════════════════════════════════════════════════════
+   CORNER ORNAMENT — reused from the papyrus design system
+   ═══════════════════════════════════════════════════════════════════ */
+function CornerOrnament({ className }: { className: string }) {
+  return (
+    <svg className={`scroll-ornament ${className}`} viewBox="0 0 24 24" fill="none">
+      <path
+        d="M2 2 L2 10 M2 2 L10 2 M2 6 L6 2"
+        stroke="#8b6914"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <circle cx="4" cy="4" r="1.5" fill="#8b6914" />
+    </svg>
+  );
+}
 
 export function BonusHuntTracker() {
   const [sessions, setSessions] = useState<BonusHuntSession[]>([]);
   const [selectedSession, setSelectedSession] = useState<BonusHuntSession | null>(null);
   const [slots, setSlots] = useState<BonusHuntSlot[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sessionIdx, setSessionIdx] = useState(0);
 
   /* Fetch all completed sessions on mount */
   useEffect(() => {
@@ -27,6 +43,7 @@ export function BonusHuntTracker() {
       if (data && data.length > 0) {
         setSessions(data);
         setSelectedSession(data[0]);
+        setSessionIdx(0);
       }
       setLoading(false);
     }
@@ -50,38 +67,35 @@ export function BonusHuntTracker() {
   }, [selectedSession]);
 
   const currency = selectedSession?.currency || "€";
-  const totalBuy = slots.reduce((sum, s) => sum + s.buy_value, 0);
-  const totalResult = slots.filter((s) => s.opened && s.payout).reduce((sum, s) => sum + (s.payout ?? 0), 0);
-  const profit = selectedSession?.profit ?? totalResult - totalBuy;
+  const openedCount = slots.filter((s) => s.opened).length;
+  const totalSlots = selectedSession?.bonus_count || slots.length;
 
-  const statusColor = {
-    pending: "text-arena-smoke",
-    active: "text-green-400",
-    completed: "text-arena-gold",
-  };
-
-  const statusLabel = {
-    pending: "Awaiting",
-    active: "⚔️ IN BATTLE",
-    completed: "✓ Conquered",
-  };
+  function prevSession() {
+    if (sessionIdx < sessions.length - 1) {
+      const next = sessionIdx + 1;
+      setSessionIdx(next);
+      setSelectedSession(sessions[next]);
+    }
+  }
+  function nextSession() {
+    if (sessionIdx > 0) {
+      const next = sessionIdx - 1;
+      setSessionIdx(next);
+      setSelectedSession(sessions[next]);
+    }
+  }
 
   if (loading) {
     return (
       <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-arena-dark/50">
-        <div className="max-w-7xl mx-auto text-center">
+        <div className="max-w-4xl mx-auto text-center">
           <SectionHeading title="Bonus Hunt" subtitle="A carregar..." />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="rounded-xl bg-arena-charcoal/40 border border-arena-steel/10 p-5 animate-pulse">
-                <div className="h-4 w-20 bg-white/[0.06] rounded mb-3" />
-                <div className="h-5 w-3/4 bg-white/[0.06] rounded mb-4" />
-                <div className="space-y-2">
-                  <div className="h-3 w-full bg-white/[0.04] rounded" />
-                  <div className="h-3 w-full bg-white/[0.04] rounded" />
-                </div>
-              </div>
-            ))}
+          <div className="papyrus-scroll greek-key-border" style={{ maxWidth: "100%", padding: "32px" }}>
+            <div className="animate-pulse space-y-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="h-12 rounded" style={{ background: "rgba(139,105,20,0.08)" }} />
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -91,9 +105,13 @@ export function BonusHuntTracker() {
   if (sessions.length === 0) {
     return (
       <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-arena-dark/50">
-        <div className="max-w-7xl mx-auto text-center">
+        <div className="max-w-4xl mx-auto text-center">
           <SectionHeading title="Bonus Hunt" subtitle="Sem bonus hunts registados" />
-          <p className="text-arena-smoke/40 mt-4">Os bonus hunts importados aparecerão aqui.</p>
+          <div className="papyrus-scroll greek-key-border" style={{ maxWidth: "100%", padding: "32px", textAlign: "center" }}>
+            <p style={{ fontFamily: "var(--font-display)", color: "var(--ink-light)", fontSize: "0.9rem" }}>
+              Os bonus hunts importados aparecerão aqui.
+            </p>
+          </div>
         </div>
       </section>
     );
@@ -107,7 +125,8 @@ export function BonusHuntTracker() {
         style={{ backgroundImage: "url('/images/pages/warrior-illustration.jpg')" }}
       />
       <div className="absolute inset-0 bg-gradient-to-r from-arena-dark via-arena-dark/85 to-arena-dark/70 pointer-events-none" />
-      <div className="relative max-w-7xl mx-auto">
+
+      <div className="relative max-w-4xl mx-auto">
         <ScrollReveal>
           <SectionHeading
             title="Bonus Hunt"
@@ -115,185 +134,291 @@ export function BonusHuntTracker() {
           />
         </ScrollReveal>
 
-        {/* Session selector */}
-        {sessions.length > 1 && (
-          <ScrollReveal delay={0.05}>
-            <div className="flex flex-wrap gap-2 mb-8 justify-center">
-              {sessions.map((s) => (
-                <button
-                  key={s.id}
-                  onClick={() => setSelectedSession(s)}
-                  className={`px-4 py-2 rounded-lg text-xs font-[family-name:var(--font-display)] tracking-wide uppercase transition-all cursor-pointer
-                    ${selectedSession?.id === s.id
-                      ? "bg-arena-gold/20 border border-arena-gold/40 text-arena-gold"
-                      : "bg-white/[0.03] border border-arena-steel/20 text-arena-smoke/60 hover:border-arena-steel/40 hover:text-arena-smoke"
-                    }`}
-                >
-                  {s.title}
-                  {s.hunt_date && <span className="ml-2 text-[10px] opacity-60">{s.hunt_date}</span>}
-                </button>
-              ))}
-            </div>
-          </ScrollReveal>
-        )}
-
-        {/* Stats bar */}
+        {/* ── PAPYRUS TABLE SCROLL ─────────────────────────── */}
         <ScrollReveal delay={0.1}>
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 mb-10">
-            {[
-              { label: "Slots", value: String(selectedSession?.bonus_count || slots.length) },
-              { label: "Total Buy", value: `${currency}${totalBuy.toFixed(2)}` },
-              { label: "Total Win", value: `${currency}${(selectedSession?.total_result ?? totalResult).toFixed(2)}` },
-              {
-                label: "Profit",
-                value: `${profit >= 0 ? "+" : ""}${currency}${profit.toFixed(2)}`,
-                color: profit >= 0 ? "text-green-400" : "text-arena-red",
-              },
-              { label: "Avg Multi", value: `${(selectedSession?.avg_multi ?? 0).toFixed(1)}x` },
-              { label: "Best Multi", value: `${(selectedSession?.best_multi ?? 0).toFixed(1)}x`, color: "text-arena-gold" },
-            ].map((stat) => (
-              <ArenaCard key={stat.label} className="p-4 text-center">
-                <p className="gladiator-label text-xs text-arena-ash">
-                  {stat.label}
-                </p>
-                <p className={`text-xl font-bold mt-1 ${stat.color ?? "text-arena-white"}`}>
-                  {stat.value}
-                </p>
-              </ArenaCard>
-            ))}
-          </div>
-        </ScrollReveal>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
+            <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom bonus-hunt-scroll">
+              <CornerOrnament className="absolute top-2 left-2 w-5 h-5" />
+              <CornerOrnament className="absolute top-2 right-2 w-5 h-5 -scale-x-100" />
+              <CornerOrnament className="absolute bottom-2 left-2 w-5 h-5 -scale-y-100" />
+              <CornerOrnament className="absolute bottom-2 right-2 w-5 h-5 -scale-x-100 -scale-y-100" />
 
-        {/* Best slot highlight */}
-        {selectedSession?.best_slot_name && (
-          <ScrollReveal delay={0.15}>
-            <div className="text-center mb-8">
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-arena-gold/10 border border-arena-gold/20 text-sm">
-                <span className="text-arena-gold">🏆</span>
-                <span className="text-arena-smoke/60">Melhor slot:</span>
-                <span className="text-arena-gold font-bold font-[family-name:var(--font-display)]">{selectedSession.best_slot_name}</span>
-                <span className="text-arena-smoke/40">({selectedSession.best_multi.toFixed(1)}x)</span>
-              </span>
-            </div>
-          </ScrollReveal>
-        )}
+              {/* ── Header bar ────────────────────────── */}
+              <div className="scroll-content" style={{ padding: "16px 20px 0" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+                  {/* Left: hunt title + session nav */}
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <span style={{ fontSize: "1.5rem" }}>⚔️</span>
+                    <span style={{
+                      fontFamily: "var(--font-display)",
+                      fontSize: "1.1rem",
+                      fontWeight: 700,
+                      color: "var(--ink-dark)",
+                      letterSpacing: "0.08em",
+                    }}>
+                      {selectedSession?.title}
+                    </span>
+                  </div>
 
-        {/* Card grid */}
-        <motion.div
-          variants={STAGGER_CONTAINER}
-          initial="initial"
-          whileInView="animate"
-          viewport={{ once: true, margin: "-50px" }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-          style={{ perspective: "1200px" }}
-        >
-          <AnimatePresence mode="popLayout">
-            {slots.map((slot, i) => {
-              const multi = slot.bet_size && slot.bet_size > 0 && slot.payout
-                ? (slot.payout / slot.bet_size).toFixed(1)
-                : null;
+                  {/* Right: navigation + status */}
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    {sessions.length > 1 && (
+                      <>
+                        <button
+                          onClick={prevSession}
+                          disabled={sessionIdx >= sessions.length - 1}
+                          className="bh-nav-btn"
+                          aria-label="Sessão anterior"
+                        >
+                          ‹
+                        </button>
+                        <button
+                          onClick={nextSession}
+                          disabled={sessionIdx <= 0}
+                          className="bh-nav-btn"
+                          aria-label="Próxima sessão"
+                        >
+                          ›
+                        </button>
+                      </>
+                    )}
+                    <span style={{
+                      fontFamily: "var(--font-display)",
+                      fontSize: "0.65rem",
+                      fontWeight: 600,
+                      letterSpacing: "0.12em",
+                      textTransform: "uppercase",
+                      padding: "4px 10px",
+                      borderRadius: "4px",
+                      background: selectedSession?.status === "active"
+                        ? "rgba(34,197,94,0.15)"
+                        : "rgba(139,105,20,0.12)",
+                      color: selectedSession?.status === "active"
+                        ? "#22c55e"
+                        : "var(--gold-dark)",
+                      border: `1px solid ${selectedSession?.status === "active" ? "rgba(34,197,94,0.3)" : "rgba(139,105,20,0.2)"}`,
+                    }}>
+                      {selectedSession?.status === "active" ? "ACTIVE" : selectedSession?.status === "completed" ? "COMPLETA" : "UPCOMING"}
+                    </span>
+                    <span style={{
+                      fontFamily: "var(--font-ui)",
+                      fontSize: "0.75rem",
+                      color: "var(--ink-light)",
+                    }}>
+                      {openedCount} / {totalSlots} Bónus
+                    </span>
+                  </div>
+                </div>
 
-              return (
-                <motion.div
-                  key={slot.id}
-                  variants={STAGGER_ITEM}
-                  layout
-                  exit={{ opacity: 0, y: 60, scale: 0.9 }}
-                  style={{ transformStyle: "preserve-3d" }}
-                  whileHover={{
-                    rotateX: -3,
-                    rotateY: 2,
-                    scale: 1.03,
-                    transition: { type: "spring", stiffness: 200, damping: 15 },
-                  }}
-                >
-                  <ArenaCard
-                    variant={slot.status === "active" ? "crimson" : "default"}
-                    className={`p-5 ${slot.status === "active" ? "metal-frame-glow" : ""}`}
-                  >
-                    {/* Thumbnail */}
-                    {slot.thumbnail_url && (
-                      <div className="relative aspect-[16/9] w-full rounded-lg overflow-hidden mb-3">
-                        <img src={slot.thumbnail_url} alt={slot.name} className="h-full w-full object-cover" loading="lazy" />
-                        {(slot.is_super_bonus || slot.is_extreme_bonus) && (
-                          <div className="absolute top-2 right-2 flex gap-1">
-                            {slot.is_extreme_bonus && (
-                              <span className="px-1.5 py-0.5 text-[9px] rounded bg-red-500/80 text-white font-bold">EXTREME</span>
-                            )}
-                            {slot.is_super_bonus && (
-                              <span className="px-1.5 py-0.5 text-[9px] rounded bg-arena-gold/80 text-arena-dark font-bold">SUPER</span>
-                            )}
+                {/* ── Column headers ──────────────────── */}
+                <div className="bh-table-header">
+                  <span className="bh-col-num">#</span>
+                  <span className="bh-col-slot">SLOT</span>
+                  <span className="bh-col-bet">BET SIZE</span>
+                  <span className="bh-col-special">SPECIAL</span>
+                  <span className="bh-col-win">WINNINGS</span>
+                </div>
+              </div>
+
+              {/* ── Slot rows ────────────────────────── */}
+              <div className="scroll-content" style={{ padding: "0 20px 16px" }}>
+                {slots.map((slot, i) => {
+                  const multi = slot.bet_size && slot.bet_size > 0 && slot.payout
+                    ? (slot.payout / slot.bet_size)
+                    : null;
+                  const isWin = slot.payout !== undefined && slot.payout !== null && slot.payout >= (slot.bet_size ?? slot.buy_value);
+
+                  return (
+                    <div
+                      key={slot.id}
+                      className={`bh-table-row ${slot.status === "active" ? "bh-row-active" : ""}`}
+                    >
+                      {/* # */}
+                      <span className="bh-col-num" style={{
+                        fontFamily: "var(--font-display)",
+                        fontSize: "0.8rem",
+                        fontWeight: 700,
+                        color: "var(--ink-light)",
+                      }}>
+                        #{i + 1}
+                      </span>
+
+                      {/* Slot: thumbnail + name + provider */}
+                      <div className="bh-col-slot" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        {slot.thumbnail_url ? (
+                          <img
+                            src={slot.thumbnail_url}
+                            alt={slot.name}
+                            loading="lazy"
+                            style={{
+                              width: "40px",
+                              height: "40px",
+                              borderRadius: "6px",
+                              objectFit: "cover",
+                              border: "1px solid rgba(139,105,20,0.2)",
+                              flexShrink: 0,
+                            }}
+                          />
+                        ) : (
+                          <div style={{
+                            width: "40px",
+                            height: "40px",
+                            borderRadius: "6px",
+                            background: "rgba(139,105,20,0.08)",
+                            border: "1px solid rgba(139,105,20,0.15)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: "0.9rem",
+                            flexShrink: 0,
+                          }}>
+                            🎰
                           </div>
                         )}
+                        <div style={{ minWidth: 0 }}>
+                          <p style={{
+                            fontFamily: "var(--font-ui)",
+                            fontSize: "0.85rem",
+                            fontWeight: 700,
+                            color: "var(--ink-dark)",
+                            lineHeight: 1.2,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}>
+                            {slot.name}
+                          </p>
+                          {slot.provider && (
+                            <p style={{
+                              fontFamily: "var(--font-display)",
+                              fontSize: "0.55rem",
+                              color: "var(--ink-light)",
+                              letterSpacing: "0.1em",
+                              textTransform: "uppercase",
+                              lineHeight: 1.4,
+                            }}>
+                              {slot.provider}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    )}
 
-                    {/* Slot header */}
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <span className="gladiator-label text-xs text-arena-ash">
-                          #{i + 1}
-                          {slot.provider && <span className="ml-2 text-arena-smoke/40">{slot.provider}</span>}
-                        </span>
-                        <h3 className="gladiator-title text-lg mt-1">
-                          {slot.name}
-                        </h3>
+                      {/* Bet size */}
+                      <span className="bh-col-bet" style={{
+                        fontFamily: "var(--font-ui)",
+                        fontSize: "0.85rem",
+                        fontWeight: 600,
+                        color: "var(--ink-dark)",
+                      }}>
+                        {(slot.bet_size ?? slot.buy_value).toFixed(2)}{currency}
+                      </span>
+
+                      {/* Special badges */}
+                      <div className="bh-col-special" style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
+                        {slot.is_super_bonus && (
+                          <span className="bh-badge bh-badge-super">SUPER BÓNUS</span>
+                        )}
+                        {slot.is_extreme_bonus && (
+                          <span className="bh-badge bh-badge-extreme">EXTREME</span>
+                        )}
                       </div>
-                      <span className={`text-xs font-bold tracking-wider uppercase ${statusColor[slot.status]}`}>
-                        {statusLabel[slot.status]}
+
+                      {/* Winnings */}
+                      <span className="bh-col-win" style={{
+                        fontFamily: "var(--font-ui)",
+                        fontSize: "0.85rem",
+                        fontWeight: 700,
+                        color: !slot.opened
+                          ? "var(--ink-light)"
+                          : isWin ? "#2e7d32" : "#8b1a1a",
+                      }}>
+                        {slot.opened && slot.payout !== undefined && slot.payout !== null
+                          ? <>
+                              {slot.payout.toFixed(2)}{currency}
+                              {multi !== null && (
+                                <span style={{ fontSize: "0.65rem", fontWeight: 400, color: "var(--ink-light)", marginLeft: "4px" }}>
+                                  ({multi.toFixed(1)}x)
+                                </span>
+                              )}
+                            </>
+                          : <span style={{ fontFamily: "var(--font-display)", letterSpacing: "0.1em" }}>???</span>
+                        }
                       </span>
                     </div>
+                  );
+                })}
+              </div>
 
-                    {/* Slot stats */}
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-arena-ash">Bet</span>
-                        <span className="text-arena-white font-bold">{currency}{(slot.bet_size ?? slot.buy_value).toFixed(2)}</span>
-                      </div>
-                      {slot.rtp && (
-                        <div className="flex justify-between">
-                          <span className="text-arena-ash">RTP</span>
-                          <span className="text-arena-smoke">{slot.rtp}%</span>
-                        </div>
-                      )}
-                      <div className="flex justify-between">
-                        <span className="text-arena-ash">Max Win</span>
-                        <span className="text-arena-gold font-bold">
-                          {slot.potential_multiplier.toLocaleString("en-US")}x
-                        </span>
-                      </div>
-                      {slot.opened && slot.payout !== undefined && slot.payout !== null && (
-                        <div className="flex justify-between pt-2 border-t border-arena-steel/20">
-                          <span className="text-arena-ash">Payout</span>
-                          <span className="flex items-center gap-2">
-                            <span
-                              className={`font-bold ${
-                                slot.payout >= (slot.bet_size ?? slot.buy_value) ? "text-green-400" : "text-arena-red"
-                              }`}
-                            >
-                              {currency}{slot.payout.toFixed(2)}
-                            </span>
-                            {multi && <span className="text-arena-smoke/40 text-xs">({multi}x)</span>}
-                          </span>
-                        </div>
-                      )}
-                    </div>
+              {/* ── Footer summary ───────────────────── */}
+              <div style={{
+                borderTop: "2px solid rgba(139,105,20,0.2)",
+                margin: "0 20px",
+                padding: "12px 0 16px",
+                display: "flex",
+                justifyContent: "space-around",
+                textAlign: "center",
+              }}>
+                <div>
+                  <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Total Buy</p>
+                  <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "var(--ink-dark)" }}>
+                    {(selectedSession?.total_buy ?? slots.reduce((s, x) => s + x.buy_value, 0)).toFixed(2)}{currency}
+                  </p>
+                </div>
+                <div>
+                  <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Total Win</p>
+                  <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "#2e7d32" }}>
+                    {(selectedSession?.total_result ?? 0).toFixed(2)}{currency}
+                  </p>
+                </div>
+                <div>
+                  <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Profit</p>
+                  <p style={{
+                    fontFamily: "var(--font-ui)",
+                    fontSize: "1rem",
+                    fontWeight: 700,
+                    color: (selectedSession?.profit ?? 0) >= 0 ? "#2e7d32" : "#8b1a1a",
+                  }}>
+                    {(selectedSession?.profit ?? 0) >= 0 ? "+" : ""}{(selectedSession?.profit ?? 0).toFixed(2)}{currency}
+                  </p>
+                </div>
+                <div>
+                  <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Best Multi</p>
+                  <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "var(--gold-dark)" }}>
+                    {(selectedSession?.best_multi ?? 0).toFixed(1)}x
+                  </p>
+                </div>
+                <div>
+                  <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Avg Multi</p>
+                  <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "var(--ink-dark)" }}>
+                    {(selectedSession?.avg_multi ?? 0).toFixed(1)}x
+                  </p>
+                </div>
+              </div>
 
-                    {/* Active indicator bar */}
-                    {slot.status === "active" && (
-                      <motion.div
-                        className="mt-4 h-1 progress-gold-fill"
-                        initial={{ width: 0 }}
-                        animate={{ width: "100%" }}
-                        transition={{ duration: 2, ease: "easeInOut" }}
-                      />
-                    )}
-                  </ArenaCard>
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
-        </motion.div>
+              {/* Best slot callout */}
+              {selectedSession?.best_slot_name && (
+                <div style={{
+                  textAlign: "center",
+                  padding: "0 20px 16px",
+                }}>
+                  <span style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "0.6rem",
+                    color: "var(--gold-dark)",
+                    letterSpacing: "0.15em",
+                    textTransform: "uppercase",
+                  }}>
+                    🏆 Melhor Slot: {selectedSession.best_slot_name} ({selectedSession.best_multi.toFixed(1)}x)
+                  </span>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        </ScrollReveal>
       </div>
     </section>
   );
