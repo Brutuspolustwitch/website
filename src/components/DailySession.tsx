@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase";
 import type { CasinoOfferRow } from "@/lib/supabase";
 import { OfferCard } from "@/components/OfferCard";
 import type { CasinoOffer } from "@/components/OfferCard";
+import { BonusHuntTracker } from "@/components/BonusHuntTracker";
 
 /* ═══════════════════════════════════════════════════════════════════
    TYPES
@@ -398,132 +399,145 @@ export default function DailySessionContent() {
             <StatPlate label="Resultado Líquido" value={net} glow={netGlow} />
           </motion.div>
 
-          {/* Bonus stats (if available) */}
-          {(session.bonuses_count > 0 || session.biggest_win > 0) && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="flex justify-center gap-6 text-center"
-            >
-              {session.bonuses_count > 0 && (
-                <div className="papyrus-scroll greek-key-border" style={{ maxWidth: "160px", padding: 0 }}>
-                  <div className="scroll-content" style={{ textAlign: "center", padding: "10px 16px" }}>
-                    <p style={{ fontFamily: "var(--font-display)", fontSize: "0.6rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase" }}>Bónus Jogados</p>
-                    <p style={{ fontFamily: "var(--font-ui)", fontSize: "1.25rem", fontWeight: 700, color: "var(--gold-dark)" }}>{session.bonuses_count}</p>
-                  </div>
-                </div>
-              )}
-              {session.biggest_win > 0 && (
-                <div className="papyrus-scroll greek-key-border" style={{ maxWidth: "160px", padding: 0 }}>
-                  <div className="scroll-content" style={{ textAlign: "center", padding: "10px 16px" }}>
-                    <p style={{ fontFamily: "var(--font-display)", fontSize: "0.6rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase" }}>Maior Vitória</p>
-                    <p style={{ fontFamily: "var(--font-ui)", fontSize: "1.25rem", fontWeight: 700, color: "#2e7d32" }}>{session.biggest_win.toFixed(2)}€</p>
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          )}
+          {/* ── Two-column layout: Left (Bonus Hunt + Casino) | Right (Bonus Stats + Monthly + Spotify) ── */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
 
-          {/* ── Monthly Summary Card ───────────────── */}
-          {monthly && monthly.sessions_count > 0 && (
+            {/* ── LEFT COLUMN (3/5) — Bonus Hunt Tracker ────── */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
-              className="flex justify-center"
+              className="lg:col-span-3"
             >
-              <div className="papyrus-scroll greek-key-border" style={{ maxWidth: "520px", width: "100%", padding: 0 }}>
-                <div className="scroll-content" style={{ padding: "14px 20px 12px" }}>
-                  <p style={{
-                    fontFamily: "var(--font-display)",
-                    fontSize: "0.6rem",
-                    fontWeight: 600,
-                    color: "var(--ink-light)",
-                    letterSpacing: "0.2em",
-                    textTransform: "uppercase",
-                    textAlign: "center",
-                    marginBottom: "10px",
-                  }}>
-                    Resumo do Mês · {monthly.sessions_count} {monthly.sessions_count === 1 ? "sessão" : "sessões"}
-                  </p>
-                  <div style={{ display: "flex", justifyContent: "space-around", gap: "12px", textAlign: "center" }}>
-                    <div>
-                      <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Depósitos</p>
-                      <p style={{ fontFamily: "var(--font-ui)", fontSize: "1.1rem", fontWeight: 700, color: "#8b1a1a" }}>{monthly.deposits.toFixed(2)}€</p>
-                    </div>
-                    <div>
-                      <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Levantamentos</p>
-                      <p style={{ fontFamily: "var(--font-ui)", fontSize: "1.1rem", fontWeight: 700, color: "#2e7d32" }}>{monthly.withdrawals.toFixed(2)}€</p>
-                    </div>
-                    <div>
-                      <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Resultado</p>
-                      <p style={{
-                        fontFamily: "var(--font-ui)",
-                        fontSize: "1.1rem",
-                        fontWeight: 700,
-                        color: (monthly.withdrawals - monthly.deposits) >= 0 ? "#2e7d32" : "#8b1a1a",
-                      }}>
-                        {(monthly.withdrawals - monthly.deposits).toFixed(2)}€
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <BonusHuntTracker compact />
             </motion.div>
-          )}
 
-          {/* ── Spotify Playlist (wide) ────────────── */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="flex justify-center"
-          >
-            <div className="w-full max-w-3xl">
-              <SpotifyEmbed url={session.spotify_url} />
-            </div>
-          </motion.div>
+            {/* ── RIGHT COLUMN (2/5) — Sidebar panels ───────── */}
+            <div className="lg:col-span-2 space-y-6">
 
-          {/* ── Casino Offer Card ──────────────────── */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="flex justify-center"
-          >
-            <div className="daily-session-card">
-              {session.casino ? (
-                <OfferCard offer={{
-                  slug: session.casino.slug,
-                  name: session.casino.name,
-                  logo_url: session.casino.logo_url ?? undefined,
-                  logo_bg: session.casino.logo_bg,
-                  banner_url: session.casino.banner_url ?? undefined,
-                  badge: session.casino.badge ?? undefined,
-                  tags: session.casino.tags,
-                  headline: session.casino.headline,
-                  bonus_value: session.casino.bonus_value,
-                  free_spins: session.casino.free_spins,
-                  min_deposit: session.casino.min_deposit,
-                  code: session.casino.code,
-                  cashback: session.casino.cashback ?? undefined,
-                  withdraw_time: session.casino.withdraw_time,
-                  license: session.casino.license,
-                  established: session.casino.established,
-                  notes: session.casino.notes,
-                  affiliate_url: session.casino.affiliate_url,
-                  rating: session.casino.rating ?? 4.5,
-                }} />
-              ) : (
-                <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom" style={{ maxWidth: "400px" }}>
-                  <div className="scroll-content" style={{ textAlign: "center", padding: "32px 16px" }}>
-                    <p style={{ fontFamily: "var(--font-display)", fontSize: "0.85rem", color: "var(--ink-light)" }}>Nenhum casino selecionado</p>
-                  </div>
-                </div>
+              {/* Bonus stats (if available) */}
+              {(session.bonuses_count > 0 || session.biggest_win > 0) && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="flex justify-center gap-4"
+                >
+                  {session.bonuses_count > 0 && (
+                    <div className="papyrus-scroll greek-key-border flex-1" style={{ padding: 0 }}>
+                      <div className="scroll-content" style={{ textAlign: "center", padding: "10px 16px" }}>
+                        <p style={{ fontFamily: "var(--font-display)", fontSize: "0.6rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase" }}>Bónus Jogados</p>
+                        <p style={{ fontFamily: "var(--font-ui)", fontSize: "1.25rem", fontWeight: 700, color: "var(--gold-dark)" }}>{session.bonuses_count}</p>
+                      </div>
+                    </div>
+                  )}
+                  {session.biggest_win > 0 && (
+                    <div className="papyrus-scroll greek-key-border flex-1" style={{ padding: 0 }}>
+                      <div className="scroll-content" style={{ textAlign: "center", padding: "10px 16px" }}>
+                        <p style={{ fontFamily: "var(--font-display)", fontSize: "0.6rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase" }}>Maior Vitória</p>
+                        <p style={{ fontFamily: "var(--font-ui)", fontSize: "1.25rem", fontWeight: 700, color: "#2e7d32" }}>{session.biggest_win.toFixed(2)}€</p>
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
               )}
+
+              {/* Monthly Summary */}
+              {monthly && monthly.sessions_count > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.25 }}
+                >
+                  <div className="papyrus-scroll greek-key-border" style={{ width: "100%", padding: 0 }}>
+                    <div className="scroll-content" style={{ padding: "14px 20px 12px" }}>
+                      <p style={{
+                        fontFamily: "var(--font-display)",
+                        fontSize: "0.6rem",
+                        fontWeight: 600,
+                        color: "var(--ink-light)",
+                        letterSpacing: "0.2em",
+                        textTransform: "uppercase",
+                        textAlign: "center",
+                        marginBottom: "10px",
+                      }}>
+                        Resumo do Mês · {monthly.sessions_count} {monthly.sessions_count === 1 ? "sessão" : "sessões"}
+                      </p>
+                      <div style={{ display: "flex", justifyContent: "space-around", gap: "12px", textAlign: "center" }}>
+                        <div>
+                          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Depósitos</p>
+                          <p style={{ fontFamily: "var(--font-ui)", fontSize: "1.1rem", fontWeight: 700, color: "#8b1a1a" }}>{monthly.deposits.toFixed(2)}€</p>
+                        </div>
+                        <div>
+                          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Levantamentos</p>
+                          <p style={{ fontFamily: "var(--font-ui)", fontSize: "1.1rem", fontWeight: 700, color: "#2e7d32" }}>{monthly.withdrawals.toFixed(2)}€</p>
+                        </div>
+                        <div>
+                          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Resultado</p>
+                          <p style={{
+                            fontFamily: "var(--font-ui)",
+                            fontSize: "1.1rem",
+                            fontWeight: 700,
+                            color: (monthly.withdrawals - monthly.deposits) >= 0 ? "#2e7d32" : "#8b1a1a",
+                          }}>
+                            {(monthly.withdrawals - monthly.deposits).toFixed(2)}€
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Casino Offer Card */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <div className="daily-session-card">
+                  {session.casino ? (
+                    <OfferCard offer={{
+                      slug: session.casino.slug,
+                      name: session.casino.name,
+                      logo_url: session.casino.logo_url ?? undefined,
+                      logo_bg: session.casino.logo_bg,
+                      banner_url: session.casino.banner_url ?? undefined,
+                      badge: session.casino.badge ?? undefined,
+                      tags: session.casino.tags,
+                      headline: session.casino.headline,
+                      bonus_value: session.casino.bonus_value,
+                      free_spins: session.casino.free_spins,
+                      min_deposit: session.casino.min_deposit,
+                      code: session.casino.code,
+                      cashback: session.casino.cashback ?? undefined,
+                      withdraw_time: session.casino.withdraw_time,
+                      license: session.casino.license,
+                      established: session.casino.established,
+                      notes: session.casino.notes,
+                      affiliate_url: session.casino.affiliate_url,
+                      rating: session.casino.rating ?? 4.5,
+                    }} />
+                  ) : (
+                    <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom" style={{ maxWidth: "400px" }}>
+                      <div className="scroll-content" style={{ textAlign: "center", padding: "32px 16px" }}>
+                        <p style={{ fontFamily: "var(--font-display)", fontSize: "0.85rem", color: "var(--ink-light)" }}>Nenhum casino selecionado</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+
+              {/* Spotify Playlist */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.35 }}
+              >
+                <SpotifyEmbed url={session.spotify_url} />
+              </motion.div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </div>

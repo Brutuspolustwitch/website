@@ -24,7 +24,7 @@ function CornerOrnament({ className }: { className: string }) {
   );
 }
 
-export function BonusHuntTracker() {
+export function BonusHuntTracker({ compact = false }: { compact?: boolean } = {}) {
   const [sessions, setSessions] = useState<BonusHuntSession[]>([]);
   const [selectedSession, setSelectedSession] = useState<BonusHuntSession | null>(null);
   const [slots, setSlots] = useState<BonusHuntSlot[]>([]);
@@ -86,6 +86,17 @@ export function BonusHuntTracker() {
   }
 
   if (loading) {
+    if (compact) {
+      return (
+        <div className="papyrus-scroll greek-key-border" style={{ maxWidth: "100%", padding: "32px" }}>
+          <div className="animate-pulse space-y-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-12 rounded" style={{ background: "rgba(139,105,20,0.08)" }} />
+            ))}
+          </div>
+        </div>
+      );
+    }
     return (
       <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-arena-dark/50">
         <div className="max-w-4xl mx-auto text-center">
@@ -103,6 +114,15 @@ export function BonusHuntTracker() {
   }
 
   if (sessions.length === 0) {
+    if (compact) {
+      return (
+        <div className="papyrus-scroll greek-key-border" style={{ maxWidth: "100%", padding: "32px", textAlign: "center" }}>
+          <p style={{ fontFamily: "var(--font-display)", color: "var(--ink-light)", fontSize: "0.9rem" }}>
+            Sem bonus hunts registados.
+          </p>
+        </div>
+      );
+    }
     return (
       <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-arena-dark/50">
         <div className="max-w-4xl mx-auto text-center">
@@ -117,30 +137,13 @@ export function BonusHuntTracker() {
     );
   }
 
-  return (
-    <section id="bonus-hunt" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-arena-dark/50 overflow-hidden">
-      {/* Background texture */}
-      <div
-        className="absolute inset-0 opacity-[0.06] bg-cover bg-right-bottom pointer-events-none"
-        style={{ backgroundImage: "url('/images/pages/warrior-illustration.jpg')" }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-r from-arena-dark via-arena-dark/85 to-arena-dark/70 pointer-events-none" />
-
-      <div className="relative max-w-4xl mx-auto">
-        <ScrollReveal>
-          <SectionHeading
-            title="Bonus Hunt"
-            subtitle={selectedSession?.title || "Acompanha cada bónus em tempo real"}
-          />
-        </ScrollReveal>
-
-        {/* ── PAPYRUS TABLE SCROLL ─────────────────────────── */}
-        <ScrollReveal delay={0.1}>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-          >
+  /* ── Inner content (header + papyrus table) ──────────── */
+  const tableContent = (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+    >
             {/* ── Header bar (outside card) ──────────── */}
             <div style={{
               display: "flex",
@@ -422,6 +425,31 @@ export function BonusHuntTracker() {
               </div>
             </div>
           </motion.div>
+  );
+
+  /* ── Compact mode: skip section wrapper ──────────────── */
+  if (compact) {
+    return tableContent;
+  }
+
+  /* ── Full page mode ─────────────────────────────────── */
+  return (
+    <section id="bonus-hunt" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-arena-dark/50 overflow-hidden">
+      <div
+        className="absolute inset-0 opacity-[0.06] bg-cover bg-right-bottom pointer-events-none"
+        style={{ backgroundImage: "url('/images/pages/warrior-illustration.jpg')" }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-arena-dark via-arena-dark/85 to-arena-dark/70 pointer-events-none" />
+
+      <div className="relative max-w-4xl mx-auto">
+        <ScrollReveal>
+          <SectionHeading
+            title="Bonus Hunt"
+            subtitle={selectedSession?.title || "Acompanha cada bónus em tempo real"}
+          />
+        </ScrollReveal>
+        <ScrollReveal delay={0.1}>
+          {tableContent}
         </ScrollReveal>
       </div>
     </section>
