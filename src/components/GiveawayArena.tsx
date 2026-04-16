@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/lib/supabase";
-import GiveawayCelebration from "@/components/GiveawayCelebration";
+import GiveawaySpin from "@/components/GiveawaySpin";
 
 /* ── Types ──────────────────────────────────────────────────── */
 interface Giveaway {
@@ -487,9 +487,10 @@ export default function GiveawayArena() {
         </div>
       )}
 
-      {/* Celebration */}
-      <GiveawayCelebration
+      {/* Spin Roulette + Celebration */}
+      <GiveawaySpin
         winner={celebrationWinner}
+        participants={participants}
         prize={giveaway?.prize}
         onDismiss={() => setCelebrationWinner(null)}
       />

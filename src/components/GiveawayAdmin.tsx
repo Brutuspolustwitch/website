@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { TWITCH_CHANNEL } from "@/lib/constants";
 import { useTwitchChatListener } from "@/hooks/useTwitchChatListener";
-import GiveawayCelebration from "@/components/GiveawayCelebration";
 
 /* ── Types ──────────────────────────────────────────────────── */
 interface Giveaway {
@@ -83,7 +82,6 @@ export default function GiveawayAdmin() {
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
-  const [celebrationWinner, setCelebrationWinner] = useState<Winner | null>(null);
 
   // Form state for creating
   const [form, setForm] = useState({
@@ -251,7 +249,6 @@ export default function GiveawayAdmin() {
     const data = await res.json();
     setSaving(false);
     if (data.winner) {
-      setCelebrationWinner(data.winner);
       showToast(`Vencedor: ${data.winner.twitch_username}!`);
       loadGiveaways();
       loadGiveawayDetail(selectedId);
@@ -434,13 +431,6 @@ export default function GiveawayAdmin() {
             )}
           </div>
         </div>
-
-        {/* Celebration overlay */}
-        <GiveawayCelebration
-          winner={celebrationWinner}
-          prize={selected?.prize}
-          onDismiss={() => setCelebrationWinner(null)}
-        />
 
         {/* Toast */}
         {toast && (
