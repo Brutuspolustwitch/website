@@ -265,9 +265,9 @@ export function GuessTheSpoils() {
                   <div className="space-y-4">
                     {/* Start / Stop / Target */}
                     <div className="grid grid-cols-3 gap-2">
-                      <StatBox icon="⚔" label="Start" value={`${campaign.start_amount.toFixed(2)}€`} />
-                      <StatBox icon="⭕" label="Stop" value={`${campaign.stop_amount.toFixed(2)}€`} />
-                      <StatBox icon="🎯" label="Target" value={`${campaign.target_amount.toFixed(2)}€`} valueColor="text-arena-red" iconColor="text-green-500" />
+                      <StatBox icon="⚔" label="Start" value={`${campaign.start_money.toFixed(2)}€`} />
+                      <StatBox icon="⭕" label="Stop" value={`${campaign.stop_loss.toFixed(2)}€`} />
+                      <StatBox icon="🎯" label="Target" value={`${(campaign.total_result ?? 0).toFixed(2)}€`} valueColor="text-arena-red" iconColor="text-green-500" />
                     </div>
 
                     {/* Campaign progress */}
