@@ -222,7 +222,7 @@ export function BonusHuntTracker() {
               <CornerOrnament className="absolute bottom-2 right-2 w-5 h-5 -scale-x-100 -scale-y-100" />
 
               {/* ── Stats bar (top) ────────────────────── */}
-              <div className="scroll-content" style={{ padding: "10px 20px 0" }}>
+              <div className="scroll-content" style={{ padding: "18px 20px 0" }}>
                 <div style={{
                   borderBottom: "2px solid rgba(139,105,20,0.2)",
                   padding: "6px 0 8px",
