@@ -556,3 +556,45 @@ create policy "Public read leaderboard entries" on leaderboard_entries for selec
 create policy "Admin insert leaderboard entries" on leaderboard_entries for insert with check (true);
 create policy "Admin update leaderboard entries" on leaderboard_entries for update using (true);
 create policy "Admin delete leaderboard entries" on leaderboard_entries for delete using (true);
+
+-- ============================================================
+-- Page Settings — per-page background images & visual effects
+-- ============================================================
+create table if not exists page_settings (
+  id uuid primary key default gen_random_uuid(),
+  page_slug text not null unique,
+  page_name text not null,
+  background_image text,
+  hero_image text,
+  effect text not null default 'none' check (effect in ('none', 'snow', 'rain', 'thunder', 'fireflies')),
+  effect_intensity numeric not null default 1.0 check (effect_intensity >= 0 and effect_intensity <= 2),
+  overlay_opacity numeric not null default 0.6 check (overlay_opacity >= 0 and overlay_opacity <= 1),
+  updated_at timestamptz not null default now()
+);
+
+alter table page_settings enable row level security;
+create policy "Public read page settings" on page_settings for select using (true);
+create policy "Admin insert page settings" on page_settings for insert with check (true);
+create policy "Admin update page settings" on page_settings for update using (true);
+create policy "Admin delete page settings" on page_settings for delete using (true);
+
+-- Seed default pages
+insert into page_settings (page_slug, page_name) values
+  ('home', 'Página Inicial'),
+  ('ofertas', 'Ofertas'),
+  ('casinos', 'Casinos'),
+  ('destaques', 'Destaques'),
+  ('stream', 'Stream'),
+  ('liga-dos-brutus', 'Liga dos Brutus'),
+  ('torneio', 'Torneio'),
+  ('loja', 'Loja'),
+  ('contactos', 'Contactos'),
+  ('sobre', 'Sobre'),
+  ('bonus-hunt', 'Bonus Hunt'),
+  ('roda-diaria', 'Roda Diária'),
+  ('leaderboard', 'Leaderboard'),
+  ('giveaways', 'Giveaways'),
+  ('live', 'Live'),
+  ('slots', 'Slots'),
+  ('calendario', 'Calendário')
+on conflict (page_slug) do nothing;

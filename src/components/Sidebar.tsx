@@ -60,6 +60,7 @@ const SECONDARY_LINKS: NavItem[] = [
     label: "Admin Area",
     minRole: "configurador",
     children: [
+      { href: "/admin/settings", label: "Definições" },
       { href: "/admin/outros/daily-session", label: "Sessão do Dia" },
       { href: "/admin/outros/bonus-hunt", label: "Bonus Hunt" },
       {

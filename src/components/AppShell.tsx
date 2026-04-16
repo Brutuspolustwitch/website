@@ -8,6 +8,7 @@ import { AgeGate } from "@/components/AgeGate";
 import { CookieConsent } from "@/components/CookieConsent";
 import { AuthProvider } from "@/lib/auth-context";
 import PageViewTracker from "@/components/PageViewTracker";
+import { DynamicPageBackground } from "@/components/DynamicPageBackground";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -15,6 +16,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
       <PageViewTracker />
+      <DynamicPageBackground />
       <Navbar onMenuToggle={() => setSidebarOpen((v) => !v)} />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
