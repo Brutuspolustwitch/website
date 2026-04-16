@@ -385,16 +385,17 @@ export default function DailySessionContent() {
             <p className="text-arena-smoke text-sm capitalize">{dateFormatted}</p>
           </motion.div>
 
-          {/* ── Stats strip — single papyrus bar ──── */}
+          {/* ── Stats + Monthly row ──────────────── */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-4"
           >
+            {/* Session stats */}
             <div className="papyrus-scroll greek-key-border" style={{ padding: 0 }}>
               <div className="scroll-content" style={{ padding: "10px 16px" }}>
                 <div className="flex flex-wrap items-center justify-around gap-x-6 gap-y-2 text-center">
-                  {/* Depósitos */}
                   <div>
                     <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Depósitos</p>
                     <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "#8b1a1a" }}>
@@ -402,7 +403,6 @@ export default function DailySessionContent() {
                     </span>
                   </div>
                   <div style={{ width: "1px", height: "28px", background: "rgba(139,105,20,0.2)" }} className="hidden sm:block" />
-                  {/* Levantamentos */}
                   <div>
                     <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Levantamentos</p>
                     <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "#2e7d32" }}>
@@ -410,7 +410,6 @@ export default function DailySessionContent() {
                     </span>
                   </div>
                   <div style={{ width: "1px", height: "28px", background: "rgba(139,105,20,0.2)" }} className="hidden sm:block" />
-                  {/* Resultado */}
                   <div>
                     <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Resultado</p>
                     <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: net >= 0 ? "#2e7d32" : "#8b1a1a" }}>
@@ -438,6 +437,47 @@ export default function DailySessionContent() {
                 </div>
               </div>
             </div>
+
+            {/* Monthly summary (same row) */}
+            {monthly && monthly.sessions_count > 0 ? (
+              <div className="papyrus-scroll greek-key-border" style={{ padding: 0 }}>
+                <div className="scroll-content" style={{ padding: "10px 16px" }}>
+                  <p style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "0.5rem",
+                    fontWeight: 600,
+                    color: "var(--ink-light)",
+                    letterSpacing: "0.18em",
+                    textTransform: "uppercase",
+                    textAlign: "center",
+                    marginBottom: "6px",
+                  }}>
+                    Resumo Mensal · {monthly.sessions_count} {monthly.sessions_count === 1 ? "sessão" : "sessões"}
+                  </p>
+                  <div style={{ display: "flex", justifyContent: "space-around", gap: "8px", textAlign: "center" }}>
+                    <div>
+                      <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1px" }}>Depósitos</p>
+                      <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "#8b1a1a" }}>{monthly.deposits.toFixed(2)}€</p>
+                    </div>
+                    <div>
+                      <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1px" }}>Levantam.</p>
+                      <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "#2e7d32" }}>{monthly.withdrawals.toFixed(2)}€</p>
+                    </div>
+                    <div>
+                      <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1px" }}>Resultado</p>
+                      <p style={{
+                        fontFamily: "var(--font-ui)",
+                        fontSize: "1rem",
+                        fontWeight: 700,
+                        color: (monthly.withdrawals - monthly.deposits) >= 0 ? "#2e7d32" : "#8b1a1a",
+                      }}>
+                        {(monthly.withdrawals - monthly.deposits).toFixed(2)}€
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : <div />}
           </motion.div>
 
           {/* ── Main grid: Bonus Hunt | Sidebar ──── */}
@@ -456,52 +496,14 @@ export default function DailySessionContent() {
             {/* RIGHT — Sidebar (1/3) */}
             <div className="lg:col-span-1 space-y-4">
 
-              {/* Monthly Summary */}
-              {monthly && monthly.sessions_count > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <div className="papyrus-scroll greek-key-border" style={{ width: "100%", padding: 0 }}>
-                    <div className="scroll-content" style={{ padding: "10px 16px 8px" }}>
-                      <p style={{
-                        fontFamily: "var(--font-display)",
-                        fontSize: "0.55rem",
-                        fontWeight: 600,
-                        color: "var(--ink-light)",
-                        letterSpacing: "0.18em",
-                        textTransform: "uppercase",
-                        textAlign: "center",
-                        marginBottom: "8px",
-                      }}>
-                        Resumo Mensal · {monthly.sessions_count} {monthly.sessions_count === 1 ? "sessão" : "sessões"}
-                      </p>
-                      <div style={{ display: "flex", justifyContent: "space-around", gap: "8px", textAlign: "center" }}>
-                        <div>
-                          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1px" }}>Depósitos</p>
-                          <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "#8b1a1a" }}>{monthly.deposits.toFixed(2)}€</p>
-                        </div>
-                        <div>
-                          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1px" }}>Levantam.</p>
-                          <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "#2e7d32" }}>{monthly.withdrawals.toFixed(2)}€</p>
-                        </div>
-                        <div>
-                          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1px" }}>Resultado</p>
-                          <p style={{
-                            fontFamily: "var(--font-ui)",
-                            fontSize: "1rem",
-                            fontWeight: 700,
-                            color: (monthly.withdrawals - monthly.deposits) >= 0 ? "#2e7d32" : "#8b1a1a",
-                          }}>
-                            {(monthly.withdrawals - monthly.deposits).toFixed(2)}€
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
+              {/* Spotify Playlist */}
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <SpotifyEmbed url={session.spotify_url} />
+              </motion.div>
 
               {/* Casino Offer Card */}
               <motion.div
@@ -540,15 +542,6 @@ export default function DailySessionContent() {
                     </div>
                   )}
                 </div>
-              </motion.div>
-
-              {/* Spotify Playlist */}
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                <SpotifyEmbed url={session.spotify_url} />
               </motion.div>
             </div>
           </div>
