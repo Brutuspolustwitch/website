@@ -214,6 +214,66 @@ export function BonusHuntTracker() {
                   </div>
                 </div>
 
+                {/* ── Stats bar (top) ────────────────────── */}
+                <div style={{
+                  borderBottom: "2px solid rgba(139,105,20,0.2)",
+                  padding: "6px 0 8px",
+                  display: "flex",
+                  justifyContent: "space-around",
+                  textAlign: "center",
+                }}>
+                  <div>
+                    <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Start Money</p>
+                    <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "var(--ink-dark)" }}>
+                      {(selectedSession?.start_money ?? 0).toFixed(2)}{currency}
+                    </p>
+                  </div>
+                  <div>
+                    <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Total Win</p>
+                    <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "#2e7d32" }}>
+                      {(selectedSession?.total_result ?? 0).toFixed(2)}{currency}
+                    </p>
+                  </div>
+                  <div>
+                    <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Profit</p>
+                    <p style={{
+                      fontFamily: "var(--font-ui)",
+                      fontSize: "1rem",
+                      fontWeight: 700,
+                      color: (selectedSession?.profit ?? 0) >= 0 ? "#2e7d32" : "#8b1a1a",
+                    }}>
+                      {(selectedSession?.profit ?? 0) >= 0 ? "+" : ""}{(selectedSession?.profit ?? 0).toFixed(2)}{currency}
+                    </p>
+                  </div>
+                  <div>
+                    <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Best Multi</p>
+                    <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "var(--gold-dark)" }}>
+                      {(selectedSession?.best_multi ?? 0).toFixed(1)}x
+                    </p>
+                  </div>
+                  <div>
+                    <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Avg Multi</p>
+                    <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "var(--ink-dark)" }}>
+                      {(selectedSession?.avg_multi ?? 0).toFixed(1)}x
+                    </p>
+                  </div>
+                </div>
+
+                {/* Best slot callout */}
+                {selectedSession?.best_slot_name && (
+                  <div style={{ textAlign: "center", padding: "4px 0" }}>
+                    <span style={{
+                      fontFamily: "var(--font-display)",
+                      fontSize: "0.6rem",
+                      color: "var(--gold-dark)",
+                      letterSpacing: "0.15em",
+                      textTransform: "uppercase",
+                    }}>
+                      🏆 Melhor Slot: {selectedSession.best_slot_name} ({selectedSession.best_multi.toFixed(1)}x)
+                    </span>
+                  </div>
+                )}
+
                 {/* ── Column headers ──────────────────── */}
                 <div className="bh-table-header">
                   <span className="bh-col-num">#</span>
@@ -353,69 +413,7 @@ export function BonusHuntTracker() {
                 })}
               </div>
 
-              {/* ── Footer summary ───────────────────── */}
-              <div style={{
-                borderTop: "2px solid rgba(139,105,20,0.2)",
-                margin: "0 20px",
-                padding: "8px 0 10px",
-                display: "flex",
-                justifyContent: "space-around",
-                textAlign: "center",
-              }}>
-                <div>
-                  <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Total Buy</p>
-                  <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "var(--ink-dark)" }}>
-                    {(selectedSession?.total_buy ?? slots.reduce((s, x) => s + x.buy_value, 0)).toFixed(2)}{currency}
-                  </p>
-                </div>
-                <div>
-                  <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Total Win</p>
-                  <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "#2e7d32" }}>
-                    {(selectedSession?.total_result ?? 0).toFixed(2)}{currency}
-                  </p>
-                </div>
-                <div>
-                  <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Profit</p>
-                  <p style={{
-                    fontFamily: "var(--font-ui)",
-                    fontSize: "1rem",
-                    fontWeight: 700,
-                    color: (selectedSession?.profit ?? 0) >= 0 ? "#2e7d32" : "#8b1a1a",
-                  }}>
-                    {(selectedSession?.profit ?? 0) >= 0 ? "+" : ""}{(selectedSession?.profit ?? 0).toFixed(2)}{currency}
-                  </p>
-                </div>
-                <div>
-                  <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Best Multi</p>
-                  <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "var(--gold-dark)" }}>
-                    {(selectedSession?.best_multi ?? 0).toFixed(1)}x
-                  </p>
-                </div>
-                <div>
-                  <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Avg Multi</p>
-                  <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "var(--ink-dark)" }}>
-                    {(selectedSession?.avg_multi ?? 0).toFixed(1)}x
-                  </p>
-                </div>
               </div>
-
-              {/* Best slot callout */}
-              {selectedSession?.best_slot_name && (
-                <div style={{
-                  textAlign: "center",
-                  padding: "0 20px 10px",
-                }}>
-                  <span style={{
-                    fontFamily: "var(--font-display)",
-                    fontSize: "0.6rem",
-                    color: "var(--gold-dark)",
-                    letterSpacing: "0.15em",
-                    textTransform: "uppercase",
-                  }}>
-                    🏆 Melhor Slot: {selectedSession.best_slot_name} ({selectedSession.best_multi.toFixed(1)}x)
-                  </span>
-                </div>
-              )}
             </div>
           </motion.div>
         </ScrollReveal>
