@@ -3,10 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useRef, useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { NAV_LINKS, SITE_NAME } from "@/lib/constants";
 import { useAuth } from "@/lib/auth-context";
 import { VipBadge, getVipLevel } from "@/components/VipBadge";
+import { supabase } from "@/lib/supabase";
 
 interface NavbarProps {
   onMenuToggle?: () => void;
@@ -18,8 +20,32 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
   const [unreadCount, setUnreadCount] = useState(0);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const { user, loading, login, logout } = useAuth();
+  const pathname = usePathname();
 
   const vipLevel = getVipLevel(points);
+
+  /* ── Daily Session info for navbar ──────────── */
+  const isDailySession = pathname === "/daily-session";
+  const [sessionInfo, setSessionInfo] = useState<{ title: string; date: string; is_active: boolean } | null>(null);
+
+  useEffect(() => {
+    if (!isDailySession) { setSessionInfo(null); return; }
+    (async () => {
+      const { data } = await supabase
+        .from("daily_sessions")
+        .select("title, session_date, is_active")
+        .eq("is_active", true)
+        .order("session_date", { ascending: false })
+        .limit(1)
+        .single();
+      if (data) {
+        const formatted = new Date(data.session_date + "T00:00:00").toLocaleDateString("pt-PT", {
+          weekday: "long", year: "numeric", month: "long", day: "numeric",
+        });
+        setSessionInfo({ title: data.title, date: formatted, is_active: data.is_active });
+      }
+    })();
+  }, [isDailySession]);
 
   // Fetch user points
   useEffect(() => {
@@ -88,18 +114,35 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
             </Link>
           </div>
 
-          {/* Center: desktop nav links (hidden on lg+ since sidebar shows them) */}
-          <div className="hidden md:flex lg:hidden items-center gap-1">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="relative px-3 py-2 text-sm font-medium text-arena-smoke hover:text-arena-gold transition-colors duration-300 arena-shine"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
+          {/* Center: session info on daily-session page, nav links on other pages */}
+          {isDailySession && sessionInfo ? (
+            <div className="hidden sm:flex items-center gap-3">
+              <h1 className="text-lg sm:text-xl font-bold font-[family-name:var(--font-display)] bg-gradient-to-r from-arena-gold via-arena-gold-light to-arena-gold bg-clip-text text-transparent">
+                {sessionInfo.title}
+              </h1>
+              {sessionInfo.is_active && (
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-900/60 border border-red-500/40 text-[10px] font-bold text-red-300 uppercase">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
+                  LIVE
+                </span>
+              )}
+              <span className="text-arena-smoke/70 text-xs capitalize hidden md:inline">
+                {sessionInfo.date}
+              </span>
+            </div>
+          ) : (
+            <div className="hidden md:flex lg:hidden items-center gap-1">
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="relative px-3 py-2 text-sm font-medium text-arena-smoke hover:text-arena-gold transition-colors duration-300 arena-shine"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          )}
 
           {/* Right: auth controls */}
           {!loading && (

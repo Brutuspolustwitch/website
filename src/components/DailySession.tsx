@@ -338,12 +338,6 @@ export default function DailySessionContent() {
   }
 
   /* ── Active Session ────────────────────────────────────── */
-  const dateFormatted = new Date(session.session_date + "T00:00:00").toLocaleDateString("pt-PT", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
 
   return (
     <div className="relative min-h-screen bg-black">
@@ -366,24 +360,6 @@ export default function DailySessionContent() {
       {/* Content */}
       <div className="relative z-10 pt-20 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
-
-          {/* ── Header — compact single line ──────── */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col sm:flex-row items-center justify-between gap-2"
-          >
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl sm:text-3xl font-bold font-[family-name:var(--font-display)] bg-gradient-to-r from-arena-gold via-arena-gold-light to-arena-gold bg-clip-text text-transparent">
-                {session.title}
-              </h1>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-red-900/60 border border-red-500/40 text-xs font-bold text-red-300 uppercase">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
-                LIVE
-              </span>
-            </div>
-            <p className="text-arena-smoke text-sm capitalize">{dateFormatted}</p>
-          </motion.div>
 
           {/* ── Stats + Monthly row ──────────────── */}
           <motion.div
