@@ -141,80 +141,88 @@ export function BonusHuntTracker() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
+            {/* ── Header bar (outside card) ──────────── */}
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: "10px",
+              padding: "0 4px",
+            }}>
+              {/* Left: hunt title + session nav */}
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <span style={{ fontSize: "1.5rem" }}>⚔️</span>
+                <span style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: "1.1rem",
+                  fontWeight: 700,
+                  color: "var(--arena-smoke, #e0ddd4)",
+                  letterSpacing: "0.08em",
+                }}>
+                  {selectedSession?.title}
+                </span>
+              </div>
+
+              {/* Right: navigation + status */}
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                {sessions.length > 1 && (
+                  <>
+                    <button
+                      onClick={prevSession}
+                      disabled={sessionIdx >= sessions.length - 1}
+                      className="bh-nav-btn"
+                      style={{ borderColor: "rgba(255,255,255,0.15)", color: "var(--arena-smoke, #e0ddd4)" }}
+                      aria-label="Sessão anterior"
+                    >
+                      ‹
+                    </button>
+                    <button
+                      onClick={nextSession}
+                      disabled={sessionIdx <= 0}
+                      className="bh-nav-btn"
+                      style={{ borderColor: "rgba(255,255,255,0.15)", color: "var(--arena-smoke, #e0ddd4)" }}
+                      aria-label="Próxima sessão"
+                    >
+                      ›
+                    </button>
+                  </>
+                )}
+                <span style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: "0.65rem",
+                  fontWeight: 600,
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  padding: "4px 10px",
+                  borderRadius: "4px",
+                  background: selectedSession?.status === "active"
+                    ? "rgba(34,197,94,0.15)"
+                    : "rgba(139,105,20,0.12)",
+                  color: selectedSession?.status === "active"
+                    ? "#22c55e"
+                    : "var(--gold-dark)",
+                  border: `1px solid ${selectedSession?.status === "active" ? "rgba(34,197,94,0.3)" : "rgba(139,105,20,0.2)"}`,
+                }}>
+                  {selectedSession?.status === "active" ? "ACTIVE" : selectedSession?.status === "completed" ? "COMPLETA" : "UPCOMING"}
+                </span>
+                <span style={{
+                  fontFamily: "var(--font-ui)",
+                  fontSize: "0.75rem",
+                  color: "rgba(255,255,255,0.5)",
+                }}>
+                  {openedCount} / {totalSlots} Bónus
+                </span>
+              </div>
+            </div>
+
             <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom bonus-hunt-scroll">
               <CornerOrnament className="absolute top-2 left-2 w-5 h-5" />
               <CornerOrnament className="absolute top-2 right-2 w-5 h-5 -scale-x-100" />
               <CornerOrnament className="absolute bottom-2 left-2 w-5 h-5 -scale-y-100" />
               <CornerOrnament className="absolute bottom-2 right-2 w-5 h-5 -scale-x-100 -scale-y-100" />
 
-              {/* ── Header bar ────────────────────────── */}
+              {/* ── Stats bar (top) ────────────────────── */}
               <div className="scroll-content" style={{ padding: "10px 20px 0" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-                  {/* Left: hunt title + session nav */}
-                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                    <span style={{ fontSize: "1.5rem" }}>⚔️</span>
-                    <span style={{
-                      fontFamily: "var(--font-display)",
-                      fontSize: "1.1rem",
-                      fontWeight: 700,
-                      color: "var(--ink-dark)",
-                      letterSpacing: "0.08em",
-                    }}>
-                      {selectedSession?.title}
-                    </span>
-                  </div>
-
-                  {/* Right: navigation + status */}
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    {sessions.length > 1 && (
-                      <>
-                        <button
-                          onClick={prevSession}
-                          disabled={sessionIdx >= sessions.length - 1}
-                          className="bh-nav-btn"
-                          aria-label="Sessão anterior"
-                        >
-                          ‹
-                        </button>
-                        <button
-                          onClick={nextSession}
-                          disabled={sessionIdx <= 0}
-                          className="bh-nav-btn"
-                          aria-label="Próxima sessão"
-                        >
-                          ›
-                        </button>
-                      </>
-                    )}
-                    <span style={{
-                      fontFamily: "var(--font-display)",
-                      fontSize: "0.65rem",
-                      fontWeight: 600,
-                      letterSpacing: "0.12em",
-                      textTransform: "uppercase",
-                      padding: "4px 10px",
-                      borderRadius: "4px",
-                      background: selectedSession?.status === "active"
-                        ? "rgba(34,197,94,0.15)"
-                        : "rgba(139,105,20,0.12)",
-                      color: selectedSession?.status === "active"
-                        ? "#22c55e"
-                        : "var(--gold-dark)",
-                      border: `1px solid ${selectedSession?.status === "active" ? "rgba(34,197,94,0.3)" : "rgba(139,105,20,0.2)"}`,
-                    }}>
-                      {selectedSession?.status === "active" ? "ACTIVE" : selectedSession?.status === "completed" ? "COMPLETA" : "UPCOMING"}
-                    </span>
-                    <span style={{
-                      fontFamily: "var(--font-ui)",
-                      fontSize: "0.75rem",
-                      color: "var(--ink-light)",
-                    }}>
-                      {openedCount} / {totalSlots} Bónus
-                    </span>
-                  </div>
-                </div>
-
-                {/* ── Stats bar (top) ────────────────────── */}
                 <div style={{
                   borderBottom: "2px solid rgba(139,105,20,0.2)",
                   padding: "6px 0 8px",
