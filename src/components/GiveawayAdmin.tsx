@@ -93,6 +93,7 @@ export default function GiveawayAdmin() {
     ticket_cost: 0,
     max_entries_per_user: "",
     prize: "",
+    prize_image: "",
     duration_seconds: 300,
     chat_command: "!enter",
     require_live: true,
@@ -203,6 +204,7 @@ export default function GiveawayAdmin() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...form,
+        prize_image: form.prize_image || null,
         max_entries_per_user: form.max_entries_per_user ? parseInt(form.max_entries_per_user) : null,
       }),
     });
@@ -211,7 +213,7 @@ export default function GiveawayAdmin() {
     if (data.giveaway) {
       showToast("Giveaway criado ✓");
       setShowCreate(false);
-      setForm({ title: "", description: "", mode: "single", ticket_cost: 0, max_entries_per_user: "", prize: "", duration_seconds: 300, chat_command: "!enter", require_live: true });
+      setForm({ title: "", description: "", mode: "single", ticket_cost: 0, max_entries_per_user: "", prize: "", prize_image: "", duration_seconds: 300, chat_command: "!enter", require_live: true });
       loadGiveaways();
     } else {
       showToast(data.error || "Erro");
@@ -304,6 +306,7 @@ export default function GiveawayAdmin() {
                   <FormField label="Prémio" value={form.prize} onChange={(v) => setForm({ ...form, prize: v })} />
                   <FormField label="Descrição" value={form.description} onChange={(v) => setForm({ ...form, description: v })} />
                   <FormField label="Comando Chat" value={form.chat_command} onChange={(v) => setForm({ ...form, chat_command: v })} />
+                  <FormField label="Imagem do Prémio (URL)" value={form.prize_image} onChange={(v) => setForm({ ...form, prize_image: v })} placeholder="https://..." />
 
                   <div className="space-y-1">
                     <label className="text-xs text-arena-smoke/70 uppercase tracking-wider font-medium">Modo</label>
@@ -666,11 +669,13 @@ function FormField({
   value,
   onChange,
   type = "text",
+  placeholder,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   type?: string;
+  placeholder?: string;
 }) {
   return (
     <div className="space-y-1">
@@ -679,7 +684,8 @@ function FormField({
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-arena-smoke text-sm focus:border-arena-gold/40 focus:outline-none transition-colors"
+        placeholder={placeholder}
+        className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-arena-smoke text-sm focus:border-arena-gold/40 focus:outline-none transition-colors placeholder:text-arena-smoke/30"
       />
     </div>
   );
