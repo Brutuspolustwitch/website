@@ -20,68 +20,74 @@ async function requireAdmin() {
 
 /* ── GET — list giveaways (with participant counts) ────────── */
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const activeOnly = searchParams.get("active") === "true";
-  const id = searchParams.get("id");
+  try {
+    const { searchParams } = new URL(request.url);
+    const activeOnly = searchParams.get("active") === "true";
+    const id = searchParams.get("id");
 
-  if (id) {
-    const { data, error } = await supabase
-      .from("giveaways")
-      .select("*")
-      .eq("id", id)
-      .single();
-    if (error) return NextResponse.json({ error: error.message }, { status: 404 });
+    if (id) {
+      const { data, error } = await supabase
+        .from("giveaways")
+        .select("*")
+        .eq("id", id)
+        .single();
+      if (error) return NextResponse.json({ error: error.message }, { status: 404 });
 
-    // Fetch participants
-    const { data: participants } = await supabase
-      .from("giveaway_participants")
-      .select("*")
-      .eq("giveaway_id", id)
-      .order("tickets", { ascending: false });
+      const { data: participants } = await supabase
+        .from("giveaway_participants")
+        .select("*")
+        .eq("giveaway_id", id)
+        .order("tickets", { ascending: false });
 
-    // Fetch winners
-    const { data: winners } = await supabase
-      .from("giveaway_winners")
-      .select("*")
-      .eq("giveaway_id", id);
+      const { data: winners } = await supabase
+        .from("giveaway_winners")
+        .select("*")
+        .eq("giveaway_id", id);
 
-    return NextResponse.json({
-      giveaway: data,
-      participants: participants ?? [],
-      winners: winners ?? [],
-    });
+      return NextResponse.json({
+        giveaway: data,
+        participants: participants ?? [],
+        winners: winners ?? [],
+      });
+    }
+
+    let query = supabase.from("giveaways").select("*").order("created_at", { ascending: false });
+
+    if (activeOnly) {
+      query = query.eq("is_active", true).eq("is_ended", false);
+    }
+
+    const { data, error } = await query;
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+    // Get participant counts for each giveaway
+    const giveawayIds = (data ?? []).map((g: { id: string }) => g.id);
+    let counts: { giveaway_id: string; tickets: number }[] = [];
+    if (giveawayIds.length > 0) {
+      const { data: countData } = await supabase
+        .from("giveaway_participants")
+        .select("giveaway_id, tickets")
+        .in("giveaway_id", giveawayIds);
+      counts = countData ?? [];
+    }
+
+    const countMap: Record<string, { participants: number; total_tickets: number }> = {};
+    for (const row of counts) {
+      if (!countMap[row.giveaway_id]) countMap[row.giveaway_id] = { participants: 0, total_tickets: 0 };
+      countMap[row.giveaway_id].participants++;
+      countMap[row.giveaway_id].total_tickets += row.tickets;
+    }
+
+    const giveaways = (data ?? []).map((g: Record<string, unknown>) => ({
+      ...g,
+      participant_count: countMap[g.id as string]?.participants ?? 0,
+      total_tickets: countMap[g.id as string]?.total_tickets ?? 0,
+    }));
+
+    return NextResponse.json({ giveaways });
+  } catch (err) {
+    return NextResponse.json({ error: String(err) }, { status: 500 });
   }
-
-  let query = supabase.from("giveaways").select("*").order("created_at", { ascending: false });
-
-  if (activeOnly) {
-    query = query.eq("is_active", true).eq("is_ended", false);
-  }
-
-  const { data, error } = await query;
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-
-  // Get participant counts for each giveaway
-  const giveawayIds = (data ?? []).map((g) => g.id);
-  const { data: counts } = await supabase
-    .from("giveaway_participants")
-    .select("giveaway_id, tickets")
-    .in("giveaway_id", giveawayIds.length > 0 ? giveawayIds : ["__none__"]);
-
-  const countMap: Record<string, { participants: number; total_tickets: number }> = {};
-  for (const row of counts ?? []) {
-    if (!countMap[row.giveaway_id]) countMap[row.giveaway_id] = { participants: 0, total_tickets: 0 };
-    countMap[row.giveaway_id].participants++;
-    countMap[row.giveaway_id].total_tickets += row.tickets;
-  }
-
-  const giveaways = (data ?? []).map((g) => ({
-    ...g,
-    participant_count: countMap[g.id]?.participants ?? 0,
-    total_tickets: countMap[g.id]?.total_tickets ?? 0,
-  }));
-
-  return NextResponse.json({ giveaways });
 }
 
 /* ── POST — create giveaway ────────────────────────────────── */
