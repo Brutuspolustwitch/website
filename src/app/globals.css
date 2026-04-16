@@ -377,42 +377,52 @@ body {
 
 /* ── Compact card variant for Daily Session ─────────────── */
 .daily-session-card .papyrus-flip-container {
-  max-width: 340px;
-  height: 560px;
+  max-width: 100%;
+  height: auto;
+}
+.daily-session-card .papyrus-flip-inner {
+  height: auto;
+}
+.daily-session-card .papyrus-flip-face {
+  position: relative;
 }
 .daily-session-card .casino-banner-inner {
-  height: 70px;
+  height: 60px;
 }
 .daily-session-card .promo-section {
-  padding: 8px 12px 6px;
+  padding: 6px 12px 4px;
 }
 .daily-session-card .promo-label {
   font-size: 0.55rem;
   margin-bottom: 2px;
 }
 .daily-session-card .promo-bonus {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 .daily-session-card .promo-bonus-accent {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
 }
 .daily-session-card .promo-detail {
   font-size: 0.6rem;
 }
 .daily-session-card .promo-code-wrapper {
-  padding: 4px 10px;
-  margin-top: 4px;
+  padding: 3px 10px;
+  margin-top: 3px;
 }
 .daily-session-card .cta-button {
-  padding: 8px 16px;
-  font-size: 0.75rem;
+  padding: 6px 14px;
+  font-size: 0.7rem;
 }
 .daily-session-card .cta-subtext {
   font-size: 0.5rem;
 }
+.daily-session-card .cta-section {
+  padding: 4px 12px;
+}
 .daily-session-card .flip-hint {
   font-size: 0.6rem;
-  margin-top: 2px;
+  margin-top: 0px;
+  padding-bottom: 4px;
 }
 
 /* ══════════════════════════════════════════════════════════════════
