@@ -971,10 +971,10 @@ body {
 /* ── Promo Code — Sealed Inscription ─────────────────────── */
 .promo-code-wrapper {
   display: inline-flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 2px;
-  padding: 6px 14px;
+  gap: 6px;
+  padding: 5px 14px;
   background: linear-gradient(
     135deg,
     rgba(60, 40, 10, 0.06) 0%,
@@ -995,15 +995,15 @@ body {
   );
 }
 .promo-code-label {
-  font-size: 0.6rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--ink-light);
-  letter-spacing: 0.15em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 .promo-code-value {
   font-family: 'Cinzel', 'Georgia', serif;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--ink-dark);
   letter-spacing: 0.08em;
