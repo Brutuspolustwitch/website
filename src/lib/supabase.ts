@@ -139,6 +139,7 @@ export interface CasinoOfferRow {
   notes: string[];
   affiliate_url: string;
   rating: number;
+  is_exclusive: boolean;
   visible: boolean;
   sort_order: number;
   created_at: string;

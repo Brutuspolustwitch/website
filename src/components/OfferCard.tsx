@@ -28,6 +28,7 @@ export interface CasinoOffer {
   notes: string[];
   affiliate_url: string;
   rating: number;
+  is_exclusive?: boolean;
 }
 
 /* ── Star Rating Component ──────────────────────────────── */
@@ -108,6 +109,15 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
             <CornerOrnament className="bottom-left" />
             <CornerOrnament className="bottom-right" />
             <div className="scroll-content">
+              {/* Badge Ribbon */}
+              {offer.badge && (
+                <div className={`absolute top-3 right-3 z-10 px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider text-white shadow-lg ${
+                  offer.badge === "NEW" ? "bg-green-600" : "bg-orange-600"
+                }`}>
+                  {offer.badge}
+                </div>
+              )}
+
               {/* Banner */}
               <div className="casino-banner">
                 <div className="casino-banner-inner">
@@ -123,7 +133,7 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
 
               {/* Promo Section */}
               <div className="promo-section">
-                <p className="promo-label">✦ Oferta Exclusiva ✦</p>
+                <p className="promo-label">✦ Oferta{offer.is_exclusive !== false ? " Exclusiva" : ""} ✦</p>
                 <p className="promo-bonus">
                   {offer.headline}
                   <span className="promo-bonus-accent">{offer.bonus_value}</span>
@@ -258,6 +268,7 @@ export function OfferCards({ emptyClassName = "" }: { emptyClassName?: string })
             notes: r.notes,
             affiliate_url: r.affiliate_url,
             rating: r.rating ?? 4.5,
+            is_exclusive: r.is_exclusive ?? true,
           }))
         );
       }

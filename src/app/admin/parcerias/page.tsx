@@ -26,8 +26,9 @@ const EMPTY_OFFER: Omit<CasinoOfferRow, "id" | "created_at" | "updated_at"> = {
   license: "Curaçao",
   established: "2023",
   notes: [],
-  affiliate_url: "#",
+  affiliate_url: "",
   rating: 4.5,
+  is_exclusive: true,
   visible: true,
   sort_order: 0,
 };
@@ -292,6 +293,7 @@ function OfferForm({ initial, onSave, saving, nextOrder }: OfferFormProps) {
     notes: initial.notes.join("\n"),
     affiliate_url: initial.affiliate_url,
     rating: (initial as any).rating ?? 4.5,
+    is_exclusive: initial.is_exclusive ?? true,
     visible: initial.visible,
     sort_order: initial.sort_order || nextOrder,
   });
@@ -324,6 +326,7 @@ function OfferForm({ initial, onSave, saving, nextOrder }: OfferFormProps) {
       notes: form.notes.split("\n").filter(Boolean),
       affiliate_url: form.affiliate_url,
       rating: form.rating,
+      is_exclusive: form.is_exclusive,
       visible: form.visible,
       sort_order: form.sort_order,
     });
@@ -371,7 +374,7 @@ function OfferForm({ initial, onSave, saving, nextOrder }: OfferFormProps) {
         </div>
         <div>
           <label className={labelCls}>Código</label>
-          <input className={inputCls} value={form.code} onChange={(e) => set("code", e.target.value)} placeholder="GODMOTA" />
+          <input className={inputCls} value={form.code} onChange={(e) => set("code", e.target.value)} placeholder="BRUTUS" />
         </div>
       </div>
 
@@ -429,7 +432,7 @@ function OfferForm({ initial, onSave, saving, nextOrder }: OfferFormProps) {
         </div>
         <div>
           <label className={labelCls}>Logo URL</label>
-          <input className={inputCls} value={form.logo_url} onChange={(e) => set("logo_url", e.target.value)} placeholder="/images/logo.png" />
+          <input className={inputCls} value={form.logo_url} onChange={(e) => set("logo_url", e.target.value)} />
         </div>
         <div>
           <label className={labelCls}>Banner URL</label>
@@ -437,7 +440,7 @@ function OfferForm({ initial, onSave, saving, nextOrder }: OfferFormProps) {
         </div>
         <div>
           <label className={labelCls}>Link Afiliado</label>
-          <input className={inputCls} value={form.affiliate_url} onChange={(e) => set("affiliate_url", e.target.value)} placeholder="https://..." />
+          <input className={inputCls} value={form.affiliate_url} onChange={(e) => set("affiliate_url", e.target.value)} placeholder="" />
         </div>
       </div>
 
@@ -447,11 +450,15 @@ function OfferForm({ initial, onSave, saving, nextOrder }: OfferFormProps) {
         <textarea className={`${inputCls} min-h-[80px]`} value={form.notes} onChange={(e) => set("notes", e.target.value)} placeholder={"24/7 Live Support\nPromotion details..."} />
       </div>
 
-      {/* Visibility + Order */}
-      <div className="flex items-center gap-6">
+      {/* Visibility + Exclusive + Order */}
+      <div className="flex items-center gap-6 flex-wrap">
         <label className="flex items-center gap-2 cursor-pointer">
           <input type="checkbox" checked={form.visible} onChange={(e) => set("visible", e.target.checked)} className="w-4 h-4 accent-arena-gold" />
           <span className="text-sm text-arena-smoke">Visível no site</span>
+        </label>
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" checked={form.is_exclusive} onChange={(e) => set("is_exclusive", e.target.checked)} className="w-4 h-4 accent-arena-gold" />
+          <span className="text-sm text-arena-smoke">Oferta Exclusiva</span>
         </label>
         <div className="flex items-center gap-2">
           <label className="text-[11px] uppercase tracking-wider text-arena-ash">Ordem:</label>
