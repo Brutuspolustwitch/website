@@ -360,123 +360,137 @@ export default function DailySessionContent() {
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black" />
-        {/* Fog overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-transparent via-arena-crimson/[0.03] to-transparent pointer-events-none" />
       </div>
 
       {/* Content */}
-      <div className="relative z-10 pt-24 pb-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <div className="relative z-10 pt-20 pb-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
 
-          {/* ── Header ──────────────────────────────── */}
+          {/* ── Header — compact single line ──────── */}
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center space-y-2"
+            className="flex flex-col sm:flex-row items-center justify-between gap-2"
           >
-            <div className="flex items-center justify-center gap-3">
-              <h1 className="text-3xl sm:text-5xl font-bold font-[family-name:var(--font-display)] bg-gradient-to-r from-arena-gold via-arena-gold-light to-arena-gold bg-clip-text text-transparent">
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl sm:text-3xl font-bold font-[family-name:var(--font-display)] bg-gradient-to-r from-arena-gold via-arena-gold-light to-arena-gold bg-clip-text text-transparent">
                 {session.title}
               </h1>
-              {/* LIVE indicator */}
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-900/60 border border-red-500/40 text-xs font-bold text-red-300 uppercase">
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-red-900/60 border border-red-500/40 text-xs font-bold text-red-300 uppercase">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
                 LIVE
               </span>
             </div>
             <p className="text-arena-smoke text-sm capitalize">{dateFormatted}</p>
           </motion.div>
 
-          {/* ── Stats Panel ─────────────────────────── */}
+          {/* ── Stats strip — single papyrus bar ──── */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="grid grid-cols-1 sm:grid-cols-3 gap-4"
           >
-            <StatPlate label="Depósitos" value={session.deposits} glow="red" />
-            <StatPlate label="Levantamentos" value={session.withdrawals} glow="green" />
-            <StatPlate label="Resultado Líquido" value={net} glow={netGlow} />
+            <div className="papyrus-scroll greek-key-border" style={{ padding: 0 }}>
+              <div className="scroll-content" style={{ padding: "10px 16px" }}>
+                <div className="flex flex-wrap items-center justify-around gap-x-6 gap-y-2 text-center">
+                  {/* Depósitos */}
+                  <div>
+                    <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Depósitos</p>
+                    <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "#8b1a1a" }}>
+                      <AnimatedCounter value={session.deposits} suffix="€" />
+                    </span>
+                  </div>
+                  <div style={{ width: "1px", height: "28px", background: "rgba(139,105,20,0.2)" }} className="hidden sm:block" />
+                  {/* Levantamentos */}
+                  <div>
+                    <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Levantamentos</p>
+                    <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "#2e7d32" }}>
+                      <AnimatedCounter value={session.withdrawals} suffix="€" />
+                    </span>
+                  </div>
+                  <div style={{ width: "1px", height: "28px", background: "rgba(139,105,20,0.2)" }} className="hidden sm:block" />
+                  {/* Resultado */}
+                  <div>
+                    <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Resultado</p>
+                    <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: net >= 0 ? "#2e7d32" : "#8b1a1a" }}>
+                      <AnimatedCounter value={net} suffix="€" />
+                    </span>
+                  </div>
+                  {session.bonuses_count > 0 && (
+                    <>
+                      <div style={{ width: "1px", height: "28px", background: "rgba(139,105,20,0.2)" }} className="hidden sm:block" />
+                      <div>
+                        <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Bónus</p>
+                        <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "var(--gold-dark)" }}>{session.bonuses_count}</span>
+                      </div>
+                    </>
+                  )}
+                  {session.biggest_win > 0 && (
+                    <>
+                      <div style={{ width: "1px", height: "28px", background: "rgba(139,105,20,0.2)" }} className="hidden sm:block" />
+                      <div>
+                        <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Maior Win</p>
+                        <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "#2e7d32" }}>{session.biggest_win.toFixed(2)}€</span>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
           </motion.div>
 
-          {/* ── Two-column layout: Left (Bonus Hunt + Casino) | Right (Bonus Stats + Monthly + Spotify) ── */}
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
+          {/* ── Main grid: Bonus Hunt | Sidebar ──── */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
 
-            {/* ── LEFT COLUMN (3/5) — Bonus Hunt Tracker ────── */}
+            {/* LEFT — Bonus Hunt (2/3) */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
-              className="lg:col-span-3"
+              className="lg:col-span-2"
             >
               <BonusHuntTracker compact />
             </motion.div>
 
-            {/* ── RIGHT COLUMN (2/5) — Sidebar panels ───────── */}
-            <div className="lg:col-span-2 space-y-6">
-
-              {/* Bonus stats (if available) */}
-              {(session.bonuses_count > 0 || session.biggest_win > 0) && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="flex justify-center gap-4"
-                >
-                  {session.bonuses_count > 0 && (
-                    <div className="papyrus-scroll greek-key-border flex-1" style={{ padding: 0 }}>
-                      <div className="scroll-content" style={{ textAlign: "center", padding: "10px 16px" }}>
-                        <p style={{ fontFamily: "var(--font-display)", fontSize: "0.6rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase" }}>Bónus Jogados</p>
-                        <p style={{ fontFamily: "var(--font-ui)", fontSize: "1.25rem", fontWeight: 700, color: "var(--gold-dark)" }}>{session.bonuses_count}</p>
-                      </div>
-                    </div>
-                  )}
-                  {session.biggest_win > 0 && (
-                    <div className="papyrus-scroll greek-key-border flex-1" style={{ padding: 0 }}>
-                      <div className="scroll-content" style={{ textAlign: "center", padding: "10px 16px" }}>
-                        <p style={{ fontFamily: "var(--font-display)", fontSize: "0.6rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase" }}>Maior Vitória</p>
-                        <p style={{ fontFamily: "var(--font-ui)", fontSize: "1.25rem", fontWeight: 700, color: "#2e7d32" }}>{session.biggest_win.toFixed(2)}€</p>
-                      </div>
-                    </div>
-                  )}
-                </motion.div>
-              )}
+            {/* RIGHT — Sidebar (1/3) */}
+            <div className="lg:col-span-1 space-y-4">
 
               {/* Monthly Summary */}
               {monthly && monthly.sessions_count > 0 && (
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.25 }}
+                  transition={{ delay: 0.2 }}
                 >
                   <div className="papyrus-scroll greek-key-border" style={{ width: "100%", padding: 0 }}>
-                    <div className="scroll-content" style={{ padding: "14px 20px 12px" }}>
+                    <div className="scroll-content" style={{ padding: "10px 16px 8px" }}>
                       <p style={{
                         fontFamily: "var(--font-display)",
-                        fontSize: "0.6rem",
+                        fontSize: "0.55rem",
                         fontWeight: 600,
                         color: "var(--ink-light)",
-                        letterSpacing: "0.2em",
+                        letterSpacing: "0.18em",
                         textTransform: "uppercase",
                         textAlign: "center",
-                        marginBottom: "10px",
+                        marginBottom: "8px",
                       }}>
-                        Resumo do Mês · {monthly.sessions_count} {monthly.sessions_count === 1 ? "sessão" : "sessões"}
+                        Resumo Mensal · {monthly.sessions_count} {monthly.sessions_count === 1 ? "sessão" : "sessões"}
                       </p>
-                      <div style={{ display: "flex", justifyContent: "space-around", gap: "12px", textAlign: "center" }}>
+                      <div style={{ display: "flex", justifyContent: "space-around", gap: "8px", textAlign: "center" }}>
                         <div>
-                          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Depósitos</p>
-                          <p style={{ fontFamily: "var(--font-ui)", fontSize: "1.1rem", fontWeight: 700, color: "#8b1a1a" }}>{monthly.deposits.toFixed(2)}€</p>
+                          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1px" }}>Depósitos</p>
+                          <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "#8b1a1a" }}>{monthly.deposits.toFixed(2)}€</p>
                         </div>
                         <div>
-                          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Levantamentos</p>
-                          <p style={{ fontFamily: "var(--font-ui)", fontSize: "1.1rem", fontWeight: 700, color: "#2e7d32" }}>{monthly.withdrawals.toFixed(2)}€</p>
+                          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1px" }}>Levantam.</p>
+                          <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "#2e7d32" }}>{monthly.withdrawals.toFixed(2)}€</p>
                         </div>
                         <div>
-                          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Resultado</p>
+                          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1px" }}>Resultado</p>
                           <p style={{
                             fontFamily: "var(--font-ui)",
-                            fontSize: "1.1rem",
+                            fontSize: "1rem",
                             fontWeight: 700,
                             color: (monthly.withdrawals - monthly.deposits) >= 0 ? "#2e7d32" : "#8b1a1a",
                           }}>
@@ -491,9 +505,9 @@ export default function DailySessionContent() {
 
               {/* Casino Offer Card */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
+                transition={{ delay: 0.25 }}
               >
                 <div className="daily-session-card">
                   {session.casino ? (
@@ -519,8 +533,8 @@ export default function DailySessionContent() {
                       rating: session.casino.rating ?? 4.5,
                     }} />
                   ) : (
-                    <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom" style={{ maxWidth: "400px" }}>
-                      <div className="scroll-content" style={{ textAlign: "center", padding: "32px 16px" }}>
+                    <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom">
+                      <div className="scroll-content" style={{ textAlign: "center", padding: "24px 16px" }}>
                         <p style={{ fontFamily: "var(--font-display)", fontSize: "0.85rem", color: "var(--ink-light)" }}>Nenhum casino selecionado</p>
                       </div>
                     </div>
@@ -530,9 +544,9 @@ export default function DailySessionContent() {
 
               {/* Spotify Playlist */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35 }}
+                transition={{ delay: 0.3 }}
               >
                 <SpotifyEmbed url={session.spotify_url} />
               </motion.div>
