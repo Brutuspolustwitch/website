@@ -377,8 +377,9 @@ body {
 
 /* ── Compact card variant for Daily Session ─────────────── */
 .daily-session-card .papyrus-flip-container {
-  max-width: 260px;
-  height: 400px;
+  max-width: 100%;
+  width: 100%;
+  height: 480px;
 }
 .daily-session-card .casino-banner-inner {
   height: 70px;

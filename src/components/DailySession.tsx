@@ -481,7 +481,7 @@ export default function DailySessionContent() {
             className="grid grid-cols-1 lg:grid-cols-2 gap-6 justify-items-center"
           >
             {/* LEFT: Casino Card — reuses the papyrus OfferCard */}
-            <div className="daily-session-card">
+            <div className="daily-session-card w-full max-w-[380px]">
               {session.casino ? (
                 <OfferCard offer={{
                   slug: session.casino.slug,
@@ -514,7 +514,7 @@ export default function DailySessionContent() {
             </div>
 
             {/* RIGHT: Spotify */}
-            <div>
+            <div className="w-full max-w-[380px]">
               <SpotifyEmbed url={session.spotify_url} />
             </div>
           </motion.div>
