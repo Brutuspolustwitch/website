@@ -276,7 +276,6 @@ function OfferForm({ initial, onSave, saving, nextOrder }: OfferFormProps) {
   const [form, setForm] = useState({
     slug: initial.slug,
     name: initial.name,
-    logo_url: initial.logo_url ?? "",
     logo_bg: initial.logo_bg,
     banner_url: initial.banner_url ?? "",
     badge: initial.badge ?? "",
@@ -309,7 +308,7 @@ function OfferForm({ initial, onSave, saving, nextOrder }: OfferFormProps) {
     onSave({
       slug: form.slug.toLowerCase().replace(/[^a-z0-9-]/g, ""),
       name: form.name,
-      logo_url: form.logo_url || null,
+      logo_url: initial.logo_url ?? null,
       logo_bg: form.logo_bg,
       banner_url: form.banner_url || null,
       badge: (form.badge as "NEW" | "HOT") || null,
@@ -429,10 +428,6 @@ function OfferForm({ initial, onSave, saving, nextOrder }: OfferFormProps) {
         <div>
           <label className={labelCls}>Tags (separadas por vírgula)</label>
           <input className={inputCls} value={form.tags} onChange={(e) => set("tags", e.target.value)} placeholder="FREE SPINS, MB" />
-        </div>
-        <div>
-          <label className={labelCls}>Logo URL</label>
-          <input className={inputCls} value={form.logo_url} onChange={(e) => set("logo_url", e.target.value)} />
         </div>
         <div>
           <label className={labelCls}>Banner URL</label>
