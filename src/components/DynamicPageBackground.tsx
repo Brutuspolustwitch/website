@@ -14,29 +14,38 @@ function DynamicPageBackgroundInner() {
   const pathname = usePathname();
   const [settings, setSettings] = useState<PageSetting | null>(null);
   const [allSettings, setAllSettings] = useState<PageSetting[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  const [fetchedAt, setFetchedAt] = useState(0);
 
   // Derive slug from pathname
   const slug = pathname === "/" ? "home" : pathname.replace(/^\//, "").split("/")[0];
 
-  // Fetch all settings once, then use from cache
+  // Re-fetch settings every 30s so admin changes propagate quickly
   useEffect(() => {
-    if (loaded) return;
-    fetch("/api/page-settings")
-      .then((r) => r.json())
-      .then((data) => {
-        setAllSettings(data.settings ?? []);
-        setLoaded(true);
-      })
-      .catch(() => setLoaded(true));
-  }, [loaded]);
+    let cancelled = false;
 
-  // Update current settings when pathname changes
+    const doFetch = () => {
+      fetch("/api/page-settings")
+        .then((r) => r.json())
+        .then((data) => {
+          if (!cancelled) {
+            setAllSettings(data.settings ?? []);
+            setFetchedAt(Date.now());
+          }
+        })
+        .catch(() => {});
+    };
+
+    doFetch();
+    const interval = setInterval(doFetch, 30_000);
+    return () => { cancelled = true; clearInterval(interval); };
+  }, []);
+
+  // Update current settings when pathname or data changes
   useEffect(() => {
-    if (!loaded) return;
+    if (fetchedAt === 0) return;
     const match = allSettings.find((s) => s.page_slug === slug);
     setSettings(match ?? null);
-  }, [slug, loaded, allSettings]);
+  }, [slug, fetchedAt, allSettings]);
 
   // Only use admin-configured settings
   const bgImage = settings?.background_image || null;
