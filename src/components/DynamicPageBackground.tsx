@@ -53,6 +53,9 @@ function DynamicPageBackgroundInner() {
   const effect = settings?.effect ?? "none";
   const effectIntensity = settings?.effect_intensity ?? 1;
 
+  // Home page has its own hero image — skip the global background
+  if (slug === "home") return null;
+
   const hasBg = !!bgImage;
   const hasEffect = effect !== "none";
   if (!hasBg && !hasEffect) return null;
