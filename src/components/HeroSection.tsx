@@ -1,43 +1,16 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import gsap from "gsap";
 
 /**
  * HERO SECTION — Full-screen cinematic entry point.
  *
- * Left-aligned content at the bottom, full-bleed gladiator image
- * with GSAP slow-zoom, rain particles, ambient glow.
+ * Left-aligned content at the bottom, full-bleed image
+ * with GSAP slow-zoom and ambient glow.
+ * Hero image and effects come from admin settings (Definições).
  */
-
-/* ── Rain ────────────────────────────────────────── */
-function RainField() {
-  const reduceMotion = useReducedMotion();
-  if (reduceMotion) return null;
-
-  const drops = Array.from({ length: 42 }, (_, i) => ({
-    left: (i * 11.7 + (i % 5) * 4.2) % 100,
-    delay: (i % 7) * 0.18,
-    duration: 1.2 + (i % 6) * 0.16,
-    height: 12 + (i % 4) * 16,
-    offset: -10 + (i % 4) * 4,
-  }));
-
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {drops.map((drop, i) => (
-        <motion.span
-          key={i}
-          className="absolute top-[-15%] block w-px rounded-full bg-gradient-to-b from-white/0 via-white/45 to-white/0"
-          style={{ left: `${drop.left}%`, height: `${drop.height}vh` }}
-          animate={{ y: [0, "130vh"], x: [drop.offset, drop.offset + 14], opacity: [0, 0.74, 0] }}
-          transition={{ duration: drop.duration, delay: drop.delay, repeat: Infinity, ease: "easeInOut" }}
-        />
-      ))}
-    </div>
-  );
-}
 
 /* ── Hero ────────────────────────────────────────── */
 export function HeroSection() {
@@ -45,6 +18,18 @@ export function HeroSection() {
   const imageRef = useRef<HTMLImageElement | null>(null);
   const glowRef = useRef<HTMLDivElement | null>(null);
   const reduceMotion = useReducedMotion();
+  const [heroImage, setHeroImage] = useState("/images/arena-gladiator.jpg");
+
+  /* Fetch hero image from admin settings */
+  useEffect(() => {
+    fetch("/api/page-settings")
+      .then((r) => r.json())
+      .then((data) => {
+        const home = (data.settings ?? []).find((s: { page_slug: string }) => s.page_slug === "home");
+        if (home?.hero_image) setHeroImage(home.hero_image);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (reduceMotion || !heroRef.current || !imageRef.current || !glowRef.current) return;
@@ -78,7 +63,7 @@ export function HeroSection() {
       <div className="absolute inset-0">
         <motion.img
           ref={imageRef}
-          src="/images/arena-gladiator.jpg"
+          src={heroImage}
           alt="Gladiator standing in a stormy colosseum"
           className="h-full w-full object-cover object-[68%_50%]"
           initial={reduceMotion ? false : { scale: 1.03, opacity: 0.84 }}
@@ -92,9 +77,6 @@ export function HeroSection() {
         {/* Gradient overlays */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_32%,rgba(201,164,76,0.14),transparent_26%),radial-gradient(circle_at_78%_20%,rgba(139,0,0,0.35),transparent_26%),linear-gradient(90deg,rgba(11,11,13,0.94)_0%,rgba(11,11,13,0.72)_34%,rgba(11,11,13,0.22)_62%,rgba(11,11,13,0.9)_100%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,11,13,0.28),rgba(11,11,13,0.66))]" />
-
-        {/* Rain */}
-        <RainField />
 
         {/* Ambient glow orb */}
         <motion.div

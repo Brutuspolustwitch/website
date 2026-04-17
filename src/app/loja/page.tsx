@@ -4,9 +4,8 @@ import { useAuth } from "@/lib/auth-context";
 import { useArmorySound } from "@/hooks/useArmorySound";
 import { RewardCard, type Reward } from "@/components/RewardCard";
 import { VipBadge, getVipLevel } from "@/components/VipBadge";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { useParticles } from "@/hooks/useParticles";
 
 export default function LojaPage() {
   const { user } = useAuth();
@@ -15,12 +14,8 @@ export default function LojaPage() {
   const [points, setPoints] = useState(0);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const vipLevel = getVipLevel(points);
-
-  /* Ember particles — no rain, embers only */
-  useParticles(canvasRef, { rainCount: 0, emberCount: 18, enabled: true });
 
   useEffect(() => {
     fetch("/api/rewards")
@@ -89,12 +84,6 @@ export default function LojaPage() {
 
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* Ember particle canvas (reuses existing useParticles hook) */}
-      <canvas
-        ref={canvasRef}
-        className="fixed inset-0 z-[1] pointer-events-none"
-        style={{ width: "100%", height: "100%" }}
-      />
 
       {/* ── Main Content ── */}
       <div className="relative z-10 pt-24 pb-20">
