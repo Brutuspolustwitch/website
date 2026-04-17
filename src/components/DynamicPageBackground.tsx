@@ -50,6 +50,9 @@ function DynamicPageBackgroundInner() {
   // Only use admin-configured settings
   const bgImage = settings?.background_image || null;
   const overlayOpacity = settings?.overlay_opacity ?? 0.6;
+  const bgBrightness = settings?.bg_brightness ?? 0.35;
+  const bgSaturation = settings?.bg_saturation ?? 0.7;
+  const bgContrast = settings?.bg_contrast ?? 0.95;
   const effect = settings?.effect ?? "none";
   const effectIntensity = settings?.effect_intensity ?? 1;
 
@@ -72,7 +75,7 @@ function DynamicPageBackgroundInner() {
               backgroundSize: "cover",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
-              filter: "brightness(0.35) saturate(0.7) contrast(0.95)",
+              filter: `brightness(${bgBrightness}) saturate(${bgSaturation}) contrast(${bgContrast})`,
             }}
           />
           <div

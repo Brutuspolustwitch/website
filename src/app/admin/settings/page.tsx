@@ -201,7 +201,7 @@ export default function AdminSettingsPage() {
                     className={`grid grid-cols-1 gap-4 px-5 py-4 border-t border-white/5 ${
                       isHome
                         ? "md:grid-cols-2 lg:grid-cols-4"
-                        : "md:grid-cols-3"
+                        : "md:grid-cols-2 lg:grid-cols-3"
                     }`}
                   >
                     {/* Background Image */}
@@ -372,6 +372,135 @@ export default function AdminSettingsPage() {
                           />
                           <span className="text-xs text-arena-smoke w-8 text-right">
                             {(page.overlay_opacity * 100).toFixed(0)}%
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-xs font-medium text-arena-smoke/70 uppercase tracking-wider">
+                          Brilho
+                        </label>
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.05"
+                            value={page.bg_brightness ?? 0.35}
+                            onChange={(e) => {
+                              const val = parseFloat(e.target.value);
+                              setSettings((prev) =>
+                                prev.map((s) =>
+                                  s.id === page.id
+                                    ? { ...s, bg_brightness: val }
+                                    : s
+                                )
+                              );
+                            }}
+                            onMouseUp={(e) =>
+                              saveField(page.id, {
+                                bg_brightness: parseFloat(
+                                  (e.target as HTMLInputElement).value
+                                ),
+                              } as Partial<PageSetting>)
+                            }
+                            onTouchEnd={(e) =>
+                              saveField(page.id, {
+                                bg_brightness: parseFloat(
+                                  (e.target as HTMLInputElement).value
+                                ),
+                              } as Partial<PageSetting>)
+                            }
+                            className="flex-1 accent-[var(--arena-gold,#d4a843)]"
+                          />
+                          <span className="text-xs text-arena-smoke w-8 text-right">
+                            {((page.bg_brightness ?? 0.35) * 100).toFixed(0)}%
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-xs font-medium text-arena-smoke/70 uppercase tracking-wider">
+                          Saturação
+                        </label>
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="range"
+                            min="0"
+                            max="2"
+                            step="0.05"
+                            value={page.bg_saturation ?? 0.7}
+                            onChange={(e) => {
+                              const val = parseFloat(e.target.value);
+                              setSettings((prev) =>
+                                prev.map((s) =>
+                                  s.id === page.id
+                                    ? { ...s, bg_saturation: val }
+                                    : s
+                                )
+                              );
+                            }}
+                            onMouseUp={(e) =>
+                              saveField(page.id, {
+                                bg_saturation: parseFloat(
+                                  (e.target as HTMLInputElement).value
+                                ),
+                              } as Partial<PageSetting>)
+                            }
+                            onTouchEnd={(e) =>
+                              saveField(page.id, {
+                                bg_saturation: parseFloat(
+                                  (e.target as HTMLInputElement).value
+                                ),
+                              } as Partial<PageSetting>)
+                            }
+                            className="flex-1 accent-[var(--arena-gold,#d4a843)]"
+                          />
+                          <span className="text-xs text-arena-smoke w-8 text-right">
+                            {((page.bg_saturation ?? 0.7) * 100).toFixed(0)}%
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-xs font-medium text-arena-smoke/70 uppercase tracking-wider">
+                          Contraste
+                        </label>
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="range"
+                            min="0"
+                            max="2"
+                            step="0.05"
+                            value={page.bg_contrast ?? 0.95}
+                            onChange={(e) => {
+                              const val = parseFloat(e.target.value);
+                              setSettings((prev) =>
+                                prev.map((s) =>
+                                  s.id === page.id
+                                    ? { ...s, bg_contrast: val }
+                                    : s
+                                )
+                              );
+                            }}
+                            onMouseUp={(e) =>
+                              saveField(page.id, {
+                                bg_contrast: parseFloat(
+                                  (e.target as HTMLInputElement).value
+                                ),
+                              } as Partial<PageSetting>)
+                            }
+                            onTouchEnd={(e) =>
+                              saveField(page.id, {
+                                bg_contrast: parseFloat(
+                                  (e.target as HTMLInputElement).value
+                                ),
+                              } as Partial<PageSetting>)
+                            }
+                            className="flex-1 accent-[var(--arena-gold,#d4a843)]"
+                          />
+                          <span className="text-xs text-arena-smoke w-8 text-right">
+                            {((page.bg_contrast ?? 0.95) * 100).toFixed(0)}%
                           </span>
                         </div>
                       </div>

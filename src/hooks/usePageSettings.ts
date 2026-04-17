@@ -11,6 +11,9 @@ export interface PageSetting {
   effect: "none" | "snow" | "rain" | "thunder" | "fireflies";
   effect_intensity: number;
   overlay_opacity: number;
+  bg_brightness: number;
+  bg_saturation: number;
+  bg_contrast: number;
   updated_at: string;
 }
 
