@@ -573,6 +573,9 @@ create table if not exists page_settings (
   bg_brightness numeric not null default 0.35 check (bg_brightness >= 0 and bg_brightness <= 1),
   bg_saturation numeric not null default 0.7 check (bg_saturation >= 0 and bg_saturation <= 2),
   bg_contrast numeric not null default 0.95 check (bg_contrast >= 0 and bg_contrast <= 2),
+  bg_position_x integer not null default 50 check (bg_position_x >= 0 and bg_position_x <= 100),
+  bg_position_y integer not null default 50 check (bg_position_y >= 0 and bg_position_y <= 100),
+  bg_zoom numeric not null default 100 check (bg_zoom >= 50 and bg_zoom <= 200),
   updated_at timestamptz not null default now()
 );
 

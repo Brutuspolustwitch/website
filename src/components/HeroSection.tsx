@@ -20,6 +20,7 @@ export function HeroSection() {
   const reduceMotion = useReducedMotion();
   const [heroImage, setHeroImage] = useState("/images/arena-gladiator.jpg");
   const [heroFilter, setHeroFilter] = useState("brightness(0.35) saturate(0.7) contrast(0.95)");
+  const [heroPosition, setHeroPosition] = useState("68% 50%");
 
   /* Fetch hero image + filter settings from admin */
   useEffect(() => {
@@ -33,6 +34,9 @@ export function HeroSection() {
           const s = home.bg_saturation ?? 0.7;
           const c = home.bg_contrast ?? 0.95;
           setHeroFilter(`brightness(${b}) saturate(${s}) contrast(${c})`);
+          const px = home.bg_position_x ?? 50;
+          const py = home.bg_position_y ?? 50;
+          setHeroPosition(`${px}% ${py}%`);
         }
       })
       .catch(() => {});
@@ -72,8 +76,8 @@ export function HeroSection() {
           ref={imageRef}
           src={heroImage}
           alt="Gladiator standing in a stormy colosseum"
-          className="h-full w-full object-cover object-[68%_50%]"
-          style={{ filter: heroFilter }}
+          className="h-full w-full object-cover"
+          style={{ filter: heroFilter, objectPosition: heroPosition }}
           initial={reduceMotion ? false : { scale: 1.03, opacity: 0.84 }}
           animate={reduceMotion ? { opacity: 0.96 } : { opacity: 0.96 }}
           transition={{ duration: 1.2, ease: "easeOut" }}

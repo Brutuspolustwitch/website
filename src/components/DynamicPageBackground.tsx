@@ -53,6 +53,9 @@ function DynamicPageBackgroundInner() {
   const bgBrightness = settings?.bg_brightness ?? 0.35;
   const bgSaturation = settings?.bg_saturation ?? 0.7;
   const bgContrast = settings?.bg_contrast ?? 0.95;
+  const bgPosX = settings?.bg_position_x ?? 50;
+  const bgPosY = settings?.bg_position_y ?? 50;
+  const bgZoom = settings?.bg_zoom ?? 100;
   const effect = settings?.effect ?? "none";
   const effectIntensity = settings?.effect_intensity ?? 1;
 
@@ -72,8 +75,8 @@ function DynamicPageBackgroundInner() {
             className="absolute inset-0"
             style={{
               backgroundImage: `url('${bgImage}')`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
+              backgroundSize: `${bgZoom}%`,
+              backgroundPosition: `${bgPosX}% ${bgPosY}%`,
               backgroundRepeat: "no-repeat",
               filter: `brightness(${bgBrightness}) saturate(${bgSaturation}) contrast(${bgContrast})`,
             }}

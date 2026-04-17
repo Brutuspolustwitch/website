@@ -505,6 +505,146 @@ export default function AdminSettingsPage() {
                         </div>
                       </div>
 
+                      {/* ── Image Position & Zoom ── */}
+                      <div className="pt-2 border-t border-white/5 space-y-3">
+                        <span className="text-[10px] font-semibold text-arena-smoke/50 uppercase tracking-widest">
+                          Posição & Zoom
+                        </span>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-medium text-arena-smoke/70 uppercase tracking-wider">
+                            Posição Horizontal
+                          </label>
+                          <div className="flex items-center gap-3">
+                            <span className="text-[10px] text-arena-smoke/40">←</span>
+                            <input
+                              type="range"
+                              min="0"
+                              max="100"
+                              step="1"
+                              value={page.bg_position_x ?? 50}
+                              onChange={(e) => {
+                                const val = parseInt(e.target.value);
+                                setSettings((prev) =>
+                                  prev.map((s) =>
+                                    s.id === page.id
+                                      ? { ...s, bg_position_x: val }
+                                      : s
+                                  )
+                                );
+                              }}
+                              onMouseUp={(e) =>
+                                saveField(page.id, {
+                                  bg_position_x: parseInt(
+                                    (e.target as HTMLInputElement).value
+                                  ),
+                                } as Partial<PageSetting>)
+                              }
+                              onTouchEnd={(e) =>
+                                saveField(page.id, {
+                                  bg_position_x: parseInt(
+                                    (e.target as HTMLInputElement).value
+                                  ),
+                                } as Partial<PageSetting>)
+                              }
+                              className="flex-1 accent-[var(--arena-gold,#d4a843)]"
+                            />
+                            <span className="text-[10px] text-arena-smoke/40">→</span>
+                            <span className="text-xs text-arena-smoke w-8 text-right">
+                              {page.bg_position_x ?? 50}%
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-medium text-arena-smoke/70 uppercase tracking-wider">
+                            Posição Vertical
+                          </label>
+                          <div className="flex items-center gap-3">
+                            <span className="text-[10px] text-arena-smoke/40">↑</span>
+                            <input
+                              type="range"
+                              min="0"
+                              max="100"
+                              step="1"
+                              value={page.bg_position_y ?? 50}
+                              onChange={(e) => {
+                                const val = parseInt(e.target.value);
+                                setSettings((prev) =>
+                                  prev.map((s) =>
+                                    s.id === page.id
+                                      ? { ...s, bg_position_y: val }
+                                      : s
+                                  )
+                                );
+                              }}
+                              onMouseUp={(e) =>
+                                saveField(page.id, {
+                                  bg_position_y: parseInt(
+                                    (e.target as HTMLInputElement).value
+                                  ),
+                                } as Partial<PageSetting>)
+                              }
+                              onTouchEnd={(e) =>
+                                saveField(page.id, {
+                                  bg_position_y: parseInt(
+                                    (e.target as HTMLInputElement).value
+                                  ),
+                                } as Partial<PageSetting>)
+                              }
+                              className="flex-1 accent-[var(--arena-gold,#d4a843)]"
+                            />
+                            <span className="text-[10px] text-arena-smoke/40">↓</span>
+                            <span className="text-xs text-arena-smoke w-8 text-right">
+                              {page.bg_position_y ?? 50}%
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-medium text-arena-smoke/70 uppercase tracking-wider">
+                            Zoom
+                          </label>
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="range"
+                              min="50"
+                              max="200"
+                              step="5"
+                              value={page.bg_zoom ?? 100}
+                              onChange={(e) => {
+                                const val = parseInt(e.target.value);
+                                setSettings((prev) =>
+                                  prev.map((s) =>
+                                    s.id === page.id
+                                      ? { ...s, bg_zoom: val }
+                                      : s
+                                  )
+                                );
+                              }}
+                              onMouseUp={(e) =>
+                                saveField(page.id, {
+                                  bg_zoom: parseInt(
+                                    (e.target as HTMLInputElement).value
+                                  ),
+                                } as Partial<PageSetting>)
+                              }
+                              onTouchEnd={(e) =>
+                                saveField(page.id, {
+                                  bg_zoom: parseInt(
+                                    (e.target as HTMLInputElement).value
+                                  ),
+                                } as Partial<PageSetting>)
+                              }
+                              className="flex-1 accent-[var(--arena-gold,#d4a843)]"
+                            />
+                            <span className="text-xs text-arena-smoke w-8 text-right">
+                              {page.bg_zoom ?? 100}%
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
                       {saving === page.id && (
                         <div className="text-xs text-arena-gold animate-pulse">
                           A guardar...

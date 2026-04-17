@@ -14,6 +14,9 @@ export interface PageSetting {
   bg_brightness: number;
   bg_saturation: number;
   bg_contrast: number;
+  bg_position_x: number;
+  bg_position_y: number;
+  bg_zoom: number;
   updated_at: string;
 }
 

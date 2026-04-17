@@ -79,7 +79,7 @@ export async function PUT(request: Request) {
   if (!admin) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   const body = await request.json();
-  const { id, background_image, hero_image, effect, effect_intensity, overlay_opacity, bg_brightness, bg_saturation, bg_contrast } = body;
+  const { id, background_image, hero_image, effect, effect_intensity, overlay_opacity, bg_brightness, bg_saturation, bg_contrast, bg_position_x, bg_position_y, bg_zoom } = body;
 
   if (!id) {
     return NextResponse.json({ error: "ID is required" }, { status: 400 });
@@ -99,6 +99,9 @@ export async function PUT(request: Request) {
   if (bg_brightness !== undefined) updates.bg_brightness = Math.min(1, Math.max(0, Number(bg_brightness)));
   if (bg_saturation !== undefined) updates.bg_saturation = Math.min(2, Math.max(0, Number(bg_saturation)));
   if (bg_contrast !== undefined) updates.bg_contrast = Math.min(2, Math.max(0, Number(bg_contrast)));
+  if (bg_position_x !== undefined) updates.bg_position_x = Math.min(100, Math.max(0, Math.round(Number(bg_position_x))));
+  if (bg_position_y !== undefined) updates.bg_position_y = Math.min(100, Math.max(0, Math.round(Number(bg_position_y))));
+  if (bg_zoom !== undefined) updates.bg_zoom = Math.min(200, Math.max(50, Number(bg_zoom)));
 
   const { data, error } = await supabase
     .from("page_settings")
