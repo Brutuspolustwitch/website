@@ -106,7 +106,7 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
         <div className="papyrus-flip-face papyrus-flip-front relative">
           {/* Wax Seal Badge — on the front face so it moves with the card */}
           {offer.badge && (
-            <div className="absolute top-3 right-3" style={{ zIndex: 20 }}>
+            <div className="absolute top-3 left-3" style={{ zIndex: 20 }}>
               <WaxSealBadge
                 text={offer.badge === "NEW" ? "NOVUS" : offer.badge}
                 variant={offer.badge === "ELITE" ? "gold" : "red"}
