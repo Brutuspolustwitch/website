@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import type { CasinoOfferRow } from "@/lib/supabase";
+import { WaxSealBadge } from "@/components/WaxSealBadge";
 
 /* ═══════════════════════════════════════════════════════════════════
    TYPES
@@ -14,7 +15,7 @@ export interface CasinoOffer {
   logo_url?: string;
   logo_bg: string;
   banner_url?: string;
-  badge?: "NEW" | "HOT";
+  badge?: "NEW" | "HOT" | "ELITE";
   tags: string[];
   headline: string;
   bonus_value: string;
@@ -109,12 +110,15 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
             <CornerOrnament className="bottom-left" />
             <CornerOrnament className="bottom-right" />
             <div className="scroll-content">
-              {/* Badge Ribbon */}
+              {/* Wax Seal Badge */}
               {offer.badge && (
-                <div className={`absolute top-3 right-3 z-10 px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider text-white shadow-lg ${
-                  offer.badge === "NEW" ? "bg-green-600" : "bg-orange-600"
-                }`}>
-                  {offer.badge}
+                <div className="absolute -top-2 -right-2 z-10">
+                  <WaxSealBadge
+                    text={offer.badge === "NEW" ? "NOVUS" : offer.badge}
+                    variant={offer.badge === "ELITE" ? "gold" : "red"}
+                    rotation={offer.badge === "HOT" ? 8 : offer.badge === "ELITE" ? -4 : -7}
+                    size={52}
+                  />
                 </div>
               )}
 

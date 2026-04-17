@@ -99,7 +99,7 @@ create table if not exists casino_offers (
   logo_url text,
   logo_bg text not null default '#666',
   banner_url text,
-  badge text check (badge in ('NEW', 'HOT', null)),
+  badge text check (badge in ('NEW', 'HOT', 'ELITE', null)),
   tags text[] not null default '{}',
   headline text not null,
   bonus_value text not null,

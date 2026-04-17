@@ -1155,6 +1155,133 @@ body {
   color: rgba(255, 200, 150, 0.5);
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   WAX SEAL BADGE — Realistic wax stamp overlay
+   ═══════════════════════════════════════════════════════════════════ */
+.wax-seal-badge {
+  position: relative;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.45))
+         drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  /* Slight imperfection in shape */
+  clip-path: polygon(
+    50% 0%, 63% 2%, 78% 5%, 88% 12%, 95% 22%, 98% 37%,
+    100% 50%, 98% 63%, 94% 78%, 87% 88%, 77% 95%, 63% 99%,
+    50% 100%, 38% 98%, 23% 94%, 13% 86%, 6% 76%, 2% 62%,
+    0% 50%, 1% 38%, 5% 24%, 12% 13%, 22% 6%, 37% 2%
+  );
+}
+
+/* ── Red variant ── */
+.wax-seal-badge--red {
+  background:
+    radial-gradient(ellipse at 35% 30%, rgba(255, 120, 100, 0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 65% 70%, rgba(40, 5, 5, 0.4) 0%, transparent 55%),
+    radial-gradient(circle at 50% 50%, #8b1a1a 0%, #7a1c1c 40%, #5a0e0e 85%, #3d0808 100%);
+}
+
+/* ── Gold variant ── */
+.wax-seal-badge--gold {
+  background:
+    radial-gradient(ellipse at 35% 30%, rgba(255, 220, 140, 0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at 65% 70%, rgba(80, 50, 10, 0.4) 0%, transparent 55%),
+    radial-gradient(circle at 50% 50%, #c9a44c 0%, #b08930 40%, #7a5f20 85%, #4a3510 100%);
+}
+
+/* ── Wax drip blobs ── */
+.wax-seal-badge__drip {
+  position: absolute;
+  border-radius: 50% 50% 60% 40%;
+  z-index: -1;
+}
+.wax-seal-badge--red .wax-seal-badge__drip { background: #6e1616; }
+.wax-seal-badge--gold .wax-seal-badge__drip { background: #8a6a25; }
+
+.wax-seal-badge__drip--1 {
+  width: 28%; height: 18%;
+  bottom: -8%; right: 18%;
+  transform: rotate(15deg);
+  border-radius: 45% 55% 50% 50%;
+}
+.wax-seal-badge__drip--2 {
+  width: 20%; height: 14%;
+  bottom: -5%; left: 22%;
+  transform: rotate(-20deg);
+  border-radius: 50% 50% 55% 45%;
+}
+.wax-seal-badge__drip--3 {
+  width: 15%; height: 12%;
+  top: -4%; left: 30%;
+  transform: rotate(8deg);
+  border-radius: 50%;
+}
+
+/* ── Pressed inner ring ── */
+.wax-seal-badge__ring {
+  position: absolute;
+  inset: 14%;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.wax-seal-badge--red .wax-seal-badge__ring {
+  border: 1.5px solid rgba(255, 150, 130, 0.15);
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.4),
+    inset 0 -1px 1px rgba(255, 120, 100, 0.12);
+}
+.wax-seal-badge--gold .wax-seal-badge__ring {
+  border: 1.5px solid rgba(255, 220, 150, 0.2);
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.4),
+    inset 0 -1px 1px rgba(255, 210, 120, 0.15);
+}
+
+/* ── Debossed text engraving ── */
+.wax-seal-badge__text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+  z-index: 1;
+  pointer-events: none;
+}
+.wax-seal-badge__label {
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: var(--font-display), 'Times New Roman', serif;
+}
+.wax-seal-badge__sub {
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  opacity: 0.6;
+  margin-top: 1px;
+}
+
+/* Debossed text colors */
+.wax-seal-badge--red .wax-seal-badge__label {
+  color: rgba(255, 190, 160, 0.35);
+  text-shadow:
+    0 -1px 1px rgba(0, 0, 0, 0.5),
+    0 1px 0 rgba(255, 140, 120, 0.12);
+}
+.wax-seal-badge--red .wax-seal-badge__sub {
+  color: rgba(255, 180, 150, 0.25);
+}
+.wax-seal-badge--gold .wax-seal-badge__label {
+  color: rgba(80, 50, 15, 0.5);
+  text-shadow:
+    0 -1px 1px rgba(0, 0, 0, 0.35),
+    0 1px 0 rgba(255, 220, 150, 0.15);
+}
+.wax-seal-badge--gold .wax-seal-badge__sub {
+  color: rgba(80, 50, 15, 0.35);
+}
+
 /* ── Key Perks List ─────────────────────────────────────── */
 .perks-list {
   display: flex;
