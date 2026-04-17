@@ -3,49 +3,58 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useState, memo } from "react";
 import { PageEffects } from "@/components/PageEffects";
+import { supabase } from "@/lib/supabase";
 import type { PageSetting } from "@/hooks/usePageSettings";
 
 /**
  * Renders a fixed background image + visual effect overlay
  * based on the current page's admin-configured settings.
- * Lives in AppShell so it works globally without modifying page files.
+ * Uses Supabase Realtime so admin changes appear instantly.
  */
 function DynamicPageBackgroundInner() {
   const pathname = usePathname();
-  const [settings, setSettings] = useState<PageSetting | null>(null);
   const [allSettings, setAllSettings] = useState<PageSetting[]>([]);
-  const [fetchedAt, setFetchedAt] = useState(0);
+  const [loaded, setLoaded] = useState(false);
 
-  // Derive slug from pathname
   const slug = pathname === "/" ? "home" : pathname.replace(/^\//, "").split("/")[0];
 
-  // Re-fetch settings every 30s so admin changes propagate quickly
+  // Initial fetch + Supabase Realtime subscription
   useEffect(() => {
     let cancelled = false;
 
-    const doFetch = () => {
-      fetch("/api/page-settings")
-        .then((r) => r.json())
-        .then((data) => {
-          if (!cancelled) {
-            setAllSettings(data.settings ?? []);
-            setFetchedAt(Date.now());
-          }
-        })
-        .catch(() => {});
-    };
+    // Initial fetch via API (seeds missing pages)
+    fetch("/api/page-settings")
+      .then((r) => r.json())
+      .then((data) => {
+        if (!cancelled) {
+          setAllSettings(data.settings ?? []);
+          setLoaded(true);
+        }
+      })
+      .catch(() => {});
 
-    doFetch();
-    const interval = setInterval(doFetch, 30_000);
-    return () => { cancelled = true; clearInterval(interval); };
+    // Realtime: listen for any UPDATE on page_settings
+    const channel = supabase
+      .channel("page-settings-live")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "page_settings" },
+        (payload) => {
+          const updated = payload.new as PageSetting;
+          setAllSettings((prev) =>
+            prev.map((s) => (s.id === updated.id ? updated : s))
+          );
+        }
+      )
+      .subscribe();
+
+    return () => {
+      cancelled = true;
+      supabase.removeChannel(channel);
+    };
   }, []);
 
-  // Update current settings when pathname or data changes
-  useEffect(() => {
-    if (fetchedAt === 0) return;
-    const match = allSettings.find((s) => s.page_slug === slug);
-    setSettings(match ?? null);
-  }, [slug, fetchedAt, allSettings]);
+  const settings = loaded ? (allSettings.find((s) => s.page_slug === slug) ?? null) : null;
 
   // Only use admin-configured settings
   const bgImage = settings?.background_image || null;

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import gsap from "gsap";
+import { supabase } from "@/lib/supabase";
 
 /**
  * HERO SECTION — Full-screen cinematic entry point.
@@ -10,6 +11,7 @@ import gsap from "gsap";
  * Left-aligned content at the bottom, full-bleed image
  * with GSAP slow-zoom and ambient glow.
  * Hero image and effects come from admin settings (Definições).
+ * Uses Supabase Realtime so admin changes appear instantly.
  */
 
 /* ── Hero ────────────────────────────────────────── */
@@ -20,26 +22,48 @@ export function HeroSection() {
   const reduceMotion = useReducedMotion();
   const [heroImage, setHeroImage] = useState("/images/arena-gladiator.jpg");
   const [heroFilter, setHeroFilter] = useState("brightness(0.35) saturate(0.7) contrast(0.95)");
-  const [heroPosition, setHeroPosition] = useState("68% 50%");
+  const [heroPosition, setHeroPosition] = useState("50% 50%");
+  const homeIdRef = useRef<string | null>(null);
 
-  /* Fetch hero image + filter settings from admin */
+  const applyHome = (home: Record<string, unknown>) => {
+    if (home.hero_image) setHeroImage(home.hero_image as string);
+    const b = (home.bg_brightness as number) ?? 0.35;
+    const s = (home.bg_saturation as number) ?? 0.7;
+    const c = (home.bg_contrast as number) ?? 0.95;
+    setHeroFilter(`brightness(${b}) saturate(${s}) contrast(${c})`);
+    const px = (home.bg_position_x as number) ?? 50;
+    const py = (home.bg_position_y as number) ?? 50;
+    setHeroPosition(`${px}% ${py}%`);
+  };
+
+  /* Fetch + Realtime */
   useEffect(() => {
     fetch("/api/page-settings")
       .then((r) => r.json())
       .then((data) => {
         const home = (data.settings ?? []).find((s: { page_slug: string }) => s.page_slug === "home");
-        if (home?.hero_image) setHeroImage(home.hero_image);
         if (home) {
-          const b = home.bg_brightness ?? 0.35;
-          const s = home.bg_saturation ?? 0.7;
-          const c = home.bg_contrast ?? 0.95;
-          setHeroFilter(`brightness(${b}) saturate(${s}) contrast(${c})`);
-          const px = home.bg_position_x ?? 50;
-          const py = home.bg_position_y ?? 50;
-          setHeroPosition(`${px}% ${py}%`);
+          homeIdRef.current = home.id;
+          applyHome(home);
         }
       })
       .catch(() => {});
+
+    const channel = supabase
+      .channel("hero-settings-live")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "page_settings" },
+        (payload) => {
+          const row = payload.new as Record<string, unknown>;
+          if (row.page_slug === "home" || row.id === homeIdRef.current) {
+            applyHome(row);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   useEffect(() => {
