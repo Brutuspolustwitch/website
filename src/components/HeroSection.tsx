@@ -19,14 +19,21 @@ export function HeroSection() {
   const glowRef = useRef<HTMLDivElement | null>(null);
   const reduceMotion = useReducedMotion();
   const [heroImage, setHeroImage] = useState("/images/arena-gladiator.jpg");
+  const [heroFilter, setHeroFilter] = useState("brightness(0.35) saturate(0.7) contrast(0.95)");
 
-  /* Fetch hero image from admin settings */
+  /* Fetch hero image + filter settings from admin */
   useEffect(() => {
     fetch("/api/page-settings")
       .then((r) => r.json())
       .then((data) => {
         const home = (data.settings ?? []).find((s: { page_slug: string }) => s.page_slug === "home");
         if (home?.hero_image) setHeroImage(home.hero_image);
+        if (home) {
+          const b = home.bg_brightness ?? 0.35;
+          const s = home.bg_saturation ?? 0.7;
+          const c = home.bg_contrast ?? 0.95;
+          setHeroFilter(`brightness(${b}) saturate(${s}) contrast(${c})`);
+        }
       })
       .catch(() => {});
   }, []);
@@ -66,6 +73,7 @@ export function HeroSection() {
           src={heroImage}
           alt="Gladiator standing in a stormy colosseum"
           className="h-full w-full object-cover object-[68%_50%]"
+          style={{ filter: heroFilter }}
           initial={reduceMotion ? false : { scale: 1.03, opacity: 0.84 }}
           animate={reduceMotion ? { opacity: 0.96 } : { opacity: 0.96 }}
           transition={{ duration: 1.2, ease: "easeOut" }}

@@ -17,15 +17,18 @@ export interface PageSetting {
   updated_at: string;
 }
 
-const cache = new Map<string, PageSetting>();
+const cache = new Map<string, { data: PageSetting; ts: number }>();
+const CACHE_TTL = 30_000; // 30 seconds — matches DynamicPageBackground poll rate
 
 export function usePageSettings(slug: string) {
-  const [settings, setSettings] = useState<PageSetting | null>(cache.get(slug) ?? null);
-  const [loading, setLoading] = useState(!cache.has(slug));
+  const cached = cache.get(slug);
+  const isStale = !cached || Date.now() - cached.ts > CACHE_TTL;
+  const [settings, setSettings] = useState<PageSetting | null>(cached?.data ?? null);
+  const [loading, setLoading] = useState(!cached);
 
   useEffect(() => {
-    if (cache.has(slug)) {
-      setSettings(cache.get(slug)!);
+    if (!isStale && cached) {
+      setSettings(cached.data);
       setLoading(false);
       return;
     }
@@ -36,8 +39,8 @@ export function usePageSettings(slug: string) {
       .then((data) => {
         if (cancelled) return;
         const all: PageSetting[] = data.settings ?? [];
-        // Cache all results
-        for (const s of all) cache.set(s.page_slug, s);
+        const now = Date.now();
+        for (const s of all) cache.set(s.page_slug, { data: s, ts: now });
         setSettings(all.find((s) => s.page_slug === slug) ?? null);
       })
       .catch(() => {})
@@ -48,7 +51,7 @@ export function usePageSettings(slug: string) {
     return () => {
       cancelled = true;
     };
-  }, [slug]);
+  }, [slug, isStale, cached]);
 
   return { settings, loading };
 }

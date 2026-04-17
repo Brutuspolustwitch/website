@@ -85,9 +85,9 @@ function DynamicPageBackgroundInner() {
         </div>
       )}
 
-      {/* Fixed effect overlay */}
+      {/* Fixed effect overlay — z-[15] so effects render ABOVE page content (z-10) but below sidebar (z-40) and navbar (z-50) */}
       {hasEffect && (
-        <div className="fixed inset-0 z-[1] pointer-events-none">
+        <div className="fixed inset-0 z-[15] pointer-events-none">
           <PageEffects
             effect={effect}
             intensity={effectIntensity}
