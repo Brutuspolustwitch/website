@@ -21,9 +21,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Push content right on desktop to make room for sidebar */}
-      <main className="flex-1 lg:pl-56">{children}</main>
+      <main className="relative z-10 flex-1 lg:pl-56">{children}</main>
 
-      <div className="lg:pl-56">
+      <div className="relative z-10 lg:pl-56">
         <Footer />
       </div>
 
