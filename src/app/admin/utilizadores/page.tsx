@@ -53,6 +53,7 @@ export default function UtilizadoresPage() {
     u.login.toLowerCase().includes(search.toLowerCase()) ||
     u.display_name.toLowerCase().includes(search.toLowerCase()) ||
     (u.se_username && u.se_username.toLowerCase().includes(search.toLowerCase())) ||
+    (u.discord_username && u.discord_username.toLowerCase().includes(search.toLowerCase())) ||
     (u.email && u.email.toLowerCase().includes(search.toLowerCase()))
   );
 
@@ -103,7 +104,7 @@ export default function UtilizadoresPage() {
         {/* Search */}
         <input
           className="w-full max-w-md bg-arena-charcoal border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-arena-ash/50 focus:outline-none focus:border-arena-gold/40 transition-colors mb-6"
-          placeholder="Pesquisar por username, email, SE..."
+          placeholder="Pesquisar por username, email, SE, Discord..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -130,6 +131,7 @@ export default function UtilizadoresPage() {
                 <tr className="bg-arena-charcoal text-arena-ash text-[10px] uppercase tracking-wider">
                   <th className="text-left px-4 py-3">Utilizador</th>
                   <th className="text-left px-4 py-3">SE Username</th>
+                  <th className="text-left px-4 py-3">Discord</th>
                   <th className="text-left px-4 py-3">Email</th>
                   <th className="text-left px-4 py-3">IP</th>
                   <th className="text-left px-4 py-3">Role</th>
@@ -166,6 +168,7 @@ export default function UtilizadoresPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-arena-smoke">{user.se_username || "—"}</td>
+                    <td className="px-4 py-3 text-arena-smoke">{user.discord_username || "—"}</td>
                     <td className="px-4 py-3 text-arena-smoke text-xs">{user.email || "—"}</td>
                     <td className="px-4 py-3 text-arena-smoke text-xs font-mono">{user.ip_address || "—"}</td>
                     <td className="px-4 py-3">
@@ -347,6 +350,7 @@ function UserDetail({
         </div>
         <div className="text-right text-xs text-arena-ash space-y-0.5">
           <p>Email: {user.email || "—"}</p>
+          <p>Discord: {user.discord_username || "—"}</p>
           <p className="font-mono">IP: {user.ip_address || "—"}</p>
           <p>Registado: {new Date(user.created_at).toLocaleDateString("pt-PT")}</p>
         </div>

@@ -112,6 +112,7 @@ export interface UserRow {
   email: string | null;
   ip_address: string | null;
   se_username: string | null;
+  discord_username: string | null;
   role: UserRole;
   role_expires_at: string | null;
   created_at: string;

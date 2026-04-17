@@ -131,6 +131,7 @@ create table if not exists users (
   email text,
   ip_address text,
   se_username text,
+  discord_username text,
   role text not null default 'viewer' check (role in ('admin', 'configurador', 'moderador', 'viewer')),
   role_expires_at timestamptz,
   created_at timestamptz not null default now(),

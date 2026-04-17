@@ -21,6 +21,7 @@ interface Profile {
   profile_image_url: string;
   email: string | null;
   se_username: string | null;
+  discord_username: string | null;
   role: string;
   created_at: string;
 }
@@ -31,6 +32,7 @@ export default function PerfilPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [seUsername, setSeUsername] = useState("");
+  const [discordUsername, setDiscordUsername] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [points, setPoints] = useState<number | null>(null);
@@ -51,6 +53,7 @@ export default function PerfilPage() {
         if (d.user) {
           setProfile(d.user);
           setSeUsername(d.user.se_username || "");
+          setDiscordUsername(d.user.discord_username || "");
         }
       })
       .catch(() => {});
@@ -84,7 +87,7 @@ export default function PerfilPage() {
     await fetch("/api/profile", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ se_username: seUsername }),
+      body: JSON.stringify({ se_username: seUsername, discord_username: discordUsername }),
     });
     setSaving(false);
     setSaved(true);
@@ -161,6 +164,31 @@ export default function PerfilPage() {
                   value={seUsername}
                   onChange={(e) => setSeUsername(e.target.value)}
                   placeholder="O teu username no StreamElements"
+                  maxLength={50}
+                  className="flex-1 bg-black/50 border border-arena-gold/20 rounded-lg px-4 py-2 text-arena-smoke
+                             placeholder:text-arena-ash/40 focus:outline-none focus:border-arena-gold/60 transition-colors"
+                />
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="gladiator-label px-4 py-2 bg-arena-gold/20 border border-arena-gold/30 rounded-lg
+                             text-arena-gold hover:bg-arena-gold/30 transition-colors disabled:opacity-50"
+                >
+                  {saving ? "..." : saved ? "✓" : "Guardar"}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="gladiator-label text-xs text-arena-smoke block mb-1">
+                Username Discord
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={discordUsername}
+                  onChange={(e) => setDiscordUsername(e.target.value)}
+                  placeholder="O teu username no Discord"
                   maxLength={50}
                   className="flex-1 bg-black/50 border border-arena-gold/20 rounded-lg px-4 py-2 text-arena-smoke
                              placeholder:text-arena-ash/40 focus:outline-none focus:border-arena-gold/60 transition-colors"

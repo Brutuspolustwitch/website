@@ -17,7 +17,7 @@ export async function GET() {
 
   const { data, error } = await supabase
     .from("users")
-    .select("twitch_id, login, display_name, profile_image_url, email, se_username, role, created_at")
+    .select("twitch_id, login, display_name, profile_image_url, email, se_username, discord_username, role, created_at")
     .eq("twitch_id", session.id)
     .single();
 
@@ -44,9 +44,12 @@ export async function PATCH(request: Request) {
   const body = await request.json();
   const updates: Record<string, string> = {};
 
-  // Only allow updating se_username
+  // Only allow updating se_username and discord_username
   if (typeof body.se_username === "string") {
     updates.se_username = body.se_username.trim().slice(0, 50);
+  }
+  if (typeof body.discord_username === "string") {
+    updates.discord_username = body.discord_username.trim().slice(0, 50);
   }
 
   if (Object.keys(updates).length === 0) {
