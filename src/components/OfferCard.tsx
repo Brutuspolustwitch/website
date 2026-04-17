@@ -99,22 +99,22 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
   const externalUrl = offer.affiliate_url.startsWith("http") ? offer.affiliate_url : `https://${offer.affiliate_url}`;
 
   return (
-    <div className="papyrus-flip-container relative" onClick={() => { window.open(externalUrl, '_blank', 'noopener,noreferrer'); }}>
-      {/* Wax Seal Badge — outside the scroll so it overlaps the card edge */}
-      {offer.badge && (
-        <div className="absolute top-3 right-3" style={{ zIndex: 20 }}>
-          <WaxSealBadge
-            text={offer.badge === "NEW" ? "NOVUS" : offer.badge}
-            variant={offer.badge === "ELITE" ? "gold" : "red"}
-            rotation={offer.badge === "HOT" ? 8 : offer.badge === "ELITE" ? -4 : -7}
-            size={52}
-          />
-        </div>
-      )}
+    <div className="papyrus-flip-container" onClick={() => { window.open(externalUrl, '_blank', 'noopener,noreferrer'); }}>
       <div className={`papyrus-flip-inner ${flipped ? "papyrus-flipped" : ""}`}>
 
         {/* ═══ FRONT ═══ */}
-        <div className="papyrus-flip-face papyrus-flip-front">
+        <div className="papyrus-flip-face papyrus-flip-front relative">
+          {/* Wax Seal Badge — on the front face so it moves with the card */}
+          {offer.badge && (
+            <div className="absolute top-3 right-3" style={{ zIndex: 20 }}>
+              <WaxSealBadge
+                text={offer.badge === "NEW" ? "NOVUS" : offer.badge}
+                variant={offer.badge === "ELITE" ? "gold" : "red"}
+                rotation={offer.badge === "HOT" ? 8 : offer.badge === "ELITE" ? -4 : -7}
+                size={52}
+              />
+            </div>
+          )}
           <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom">
             <CornerOrnament className="top-left" />
             <CornerOrnament className="top-right" />
