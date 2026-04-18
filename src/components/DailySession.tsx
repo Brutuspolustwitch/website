@@ -483,39 +483,41 @@ export default function DailySessionContent() {
             ) : <div />}
           </motion.div>
 
-          {/* ── Main grid: Slot Highlights | Bonus Hunt | Sidebar ──── */}
-          <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr_1fr] gap-4 items-start">
+          {/* ── Main grid: Bonus Hunt | Sidebar ──── */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
 
-            {/* FAR LEFT — Best/Worst slot mini cards */}
-            <div className="hidden lg:flex flex-col gap-3 pt-2">
-              {bestSlot && (
-                <SlotHighlightCard
-                  label="Melhor"
-                  slotName={bestSlot.name}
-                  thumbnailUrl={bestSlot.thumbnail_url ?? undefined}
-                  payout={bestSlot.payout ?? 0}
-                  betValue={bestSlot.bet_size ?? bestSlot.buy_value}
-                  currency={session?.casino ? "€" : "€"}
-                />
-              )}
-              {worstSlot && worstSlot.id !== bestSlot?.id && (
-                <SlotHighlightCard
-                  label="Pior"
-                  slotName={worstSlot.name}
-                  thumbnailUrl={worstSlot.thumbnail_url ?? undefined}
-                  payout={worstSlot.payout ?? 0}
-                  betValue={worstSlot.bet_size ?? worstSlot.buy_value}
-                  currency="€"
-                />
-              )}
-            </div>
-
-            {/* CENTER — Bonus Hunt (spans rest) */}
+            {/* LEFT — Bonus Hunt (2/3) */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
+              className="lg:col-span-2"
             >
+              {/* Best/Worst slot mini cards */}
+              {(bestSlot || worstSlot) && (
+                <div className="flex gap-3 mb-4">
+                  {bestSlot && (
+                    <SlotHighlightCard
+                      label="Melhor"
+                      slotName={bestSlot.name}
+                      thumbnailUrl={bestSlot.thumbnail_url ?? undefined}
+                      payout={bestSlot.payout ?? 0}
+                      betValue={bestSlot.bet_size ?? bestSlot.buy_value}
+                      currency="€"
+                    />
+                  )}
+                  {worstSlot && (!bestSlot || worstSlot.id !== bestSlot?.id) && (
+                    <SlotHighlightCard
+                      label="Pior"
+                      slotName={worstSlot.name}
+                      thumbnailUrl={worstSlot.thumbnail_url ?? undefined}
+                      payout={worstSlot.payout ?? 0}
+                      betValue={worstSlot.bet_size ?? worstSlot.buy_value}
+                      currency="€"
+                    />
+                  )}
+                </div>
+              )}
               <BonusHuntTracker compact />
             </motion.div>
 
