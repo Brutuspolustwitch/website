@@ -161,6 +161,7 @@ export function StreamerHub() {
                     className="sword-btn__img"
                     draggable={false}
                   />
+                  <span className="sword-btn__label">CLIP ANTERIOR</span>
                 </button>
                 <button
                   onClick={goNextClip}
@@ -173,6 +174,7 @@ export function StreamerHub() {
                     className="sword-btn__img"
                     draggable={false}
                   />
+                  <span className="sword-btn__label">PRÓXIMO CLIP</span>
                 </button>
               </div>
             )}
