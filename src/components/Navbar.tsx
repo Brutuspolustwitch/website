@@ -37,7 +37,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
     "/roda-diaria": "Arrebanha Daily",
     "/bonus-hunt": "Bonus Hunt",
     "/leaderboard": "Gladiator Ranks",
-    "/liga-dos-brutus": "Hall of Fame",
+    "/liga-dos-brutus": "Liga dos Brutus",
     "/live": "Em Direto",
     "/slots": "Slot Request",
     "/casinos": "Battle Arenas",

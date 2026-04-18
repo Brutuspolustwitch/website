@@ -4,10 +4,10 @@ import LigaDosBrutusContent from "@/components/LigaDosBrutus";
 
 export const metadata: Metadata = {
   title: "Liga dos Brutus",
-  description: "Hall of Fame da comunidade — vencedores mensais da Liga dos Brutus.",
+  description: "Liga dos Brutus — vencedores mensais da comunidade.",
   openGraph: {
     title: "Liga dos Brutus | Arena Gladiator",
-    description: "Hall of Fame — os vencedores mensais da Liga dos Brutus.",
+    description: "Liga dos Brutus — os vencedores mensais da comunidade.",
   },
 };
 
