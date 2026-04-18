@@ -25,36 +25,6 @@ const MONTH_NAMES = [
   "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO",
 ];
 
-/* ── Corner Ornament ───────────────────────────────────── */
-function CornerOrnament({ className }: { className: string }) {
-  return (
-    <svg className={`scroll-ornament ${className}`} viewBox="0 0 24 24" fill="none">
-      <path d="M2 2 L2 10 M2 2 L10 2 M2 6 L6 2" stroke="#8b6914" strokeWidth="1.5" strokeLinecap="round" />
-      <circle cx="4" cy="4" r="1.5" fill="#8b6914" />
-    </svg>
-  );
-}
-
-/* ── Dust Particle ─────────────────────────────────────── */
-function DustParticles() {
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
-      {Array.from({ length: 12 }, (_, i) => (
-        <div
-          key={i}
-          className="liga-dust"
-          style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            animationDelay: `${Math.random() * 8}s`,
-            animationDuration: `${6 + Math.random() * 6}s`,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
 /* ── Main Component ────────────────────────────────────── */
 export default function LigaDosBrutusContent() {
   const [years, setYears] = useState<LeaderboardYear[]>([]);
@@ -80,13 +50,11 @@ export default function LigaDosBrutusContent() {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      // Fetch years list
       const res = await fetch("/api/leaderboard?list=true");
       const data = await res.json();
       const yearsList: LeaderboardYear[] = data.years ?? [];
       setYears(yearsList);
 
-      // Load active year or first available
       const active = yearsList.find((y) => y.is_active) ?? yearsList[0];
       if (active) {
         await fetchEntries(active.year);
@@ -127,18 +95,22 @@ export default function LigaDosBrutusContent() {
 
   return (
     <div className="relative min-h-screen">
-      {/* Content */}
       <div className="relative z-10 pt-24 pb-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
 
-          {/* ── Header ──────────────────────────── */}
-          {years.length > 1 && (
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-center mb-10"
-            >
-              <div className="flex gap-2 flex-wrap justify-center">
+          {/* ── Title ───────────────────────────── */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-8"
+          >
+            <h1 className="liga-title">
+              Vencedores {selectedYear?.year ?? ""}
+            </h1>
+
+            {/* Year selector */}
+            {years.length > 1 && (
+              <div className="flex gap-2 flex-wrap justify-center mt-4">
                 {years.map((y) => (
                   <button
                     key={y.id}
@@ -153,84 +125,62 @@ export default function LigaDosBrutusContent() {
                   </button>
                 ))}
               </div>
+            )}
+          </motion.div>
+
+          {/* ── Top Player Badge ─────────────────── */}
+          {topPlayer && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="liga-top-badge"
+            >
+              <span className="text-base">👑</span>
+              <span className="liga-top-badge-text">
+                Gladiador do Ano: <strong>{topPlayer}</strong>
+              </span>
             </motion.div>
           )}
 
-          {/* ── Parchment Scroll ────────────────── */}
+          {/* ── Month Entries ────────────────────── */}
           <AnimatePresence mode="wait">
             <motion.div
               key={selectedYear?.year ?? "empty"}
-              initial={{ opacity: 0, y: 30, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -20, scale: 0.97 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-              className="relative max-w-2xl w-full"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              className="liga-entries-list"
             >
-              <div className="liga-scroll">
-                <CornerOrnament className="top-left" />
-                <CornerOrnament className="top-right" />
-                <CornerOrnament className="bottom-left" />
-                <CornerOrnament className="bottom-right" />
-                <DustParticles />
-
-                {/* Scroll Header */}
-                {selectedYear && (
-                  <h2 className="liga-scroll-subtitle">Vencedores {selectedYear.year}</h2>
-                )}
-
-                <div className="liga-divider" />
-
-                {/* Top Player Badge */}
-                {topPlayer && (
-                  <div className="liga-top-player">
-                    <span className="liga-top-player-icon">👑</span>
-                    <span className="liga-top-player-text">
-                      Gladiador do Ano: <strong>{topPlayer}</strong>
+              {entries.length > 0 ? entries.map((entry) => {
+                const isCurrentMonth = selectedYear?.is_active && entry.month === currentMonth;
+                return (
+                  <motion.div
+                    key={entry.id}
+                    className={`liga-row ${isCurrentMonth ? "liga-row-current" : ""}`}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: entry.month * 0.04 }}
+                  >
+                    <span className="liga-row-month">{MONTH_NAMES[entry.month - 1]}</span>
+                    <span className="liga-row-line" />
+                    <span className={`liga-row-winner ${entry.winner_name ? "" : "liga-row-winner--empty"}`}>
+                      {entry.winner_avatar && (
+                        <img
+                          src={entry.winner_avatar}
+                          alt=""
+                          className="liga-row-avatar"
+                        />
+                      )}
+                      {entry.winner_name || "—"}
                     </span>
-                  </div>
-                )}
-
-                {/* Month Entries */}
-                <div className="liga-entries">
-                  {entries.length > 0 ? entries.map((entry) => {
-                    const isCurrentMonth = selectedYear?.is_active && entry.month === currentMonth;
-                    return (
-                      <motion.div
-                        key={entry.id}
-                        className={`liga-entry ${isCurrentMonth ? "liga-entry-current" : ""}`}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: entry.month * 0.04 }}
-                      >
-                        <span className="liga-month">{MONTH_NAMES[entry.month - 1]}</span>
-                        <span className="liga-dots" />
-                        <span className={`liga-winner ${entry.winner_name ? "" : "liga-winner-empty"}`}>
-                          {entry.winner_avatar && (
-                            <img
-                              src={entry.winner_avatar}
-                              alt=""
-                              className="liga-winner-avatar"
-                            />
-                          )}
-                          {entry.winner_name || "—"}
-                        </span>
-                      </motion.div>
-                    );
-                  }) : (
-                    <div className="liga-empty">
-                      <p>Nenhum dado disponível</p>
-                    </div>
-                  )}
+                  </motion.div>
+                );
+              }) : (
+                <div className="text-center py-10 text-arena-smoke/50 font-[family-name:var(--font-display)] text-sm italic">
+                  Nenhum dado disponível
                 </div>
-
-                <div className="liga-divider" />
-
-                {/* Footer */}
-                <div className="liga-scroll-footer">
-                  <div className="liga-wax-seal" />
-                  <p className="liga-footer-text">Arena Gladiator · BRUTUSPOLUS</p>
-                </div>
-              </div>
+              )}
             </motion.div>
           </AnimatePresence>
 
