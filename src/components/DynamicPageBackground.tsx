@@ -65,6 +65,7 @@ function DynamicPageBackgroundInner() {
   const bgPosX = settings?.bg_position_x ?? 50;
   const bgPosY = settings?.bg_position_y ?? 50;
   const bgZoom = settings?.bg_zoom ?? 100;
+  const bgColor = settings?.bg_color ?? "#000000";
   const effect = settings?.effect ?? "none";
   const effectIntensity = settings?.effect_intensity ?? 1;
 
@@ -79,7 +80,7 @@ function DynamicPageBackgroundInner() {
       {/* Fixed background image */}
       {hasBg && (
         <div className="fixed inset-0 z-0 pointer-events-none">
-          <div className="absolute inset-0 bg-arena-black" />
+          <div className="absolute inset-0" style={{ backgroundColor: bgColor }} />
           <div
             className="absolute inset-0"
             style={{

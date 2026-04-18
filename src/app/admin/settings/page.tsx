@@ -61,6 +61,167 @@ function Slider({
   );
 }
 
+/* ── Draggable page preview ───────────────────────────────── */
+function DragPreview({
+  bgImage,
+  bgPosX,
+  bgPosY,
+  bgZoom,
+  bgColor,
+  bgBrightness,
+  bgSaturation,
+  bgContrast,
+  overlayOpacity,
+  onPositionChange,
+  onPositionCommit,
+  onZoomChange,
+  onZoomCommit,
+}: {
+  bgImage: string | null;
+  bgPosX: number;
+  bgPosY: number;
+  bgZoom: number;
+  bgColor: string;
+  bgBrightness: number;
+  bgSaturation: number;
+  bgContrast: number;
+  overlayOpacity: number;
+  onPositionChange: (x: number, y: number) => void;
+  onPositionCommit: (x: number, y: number) => void;
+  onZoomChange: (zoom: number) => void;
+  onZoomCommit: (zoom: number) => void;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const startPos = useRef({ x: 0, y: 0 });
+  const startBgPos = useRef({ x: bgPosX, y: bgPosY });
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (!containerRef.current) return;
+    isDragging.current = true;
+    startPos.current = { x: e.clientX, y: e.clientY };
+    startBgPos.current = { x: bgPosX, y: bgPosY };
+    containerRef.current.setPointerCapture(e.pointerId);
+    containerRef.current.style.cursor = "grabbing";
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDragging.current || !containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const dx = e.clientX - startPos.current.x;
+    const dy = e.clientY - startPos.current.y;
+    // Map pixel delta to % — invert so dragging right moves image right (lower bg-position-x feel)
+    const pctX = (dx / rect.width) * -100;
+    const pctY = (dy / rect.height) * -100;
+    const newX = Math.min(100, Math.max(0, startBgPos.current.x + pctX));
+    const newY = Math.min(100, Math.max(0, startBgPos.current.y + pctY));
+    onPositionChange(Math.round(newX), Math.round(newY));
+  };
+
+  const handlePointerUp = () => {
+    if (!isDragging.current) return;
+    isDragging.current = false;
+    if (containerRef.current) containerRef.current.style.cursor = "grab";
+    onPositionCommit(bgPosX, bgPosY);
+  };
+
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -5 : 5;
+    const newZoom = Math.min(200, Math.max(50, bgZoom + delta));
+    onZoomChange(newZoom);
+    onZoomCommit(newZoom);
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <label className="text-[11px] font-medium text-arena-smoke/70 uppercase tracking-wider">
+          Pré-visualização (arrasta para posicionar, scroll para zoom)
+        </label>
+        <span className="text-[10px] text-arena-smoke/40 tabular-nums">
+          X:{bgPosX}% Y:{bgPosY}% Z:{bgZoom}%
+        </span>
+      </div>
+      <div
+        ref={containerRef}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        onWheel={handleWheel}
+        className="relative w-full rounded-lg overflow-hidden border border-white/10 select-none touch-none"
+        style={{ aspectRatio: "16/9", cursor: "grab" }}
+      >
+        {/* Background color fill (gap color) */}
+        <div className="absolute inset-0" style={{ backgroundColor: bgColor }} />
+
+        {/* Background image */}
+        {bgImage && (
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `url('${bgImage}')`,
+              backgroundSize: `${bgZoom}%`,
+              backgroundPosition: `${bgPosX}% ${bgPosY}%`,
+              backgroundRepeat: "no-repeat",
+              filter: `brightness(${bgBrightness}) saturate(${bgSaturation}) contrast(${bgContrast})`,
+            }}
+          />
+        )}
+
+        {/* Overlay */}
+        <div
+          className="absolute inset-0"
+          style={{ backgroundColor: `rgba(0,0,0,${overlayOpacity})` }}
+        />
+
+        {/* Page layout wireframe overlay */}
+        <div className="absolute inset-0 pointer-events-none">
+          {/* Navbar */}
+          <div className="absolute top-0 left-0 right-0 h-[8%] bg-black/60 border-b border-arena-gold/20 flex items-center px-3">
+            <div className="flex gap-1.5 items-center">
+              <div className="w-3 h-3 rounded-full bg-arena-gold/40" />
+              <div className="w-10 h-1.5 rounded-full bg-white/20" />
+            </div>
+            <div className="flex gap-2 ml-auto">
+              <div className="w-6 h-1.5 rounded-full bg-white/10" />
+              <div className="w-6 h-1.5 rounded-full bg-white/10" />
+              <div className="w-6 h-1.5 rounded-full bg-white/10" />
+            </div>
+          </div>
+          {/* Sidebar */}
+          <div className="absolute top-[8%] left-0 w-[15%] bottom-0 bg-black/40 border-r border-white/5 hidden lg:block">
+            <div className="flex flex-col gap-2 p-2 mt-2">
+              <div className="w-full h-1.5 rounded-full bg-white/10" />
+              <div className="w-3/4 h-1.5 rounded-full bg-white/10" />
+              <div className="w-full h-1.5 rounded-full bg-white/10" />
+              <div className="w-2/3 h-1.5 rounded-full bg-arena-gold/20" />
+            </div>
+          </div>
+          {/* Content area */}
+          <div className="absolute top-[12%] lg:left-[18%] left-[5%] right-[5%] flex flex-col items-center gap-2">
+            <div className="w-1/2 h-2.5 rounded-full bg-white/15" />
+            <div className="w-1/3 h-1.5 rounded-full bg-white/8" />
+            <div className="mt-2 w-3/4 grid grid-cols-3 gap-1.5">
+              <div className="aspect-[3/4] rounded bg-white/[0.06] border border-white/5" />
+              <div className="aspect-[3/4] rounded bg-white/[0.06] border border-white/5" />
+              <div className="aspect-[3/4] rounded bg-white/[0.06] border border-white/5" />
+            </div>
+          </div>
+        </div>
+
+        {/* Drag crosshair indicator */}
+        {!bgImage && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-arena-smoke/30 text-xs">Sem imagem</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /* ── Per-page settings card ───────────────────────────────── */
 function PageSettingsCard({
   page,
@@ -83,7 +244,7 @@ function PageSettingsCard({
 }) {
   const [activeTab, setActiveTab] = useState<Tab>("image");
 
-  const updateLocal = (field: string, value: number) => {
+  const updateLocal = (field: string, value: number | string) => {
     setSettings((prev) =>
       prev.map((s) => (s.id === page.id ? { ...s, [field]: value } : s))
     );
@@ -147,9 +308,9 @@ function PageSettingsCard({
       {/* Tab content */}
       <div className="px-5 py-4">
         {activeTab === "image" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Left: Image pickers */}
-            <div className="space-y-3">
+          <div className="space-y-4">
+            {/* Image pickers row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <ImageField
                 label="Imagem de Fundo"
                 value={page.background_image}
@@ -170,35 +331,47 @@ function PageSettingsCard({
               )}
             </div>
 
-            {/* Right: Position & Zoom */}
-            <div className="space-y-3">
-              <Slider
-                label="Posição Horizontal"
-                value={page.bg_position_x ?? 50}
-                min={0} max={100} step={1}
-                format={(v) => `${v}%`}
-                prefixIcon="←" suffixIcon="→"
-                onChange={(v) => updateLocal("bg_position_x", v)}
-                onCommit={(v) => saveField(page.id, { bg_position_x: v } as Partial<PageSetting>)}
+            {/* Color picker for gap fill */}
+            <div className="flex items-center gap-3">
+              <label className="text-[11px] font-medium text-arena-smoke/70 uppercase tracking-wider whitespace-nowrap">
+                Cor de Fundo (preenche espaços vazios)
+              </label>
+              <input
+                type="color"
+                value={page.bg_color ?? "#000000"}
+                onChange={(e) => updateLocal("bg_color", e.target.value)}
+                onBlur={(e) => saveField(page.id, { bg_color: e.target.value } as Partial<PageSetting>)}
+                className="w-8 h-8 rounded border border-white/20 cursor-pointer bg-transparent [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded [&::-webkit-color-swatch]:border-none"
               />
-              <Slider
-                label="Posição Vertical"
-                value={page.bg_position_y ?? 50}
-                min={0} max={100} step={1}
-                format={(v) => `${v}%`}
-                prefixIcon="↑" suffixIcon="↓"
-                onChange={(v) => updateLocal("bg_position_y", v)}
-                onCommit={(v) => saveField(page.id, { bg_position_y: v } as Partial<PageSetting>)}
-              />
-              <Slider
-                label="Zoom"
-                value={page.bg_zoom ?? 100}
-                min={50} max={200} step={5}
-                format={(v) => `${v}%`}
-                onChange={(v) => updateLocal("bg_zoom", v)}
-                onCommit={(v) => saveField(page.id, { bg_zoom: v } as Partial<PageSetting>)}
-              />
+              <span className="text-[11px] text-arena-smoke/40 font-mono">{page.bg_color ?? "#000000"}</span>
             </div>
+
+            {/* Drag preview with page layout */}
+            <DragPreview
+              bgImage={page.background_image}
+              bgPosX={page.bg_position_x ?? 50}
+              bgPosY={page.bg_position_y ?? 50}
+              bgZoom={page.bg_zoom ?? 100}
+              bgColor={page.bg_color ?? "#000000"}
+              bgBrightness={page.bg_brightness ?? 0.35}
+              bgSaturation={page.bg_saturation ?? 0.7}
+              bgContrast={page.bg_contrast ?? 0.95}
+              overlayOpacity={page.overlay_opacity ?? 0.6}
+              onPositionChange={(x, y) => { updateLocal("bg_position_x", x); updateLocal("bg_position_y", y); }}
+              onPositionCommit={(x, y) => saveField(page.id, { bg_position_x: x, bg_position_y: y } as Partial<PageSetting>)}
+              onZoomChange={(z) => updateLocal("bg_zoom", z)}
+              onZoomCommit={(z) => saveField(page.id, { bg_zoom: z } as Partial<PageSetting>)}
+            />
+
+            {/* Zoom slider below preview */}
+            <Slider
+              label="Zoom"
+              value={page.bg_zoom ?? 100}
+              min={50} max={200} step={5}
+              format={(v) => `${v}%`}
+              onChange={(v) => updateLocal("bg_zoom", v)}
+              onCommit={(v) => saveField(page.id, { bg_zoom: v } as Partial<PageSetting>)}
+            />
           </div>
         )}
 

@@ -8,7 +8,7 @@ export interface PageSetting {
   page_name: string;
   background_image: string | null;
   hero_image: string | null;
-  effect: "none" | "snow" | "rain" | "thunder" | "fireflies";
+  effect: "none" | "snow" | "rain" | "thunder" | "fireflies" | "embers";
   effect_intensity: number;
   overlay_opacity: number;
   bg_brightness: number;
@@ -17,6 +17,7 @@ export interface PageSetting {
   bg_position_x: number;
   bg_position_y: number;
   bg_zoom: number;
+  bg_color: string;
   updated_at: string;
 }
 

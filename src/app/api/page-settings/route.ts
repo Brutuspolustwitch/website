@@ -79,13 +79,13 @@ export async function PUT(request: Request) {
   if (!admin) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   const body = await request.json();
-  const { id, background_image, hero_image, effect, effect_intensity, overlay_opacity, bg_brightness, bg_saturation, bg_contrast, bg_position_x, bg_position_y, bg_zoom } = body;
+  const { id, background_image, hero_image, effect, effect_intensity, overlay_opacity, bg_brightness, bg_saturation, bg_contrast, bg_position_x, bg_position_y, bg_zoom, bg_color } = body;
 
   if (!id) {
     return NextResponse.json({ error: "ID is required" }, { status: 400 });
   }
 
-  const validEffects = ["none", "snow", "rain", "thunder", "fireflies"];
+  const validEffects = ["none", "snow", "rain", "thunder", "fireflies", "embers"];
   if (effect && !validEffects.includes(effect)) {
     return NextResponse.json({ error: "Invalid effect" }, { status: 400 });
   }
@@ -102,6 +102,7 @@ export async function PUT(request: Request) {
   if (bg_position_x !== undefined) updates.bg_position_x = Math.min(100, Math.max(0, Math.round(Number(bg_position_x))));
   if (bg_position_y !== undefined) updates.bg_position_y = Math.min(100, Math.max(0, Math.round(Number(bg_position_y))));
   if (bg_zoom !== undefined) updates.bg_zoom = Math.min(200, Math.max(50, Number(bg_zoom)));
+  if (bg_color !== undefined) updates.bg_color = typeof bg_color === "string" ? bg_color.slice(0, 7) : "#000000";
 
   const { data, error } = await supabase
     .from("page_settings")

@@ -3,7 +3,7 @@
 import { useEffect, useRef, memo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
-type EffectType = "none" | "snow" | "rain" | "thunder" | "fireflies";
+type EffectType = "none" | "snow" | "rain" | "thunder" | "fireflies" | "embers";
 
 interface PageEffectsProps {
   effect: EffectType;
@@ -174,6 +174,74 @@ function FirefliesEffect({ intensity = 1 }: { intensity: number }) {
   );
 }
 
+/* ── Embers — floating ember particles ─────────────────────── */
+function EmbersEffect({ intensity = 1 }: { intensity: number }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let animId: number;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    function resize() {
+      if (!canvas) return;
+      canvas.width = canvas.offsetWidth * dpr;
+      canvas.height = canvas.offsetHeight * dpr;
+      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
+    interface Particle { x: number; y: number; r: number; vx: number; vy: number; alpha: number; decay: number; hue: number }
+    const particles: Particle[] = [];
+    const spawnRate = 0.15 * intensity;
+
+    function spawnParticle() {
+      if (!canvas) return;
+      particles.push({
+        x: Math.random() * canvas.offsetWidth,
+        y: canvas.offsetHeight + 10,
+        r: 1 + Math.random() * 2.5,
+        vx: (Math.random() - 0.5) * 0.6,
+        vy: -(0.3 + Math.random() * 0.8),
+        alpha: 0.5 + Math.random() * 0.5,
+        decay: 0.002 + Math.random() * 0.003,
+        hue: 15 + Math.random() * 25,
+      });
+    }
+
+    function loop() {
+      if (!canvas || !ctx) return;
+      ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+      if (Math.random() < spawnRate) spawnParticle();
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx + Math.sin(Date.now() * 0.001 + i) * 0.15;
+        p.y += p.vy;
+        p.alpha -= p.decay;
+        if (p.alpha <= 0) { particles.splice(i, 1); continue; }
+        ctx.beginPath();
+        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 2.5);
+        grad.addColorStop(0, `hsla(${p.hue}, 100%, 60%, ${p.alpha})`);
+        grad.addColorStop(1, `hsla(${p.hue}, 100%, 40%, 0)`);
+        ctx.fillStyle = grad;
+        ctx.arc(p.x, p.y, p.r * 2.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      animId = requestAnimationFrame(loop);
+    }
+    loop();
+
+    return () => { cancelAnimationFrame(animId); window.removeEventListener("resize", resize); };
+  }, [intensity]);
+
+  return <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 w-full h-full" style={{ opacity: 0.6 }} />;
+}
+
 /* ── Main export ──────────────────────────────────────────── */
 function PageEffectsInner({ effect, intensity = 1 }: PageEffectsProps) {
   const reduceMotion = useReducedMotion();
@@ -188,6 +256,8 @@ function PageEffectsInner({ effect, intensity = 1 }: PageEffectsProps) {
       return <ThunderEffect intensity={intensity} />;
     case "fireflies":
       return <FirefliesEffect intensity={intensity} />;
+    case "embers":
+      return <EmbersEffect intensity={intensity} />;
     default:
       return null;
   }
@@ -202,4 +272,5 @@ export const EFFECT_OPTIONS: { value: EffectType; label: string; icon: string }[
   { value: "rain", label: "Chuva", icon: "🌧️" },
   { value: "thunder", label: "Trovoada", icon: "⛈️" },
   { value: "fireflies", label: "Pirilampos", icon: "✨" },
+  { value: "embers", label: "Brasas", icon: "🔥" },
 ];

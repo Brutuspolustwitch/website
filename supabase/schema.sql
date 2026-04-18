@@ -567,7 +567,7 @@ create table if not exists page_settings (
   page_name text not null,
   background_image text,
   hero_image text,
-  effect text not null default 'none' check (effect in ('none', 'snow', 'rain', 'thunder', 'fireflies')),
+  effect text not null default 'none' check (effect in ('none', 'snow', 'rain', 'thunder', 'fireflies', 'embers')),
   effect_intensity numeric not null default 1.0 check (effect_intensity >= 0 and effect_intensity <= 2),
   overlay_opacity numeric not null default 0.6 check (overlay_opacity >= 0 and overlay_opacity <= 1),
   bg_brightness numeric not null default 0.35 check (bg_brightness >= 0 and bg_brightness <= 1),
@@ -576,6 +576,7 @@ create table if not exists page_settings (
   bg_position_x integer not null default 50 check (bg_position_x >= 0 and bg_position_x <= 100),
   bg_position_y integer not null default 50 check (bg_position_y >= 0 and bg_position_y <= 100),
   bg_zoom numeric not null default 100 check (bg_zoom >= 50 and bg_zoom <= 200),
+  bg_color text not null default '#000000',
   updated_at timestamptz not null default now()
 );
 
