@@ -1866,6 +1866,9 @@ body {
 }
 
 /* ── Liga dos Brutus — Parchment Scroll ─────────────────── */
+.liga-scroll-perspective {
+  perspective: 1200px;
+}
 .liga-scroll {
   position: relative;
   background:
@@ -1878,6 +1881,16 @@ body {
     inset 0 0 60px rgba(58,42,16,0.08),
     0 4px 20px rgba(139,105,20,0.15);
   overflow: hidden;
+  transform: rotateY(-8deg) rotateX(2deg);
+  transform-origin: center center;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s ease;
+}
+.liga-scroll:hover {
+  transform: rotateY(0deg) rotateX(0deg);
+  box-shadow:
+    0 0 60px rgba(0,0,0,0.5),
+    inset 0 0 60px rgba(58,42,16,0.08),
+    0 8px 30px rgba(139,105,20,0.2);
 }
 .liga-scroll::before {
   content: "";
