@@ -60,6 +60,18 @@ export function StreamerHub() {
     setActiveClip(next);
   }, [clips, activeClip]);
 
+  const goNextClip = useCallback(() => {
+    if (clips.length < 2 || !activeClip) return;
+    const idx = clips.findIndex((c) => c.id === activeClip.id);
+    setActiveClip(clips[(idx + 1) % clips.length]);
+  }, [clips, activeClip]);
+
+  const goPrevClip = useCallback(() => {
+    if (clips.length < 2 || !activeClip) return;
+    const idx = clips.findIndex((c) => c.id === activeClip.id);
+    setActiveClip(clips[(idx - 1 + clips.length) % clips.length]);
+  }, [clips, activeClip]);
+
   return (
     <section
       id="stream"
@@ -112,7 +124,7 @@ export function StreamerHub() {
                     allowFullScreen
                     title={activeClip.title}
                   />
-                  <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-4 flex items-end justify-between">
+                  <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-4">
                     <div className="min-w-0">
                       <p className="text-white text-sm font-medium truncate">
                         {activeClip.title}
@@ -121,14 +133,6 @@ export function StreamerHub() {
                         Clipped by {activeClip.creator_name} · {activeClip.view_count.toLocaleString()} views
                       </p>
                     </div>
-                    {clips.length > 1 && (
-                      <button
-                        onClick={shuffleClip}
-                        className="ml-3 shrink-0 px-3 py-1.5 rounded-lg bg-arena-crimson/30 hover:bg-arena-crimson/50 text-arena-gold text-xs font-medium tracking-wide uppercase transition-colors backdrop-blur-sm border border-arena-crimson/40 arena-btn-press"
-                      >
-                        Próximo clip
-                      </button>
-                    )}
                   </div>
                 </>
               )}
@@ -142,6 +146,30 @@ export function StreamerHub() {
                 />
               )}
             </div>
+
+            {/* Prev / Next clip buttons — below the player */}
+            {!isLive && !loading && activeClip && clips.length > 1 && (
+              <div className="flex items-center justify-between mt-3 lg:col-span-1" style={{ gridColumn: "1" }}>
+                <button
+                  onClick={goPrevClip}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-arena-charcoal/80 hover:bg-arena-crimson/30 text-arena-gold text-xs font-medium tracking-wide uppercase transition-colors border border-arena-steel/30 hover:border-arena-crimson/40 arena-btn-press"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                  </svg>
+                  Clip anterior
+                </button>
+                <button
+                  onClick={goNextClip}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-arena-charcoal/80 hover:bg-arena-crimson/30 text-arena-gold text-xs font-medium tracking-wide uppercase transition-colors border border-arena-steel/30 hover:border-arena-crimson/40 arena-btn-press"
+                >
+                  Próximo clip
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            )}
 
             {/* Chat — only visible when live */}
             {isLive && (
