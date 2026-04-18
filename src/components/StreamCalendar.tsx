@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import type { ScheduledStreamRow } from "@/lib/supabase";
 
@@ -27,16 +26,15 @@ const formatMonth = (dateStr: string) =>
 const isToday = (dateStr: string) => dateStr === new Date().toISOString().split("T")[0];
 const isPast = (dateStr: string) => dateStr < new Date().toISOString().split("T")[0];
 
-/* ── Get current week dates (Mon–Sun) ──────────────────────── */
-function getWeekDates(offset = 0): string[] {
+/* ── Get all dates for the current month ───────────────────── */
+function getMonthDates(): string[] {
   const now = new Date();
-  const dayOfWeek = (now.getDay() + 6) % 7;
-  const monday = new Date(now);
-  monday.setDate(now.getDate() - dayOfWeek + offset * 7);
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
+  return Array.from({ length: daysInMonth }, (_, i) => {
+    const d = new Date(year, month, i + 1);
     return d.toISOString().split("T")[0];
   });
 }
@@ -47,13 +45,16 @@ function getWeekDates(offset = 0): string[] {
    so drag keeps working even when cursor leaves the container.
    Touch scrolling is handled natively by overflow-x: scroll.
    ═══════════════════════════════════════════════════════════════ */
-function useDragScroll() {
+function useDragScroll(onMounted?: (el: HTMLDivElement) => void) {
   const ref = useRef<HTMLDivElement>(null);
   const state = useRef({ dragging: false, startX: 0, scrollLeft: 0 });
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+
+    /* Center today on first mount */
+    if (onMounted) onMounted(el);
 
     const onMouseDown = (e: MouseEvent) => {
       state.current = { dragging: true, startX: e.clientX, scrollLeft: el.scrollLeft };
@@ -82,7 +83,7 @@ function useDragScroll() {
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseup", onMouseUp);
     };
-  }, []);
+  }, [onMounted]);
 
   return ref;
 }
@@ -93,8 +94,18 @@ function useDragScroll() {
 export function StreamCalendar() {
   const [streams, setStreams] = useState<ScheduledStreamRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [weekOffset, setWeekOffset] = useState(0);
-  const scrollRef = useDragScroll();
+
+  const centerToday = useCallback((el: HTMLDivElement) => {
+    requestAnimationFrame(() => {
+      const todayCard = el.querySelector("[data-today]") as HTMLElement | null;
+      if (todayCard) {
+        const scrollLeft = todayCard.offsetLeft - el.clientWidth / 2 + todayCard.offsetWidth / 2;
+        el.scrollLeft = scrollLeft;
+      }
+    });
+  }, []);
+
+  const scrollRef = useDragScroll(centerToday);
 
   const fetchStreams = useCallback(async () => {
     try {
@@ -118,7 +129,7 @@ export function StreamCalendar() {
     return () => { supabase.removeChannel(channel); };
   }, [fetchStreams]);
 
-  const weekDates = getWeekDates(weekOffset);
+  const monthDates = getMonthDates();
   const streamsForDate = (date: string) => streams.filter((s) => s.stream_date === date && !s.is_cancelled);
 
   if (loading) {
@@ -140,18 +151,10 @@ export function StreamCalendar() {
         />
 
         <div className="gladiator-schedule__overlay">
-          {/* ══ DRAG-SCROLLABLE WEEK ROW ══ */}
+          {/* ══ DRAG-SCROLLABLE MONTH ROW ══ */}
           <div ref={scrollRef} className="gladiator-scroll">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={weekOffset}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                className="gladiator-week"
-              >
-                {weekDates.map((date) => {
+            <div className="gladiator-week">
+                {monthDates.map((date) => {
                   const dow = new Date(date + "T00:00:00").getDay();
                   const dayStreams = streamsForDate(date);
                   const active = isToday(date);
@@ -160,7 +163,7 @@ export function StreamCalendar() {
                   const month = formatMonth(date);
 
                   return (
-                    <div key={date} className={`forge-card ${active ? "forge-card--today" : ""} ${past ? "forge-card--past" : ""}`}>
+                    <div key={date} {...(active ? { "data-today": "" } : {})} className={`forge-card ${active ? "forge-card--today" : ""} ${past ? "forge-card--past" : ""}`}>
                       {/* ── Forged header ── */}
                       <div className="forge-card__header">
                         <span className="forge-card__day">{DAY_NAMES_PT[dow]}</span>
@@ -210,8 +213,7 @@ export function StreamCalendar() {
                     </div>
                   );
                 })}
-              </motion.div>
-            </AnimatePresence>
+            </div>
           </div>
         </div>
       </div>
