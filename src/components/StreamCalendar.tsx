@@ -79,13 +79,6 @@ export function StreamCalendar() {
   return (
     <div className="gladiator-schedule">
       <div className="gladiator-schedule__poster">
-        <img
-          src="/images/schedule.jpg"
-          alt=""
-          className="gladiator-schedule__bg"
-          draggable={false}
-        />
-
         <div className="gladiator-schedule__overlay">
           <div className="gladiator-week">
             {dates.map((date) => {
