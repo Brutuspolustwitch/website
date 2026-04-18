@@ -388,146 +388,153 @@ export default function DailySessionContent() {
       <div className="relative z-10 pt-20 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
 
-          {/* ── Stats + Monthly row ──────────────── */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="grid grid-cols-1 lg:grid-cols-3 gap-4"
-          >
-            {/* Session stats */}
-            <div className="papyrus-scroll greek-key-border lg:col-span-2" style={{ padding: 0 }}>
-              <div className="scroll-content" style={{ padding: "10px 16px" }}>
-                <div className="flex flex-wrap items-center justify-around gap-x-6 gap-y-2 text-center">
-                  <div>
-                    <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Depósitos</p>
-                    <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "#8b1a1a" }}>
-                      <AnimatedCounter value={session.deposits} suffix="€" />
-                    </span>
-                  </div>
-                  <div style={{ width: "1px", height: "28px", background: "rgba(139,105,20,0.2)" }} className="hidden sm:block" />
-                  <div>
-                    <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Levantamentos</p>
-                    <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "#2e7d32" }}>
-                      <AnimatedCounter value={session.withdrawals} suffix="€" />
-                    </span>
-                  </div>
-                  <div style={{ width: "1px", height: "28px", background: "rgba(139,105,20,0.2)" }} className="hidden sm:block" />
-                  <div>
-                    <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Resultado</p>
-                    <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: net >= 0 ? "#2e7d32" : "#8b1a1a" }}>
-                      <AnimatedCounter value={net} suffix="€" />
-                    </span>
-                  </div>
-                  {session.bonuses_count > 0 && (
-                    <>
-                      <div style={{ width: "1px", height: "28px", background: "rgba(139,105,20,0.2)" }} className="hidden sm:block" />
-                      <div>
-                        <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Bónus</p>
-                        <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "var(--gold-dark)" }}>{session.bonuses_count}</span>
-                      </div>
-                    </>
-                  )}
-                  {session.biggest_win > 0 && (
-                    <>
-                      <div style={{ width: "1px", height: "28px", background: "rgba(139,105,20,0.2)" }} className="hidden sm:block" />
-                      <div>
-                        <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Maior Win</p>
-                        <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "#2e7d32" }}>{session.biggest_win.toFixed(2)}€</span>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Monthly summary (same row) */}
-            {monthly && monthly.sessions_count > 0 ? (
-              <div className="papyrus-scroll greek-key-border" style={{ padding: 0 }}>
-                <div className="scroll-content" style={{ padding: "10px 16px" }}>
-                  <p style={{
-                    fontFamily: "var(--font-display)",
-                    fontSize: "0.5rem",
-                    fontWeight: 600,
-                    color: "var(--ink-light)",
-                    letterSpacing: "0.18em",
-                    textTransform: "uppercase",
-                    textAlign: "center",
-                    marginBottom: "6px",
-                  }}>
-                    Resumo Mensal · {monthly.sessions_count} {monthly.sessions_count === 1 ? "sessão" : "sessões"}
-                  </p>
-                  <div style={{ display: "flex", justifyContent: "space-around", gap: "8px", textAlign: "center" }}>
-                    <div>
-                      <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1px" }}>Depósitos</p>
-                      <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "#8b1a1a" }}>{monthly.deposits.toFixed(2)}€</p>
-                    </div>
-                    <div>
-                      <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1px" }}>Levantam.</p>
-                      <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "#2e7d32" }}>{monthly.withdrawals.toFixed(2)}€</p>
-                    </div>
-                    <div>
-                      <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1px" }}>Resultado</p>
-                      <p style={{
-                        fontFamily: "var(--font-ui)",
-                        fontSize: "1rem",
-                        fontWeight: 700,
-                        color: (monthly.withdrawals - monthly.deposits) >= 0 ? "#2e7d32" : "#8b1a1a",
-                      }}>
-                        {(monthly.withdrawals - monthly.deposits).toFixed(2)}€
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : <div />}
-          </motion.div>
-
-          {/* ── Main grid: Bonus Hunt | Sidebar ──── */}
+          {/* ── Main grid: Stats + Bonus Hunt | Sidebar ──── */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
 
-            {/* LEFT — Best/Worst + Bonus Hunt (2/3) */}
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 }}
-              className="lg:col-span-2"
-            >
-              <div className="flex gap-4 items-start">
-                {/* Best/Worst slot mini cards — vertical column on the left */}
-                {(bestSlot || worstSlot) && (
-                  <div className="hidden lg:flex flex-col gap-3 shrink-0">
-                    {bestSlot && (
-                      <SlotHighlightCard
-                        label="Melhor"
-                        slotName={bestSlot.name}
-                        thumbnailUrl={bestSlot.thumbnail_url ?? undefined}
-                        payout={bestSlot.payout ?? 0}
-                        betValue={bestSlot.bet_size ?? bestSlot.buy_value}
-                        currency="€"
-                      />
-                    )}
-                    {worstSlot && (!bestSlot || worstSlot.id !== bestSlot?.id) && (
-                      <SlotHighlightCard
-                        label="Pior"
-                        slotName={worstSlot.name}
-                        thumbnailUrl={worstSlot.thumbnail_url ?? undefined}
-                        payout={worstSlot.payout ?? 0}
-                        betValue={worstSlot.bet_size ?? worstSlot.buy_value}
-                        currency="€"
-                      />
-                    )}
+            {/* LEFT — Stats + Best/Worst + Bonus Hunt (2/3) */}
+            <div className="lg:col-span-2 space-y-4">
+
+              {/* Session stats */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+              >
+                <div className="papyrus-scroll greek-key-border" style={{ padding: 0 }}>
+                  <div className="scroll-content" style={{ padding: "10px 16px" }}>
+                    <div className="flex flex-wrap items-center justify-around gap-x-6 gap-y-2 text-center">
+                      <div>
+                        <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Depósitos</p>
+                        <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "#8b1a1a" }}>
+                          <AnimatedCounter value={session.deposits} suffix="€" />
+                        </span>
+                      </div>
+                      <div style={{ width: "1px", height: "28px", background: "rgba(139,105,20,0.2)" }} className="hidden sm:block" />
+                      <div>
+                        <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Levantamentos</p>
+                        <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "#2e7d32" }}>
+                          <AnimatedCounter value={session.withdrawals} suffix="€" />
+                        </span>
+                      </div>
+                      <div style={{ width: "1px", height: "28px", background: "rgba(139,105,20,0.2)" }} className="hidden sm:block" />
+                      <div>
+                        <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Resultado</p>
+                        <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: net >= 0 ? "#2e7d32" : "#8b1a1a" }}>
+                          <AnimatedCounter value={net} suffix="€" />
+                        </span>
+                      </div>
+                      {session.bonuses_count > 0 && (
+                        <>
+                          <div style={{ width: "1px", height: "28px", background: "rgba(139,105,20,0.2)" }} className="hidden sm:block" />
+                          <div>
+                            <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Bónus</p>
+                            <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "var(--gold-dark)" }}>{session.bonuses_count}</span>
+                          </div>
+                        </>
+                      )}
+                      {session.biggest_win > 0 && (
+                        <>
+                          <div style={{ width: "1px", height: "28px", background: "rgba(139,105,20,0.2)" }} className="hidden sm:block" />
+                          <div>
+                            <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Maior Win</p>
+                            <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "#2e7d32" }}>{session.biggest_win.toFixed(2)}€</span>
+                          </div>
+                        </>
+                      )}
+                    </div>
                   </div>
-                )}
-                {/* Bonus Hunt */}
-                <div className="flex-1 min-w-0">
-                  <BonusHuntTracker compact />
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
+
+              {/* Best/Worst + Bonus Hunt */}
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+              >
+                <div className="flex gap-4 items-start">
+                  {/* Best/Worst slot mini cards — vertical column on the left */}
+                  {(bestSlot || worstSlot) && (
+                    <div className="hidden lg:flex flex-col gap-3 shrink-0">
+                      {bestSlot && (
+                        <SlotHighlightCard
+                          label="Melhor"
+                          slotName={bestSlot.name}
+                          thumbnailUrl={bestSlot.thumbnail_url ?? undefined}
+                          payout={bestSlot.payout ?? 0}
+                          betValue={bestSlot.bet_size ?? bestSlot.buy_value}
+                          currency="€"
+                        />
+                      )}
+                      {worstSlot && (!bestSlot || worstSlot.id !== bestSlot?.id) && (
+                        <SlotHighlightCard
+                          label="Pior"
+                          slotName={worstSlot.name}
+                          thumbnailUrl={worstSlot.thumbnail_url ?? undefined}
+                          payout={worstSlot.payout ?? 0}
+                          betValue={worstSlot.bet_size ?? worstSlot.buy_value}
+                          currency="€"
+                        />
+                      )}
+                    </div>
+                  )}
+                  {/* Bonus Hunt */}
+                  <div className="flex-1 min-w-0">
+                    <BonusHuntTracker compact />
+                  </div>
+                </div>
+              </motion.div>
+            </div>
 
             {/* RIGHT — Sidebar (1/3) */}
             <div className="lg:col-span-1 space-y-1">
+
+              {/* Monthly summary */}
+              {monthly && monthly.sessions_count > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.08 }}
+                >
+                  <div className="papyrus-scroll greek-key-border" style={{ padding: 0 }}>
+                    <div className="scroll-content" style={{ padding: "10px 16px" }}>
+                      <p style={{
+                        fontFamily: "var(--font-display)",
+                        fontSize: "0.5rem",
+                        fontWeight: 600,
+                        color: "var(--ink-light)",
+                        letterSpacing: "0.18em",
+                        textTransform: "uppercase",
+                        textAlign: "center",
+                        marginBottom: "6px",
+                      }}>
+                        Resumo Mensal · {monthly.sessions_count} {monthly.sessions_count === 1 ? "sessão" : "sessões"}
+                      </p>
+                      <div style={{ display: "flex", justifyContent: "space-around", gap: "8px", textAlign: "center" }}>
+                        <div>
+                          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1px" }}>Depósitos</p>
+                          <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "#8b1a1a" }}>{monthly.deposits.toFixed(2)}€</p>
+                        </div>
+                        <div>
+                          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1px" }}>Levantam.</p>
+                          <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "#2e7d32" }}>{monthly.withdrawals.toFixed(2)}€</p>
+                        </div>
+                        <div>
+                          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1px" }}>Resultado</p>
+                          <p style={{
+                            fontFamily: "var(--font-ui)",
+                            fontSize: "1rem",
+                            fontWeight: 700,
+                            color: (monthly.withdrawals - monthly.deposits) >= 0 ? "#2e7d32" : "#8b1a1a",
+                          }}>
+                            {(monthly.withdrawals - monthly.deposits).toFixed(2)}€
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
 
               {/* Casino Offer Card */}
               <motion.div
