@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -432,7 +432,7 @@ export default function AdminCalendarioConfig() {
                     value={draft.title}
                     onChange={(e) => setDraft((p) => ({ ...p, title: e.target.value }))}
                     className="mt-1 w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-sm text-arena-white placeholder:text-arena-ash/50 focus:border-arena-gold/50 focus:ring-1 focus:ring-arena-gold/20 outline-none"
-                    placeholder="Ex: Slots com os Seca"
+                    placeholder="Ex: Slots com os Brutus"
                   />
                 </div>
 

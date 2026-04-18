@@ -43,7 +43,7 @@ export function Footer() {
 
         <div className="mt-4 pt-3 border-t border-arena-steel/30 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-[10px] text-arena-ash">
-            &copy; {new Date().getFullYear()} OSECAADEGAS95, Todos os direitos reservados
+            &copy; {new Date().getFullYear()} BRUTUSPOLUS, Todos os direitos reservados
           </p>
           <div className="flex gap-4">
             <Link

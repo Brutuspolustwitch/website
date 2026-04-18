@@ -2,7 +2,7 @@
 import AdminLigaConfig from "@/components/AdminLigaConfig";
 
 export const metadata: Metadata = {
-  title: "Admin — Liga dos Seca",
+  title: "Admin — Liga dos Brutus",
 };
 
 export default function AdminLigaPage() {

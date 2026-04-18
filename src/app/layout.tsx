@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Cinzel, Bebas_Neue } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/AppShell";
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     "casino bonus",
     "casino online portugal",
     "streamer casino",
-    "liga dos seca",
+    "Liga dos Brutus",
     "torneio slots",
     "casino ao vivo",
   ],

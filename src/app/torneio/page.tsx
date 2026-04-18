@@ -1,11 +1,11 @@
 ﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Torneio Liga dos Seca",
-  description: "Torneios exclusivos da Liga dos Seca. Compete, sobe no ranking e ganha prémios épicos.",
+  title: "Torneio Liga dos Brutus",
+  description: "Torneios exclusivos da Liga dos Brutus. Compete, sobe no ranking e ganha prémios épicos.",
   openGraph: {
-    title: "Torneio Liga dos Seca | Arena Gladiator",
-    description: "Torneios exclusivos da Liga dos Seca.",
+    title: "Torneio Liga dos Brutus | Arena Gladiator",
+    description: "Torneios exclusivos da Liga dos Brutus.",
   },
 };
 

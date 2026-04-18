@@ -464,7 +464,7 @@ const PRESET_IMAGES = [
   { name: "Elmo Grunge", file: "/images/pages/helmet-grunge.jpg" },
   { name: "Elmo Still Life", file: "/images/pages/helmet-still-life.jpg" },
   { name: "Stream", file: "/images/pages/Stream.jpg" },
-  { name: "Liga dos Seca", file: "/images/pages/brutusleague.png" },
+  { name: "Liga dos Brutus", file: "/images/pages/brutusleague.png" },
   { name: "Roda", file: "/images/pages/wheel-bg.jpg" },
   { name: "Sessão", file: "/images/pages/session.jpg" },
   { name: "Loja", file: "/images/pages/store.jpg" },

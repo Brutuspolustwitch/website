@@ -42,7 +42,7 @@ const sections = [
   },
   {
     title: "Compromisso do Utilizador",
-    content: `O utilizador compromete-se a usar o conteúdo e a informação fornecida pelo OSECAADEGAS95 no site de forma apropriada e com os seguintes compromissos, mas não limitados a:\n\nA) Não praticar atividades que sejam ilegais ou contrárias à boa-fé e à ordem pública;\n\nB) Não disseminar propaganda ou conteúdo de natureza racista, xenófoba, ou relacionado com jogo ilegal, pornografia ilegal, apologia ao terrorismo, ou contra os direitos humanos;\n\nC) Não causar danos aos sistemas físicos (hardware) e lógicos (software) do OSECAADEGAS95, dos seus fornecedores, ou de terceiros, através da introdução ou disseminação de vírus informáticos ou quaisquer outros sistemas de hardware ou software capazes de causar os danos supramencionados.`,
+    content: `O utilizador compromete-se a usar o conteúdo e a informação fornecida pelo BRUTUSPOLUS no site de forma apropriada e com os seguintes compromissos, mas não limitados a:\n\nA) Não praticar atividades que sejam ilegais ou contrárias à boa-fé e à ordem pública;\n\nB) Não disseminar propaganda ou conteúdo de natureza racista, xenófoba, ou relacionado com jogo ilegal, pornografia ilegal, apologia ao terrorismo, ou contra os direitos humanos;\n\nC) Não causar danos aos sistemas físicos (hardware) e lógicos (software) do BRUTUSPOLUS, dos seus fornecedores, ou de terceiros, através da introdução ou disseminação de vírus informáticos ou quaisquer outros sistemas de hardware ou software capazes de causar os danos supramencionados.`,
   },
   {
     title: "Bloquear cookies",
@@ -88,10 +88,10 @@ export function CookiePolicy({ hideTitle = false }: { hideTitle?: boolean } = {}
             <p className="mt-1">
               Para questões contacte{" "}
               <a
-                href="mailto:info@osecaadegas95.com"
+                href="mailto:info@BRUTUSPOLUS.com"
                 className="text-arena-gold hover:underline"
               >
-                info@osecaadegas95.com
+                info@BRUTUSPOLUS.com
               </a>
             </p>
           </div>

@@ -145,7 +145,7 @@ function timeAgo(timestamp: number): string {
 }
 
 const GLADIATOR_NAMES = [
-  "Maximus", "Spartacus", "Seca", "Crixus", "Flamma",
+  "Maximus", "Spartacus", "Brutus", "Crixus", "Flamma",
   "Commodus", "Verus", "Priscus", "Carpophorus", "Tetraites",
   "Hermes", "Tigris", "Spiculus", "Triumphus", "Gannicus",
 ];

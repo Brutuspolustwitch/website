@@ -2,8 +2,8 @@
 import { CookiePolicy } from "@/components/CookiePolicy";
 
 export const metadata: Metadata = {
-  title: "Política de Cookies | OSECAADEGAS95",
-  description: "Política de cookies do website OSECAADEGAS95.",
+  title: "Política de Cookies | BRUTUSPOLUS",
+  description: "Política de cookies do website BRUTUSPOLUS.",
 };
 
 export default function CookiePolicyPage() {

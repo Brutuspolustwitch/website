@@ -6,7 +6,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 const sections = [
   {
     title: "Política de Privacidade",
-    content: `A sua privacidade é importante para nós. É política do OSECAADEGAS95 respeitar a privacidade em relação a qualquer informação que possamos recolher no website OSECAADEGAS95, e noutros sites que possuímos e operamos.\n\nSolicitamos informações pessoais apenas quando realmente precisamos delas para lhe fornecer um serviço. Fazemo-lo por meios justos e legais, com o seu conhecimento e consentimento. Também informamos porque estamos a recolher as informações e como serão utilizadas.\n\nApenas retemos as informações recolhidas pelo tempo necessário para fornecer o serviço solicitado. Quando armazenamos dados, são protegidos dentro de meios comercialmente aceitáveis para evitar perdas e roubos, bem como acesso, disseminação, cópia, uso ou modificação não autorizados.\n\nNão partilhamos informações de identificação pessoal publicamente ou com terceiros, exceto quando exigido por lei.\n\nO nosso site pode ter links para websites externos que não são operados por nós. Esteja ciente de que não temos controlo sobre o conteúdo e práticas desses sites e não podemos aceitar responsabilidade pelas suas respetivas políticas de privacidade. Informe-se sempre dos termos e condições dos sites parceiros externos.\n\nSão livres de recusar o nosso pedido de informação pessoal, entendendo que podemos não ser capazes de fornecer alguns dos serviços desejados.\n\nO uso continuado do nosso site será considerado como aceitação das nossas práticas em torno de privacidade e informação pessoal. Se tiver alguma dúvida sobre como lidamos com dados de utilizador e informação pessoal, por favor contacte-nos via email: info@osecaadegas95.com.`,
+    content: `A sua privacidade é importante para nós. É política do BRUTUSPOLUS respeitar a privacidade em relação a qualquer informação que possamos recolher no website BRUTUSPOLUS, e noutros sites que possuímos e operamos.\n\nSolicitamos informações pessoais apenas quando realmente precisamos delas para lhe fornecer um serviço. Fazemo-lo por meios justos e legais, com o seu conhecimento e consentimento. Também informamos porque estamos a recolher as informações e como serão utilizadas.\n\nApenas retemos as informações recolhidas pelo tempo necessário para fornecer o serviço solicitado. Quando armazenamos dados, são protegidos dentro de meios comercialmente aceitáveis para evitar perdas e roubos, bem como acesso, disseminação, cópia, uso ou modificação não autorizados.\n\nNão partilhamos informações de identificação pessoal publicamente ou com terceiros, exceto quando exigido por lei.\n\nO nosso site pode ter links para websites externos que não são operados por nós. Esteja ciente de que não temos controlo sobre o conteúdo e práticas desses sites e não podemos aceitar responsabilidade pelas suas respetivas políticas de privacidade. Informe-se sempre dos termos e condições dos sites parceiros externos.\n\nSão livres de recusar o nosso pedido de informação pessoal, entendendo que podemos não ser capazes de fornecer alguns dos serviços desejados.\n\nO uso continuado do nosso site será considerado como aceitação das nossas práticas em torno de privacidade e informação pessoal. Se tiver alguma dúvida sobre como lidamos com dados de utilizador e informação pessoal, por favor contacte-nos via email: info@BRUTUSPOLUS.com.`,
   },
   {
     title: "Tipos de Dados Pessoais Recolhidos",
@@ -120,10 +120,10 @@ export function PrivacyPolicy({ hideTitle = false }: { hideTitle?: boolean } = {
             <p className="mt-1">
               Para questões contacte{" "}
               <a
-                href="mailto:info@osecaadegas95.com"
+                href="mailto:info@BRUTUSPOLUS.com"
                 className="text-arena-gold hover:underline"
               >
-                info@osecaadegas95.com
+                info@BRUTUSPOLUS.com
               </a>
             </p>
           </div>
