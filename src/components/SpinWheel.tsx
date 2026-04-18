@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -145,7 +145,7 @@ function timeAgo(timestamp: number): string {
 }
 
 const GLADIATOR_NAMES = [
-  "Maximus", "Spartacus", "Brutus", "Crixus", "Flamma",
+  "Maximus", "Spartacus", "Seca", "Crixus", "Flamma",
   "Commodus", "Verus", "Priscus", "Carpophorus", "Tetraites",
   "Hermes", "Tigris", "Spiculus", "Triumphus", "Gannicus",
 ];

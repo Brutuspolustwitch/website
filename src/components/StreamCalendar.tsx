@@ -26,15 +26,16 @@ const formatMonth = (dateStr: string) =>
 const isToday = (dateStr: string) => dateStr === new Date().toISOString().split("T")[0];
 const isPast = (dateStr: string) => dateStr < new Date().toISOString().split("T")[0];
 
-/* ── Get all dates for the current month ───────────────────── */
-function getMonthDates(): string[] {
+/* ── Get current week dates (Mon–Sun) ──────────────────────── */
+function getWeekDates(offset = 0): string[] {
   const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const dayOfWeek = (now.getDay() + 6) % 7;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - dayOfWeek + offset * 7);
 
-  return Array.from({ length: daysInMonth }, (_, i) => {
-    const d = new Date(year, month, i + 1);
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
     return d.toISOString().split("T")[0];
   });
 }
@@ -45,16 +46,13 @@ function getMonthDates(): string[] {
    so drag keeps working even when cursor leaves the container.
    Touch scrolling is handled natively by overflow-x: scroll.
    ═══════════════════════════════════════════════════════════════ */
-function useDragScroll(onMounted?: (el: HTMLDivElement) => void) {
+function useDragScroll() {
   const ref = useRef<HTMLDivElement>(null);
   const state = useRef({ dragging: false, startX: 0, scrollLeft: 0 });
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-
-    /* Center today on first mount */
-    if (onMounted) onMounted(el);
 
     const onMouseDown = (e: MouseEvent) => {
       state.current = { dragging: true, startX: e.clientX, scrollLeft: el.scrollLeft };
@@ -83,7 +81,7 @@ function useDragScroll(onMounted?: (el: HTMLDivElement) => void) {
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseup", onMouseUp);
     };
-  }, [onMounted]);
+  }, []);
 
   return ref;
 }
@@ -94,18 +92,8 @@ function useDragScroll(onMounted?: (el: HTMLDivElement) => void) {
 export function StreamCalendar() {
   const [streams, setStreams] = useState<ScheduledStreamRow[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const centerToday = useCallback((el: HTMLDivElement) => {
-    requestAnimationFrame(() => {
-      const todayCard = el.querySelector("[data-today]") as HTMLElement | null;
-      if (todayCard) {
-        const scrollLeft = todayCard.offsetLeft - el.clientWidth / 2 + todayCard.offsetWidth / 2;
-        el.scrollLeft = scrollLeft;
-      }
-    });
-  }, []);
-
-  const scrollRef = useDragScroll(centerToday);
+  const [weekOffset, setWeekOffset] = useState(0);
+  const scrollRef = useDragScroll();
 
   const fetchStreams = useCallback(async () => {
     try {
@@ -129,7 +117,7 @@ export function StreamCalendar() {
     return () => { supabase.removeChannel(channel); };
   }, [fetchStreams]);
 
-  const monthDates = getMonthDates();
+  const weekDates = getWeekDates(weekOffset);
   const streamsForDate = (date: string) => streams.filter((s) => s.stream_date === date && !s.is_cancelled);
 
   if (loading) {
@@ -151,10 +139,17 @@ export function StreamCalendar() {
         />
 
         <div className="gladiator-schedule__overlay">
-          {/* ══ DRAG-SCROLLABLE MONTH ROW ══ */}
+          {/* ══ WEEK NAV ══ */}
+          <div className="gladiator-nav">
+            <button onClick={() => setWeekOffset((o) => o - 1)} className="gladiator-nav__btn" aria-label="Semana anterior">◂</button>
+            <button onClick={() => setWeekOffset(0)} className="gladiator-nav__btn gladiator-nav__btn--today" aria-label="Esta semana">HOJE</button>
+            <button onClick={() => setWeekOffset((o) => o + 1)} className="gladiator-nav__btn" aria-label="Próxima semana">▸</button>
+          </div>
+
+          {/* ══ WEEK ROW ══ */}
           <div ref={scrollRef} className="gladiator-scroll">
             <div className="gladiator-week">
-                {monthDates.map((date) => {
+                {weekDates.map((date) => {
                   const dow = new Date(date + "T00:00:00").getDay();
                   const dayStreams = streamsForDate(date);
                   const active = isToday(date);

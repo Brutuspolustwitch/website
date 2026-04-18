@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
@@ -373,7 +373,7 @@ function OfferForm({ initial, onSave, saving, nextOrder }: OfferFormProps) {
         </div>
         <div>
           <label className={labelCls}>Código</label>
-          <input className={inputCls} value={form.code} onChange={(e) => set("code", e.target.value)} placeholder="BRUTUS" />
+          <input className={inputCls} value={form.code} onChange={(e) => set("code", e.target.value)} placeholder="SECA" />
         </div>
       </div>
 

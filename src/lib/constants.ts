@@ -1,4 +1,4 @@
-/* Site-wide constants */
+﻿/* Site-wide constants */
 
 export const SITE_NAME = "Arena Gladiator";
 export const SITE_DESCRIPTION =
@@ -11,8 +11,8 @@ export const NAV_LINKS = [
   { href: "/ofertas", label: "Ofertas" },
   { href: "/destaques", label: "Destaques" },
   { href: "/stream", label: "Stream" },
-  { href: "/liga-dos-brutus", label: "Liga dos Brutus" },
-  { href: "/torneio", label: "Torneio Liga dos Brutus" },
+  { href: "/liga-dos-seca", label: "Liga dos Seca" },
+  { href: "/torneio", label: "Torneio Liga dos Seca" },
   { href: "/loja", label: "Loja" },
   { href: "/contactos", label: "Contactos" },
 ] as const;

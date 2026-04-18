@@ -1,4 +1,4 @@
-import { SITE_URL } from "@/lib/constants";
+﻿import { SITE_URL } from "@/lib/constants";
 import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -8,7 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/ofertas",
     "/destaques",
     "/stream",
-    "/liga-dos-brutus",
+    "/liga-dos-seca",
     "/torneio",
     "/loja",
     "/contactos",

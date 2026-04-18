@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -138,7 +138,7 @@ export default function LigaDosBrutusContent({ hideTitle = false }: { hideTitle?
             className="text-center mb-10"
           >
             <h1 className="text-3xl sm:text-5xl font-bold font-[family-name:var(--font-display)] bg-gradient-to-r from-arena-gold via-arena-gold-light to-arena-gold bg-clip-text text-transparent tracking-wider">
-              LIGA DOS BRUTUS
+              LIGA DOS SECA
             </h1>
             <p className="text-arena-smoke text-sm sm:text-base mt-2 font-[family-name:var(--font-display)] tracking-[0.3em] uppercase">
               Vencedores {selectedYear?.year ?? ""}
@@ -240,7 +240,7 @@ export default function LigaDosBrutusContent({ hideTitle = false }: { hideTitle?
                 {/* Footer */}
                 <div className="liga-scroll-footer">
                   <div className="liga-wax-seal" />
-                  <p className="liga-footer-text">Arena Gladiator · BrutusPolus</p>
+                  <p className="liga-footer-text">Arena Gladiator · OSECAADEGAS95</p>
                 </div>
               </div>
             </motion.div>

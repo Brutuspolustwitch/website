@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 /* ── Arena Design System ─────────────────────────────────────────────── */
 
@@ -524,7 +524,7 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   object-position: top center;
   pointer-events: none;
   user-select: none;
@@ -560,14 +560,48 @@ body {
 .gladiator-week {
   display: flex;
   gap: 0.3rem;
-  min-width: min-content;
+  width: 100%;
+}
+
+/* ── Week navigation ─────────────────── */
+.gladiator-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-bottom: 0.4rem;
+}
+
+.gladiator-nav__btn {
+  background: transparent;
+  border: 1px solid rgba(180, 145, 60, 0.2);
+  color: #9a8a5e;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 0.3rem 0.7rem;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gladiator-nav__btn:hover {
+  border-color: rgba(202, 168, 94, 0.4);
+  color: #caa85e;
+}
+
+.gladiator-nav__btn--today {
+  border-color: rgba(212, 168, 67, 0.4);
+  color: #caa85e;
 }
 
 /* ══════════════════════════════════════════════
    FORGE CARD — Transparent day card (no glass)
    ══════════════════════════════════════════════ */
 .forge-card {
-  flex: 0 0 128px;
+  flex: 1 1 0;
+  min-width: 0;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -846,16 +880,6 @@ body {
   .gladiator-schedule__overlay {
     width: 94%;
     margin-top: 18%;
-  }
-
-  .forge-card {
-    flex: 0 0 116px;
-  }
-}
-
-@media (max-width: 480px) {
-  .forge-card {
-    flex: 0 0 106px;
   }
 }
 
@@ -1925,7 +1949,7 @@ body {
   animation: pulse-glow 3s ease-in-out infinite;
 }
 
-/* ── Liga dos Brutus — Parchment Scroll ─────────────────── */
+/* ── Liga dos Seca — Parchment Scroll ─────────────────── */
 .liga-scroll {
   position: relative;
   background:

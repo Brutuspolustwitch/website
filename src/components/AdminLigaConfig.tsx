@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -211,7 +211,7 @@ export default function AdminLigaConfig() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-arena-gold font-[family-name:var(--font-display)] tracking-wider">
-          Liga dos Brutus
+          Liga dos Seca
         </h1>
         <p className="text-sm text-arena-smoke mt-1">Gerir vencedores mensais por ano</p>
       </div>

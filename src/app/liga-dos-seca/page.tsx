@@ -1,13 +1,13 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Suspense } from "react";
 import LigaDosBrutusContent from "@/components/LigaDosBrutus";
 
 export const metadata: Metadata = {
-  title: "Liga dos Brutus",
-  description: "Hall of Fame da comunidade — vencedores mensais da Liga dos Brutus.",
+  title: "Liga dos Seca",
+  description: "Hall of Fame da comunidade — vencedores mensais da Liga dos Seca.",
   openGraph: {
-    title: "Liga dos Brutus | Arena Gladiator",
-    description: "Hall of Fame — os vencedores mensais da Liga dos Brutus.",
+    title: "Liga dos Seca | Arena Gladiator",
+    description: "Hall of Fame — os vencedores mensais da Liga dos Seca.",
   },
 };
 

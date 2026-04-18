@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -27,7 +27,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
   /* ── Page title map ─────────────────────────── */
   const PAGE_TITLES: Record<string, string> = {
     "/calendario": "Calendário",
-    "/torneio": "Torneio Liga dos Brutus",
+    "/torneio": "Torneio Liga dos Seca",
     "/sobre": "Sobre Nós",
     "/contactos": "Contactos",
     "/giveaways": "Giveaways",
@@ -37,7 +37,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
     "/roda-diaria": "Arrebanha Daily",
     "/bonus-hunt": "Bonus Hunt",
     "/leaderboard": "Gladiator Ranks",
-    "/liga-dos-brutus": "Hall of Fame",
+    "/liga-dos-seca": "Hall of Fame",
     "/live": "Em Direto",
     "/slots": "Slot Request",
     "/casinos": "Battle Arenas",

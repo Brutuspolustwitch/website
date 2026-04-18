@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
@@ -186,7 +186,7 @@ export function StreamerHub() {
               <div className="relative z-20 flex items-center justify-center gap-2 py-0 bg-gradient-to-b from-arena-charcoal to-arena-dark border-b border-white/5">
                 <img
                   src="/images/BrutoEmblem.png"
-                  alt="BrutusPolus"
+                  alt="OSECAADEGAS95"
                   className="w-28 h-28 object-contain"
                 />
                 <span className="gladiator-label text-arena-gold text-sm font-bold arena-glow">
