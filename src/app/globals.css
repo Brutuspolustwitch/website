@@ -520,7 +520,7 @@ body {
   justify-content: center;
   background-image: url('/images/schedule.jpg');
   background-size: cover;
-  background-position: top center;
+  background-position: bottom center;
   background-repeat: no-repeat;
   overflow: hidden;
 }
