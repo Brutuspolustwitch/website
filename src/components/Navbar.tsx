@@ -125,7 +125,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
   }, []);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-arena-black/80 backdrop-blur-md border-b border-arena-gold/10">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-arena-black border-b border-arena-gold/10">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Left: hamburger + logo */}
