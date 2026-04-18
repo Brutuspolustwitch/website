@@ -142,20 +142,14 @@ export function StreamCalendar() {
           draggable={false}
         />
 
-        {/* ══ CONTENT OVERLAY (positioned over green chroma key area) ══ */}
+        {/* ══ CONTENT OVERLAY (positioned over stone area) ══ */}
         <div className="gladiator-schedule__overlay">
-          {/* Week navigation */}
+          {/* Week navigation — just arrows */}
           <div className="gladiator-schedule__nav">
             <button onClick={() => setWeekOffset((w) => w - 1)} className="gladiator-nav-btn" aria-label="Semana anterior">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
               </svg>
-            </button>
-            <button
-              onClick={() => setWeekOffset(0)}
-              className={`gladiator-nav-btn gladiator-nav-btn--today ${weekOffset === 0 ? "gladiator-nav-btn--active" : ""}`}
-            >
-              Esta Semana
             </button>
             <button onClick={() => setWeekOffset((w) => w + 1)} className="gladiator-nav-btn" aria-label="Próxima semana">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
@@ -192,7 +186,7 @@ export function StreamCalendar() {
                             <div key={stream.id} className={`gladiator-slot ${stream.is_special ? "gladiator-slot--special" : ""}`}>
                               <div className="gladiator-slot__time">
                                 {stream.start_time.slice(0, 5)}
-                                {stream.end_time ? ` - ${stream.end_time.slice(0, 5)}` : " - ?"}
+                                {stream.end_time ? ` - ${stream.end_time.slice(0, 5)}` : ""}
                               </div>
                               <div className="gladiator-slot__title">{stream.title}</div>
                               <div className="gladiator-slot__cats">
@@ -210,7 +204,7 @@ export function StreamCalendar() {
                         })
                       ) : (
                         <div className="gladiator-slot gladiator-slot--empty">
-                          <div className="gladiator-slot__title" style={{ opacity: 0.4 }}>—</div>
+                          <div className="gladiator-slot__title" style={{ opacity: 0.3 }}>—</div>
                         </div>
                       )}
                     </div>
@@ -219,48 +213,6 @@ export function StreamCalendar() {
               })}
             </motion.div>
           </AnimatePresence>
-
-          {/* ══ BOTTOM SECTIONS ══ */}
-          <div className="gladiator-schedule__footer">
-            <div className="gladiator-footer-section">
-              <h3 className="gladiator-footer-section__title">⚔ Jogos da Semana</h3>
-              <div className="gladiator-footer-section__content">
-                {weekCategories.size > 0 ? (
-                  <div className="flex flex-wrap gap-2 justify-center">
-                    {Array.from(weekCategories).map((cat) => {
-                      const c = CATEGORY_COLORS[cat] || CATEGORY_COLORS["Outro"];
-                      return (
-                        <span key={cat} className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border ${c.bg} ${c.text} ${c.border}`}>
-                          {CATEGORY_ICONS[cat]} {cat}
-                        </span>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <p className="text-arena-ash text-sm text-center">Sem jogos agendados</p>
-                )}
-              </div>
-            </div>
-
-            <div className="gladiator-footer-section">
-              <h3 className="gladiator-footer-section__title">🏛 Eventos Especiais / Notas</h3>
-              <div className="gladiator-footer-section__content">
-                {specialStreams.length > 0 ? (
-                  <div className="space-y-2">
-                    {specialStreams.map((s) => (
-                      <div key={s.id} className="flex items-center gap-2 text-sm">
-                        <span className="text-arena-gold">⭐</span>
-                        <span className="text-arena-smoke font-medium">{s.title}</span>
-                        {s.description && <span className="text-arena-ash">— {s.description}</span>}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-arena-ash text-sm text-center">Sem eventos especiais esta semana</p>
-                )}
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

@@ -493,8 +493,7 @@ body {
 .gladiator-schedule {
   position: relative;
   width: 100%;
-  max-width: 100%;
-  margin: 0 auto;
+  margin: 0;
   padding: 0;
 }
 
@@ -502,35 +501,32 @@ body {
 .gladiator-schedule__poster {
   position: relative;
   width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .gladiator-schedule__bg {
-  display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
   pointer-events: none;
   user-select: none;
 }
 
 /* ── Content overlay on stone area ──────── */
-/* Stone area between columns: x=18%–82%, y=30%–94% */
 .gladiator-schedule__overlay {
-  position: absolute;
-  top: 30%;
-  left: 18%;
-  width: 64%;
-  height: 64%;
+  position: relative;
+  z-index: 1;
+  width: 58%;
+  margin-top: 12%;
   display: flex;
   flex-direction: column;
-  gap: 1.5%;
-  padding: 1% 1%;
-  overflow: hidden;
-}
-
-/* ── Header (removed — now part of bg image) */
-
-.gladiator-schedule__header {
-  display: none;
+  gap: 0.75rem;
+  padding: 0 0.5rem;
 }
 
 /* ── Week Nav ──────────────────────────────── */
@@ -538,7 +534,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 1rem;
   flex-shrink: 0;
 }
 
@@ -546,76 +542,27 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 1rem;
-  border: 1px solid rgba(212, 168, 67, 0.2);
-  border-radius: 0.5rem;
-  background: rgba(212, 168, 67, 0.05);
-  color: var(--color-arena-smoke);
-  font-family: var(--font-display);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(212, 168, 67, 0.3);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--color-arena-gold);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .gladiator-nav-btn:hover {
-  background: rgba(212, 168, 67, 0.15);
-  border-color: rgba(212, 168, 67, 0.4);
-  color: var(--color-arena-gold);
-}
-
-.gladiator-nav-btn--active {
-  background: rgba(212, 168, 67, 0.15);
+  background: rgba(212, 168, 67, 0.2);
   border-color: var(--color-arena-gold);
-  color: var(--color-arena-gold);
+  transform: scale(1.1);
 }
 
 /* ── Weekly Grid ───────────────────────────── */
 .gladiator-week {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 0.35rem;
-  flex: 1;
-  min-height: 0;
-}
-
-@media (max-width: 1024px) {
-  .gladiator-week {
-    grid-template-columns: repeat(7, 1fr);
-    gap: 0.25rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .gladiator-schedule__poster {
-    /* On mobile, stack vertically instead of overlay */
-    display: flex;
-    flex-direction: column;
-  }
-
-  .gladiator-schedule__bg {
-    border-radius: 0.75rem;
-  }
-
-  .gladiator-schedule__overlay {
-    position: relative;
-    top: auto;
-    left: auto;
-    width: 100%;
-    height: auto;
-    padding: 1rem 0.5rem;
-    gap: 0.75rem;
-  }
-
-  .gladiator-week {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.35rem;
-  }
-
-  .gladiator-schedule__footer {
-    grid-template-columns: 1fr;
-  }
+  gap: 0.4rem;
 }
 
 /* ── Day Column ────────────────────────────── */
@@ -623,25 +570,26 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(212, 168, 67, 0.2);
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(212, 168, 67, 0.15);
   border-radius: 0.5rem;
   overflow: hidden;
+  backdrop-filter: blur(4px);
   transition: all 0.3s;
 }
 
 .gladiator-day:hover {
   border-color: rgba(212, 168, 67, 0.4);
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
 }
 
 .gladiator-day--today {
-  border-color: rgba(212, 168, 67, 0.5);
-  box-shadow: 0 0 20px rgba(212, 168, 67, 0.1), inset 0 0 30px rgba(212, 168, 67, 0.03);
+  border-color: rgba(212, 168, 67, 0.6);
+  box-shadow: 0 0 15px rgba(212, 168, 67, 0.15), inset 0 0 20px rgba(212, 168, 67, 0.05);
 }
 
 .gladiator-day--past {
-  opacity: 0.5;
+  opacity: 0.45;
 }
 
 /* ── Shield Header ─────────────────────────── */
@@ -651,21 +599,19 @@ body {
   flex-direction: column;
   align-items: center;
   padding: 0;
-  position: relative;
 }
 
 .gladiator-shield__top {
   width: 100%;
-  padding: 0.6rem 0.5rem 0.4rem;
-  background: linear-gradient(180deg, rgba(212, 168, 67, 0.15), rgba(212, 168, 67, 0.05));
+  padding: 0.5rem 0.5rem 1rem;
+  background: linear-gradient(180deg, rgba(212, 168, 67, 0.2), rgba(212, 168, 67, 0.05));
   text-align: center;
-  clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
-  padding-bottom: 1.2rem;
+  clip-path: polygon(0 0, 100% 0, 100% 65%, 50% 100%, 0 65%);
 }
 
 .gladiator-shield__day {
   font-family: var(--font-display);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.15em;
@@ -673,26 +619,26 @@ body {
 }
 
 .gladiator-shield--active .gladiator-shield__top {
-  background: linear-gradient(180deg, rgba(212, 168, 67, 0.3), rgba(212, 168, 67, 0.1));
+  background: linear-gradient(180deg, rgba(212, 168, 67, 0.35), rgba(212, 168, 67, 0.1));
 }
 
 .gladiator-shield__date {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: -0.3rem;
+  margin-top: -0.2rem;
   line-height: 1;
 }
 
 .gladiator-shield__num {
   font-family: var(--font-ui);
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   color: var(--color-arena-white);
 }
 
 .gladiator-shield__month {
   font-family: var(--font-display);
-  font-size: 0.6rem;
+  font-size: 0.5rem;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   color: var(--color-arena-ash);
@@ -700,9 +646,9 @@ body {
 
 /* ── Spear Divider ─────────────────────────── */
 .gladiator-spear {
-  width: 80%;
-  height: 2px;
-  margin: 0.5rem 0;
+  width: 75%;
+  height: 1px;
+  margin: 0.35rem 0;
   background: linear-gradient(90deg, transparent, var(--color-arena-gold), transparent);
   position: relative;
 }
@@ -713,44 +659,44 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 0.45rem;
+  font-size: 0.35rem;
   color: var(--color-arena-gold);
 }
 
 /* ── Stream Slots ──────────────────────────── */
 .gladiator-day__slots {
   width: 100%;
-  padding: 0.5rem;
+  padding: 0.35rem;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.3rem;
   flex: 1;
 }
 
 .gladiator-slot {
-  padding: 0.5rem;
-  border-radius: 0.4rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 0.4rem 0.3rem;
+  border-radius: 0.3rem;
+  background: rgba(212, 168, 67, 0.03);
+  border: 1px solid rgba(212, 168, 67, 0.08);
   text-align: center;
   transition: all 0.2s;
 }
 
 .gladiator-slot:hover {
-  background: rgba(212, 168, 67, 0.05);
-  border-color: rgba(212, 168, 67, 0.15);
+  background: rgba(212, 168, 67, 0.08);
+  border-color: rgba(212, 168, 67, 0.2);
 }
 
 .gladiator-slot--special {
-  border-color: rgba(212, 168, 67, 0.25);
-  background: rgba(212, 168, 67, 0.05);
+  border-color: rgba(212, 168, 67, 0.3);
+  background: rgba(212, 168, 67, 0.06);
 }
 
 .gladiator-slot--special::before {
   content: "⭐";
   display: block;
-  font-size: 0.6rem;
-  margin-bottom: 0.2rem;
+  font-size: 0.55rem;
+  margin-bottom: 0.15rem;
 }
 
 .gladiator-slot--empty {
@@ -760,19 +706,19 @@ body {
 
 .gladiator-slot__time {
   font-family: var(--font-ui);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--color-arena-gold-light);
   letter-spacing: 0.05em;
 }
 
 .gladiator-slot__title {
   font-family: var(--font-display);
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 600;
   color: var(--color-arena-white);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-top: 0.15rem;
+  letter-spacing: 0.04em;
+  margin-top: 0.1rem;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -783,47 +729,33 @@ body {
 .gladiator-slot__cats {
   display: flex;
   justify-content: center;
-  gap: 0.2rem;
-  margin-top: 0.25rem;
-  font-size: 0.75rem;
+  gap: 0.15rem;
+  margin-top: 0.2rem;
+  font-size: 0.7rem;
 }
 
 .gladiator-slot__casino {
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   color: var(--color-arena-ash);
-  margin-top: 0.2rem;
+  margin-top: 0.15rem;
 }
 
-/* ── Footer Sections ───────────────────────── */
-.gladiator-schedule__footer {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
-  flex-shrink: 0;
+/* ── Mobile ────────────────────────────────── */
+@media (max-width: 768px) {
+  .gladiator-schedule__overlay {
+    width: 90%;
+    margin-top: 25%;
+  }
+
+  .gladiator-week {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
-.gladiator-footer-section {
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(212, 168, 67, 0.2);
-  border-radius: 0.5rem;
-  overflow: hidden;
-}
-
-.gladiator-footer-section__title {
-  font-family: var(--font-display);
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--color-arena-gold);
-  padding: 0.4rem 0.75rem;
-  background: linear-gradient(180deg, rgba(212, 168, 67, 0.1), transparent);
-  border-bottom: 1px solid rgba(212, 168, 67, 0.1);
-  text-align: center;
-}
-
-.gladiator-footer-section__content {
-  padding: 0.5rem 0.75rem;
+@media (max-width: 480px) {
+  .gladiator-week {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 /* ══════════════════════════════════════════════════════════════════
