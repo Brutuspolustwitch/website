@@ -518,13 +518,12 @@ body {
   position: relative;
   width: 100%;
   flex: 1;
-  min-height: calc(100vh - 4rem);
   display: flex;
   align-items: flex-start;
   justify-content: center;
   background-image: url('/images/schedule.jpg');
   background-size: cover;
-  background-position: bottom center;
+  background-position: center center;
   background-repeat: no-repeat;
   overflow: hidden;
 }
