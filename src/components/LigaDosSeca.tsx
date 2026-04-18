@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -56,7 +56,7 @@ function DustParticles() {
 }
 
 /* ── Main Component ────────────────────────────────────── */
-export default function LigaDosBrutusContent({ hideTitle = false }: { hideTitle?: boolean } = {}) {
+export default function LigaDoSecaContent({ hideTitle = false }: { hideTitle?: boolean } = {}) {
   const [years, setYears] = useState<LeaderboardYear[]>([]);
   const [selectedYear, setSelectedYear] = useState<LeaderboardYear | null>(null);
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);

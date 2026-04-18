@@ -539,65 +539,15 @@ body {
   padding: 0 0.25rem 2rem;
 }
 
-/* ── Drag-scrollable container ──────────── */
-.gladiator-scroll {
-  overflow-x: scroll;
-  overflow-y: hidden;
-  cursor: grab;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  padding: 0.75rem 0;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: none;
-}
-
-.gladiator-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-/* ── Month row ───────────────────────────── */
+/* ── Week row — static 7 columns ─────────── */
 .gladiator-week {
   display: flex;
-  gap: 0.3rem;
+  gap: 0.35rem;
   width: 100%;
 }
 
-/* ── Week navigation ─────────────────── */
-.gladiator-nav {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  margin-bottom: 0.4rem;
-}
-
-.gladiator-nav__btn {
-  background: transparent;
-  border: 1px solid rgba(180, 145, 60, 0.2);
-  color: #9a8a5e;
-  font-family: var(--font-display);
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  padding: 0.3rem 0.7rem;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.gladiator-nav__btn:hover {
-  border-color: rgba(202, 168, 94, 0.4);
-  color: #caa85e;
-}
-
-.gladiator-nav__btn--today {
-  border-color: rgba(212, 168, 67, 0.4);
-  color: #caa85e;
-}
-
 /* ══════════════════════════════════════════════
-   FORGE CARD — Transparent day card (no glass)
+   FORGE CARD — Clean dark card, gold accents
    ══════════════════════════════════════════════ */
 .forge-card {
   flex: 1 1 0;
@@ -605,65 +555,55 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
-  border-radius: 4px;
+  border-radius: 6px;
   overflow: hidden;
-  scroll-snap-align: center;
-  cursor: pointer;
-  transition: opacity 0.3s ease;
-  background: transparent;
-  border: 1px solid rgba(180, 145, 60, 0.08);
-  box-shadow: none;
+  background: rgba(18, 16, 12, 0.85);
+  border: 1px solid rgba(80, 70, 50, 0.3);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
-/* Remove old gold accent pseudo-elements */
 .forge-card::before,
 .forge-card::after {
   display: none;
 }
 
-/* ── Hover state ─────────────────────────── */
+/* ── Hover ───────────────────────────────── */
 .forge-card:hover {
-  border-color: rgba(202, 168, 94, 0.2);
+  border-color: rgba(180, 145, 60, 0.35);
 }
 
-/* ── Active press ────────────────────────── */
-.forge-card:active {
-  transform: none;
-}
-
-/* ── Today — subtle thin gold glow ───────── */
+/* ── Today — gold border glow ────────────── */
 .forge-card--today {
-  border: 1px solid rgba(212, 168, 67, 0.5);
+  border-color: rgba(202, 168, 94, 0.6);
   box-shadow:
-    0 0 8px rgba(255, 179, 71, 0.15),
-    0 0 20px rgba(255, 160, 40, 0.08);
+    0 0 6px rgba(202, 168, 94, 0.2),
+    0 0 16px rgba(202, 168, 94, 0.08);
 }
 
 .forge-card--today:hover {
-  border-color: rgba(255, 200, 80, 0.6);
+  border-color: rgba(212, 178, 80, 0.7);
   box-shadow:
-    0 0 10px rgba(255, 179, 71, 0.2),
-    0 0 24px rgba(255, 160, 40, 0.1);
+    0 0 8px rgba(202, 168, 94, 0.25),
+    0 0 20px rgba(202, 168, 94, 0.1);
 }
 
-/* ── Past days — slightly darker ─────────── */
+/* ── Past days — dimmed ──────────────────── */
 .forge-card--past {
-  opacity: 0.4;
+  opacity: 0.45;
 }
 
 .forge-card--past:hover {
-  opacity: 0.55;
+  opacity: 0.6;
 }
 
 /* ── Header ──────────────────────────────── */
 .forge-card__header {
-  position: relative;
   padding: 0.6rem 0.4rem 0.45rem;
   text-align: center;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(80, 70, 50, 0.2);
 }
 
-/* Remove vignette */
 .forge-card__header::after {
   display: none;
 }
@@ -671,12 +611,11 @@ body {
 .forge-card__day {
   display: block;
   font-family: var(--font-display);
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.25em;
-  color: #9a8a5e;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  letter-spacing: 0.2em;
+  color: #8a7d65;
 }
 
 .forge-card--today .forge-card__day {
@@ -693,110 +632,61 @@ body {
 
 .forge-card__num {
   font-family: var(--font-display);
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 400;
-  color: #c0b088;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+  color: #b0a588;
 }
 
 .forge-card--today .forge-card__num {
-  color: #ffd98a;
-  text-shadow:
-    0 2px 6px rgba(0, 0, 0, 0.6),
-    0 0 10px rgba(255, 179, 71, 0.2);
+  color: #e8c96e;
 }
 
 .forge-card__month {
   font-family: var(--font-display);
-  font-size: 0.44rem;
+  font-size: 0.42rem;
   text-transform: uppercase;
-  letter-spacing: 0.22em;
-  color: #6a6050;
+  letter-spacing: 0.2em;
+  color: #5e5648;
   margin-top: 0.1rem;
 }
 
-/* ── Divider ─────────────────────────────── */
+/* ── Divider — simple line ───────────────── */
 .forge-card__divider {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  padding: 0 0.5rem;
-  height: 8px;
-}
-
-.forge-card__divider-line {
-  flex: 1;
   height: 1px;
+  margin: 0 0.5rem;
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(180, 145, 60, 0.18)
-  );
-}
-
-.forge-card__divider-line:last-child {
-  background: linear-gradient(
-    90deg,
-    rgba(180, 145, 60, 0.18),
+    rgba(180, 145, 60, 0.2) 50%,
     transparent
   );
 }
 
-.forge-card__divider-gem {
-  width: 3px;
-  height: 3px;
-  background: rgba(180, 145, 60, 0.3);
-  transform: rotate(45deg);
-  flex-shrink: 0;
-  margin: 0 2px;
-}
-
-.forge-card--today .forge-card__divider-gem {
-  background: rgba(255, 200, 80, 0.6);
-  box-shadow: 0 0 4px rgba(255, 179, 71, 0.3);
-}
-
 /* ── Body (stream list) ────────────────── */
 .forge-card__body {
-  padding: 0.3rem 0.4rem 0.5rem;
+  padding: 0.35rem 0.4rem 0.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
   flex: 1;
 }
 
-/* ── Ember glow (today only) ───────────── */
-.forge-card__ember {
-  position: absolute;
-  bottom: 0;
-  left: 10%;
-  right: 10%;
-  height: 30%;
-  pointer-events: none;
-  background: radial-gradient(
-    ellipse at bottom center,
-    rgba(255, 160, 40, 0.06) 0%,
-    transparent 70%
-  );
-  z-index: 0;
-}
-
 /* ══════════════════════════════════════════════
-   FORGE SLOT — Individual stream entry
+   FORGE SLOT — Stream entry
    ══════════════════════════════════════════════ */
 .forge-slot {
   position: relative;
   z-index: 1;
-  padding: 0.35rem 0.3rem;
+  padding: 0.3rem 0.25rem;
   border-radius: 3px;
   text-align: center;
   background: transparent;
   border: none;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease;
 }
 
 .forge-slot:hover {
-  background: rgba(180, 145, 60, 0.04);
+  background: rgba(180, 145, 60, 0.06);
 }
 
 .forge-slot--special {
@@ -811,22 +701,20 @@ body {
 
 .forge-slot__time {
   font-family: var(--font-display);
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 600;
   color: #caa85e;
   letter-spacing: 0.06em;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 .forge-slot__title {
   font-family: var(--font-display);
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   font-weight: 700;
-  color: #e8d8a6;
+  color: #d4c8a0;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin-top: 0.15rem;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  margin-top: 0.12rem;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -834,12 +722,8 @@ body {
   -webkit-box-orient: vertical;
 }
 
-/* Special slot title glows */
 .forge-slot--special .forge-slot__title {
-  color: #ffd98a;
-  text-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.5),
-    0 0 8px rgba(255, 179, 71, 0.2);
+  color: #e8c96e;
 }
 
 .forge-slot__meta {
@@ -847,24 +731,24 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.25rem;
-  margin-top: 0.2rem;
+  margin-top: 0.15rem;
 }
 
 .forge-slot__icon {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
 }
 
 .forge-slot__casino {
   font-family: var(--font-display);
-  font-size: 0.5rem;
-  color: #7a6f5c;
+  font-size: 0.46rem;
+  color: #6a6050;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .forge-slot__dash {
-  color: #3d362c;
-  font-size: 1rem;
+  color: #3a342a;
+  font-size: 0.9rem;
   font-family: var(--font-display);
 }
 

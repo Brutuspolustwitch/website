@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     "casino bonus",
     "casino online portugal",
     "streamer casino",
-    "liga dos brutus",
+    "liga dos seca",
     "torneio slots",
     "casino ao vivo",
   ],

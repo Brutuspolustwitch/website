@@ -1,6 +1,6 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { Suspense } from "react";
-import LigaDosBrutusContent from "@/components/LigaDosBrutus";
+import LigaDoSecaContent from "@/components/LigaDosSeca";
 
 export const metadata: Metadata = {
   title: "Liga dos Seca",
@@ -11,14 +11,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function LigaDosBrutusPage() {
+export default function LigaDoSecaPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-arena-gold/30 border-t-arena-gold rounded-full animate-spin" />
       </div>
     }>
-      <LigaDosBrutusContent hideTitle />
+      <LigaDoSecaContent hideTitle />
     </Suspense>
   );
 }
