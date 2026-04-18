@@ -487,6 +487,369 @@ body {
 }
 
 /* ══════════════════════════════════════════════════════════════════
+   GLADIATOR SCHEDULE
+   ══════════════════════════════════════════════════════════════════ */
+
+.gladiator-schedule {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* ── Header ────────────────────────────────── */
+.gladiator-schedule__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2.5rem;
+  position: relative;
+}
+
+.gladiator-schedule__header::after {
+  content: "";
+  position: absolute;
+  bottom: -1rem;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-arena-gold), transparent);
+}
+
+.gladiator-schedule__emblem {
+  position: relative;
+}
+
+.gladiator-schedule__emblem::before,
+.gladiator-schedule__emblem::after {
+  content: "🔥";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  filter: brightness(1.2);
+  animation: torch-flicker 1.5s ease-in-out infinite alternate;
+}
+
+.gladiator-schedule__emblem::before {
+  left: -2.5rem;
+}
+
+.gladiator-schedule__emblem::after {
+  right: -2.5rem;
+  animation-delay: 0.3s;
+}
+
+@keyframes torch-flicker {
+  0%, 100% { opacity: 0.7; transform: translateY(-50%) scale(1); }
+  50% { opacity: 1; transform: translateY(-55%) scale(1.1); }
+}
+
+.gladiator-schedule__title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+
+.gladiator-schedule__title-top {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4em;
+  color: var(--color-arena-smoke);
+}
+
+.gladiator-schedule__title-main {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--color-arena-gold);
+  text-shadow: 0 0 20px rgba(212, 168, 67, 0.3);
+}
+
+.gladiator-schedule__subtitle {
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  letter-spacing: 0.3em;
+  color: var(--color-arena-ash);
+}
+
+/* ── Week Nav ──────────────────────────────── */
+.gladiator-schedule__nav {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.gladiator-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(212, 168, 67, 0.2);
+  border-radius: 0.5rem;
+  background: rgba(212, 168, 67, 0.05);
+  color: var(--color-arena-smoke);
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.gladiator-nav-btn:hover {
+  background: rgba(212, 168, 67, 0.15);
+  border-color: rgba(212, 168, 67, 0.4);
+  color: var(--color-arena-gold);
+}
+
+.gladiator-nav-btn--active {
+  background: rgba(212, 168, 67, 0.15);
+  border-color: var(--color-arena-gold);
+  color: var(--color-arena-gold);
+}
+
+/* ── Weekly Grid ───────────────────────────── */
+.gladiator-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .gladiator-week {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .gladiator-week {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── Day Column ────────────────────────────── */
+.gladiator-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(20, 20, 20, 0.6);
+  border: 1px solid rgba(212, 168, 67, 0.12);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.gladiator-day:hover {
+  border-color: rgba(212, 168, 67, 0.3);
+  background: rgba(25, 25, 20, 0.8);
+}
+
+.gladiator-day--today {
+  border-color: rgba(212, 168, 67, 0.5);
+  box-shadow: 0 0 20px rgba(212, 168, 67, 0.1), inset 0 0 30px rgba(212, 168, 67, 0.03);
+}
+
+.gladiator-day--past {
+  opacity: 0.5;
+}
+
+/* ── Shield Header ─────────────────────────── */
+.gladiator-shield {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  position: relative;
+}
+
+.gladiator-shield__top {
+  width: 100%;
+  padding: 0.6rem 0.5rem 0.4rem;
+  background: linear-gradient(180deg, rgba(212, 168, 67, 0.15), rgba(212, 168, 67, 0.05));
+  text-align: center;
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
+  padding-bottom: 1.2rem;
+}
+
+.gladiator-shield__day {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--color-arena-gold);
+}
+
+.gladiator-shield--active .gladiator-shield__top {
+  background: linear-gradient(180deg, rgba(212, 168, 67, 0.3), rgba(212, 168, 67, 0.1));
+}
+
+.gladiator-shield__date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -0.3rem;
+  line-height: 1;
+}
+
+.gladiator-shield__num {
+  font-family: var(--font-ui);
+  font-size: 1.5rem;
+  color: var(--color-arena-white);
+}
+
+.gladiator-shield__month {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--color-arena-ash);
+}
+
+/* ── Spear Divider ─────────────────────────── */
+.gladiator-spear {
+  width: 80%;
+  height: 2px;
+  margin: 0.5rem 0;
+  background: linear-gradient(90deg, transparent, var(--color-arena-gold), transparent);
+  position: relative;
+}
+
+.gladiator-spear::before {
+  content: "◆";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.45rem;
+  color: var(--color-arena-gold);
+}
+
+/* ── Stream Slots ──────────────────────────── */
+.gladiator-day__slots {
+  width: 100%;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.gladiator-slot {
+  padding: 0.5rem;
+  border-radius: 0.4rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.gladiator-slot:hover {
+  background: rgba(212, 168, 67, 0.05);
+  border-color: rgba(212, 168, 67, 0.15);
+}
+
+.gladiator-slot--special {
+  border-color: rgba(212, 168, 67, 0.25);
+  background: rgba(212, 168, 67, 0.05);
+}
+
+.gladiator-slot--special::before {
+  content: "⭐";
+  display: block;
+  font-size: 0.6rem;
+  margin-bottom: 0.2rem;
+}
+
+.gladiator-slot--empty {
+  border-color: transparent;
+  background: transparent;
+}
+
+.gladiator-slot__time {
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  color: var(--color-arena-gold-light);
+  letter-spacing: 0.05em;
+}
+
+.gladiator-slot__title {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-arena-white);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.15rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.gladiator-slot__cats {
+  display: flex;
+  justify-content: center;
+  gap: 0.2rem;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.gladiator-slot__casino {
+  font-size: 0.6rem;
+  color: var(--color-arena-ash);
+  margin-top: 0.2rem;
+}
+
+/* ── Footer Sections ───────────────────────── */
+.gladiator-schedule__footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 640px) {
+  .gladiator-schedule__footer {
+    grid-template-columns: 1fr;
+  }
+}
+
+.gladiator-footer-section {
+  background: rgba(20, 20, 20, 0.6);
+  border: 1px solid rgba(212, 168, 67, 0.12);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.gladiator-footer-section__title {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--color-arena-gold);
+  padding: 0.75rem 1rem;
+  background: linear-gradient(180deg, rgba(212, 168, 67, 0.1), transparent);
+  border-bottom: 1px solid rgba(212, 168, 67, 0.1);
+  text-align: center;
+}
+
+.gladiator-footer-section__content {
+  padding: 1rem;
+}
+
+/* ══════════════════════════════════════════════════════════════════
    BONUS HUNT — Papyrus Table
    ══════════════════════════════════════════════════════════════════ */
 .bonus-hunt-scroll {
