@@ -522,9 +522,10 @@ body {
   align-items: flex-start;
   justify-content: center;
   background-image: url('/images/schedule.jpg');
-  background-size: cover;
+  background-size: contain;
   background-position: center center;
   background-repeat: no-repeat;
+  background-color: #0a0908;
   overflow: hidden;
 }
 
