@@ -540,7 +540,7 @@ body {
 }
 
 /* ══════════════════════════════════════════════
-   FORGE CARD — Clean dark card, gold accents
+   FORGE CARD — Gladiator stone card
    ══════════════════════════════════════════════ */
 .forge-card {
   flex: 1 1 0;
@@ -548,41 +548,60 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
-  border-radius: 6px;
+  border-radius: 0;
   overflow: hidden;
-  background: rgba(18, 16, 12, 0.85);
-  border: 1px solid rgba(80, 70, 50, 0.3);
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+  border: 2px solid #1a1a1a;
+  box-shadow:
+    inset 0 0 50px rgba(0, 0, 0, 0.8),
+    0 10px 20px rgba(0, 0, 0, 0.5);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.forge-card::before,
+.forge-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.9);
+  z-index: 2;
+}
+
 .forge-card::after {
   display: none;
 }
 
 /* ── Hover ───────────────────────────────── */
 .forge-card:hover {
-  border-color: rgba(180, 145, 60, 0.35);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow:
+    inset 0 0 50px rgba(0, 0, 0, 0.8),
+    0 15px 30px rgba(0, 0, 0, 0.6);
 }
 
 /* ── Today — gold border glow ────────────── */
 .forge-card--today {
-  border-color: rgba(202, 168, 94, 0.6);
+  border-color: #c49a3f;
   box-shadow:
-    0 0 6px rgba(202, 168, 94, 0.2),
-    0 0 16px rgba(202, 168, 94, 0.08);
+    inset 0 0 50px rgba(0, 0, 0, 0.7),
+    0 0 10px rgba(196, 154, 63, 0.3),
+    0 0 25px rgba(196, 154, 63, 0.1),
+    0 10px 20px rgba(0, 0, 0, 0.5);
 }
 
 .forge-card--today:hover {
-  border-color: rgba(212, 178, 80, 0.7);
+  border-color: #d4aa4f;
   box-shadow:
-    0 0 8px rgba(202, 168, 94, 0.25),
-    0 0 20px rgba(202, 168, 94, 0.1);
+    inset 0 0 50px rgba(0, 0, 0, 0.7),
+    0 0 14px rgba(196, 154, 63, 0.4),
+    0 0 30px rgba(196, 154, 63, 0.15),
+    0 15px 30px rgba(0, 0, 0, 0.6);
 }
 
 /* ── Past days — dimmed ──────────────────── */
 .forge-card--past {
-  opacity: 0.45;
+  opacity: 0.4;
 }
 
 .forge-card--past:hover {
@@ -591,10 +610,10 @@ body {
 
 /* ── Header ──────────────────────────────── */
 .forge-card__header {
-  padding: 0.6rem 0.4rem 0.45rem;
+  padding: 0.8rem 0.4rem 0.5rem;
   text-align: center;
-  background: rgba(255, 255, 255, 0.02);
-  border-bottom: 1px solid rgba(80, 70, 50, 0.2);
+  position: relative;
+  z-index: 1;
 }
 
 .forge-card__header::after {
@@ -604,15 +623,22 @@ body {
 .forge-card__day {
   display: block;
   font-family: var(--font-display);
-  font-size: 0.6rem;
-  font-weight: 700;
+  font-size: 0.7rem;
+  font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: #8a7d65;
+  letter-spacing: 0.25em;
+  background: linear-gradient(to bottom, #f3d47a 0%, #c49a3f 50%, #8b6e2a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
 }
 
 .forge-card--today .forge-card__day {
-  color: #caa85e;
+  background: linear-gradient(to bottom, #ffe8a0 0%, #e8c96e 50%, #c49a3f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .forge-card__date {
@@ -620,89 +646,101 @@ body {
   flex-direction: column;
   align-items: center;
   line-height: 1;
-  margin-top: 0.15rem;
+  margin-top: 0.2rem;
 }
 
 .forge-card__num {
   font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 400;
-  color: #b0a588;
+  font-size: 1.8rem;
+  font-weight: 900;
+  background: linear-gradient(to bottom, #f3d47a 0%, #c49a3f 50%, #8b6e2a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
 }
 
 .forge-card--today .forge-card__num {
-  color: #e8c96e;
+  background: linear-gradient(to bottom, #ffe8a0 0%, #e8c96e 50%, #c49a3f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .forge-card__month {
   font-family: var(--font-display);
-  font-size: 0.42rem;
+  font-size: 0.44rem;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  color: #5e5648;
+  color: #6a6050;
   margin-top: 0.1rem;
 }
 
-/* ── Divider — simple line ───────────────── */
+/* ── Divider — gold gradient line ────────── */
 .forge-card__divider {
   height: 1px;
-  margin: 0 0.5rem;
+  margin: 0 1rem;
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(180, 145, 60, 0.2) 50%,
+    #c49a3f 50%,
     transparent
   );
 }
 
 /* ── Body (stream list) ────────────────── */
 .forge-card__body {
-  padding: 0.35rem 0.4rem 0.5rem;
+  padding: 0.5rem 0.4rem 0.6rem;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
   flex: 1;
+  position: relative;
+  z-index: 1;
 }
 
 /* ══════════════════════════════════════════════
-   FORGE SLOT — Stream entry
+   FORGE SLOT — Stream entry (gladiator style)
    ══════════════════════════════════════════════ */
 .forge-slot {
   position: relative;
   z-index: 1;
-  padding: 0.3rem 0.25rem;
-  border-radius: 3px;
+  padding: 0.35rem 0.3rem;
+  border-radius: 0;
   text-align: center;
-  background: transparent;
-  border: none;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid #222;
   transition: background 0.2s ease;
 }
 
 .forge-slot:hover {
-  background: rgba(180, 145, 60, 0.06);
+  background: rgba(0, 0, 0, 0.6);
 }
 
 .forge-slot--special {
-  background: transparent;
-  border: none;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid #333;
 }
 
 .forge-slot--empty {
-  background: transparent;
-  border: none;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid #1a1a1a;
 }
 
 .forge-slot__time {
   font-family: var(--font-display);
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: #caa85e;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: linear-gradient(to bottom, #f3d47a 0%, #c49a3f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   letter-spacing: 0.06em;
 }
 
 .forge-slot__title {
   font-family: var(--font-display);
-  font-size: 0.58rem;
+  font-size: 0.6rem;
   font-weight: 700;
   color: #d4c8a0;
   text-transform: uppercase;
