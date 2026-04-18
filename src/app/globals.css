@@ -508,25 +508,19 @@ body {
   width: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
 }
 
 .gladiator-schedule__poster {
   position: relative;
   width: 100%;
-  flex: 1;
+  aspect-ratio: 1906 / 1040;
   display: flex;
   align-items: flex-start;
   justify-content: center;
   background-image: url('/images/schedule.jpg');
-  background-size: 100% auto;
-  background-position: top center;
+  background-size: 100% 100%;
+  background-position: center;
   background-repeat: no-repeat;
-  background-color: #0a0908;
-  overflow: visible;
 }
 
 /* ── Overlay ─────────────────────────────── */
