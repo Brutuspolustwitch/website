@@ -147,34 +147,24 @@ export function StreamerHub() {
               )}
             </div>
 
-            {/* Prev / Next clip buttons — sword buttons below the player */}
+            {/* Prev / Next clip buttons */}
             {!isLive && !loading && activeClip && clips.length > 1 && (
               <div className="flex items-center justify-between mt-3 lg:col-span-1" style={{ gridColumn: "1" }}>
                 <button
                   onClick={goPrevClip}
-                  className="sword-btn sword-btn--prev"
+                  className="flex items-center gap-2 px-5 py-2 rounded-lg border border-arena-gold/30 bg-arena-gold/10 hover:bg-arena-gold/20 text-arena-gold font-[family-name:var(--font-display)] text-sm tracking-wider transition-all duration-300 hover:border-arena-gold/50 hover:shadow-[0_0_12px_rgba(212,168,67,0.15)]"
                   aria-label="Clip anterior"
                 >
-                  <img
-                    src="/images/buttons/Anterior.png"
-                    alt="Clip Anterior"
-                    className="sword-btn__img"
-                    draggable={false}
-                  />
-                  <span className="sword-btn__label">CLIP ANTERIOR</span>
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                  CLIP ANTERIOR
                 </button>
                 <button
                   onClick={goNextClip}
-                  className="sword-btn sword-btn--next"
+                  className="flex items-center gap-2 px-5 py-2 rounded-lg border border-arena-gold/30 bg-arena-gold/10 hover:bg-arena-gold/20 text-arena-gold font-[family-name:var(--font-display)] text-sm tracking-wider transition-all duration-300 hover:border-arena-gold/50 hover:shadow-[0_0_12px_rgba(212,168,67,0.15)]"
                   aria-label="Próximo clip"
                 >
-                  <img
-                    src="/images/buttons/Proximo.png"
-                    alt="Próximo Clip"
-                    className="sword-btn__img"
-                    draggable={false}
-                  />
-                  <span className="sword-btn__label">PRÓXIMO CLIP</span>
+                  PRÓXIMO CLIP
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
                 </button>
               </div>
             )}
