@@ -56,7 +56,7 @@ function DustParticles() {
 }
 
 /* ── Main Component ────────────────────────────────────── */
-export default function LigaDosBrutusContent({ hideTitle = false }: { hideTitle?: boolean } = {}) {
+export default function LigaDosBrutusContent() {
   const [years, setYears] = useState<LeaderboardYear[]>([]);
   const [selectedYear, setSelectedYear] = useState<LeaderboardYear | null>(null);
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
@@ -132,21 +132,13 @@ export default function LigaDosBrutusContent({ hideTitle = false }: { hideTitle?
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* ── Header ──────────────────────────── */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-10"
-          >
-            <h1 className="text-3xl sm:text-5xl font-bold font-[family-name:var(--font-display)] bg-gradient-to-r from-arena-gold via-arena-gold-light to-arena-gold bg-clip-text text-transparent tracking-wider">
-              Liga dos Brutus
-            </h1>
-            <p className="text-arena-smoke text-sm sm:text-base mt-2 font-[family-name:var(--font-display)] tracking-[0.3em] uppercase">
-              Vencedores {selectedYear?.year ?? ""}
-            </p>
-
-            {/* Year Selector */}
-            {years.length > 1 && (
-              <div className="mt-6 flex gap-2 flex-wrap">
+          {years.length > 1 && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center mb-10"
+            >
+              <div className="flex gap-2 flex-wrap justify-center">
                 {years.map((y) => (
                   <button
                     key={y.id}
@@ -161,8 +153,8 @@ export default function LigaDosBrutusContent({ hideTitle = false }: { hideTitle?
                   </button>
                 ))}
               </div>
-            )}
-          </motion.div>
+            </motion.div>
+          )}
 
           {/* ── Parchment Scroll ────────────────── */}
           <AnimatePresence mode="wait">
@@ -182,12 +174,14 @@ export default function LigaDosBrutusContent({ hideTitle = false }: { hideTitle?
                 <DustParticles />
 
                 {/* Scroll Header */}
-                {!hideTitle && (
                 <div className="liga-scroll-header">
                   <div className="liga-scroll-title-ornament">⚔</div>
-                  <h2 className="liga-scroll-title">HALL OF FAME</h2>
+                  <h2 className="liga-scroll-title">LIGA DOS BRUTUS</h2>
                   <div className="liga-scroll-title-ornament">⚔</div>
                 </div>
+
+                {selectedYear && (
+                  <p className="liga-scroll-subtitle">Vencedores {selectedYear.year}</p>
                 )}
 
                 <div className="liga-divider" />

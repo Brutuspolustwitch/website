@@ -18,7 +18,7 @@ export default function LigaDoSecaPage() {
         <div className="w-8 h-8 border-2 border-arena-gold/30 border-t-arena-gold rounded-full animate-spin" />
       </div>
     }>
-      <LigaDosBrutusContent hideTitle />
+      <LigaDosBrutusContent />
     </Suspense>
   );
 }

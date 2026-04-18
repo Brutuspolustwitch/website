@@ -1930,10 +1930,27 @@ body {
   font-family: 'Cinzel', 'Georgia', serif;
   font-size: 1.4rem;
   font-weight: 700;
-  color: var(--deep-red);
+  background: linear-gradient(to bottom, #f3d47a 0%, #c49a3f 50%, #8b6e2a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   letter-spacing: 0.2em;
-  text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
   text-align: center;
+}
+.liga-scroll-subtitle {
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  background: linear-gradient(to bottom, #f3d47a 0%, #c49a3f 50%, #8b6e2a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.25em;
+  text-align: center;
+  text-transform: uppercase;
+  margin-top: 0.5rem;
+  position: relative;
+  z-index: 2;
 }
 .liga-scroll-title-ornament {
   color: var(--gold-dark);
