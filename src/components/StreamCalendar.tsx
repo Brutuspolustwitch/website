@@ -136,7 +136,7 @@ export function StreamCalendar() {
       {/* ══ BACKGROUND IMAGE ══ */}
       <div className="gladiator-schedule__poster">
         <img
-          src="/images/schedule.png"
+          src="/images/schedule.jpg"
           alt=""
           className="gladiator-schedule__bg"
           draggable={false}
