@@ -56,7 +56,7 @@ function useDragScroll() {
 
     const onDown = (e: PointerEvent) => {
       isDragging.current = true;
-      startX.current = e.pageX - el.offsetLeft;
+      startX.current = e.clientX;
       scrollLeft.current = el.scrollLeft;
       el.style.cursor = "grabbing";
       el.setPointerCapture(e.pointerId);
@@ -65,8 +65,8 @@ function useDragScroll() {
     const onMove = (e: PointerEvent) => {
       if (!isDragging.current) return;
       e.preventDefault();
-      const x = e.pageX - el.offsetLeft;
-      el.scrollLeft = scrollLeft.current - (x - startX.current);
+      const dx = e.clientX - startX.current;
+      el.scrollLeft = scrollLeft.current - dx;
     };
 
     const onUp = () => {
