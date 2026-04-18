@@ -6,23 +6,17 @@ export function Footer() {
   return (
     <footer className="bg-arena-dark border-t border-arena-gold/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-          {/* Brand */}
-          <div className="flex items-center gap-3 shrink-0">
-            <Image
-              src="/images/logo.png"
-              alt={SITE_NAME}
-              width={140}
-              height={35}
-              className="h-7 w-auto"
-            />
-            <p className="text-xs text-arena-ash max-w-[220px] leading-relaxed hidden sm:block">
-              A arena definitiva de iGaming. Streams ao vivo e a melhor comunidade.
-            </p>
-          </div>
+        {/* Top row: logo + nav links */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <Image
+            src="/images/logo.png"
+            alt={SITE_NAME}
+            width={140}
+            height={35}
+            className="h-7 w-auto"
+          />
 
-          {/* Links — horizontal */}
-          <nav className="flex flex-wrap gap-x-5 gap-y-1.5">
+          <nav className="flex flex-wrap justify-center gap-x-5 gap-y-1.5">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
@@ -33,14 +27,9 @@ export function Footer() {
               </Link>
             ))}
           </nav>
-
-          {/* Disclaimer */}
-          <p className="text-[10px] text-arena-ash leading-relaxed max-w-xs shrink-0">
-            O jogo envolve risco. Joga apenas com dinheiro que podes perder.
-            18+ para participar. Joga com responsabilidade. Contém links de afiliados.
-          </p>
         </div>
 
+        {/* Middle row: copyright + legal links */}
         <div className="mt-4 pt-3 border-t border-arena-steel/30 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-[10px] text-arena-ash">
             &copy; {new Date().getFullYear()} BRUTUSPOLUS, Todos os direitos reservados
@@ -67,9 +56,10 @@ export function Footer() {
           </div>
         </div>
 
+        {/* Bottom: disclaimer */}
         <div className="mt-3 pt-3 border-t border-arena-steel/30">
           <p className="text-[9px] text-arena-ash/60 text-center leading-relaxed">
-            Não nos responsabilizamos por quaisquer perdas resultantes do jogo em casinos e sites de apostas que estejam ligados ou promovidos no nosso website. Enquanto jogador, és o único responsável pelas tuas apostas.
+            O jogo envolve risco. Joga apenas com dinheiro que podes perder. 18+ para participar. Joga com responsabilidade. Contém links de afiliados. Não nos responsabilizamos por quaisquer perdas resultantes do jogo em casinos e sites de apostas que estejam ligados ou promovidos no nosso website. Enquanto jogador, és o único responsável pelas tuas apostas.
           </p>
         </div>
       </div>
