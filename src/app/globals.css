@@ -509,11 +509,15 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .gladiator-schedule__poster {
   position: relative;
   width: 100%;
+  flex: 1;
   min-height: calc(100vh - 4rem);
   display: flex;
   align-items: flex-start;

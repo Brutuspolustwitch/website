@@ -15,20 +15,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthProvider>
-      <PageViewTracker />
-      <DynamicPageBackground />
-      <Navbar onMenuToggle={() => setSidebarOpen((v) => !v)} />
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <div className="min-h-screen flex flex-col">
+        <PageViewTracker />
+        <DynamicPageBackground />
+        <Navbar onMenuToggle={() => setSidebarOpen((v) => !v)} />
+        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      {/* Push content below navbar + right of sidebar */}
-      <main className="relative z-10 flex-1 pt-16 lg:pl-56">{children}</main>
+        {/* Push content below navbar + right of sidebar */}
+        <main className="relative z-10 flex-1 pt-16 lg:pl-56 flex flex-col">{children}</main>
 
-      <div className="relative z-10 lg:pl-56">
-        <Footer />
+        <div className="relative z-10 lg:pl-56">
+          <Footer />
+        </div>
+
+        <AgeGate />
+        <CookieConsent />
       </div>
-
-      <AgeGate />
-      <CookieConsent />
     </AuthProvider>
   );
 }
