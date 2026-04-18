@@ -1875,7 +1875,7 @@ body {
     linear-gradient(135deg, var(--parchment-light) 0%, var(--parchment-mid) 40%, var(--parchment-dark) 70%, var(--parchment-edge) 100%);
   border: 2px solid var(--parchment-edge);
   border-radius: var(--scroll-radius);
-  padding: 1.2rem 1.2rem 1rem;
+  padding: 2rem 1.5rem 1.8rem;
   box-shadow:
     0 0 40px rgba(0,0,0,0.6),
     inset 0 0 60px rgba(58,42,16,0.08),
@@ -1974,7 +1974,7 @@ body {
 /* Divider */
 .liga-divider {
   height: 1px;
-  margin: 0.6rem 0;
+  margin: 1rem 0;
   background: linear-gradient(90deg, transparent, var(--parchment-edge), var(--gold-dark), var(--parchment-edge), transparent);
   position: relative;
   z-index: 2;
@@ -2013,12 +2013,12 @@ body {
   z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 0.3rem;
 }
 .liga-entry {
   display: flex;
   align-items: center;
-  padding: 0.35rem 0.8rem;
+  padding: 0.5rem 0.8rem;
   border-radius: 6px;
   transition: background 0.2s;
 }
