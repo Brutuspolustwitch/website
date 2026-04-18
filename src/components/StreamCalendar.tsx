@@ -133,138 +133,133 @@ export function StreamCalendar() {
 
   return (
     <div className="gladiator-schedule">
-      {/* ══ HEADER ══ */}
-      <div className="gladiator-schedule__header">
-        <div className="gladiator-schedule__emblem">
-          <img src="/images/BrutoEmblem.png" alt="Arena" className="w-20 h-20 object-contain drop-shadow-lg" />
-        </div>
-        <h1 className="gladiator-schedule__title">
-          <span className="gladiator-schedule__title-top">Streaming</span>
-          <span className="gladiator-schedule__title-main">Schedule</span>
-        </h1>
-        <p className="gladiator-schedule__subtitle">@BRUTUSPOLUS</p>
+      {/* ══ BACKGROUND IMAGE ══ */}
+      <div className="gladiator-schedule__poster">
+        <img
+          src="/images/schedule.png"
+          alt=""
+          className="gladiator-schedule__bg"
+          draggable={false}
+        />
 
-        {/* Week navigation */}
-        <div className="gladiator-schedule__nav">
-          <button onClick={() => setWeekOffset((w) => w - 1)} className="gladiator-nav-btn" aria-label="Semana anterior">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <button
-            onClick={() => setWeekOffset(0)}
-            className={`gladiator-nav-btn gladiator-nav-btn--today ${weekOffset === 0 ? "gladiator-nav-btn--active" : ""}`}
-          >
-            Esta Semana
-          </button>
-          <button onClick={() => setWeekOffset((w) => w + 1)} className="gladiator-nav-btn" aria-label="Próxima semana">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      {/* ══ WEEKLY GRID ══ */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={weekOffset}
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -30 }}
-          transition={{ duration: 0.3 }}
-          className="gladiator-week"
-        >
-          {weekDates.map((date, i) => {
-            const dow = new Date(date + "T00:00:00").getDay();
-            const dayStreams = streamsForDate(date);
-            const active = isToday(date);
-            const past = isPast(date);
-
-            return (
-              <div key={date} className={`gladiator-day ${active ? "gladiator-day--today" : ""} ${past ? "gladiator-day--past" : ""}`}>
-                <ShieldHeader dayName={DAY_NAMES_PT[dow]} date={date} isActive={active} />
-
-                {/* Spear divider */}
-                <div className="gladiator-spear" />
-
-                {/* Stream slots */}
-                <div className="gladiator-day__slots">
-                  {dayStreams.length > 0 ? (
-                    dayStreams.map((stream) => {
-                      const cats = stream.categories || ["Outro"];
-                      return (
-                        <div key={stream.id} className={`gladiator-slot ${stream.is_special ? "gladiator-slot--special" : ""}`}>
-                          <div className="gladiator-slot__time">
-                            {stream.start_time.slice(0, 5)}
-                            {stream.end_time ? ` - ${stream.end_time.slice(0, 5)}` : " - ?"}
-                          </div>
-                          <div className="gladiator-slot__title">{stream.title}</div>
-                          <div className="gladiator-slot__cats">
-                            {cats.map((c) => (
-                              <span key={c} className="gladiator-slot__cat">
-                                {CATEGORY_ICONS[c] || "📺"}
-                              </span>
-                            ))}
-                          </div>
-                          {stream.casino && (
-                            <div className="gladiator-slot__casino">🎰 {stream.casino}</div>
-                          )}
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <div className="gladiator-slot gladiator-slot--empty">
-                      <div className="gladiator-slot__title" style={{ opacity: 0.4 }}>—</div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </motion.div>
-      </AnimatePresence>
-
-      {/* ══ BOTTOM SECTIONS ══ */}
-      <div className="gladiator-schedule__footer">
-        {/* Jogos da Semana */}
-        <div className="gladiator-footer-section">
-          <h3 className="gladiator-footer-section__title">⚔ Jogos da Semana</h3>
-          <div className="gladiator-footer-section__content">
-            {weekCategories.size > 0 ? (
-              <div className="flex flex-wrap gap-2 justify-center">
-                {Array.from(weekCategories).map((cat) => {
-                  const c = CATEGORY_COLORS[cat] || CATEGORY_COLORS["Outro"];
-                  return (
-                    <span key={cat} className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border ${c.bg} ${c.text} ${c.border}`}>
-                      {CATEGORY_ICONS[cat]} {cat}
-                    </span>
-                  );
-                })}
-              </div>
-            ) : (
-              <p className="text-arena-ash text-sm text-center">Sem jogos agendados</p>
-            )}
+        {/* ══ CONTENT OVERLAY (positioned over green chroma key area) ══ */}
+        <div className="gladiator-schedule__overlay">
+          {/* Week navigation */}
+          <div className="gladiator-schedule__nav">
+            <button onClick={() => setWeekOffset((w) => w - 1)} className="gladiator-nav-btn" aria-label="Semana anterior">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              onClick={() => setWeekOffset(0)}
+              className={`gladiator-nav-btn gladiator-nav-btn--today ${weekOffset === 0 ? "gladiator-nav-btn--active" : ""}`}
+            >
+              Esta Semana
+            </button>
+            <button onClick={() => setWeekOffset((w) => w + 1)} className="gladiator-nav-btn" aria-label="Próxima semana">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
           </div>
-        </div>
 
-        {/* Eventos Especiais / Notas */}
-        <div className="gladiator-footer-section">
-          <h3 className="gladiator-footer-section__title">🏛 Eventos Especiais / Notas</h3>
-          <div className="gladiator-footer-section__content">
-            {specialStreams.length > 0 ? (
-              <div className="space-y-2">
-                {specialStreams.map((s) => (
-                  <div key={s.id} className="flex items-center gap-2 text-sm">
-                    <span className="text-arena-gold">⭐</span>
-                    <span className="text-arena-smoke font-medium">{s.title}</span>
-                    {s.description && <span className="text-arena-ash">— {s.description}</span>}
+          {/* ══ WEEKLY GRID ══ */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={weekOffset}
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -30 }}
+              transition={{ duration: 0.3 }}
+              className="gladiator-week"
+            >
+              {weekDates.map((date) => {
+                const dow = new Date(date + "T00:00:00").getDay();
+                const dayStreams = streamsForDate(date);
+                const active = isToday(date);
+                const past = isPast(date);
+
+                return (
+                  <div key={date} className={`gladiator-day ${active ? "gladiator-day--today" : ""} ${past ? "gladiator-day--past" : ""}`}>
+                    <ShieldHeader dayName={DAY_NAMES_PT[dow]} date={date} isActive={active} />
+                    <div className="gladiator-spear" />
+                    <div className="gladiator-day__slots">
+                      {dayStreams.length > 0 ? (
+                        dayStreams.map((stream) => {
+                          const cats = stream.categories || ["Outro"];
+                          return (
+                            <div key={stream.id} className={`gladiator-slot ${stream.is_special ? "gladiator-slot--special" : ""}`}>
+                              <div className="gladiator-slot__time">
+                                {stream.start_time.slice(0, 5)}
+                                {stream.end_time ? ` - ${stream.end_time.slice(0, 5)}` : " - ?"}
+                              </div>
+                              <div className="gladiator-slot__title">{stream.title}</div>
+                              <div className="gladiator-slot__cats">
+                                {cats.map((c) => (
+                                  <span key={c} className="gladiator-slot__cat">
+                                    {CATEGORY_ICONS[c] || "📺"}
+                                  </span>
+                                ))}
+                              </div>
+                              {stream.casino && (
+                                <div className="gladiator-slot__casino">🎰 {stream.casino}</div>
+                              )}
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <div className="gladiator-slot gladiator-slot--empty">
+                          <div className="gladiator-slot__title" style={{ opacity: 0.4 }}>—</div>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                ))}
+                );
+              })}
+            </motion.div>
+          </AnimatePresence>
+
+          {/* ══ BOTTOM SECTIONS ══ */}
+          <div className="gladiator-schedule__footer">
+            <div className="gladiator-footer-section">
+              <h3 className="gladiator-footer-section__title">⚔ Jogos da Semana</h3>
+              <div className="gladiator-footer-section__content">
+                {weekCategories.size > 0 ? (
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {Array.from(weekCategories).map((cat) => {
+                      const c = CATEGORY_COLORS[cat] || CATEGORY_COLORS["Outro"];
+                      return (
+                        <span key={cat} className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border ${c.bg} ${c.text} ${c.border}`}>
+                          {CATEGORY_ICONS[cat]} {cat}
+                        </span>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-arena-ash text-sm text-center">Sem jogos agendados</p>
+                )}
               </div>
-            ) : (
-              <p className="text-arena-ash text-sm text-center">Sem eventos especiais esta semana</p>
-            )}
+            </div>
+
+            <div className="gladiator-footer-section">
+              <h3 className="gladiator-footer-section__title">🏛 Eventos Especiais / Notas</h3>
+              <div className="gladiator-footer-section__content">
+                {specialStreams.length > 0 ? (
+                  <div className="space-y-2">
+                    {specialStreams.map((s) => (
+                      <div key={s.id} className="flex items-center gap-2 text-sm">
+                        <span className="text-arena-gold">⭐</span>
+                        <span className="text-arena-smoke font-medium">{s.title}</span>
+                        {s.description && <span className="text-arena-ash">— {s.description}</span>}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-arena-ash text-sm text-center">Sem eventos especiais esta semana</p>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>

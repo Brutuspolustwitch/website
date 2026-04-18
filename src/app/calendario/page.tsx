@@ -12,11 +12,9 @@ export const metadata: Metadata = {
 
 export default function CalendarioPage() {
   return (
-    <div className="pt-24 pb-16 min-h-screen">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mt-4">
-          <StreamCalendar />
-        </div>
+    <div className="pt-24 pb-8 min-h-screen">
+      <div className="max-w-[1200px] mx-auto px-2 sm:px-4">
+        <StreamCalendar />
       </div>
     </div>
   );
