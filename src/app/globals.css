@@ -487,7 +487,7 @@ body {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   GLADIATOR SCHEDULE
+   GLADIATOR SCHEDULE — Stone Tablet Cards
    ══════════════════════════════════════════════════════════════════ */
 
 .gladiator-schedule {
@@ -497,13 +497,12 @@ body {
   padding: 0;
 }
 
-/* ── Poster container (image + overlay) ──── */
 .gladiator-schedule__poster {
   position: relative;
   width: 100%;
   min-height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 }
 
@@ -517,208 +516,205 @@ body {
   user-select: none;
 }
 
-/* ── Content overlay on stone area ──────── */
+/* ── Overlay — sits over the stone area ──── */
 .gladiator-schedule__overlay {
   position: relative;
   z-index: 1;
-  width: 58%;
-  margin-top: 12%;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding: 0 0.5rem;
+  width: 60%;
+  margin-top: 6%;
+  padding: 0 0.25rem 2rem;
 }
 
-/* ── Week Nav ──────────────────────────────── */
-.gladiator-schedule__nav {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  flex-shrink: 0;
+/* ── Drag-scrollable container ──────────── */
+.gladiator-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  cursor: grab;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 0.5rem 0;
 }
 
-.gladiator-nav-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border: 1px solid rgba(212, 168, 67, 0.3);
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.5);
-  color: var(--color-arena-gold);
-  cursor: pointer;
-  transition: all 0.2s;
+.gladiator-scroll::-webkit-scrollbar {
+  display: none;
 }
 
-.gladiator-nav-btn:hover {
-  background: rgba(212, 168, 67, 0.2);
-  border-color: var(--color-arena-gold);
-  transform: scale(1.1);
-}
-
-/* ── Weekly Grid ───────────────────────────── */
+/* ── Week row — inline flex for drag scroll */
 .gladiator-week {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 0.4rem;
+  display: flex;
+  gap: 0.5rem;
+  min-width: min-content;
 }
 
-/* ── Day Column ────────────────────────────── */
-.gladiator-day {
+/* ══════════════════════════════════════════════
+   STONE CARD — Each day tablet
+   ══════════════════════════════════════════════ */
+.stone-card {
+  flex: 0 0 160px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  background: rgba(0, 0, 0, 0.45);
-  border: 1px solid rgba(212, 168, 67, 0.15);
-  border-radius: 0.5rem;
+  border-radius: 6px;
   overflow: hidden;
-  backdrop-filter: blur(4px);
-  transition: all 0.3s;
+  transition: transform 0.25s, box-shadow 0.25s;
+
+  /* Stone slab texture */
+  background:
+    linear-gradient(
+      175deg,
+      #3d3529 0%,
+      #2e2820 35%,
+      #252019 60%,
+      #1e1a14 100%
+    );
+  border: 1px solid rgba(160, 130, 70, 0.25);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
-.gladiator-day:hover {
-  border-color: rgba(212, 168, 67, 0.4);
-  background: rgba(0, 0, 0, 0.6);
+.stone-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.6),
+    0 0 10px rgba(212, 168, 67, 0.08);
 }
 
-.gladiator-day--today {
-  border-color: rgba(212, 168, 67, 0.6);
-  box-shadow: 0 0 15px rgba(212, 168, 67, 0.15), inset 0 0 20px rgba(212, 168, 67, 0.05);
+.stone-card--today {
+  border-color: rgba(212, 168, 67, 0.5);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.5),
+    0 0 12px rgba(212, 168, 67, 0.12);
 }
 
-.gladiator-day--past {
-  opacity: 0.45;
+.stone-card--past {
+  opacity: 0.4;
+  filter: saturate(0.6);
 }
 
-/* ── Shield Header ─────────────────────────── */
-.gladiator-shield {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0;
-}
-
-.gladiator-shield__top {
-  width: 100%;
-  padding: 0.5rem 0.5rem 1rem;
-  background: linear-gradient(180deg, rgba(212, 168, 67, 0.2), rgba(212, 168, 67, 0.05));
+/* ── Header — engraved look ────────────── */
+.stone-card__header {
+  position: relative;
+  padding: 0.65rem 0.5rem 0.5rem;
   text-align: center;
-  clip-path: polygon(0 0, 100% 0, 100% 65%, 50% 100%, 0 65%);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(160, 130, 70, 0.12) 0%,
+      transparent 100%
+    );
+  border-bottom: 1px solid rgba(160, 130, 70, 0.15);
 }
 
-.gladiator-shield__day {
+.stone-card__day {
+  display: block;
   font-family: var(--font-display);
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--color-arena-gold);
+  letter-spacing: 0.2em;
+  color: #c8a84e;
 }
 
-.gladiator-shield--active .gladiator-shield__top {
-  background: linear-gradient(180deg, rgba(212, 168, 67, 0.35), rgba(212, 168, 67, 0.1));
-}
-
-.gladiator-shield__date {
+.stone-card__date {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: -0.2rem;
   line-height: 1;
+  margin-top: 0.2rem;
 }
 
-.gladiator-shield__num {
+.stone-card__num {
   font-family: var(--font-ui);
-  font-size: 1.4rem;
-  color: var(--color-arena-white);
+  font-size: 1.6rem;
+  font-weight: 300;
+  color: #e8dcc8;
+  letter-spacing: -0.02em;
 }
 
-.gladiator-shield__month {
+.stone-card__month {
   font-family: var(--font-display);
   font-size: 0.5rem;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--color-arena-ash);
+  letter-spacing: 0.2em;
+  color: #8a7d6a;
+  margin-top: 0.1rem;
 }
 
-/* ── Spear Divider ─────────────────────────── */
-.gladiator-spear {
-  width: 75%;
-  height: 1px;
-  margin: 0.35rem 0;
-  background: linear-gradient(90deg, transparent, var(--color-arena-gold), transparent);
-  position: relative;
-}
-
-.gladiator-spear::before {
-  content: "◆";
+.stone-card__active-mark {
   position: absolute;
-  top: 50%;
+  bottom: -1px;
   left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 0.35rem;
-  color: var(--color-arena-gold);
+  transform: translateX(-50%);
+  width: 24px;
+  height: 2px;
+  background: #c8a84e;
+  border-radius: 1px;
 }
 
-/* ── Stream Slots ──────────────────────────── */
-.gladiator-day__slots {
-  width: 100%;
-  padding: 0.35rem;
+/* ── Chisel line (divider) ─────────────── */
+.stone-card__chisel {
+  height: 1px;
+  margin: 0 0.75rem;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(160, 130, 70, 0.3) 30%,
+    rgba(160, 130, 70, 0.3) 70%,
+    transparent 100%
+  );
+}
+
+/* ── Body (stream list) ────────────────── */
+.stone-card__body {
+  padding: 0.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.35rem;
   flex: 1;
 }
 
-.gladiator-slot {
-  padding: 0.4rem 0.3rem;
-  border-radius: 0.3rem;
-  background: rgba(212, 168, 67, 0.03);
-  border: 1px solid rgba(212, 168, 67, 0.08);
+/* ══════════════════════════════════════════════
+   STONE SLOT — Individual stream entry
+   ══════════════════════════════════════════════ */
+.stone-slot {
+  padding: 0.45rem 0.4rem;
+  border-radius: 4px;
   text-align: center;
-  transition: all 0.2s;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(160, 130, 70, 0.1);
+  transition: background 0.2s;
 }
 
-.gladiator-slot:hover {
-  background: rgba(212, 168, 67, 0.08);
-  border-color: rgba(212, 168, 67, 0.2);
+.stone-slot:hover {
+  background: rgba(160, 130, 70, 0.08);
 }
 
-.gladiator-slot--special {
+.stone-slot--special {
   border-color: rgba(212, 168, 67, 0.3);
   background: rgba(212, 168, 67, 0.06);
 }
 
-.gladiator-slot--special::before {
-  content: "⭐";
-  display: block;
-  font-size: 0.55rem;
-  margin-bottom: 0.15rem;
-}
-
-.gladiator-slot--empty {
-  border-color: transparent;
+.stone-slot--empty {
   background: transparent;
+  border-color: transparent;
 }
 
-.gladiator-slot__time {
+.stone-slot__time {
   font-family: var(--font-ui);
-  font-size: 0.8rem;
-  color: var(--color-arena-gold-light);
-  letter-spacing: 0.05em;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #c8a84e;
+  letter-spacing: 0.03em;
 }
 
-.gladiator-slot__title {
+.stone-slot__title {
   font-family: var(--font-display);
   font-size: 0.65rem;
   font-weight: 600;
-  color: var(--color-arena-white);
+  color: #e0d6c4;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-top: 0.1rem;
+  letter-spacing: 0.06em;
+  margin-top: 0.15rem;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -726,35 +722,52 @@ body {
   -webkit-box-orient: vertical;
 }
 
-.gladiator-slot__cats {
+.stone-slot__meta {
   display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 0.15rem;
-  margin-top: 0.2rem;
+  gap: 0.3rem;
+  margin-top: 0.25rem;
+}
+
+.stone-slot__icon {
   font-size: 0.7rem;
 }
 
-.gladiator-slot__casino {
+.stone-slot__casino {
+  font-family: var(--font-ui);
   font-size: 0.55rem;
-  color: var(--color-arena-ash);
-  margin-top: 0.15rem;
+  color: #8a7d6a;
+  letter-spacing: 0.04em;
 }
 
-/* ── Mobile ────────────────────────────────── */
+.stone-slot__dash {
+  color: #5a5042;
+  font-size: 1rem;
+}
+
+/* ── Responsive ────────────────────────────── */
+@media (max-width: 1024px) {
+  .gladiator-schedule__overlay {
+    width: 80%;
+    margin-top: 10%;
+  }
+}
+
 @media (max-width: 768px) {
   .gladiator-schedule__overlay {
-    width: 90%;
-    margin-top: 25%;
+    width: 94%;
+    margin-top: 18%;
   }
 
-  .gladiator-week {
-    grid-template-columns: repeat(4, 1fr);
+  .stone-card {
+    flex: 0 0 140px;
   }
 }
 
 @media (max-width: 480px) {
-  .gladiator-week {
-    grid-template-columns: repeat(3, 1fr);
+  .stone-card {
+    flex: 0 0 130px;
   }
 }
 
