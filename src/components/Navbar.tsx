@@ -156,7 +156,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
           {/* Center: page title or daily session info */}
           {isDailySession && sessionInfo ? (
             <div className="hidden sm:flex items-center gap-3">
-              <h1 className="text-lg sm:text-xl font-bold font-[family-name:var(--font-display)] bg-gradient-to-r from-arena-gold via-arena-gold-light to-arena-gold bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-4xl font-bold font-[family-name:var(--font-display)] bg-gradient-to-r from-arena-gold via-arena-gold-light to-arena-gold bg-clip-text text-transparent">
                 {sessionInfo.title}
               </h1>
               {sessionInfo.is_active && (
@@ -171,7 +171,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
             </div>
           ) : pageTitle ? (
             <div className="hidden sm:flex items-center">
-              <h1 className="text-lg sm:text-xl font-bold font-[family-name:var(--font-display)] bg-gradient-to-r from-arena-gold via-arena-gold-light to-arena-gold bg-clip-text text-transparent uppercase tracking-wider">
+              <h1 className="text-2xl sm:text-4xl font-bold font-[family-name:var(--font-display)] bg-gradient-to-r from-arena-gold via-arena-gold-light to-arena-gold bg-clip-text text-transparent uppercase tracking-wider">
                 {pageTitle}
               </h1>
             </div>
