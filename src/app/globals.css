@@ -487,8 +487,21 @@ body {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   GLADIATOR SCHEDULE — Stone Tablet Cards
+   GLADIATOR SCHEDULE — Forged Metal Cards
    ══════════════════════════════════════════════════════════════════ */
+
+/* ── Ember flicker keyframes ─────────────── */
+@keyframes ember-flicker {
+  0%, 100% { opacity: 0.45; }
+  25%      { opacity: 0.65; }
+  50%      { opacity: 0.35; }
+  75%      { opacity: 0.55; }
+}
+
+@keyframes border-glow-pulse {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 1; }
+}
 
 .gladiator-schedule {
   position: relative;
@@ -516,7 +529,7 @@ body {
   user-select: none;
 }
 
-/* ── Overlay — sits over the stone area ──── */
+/* ── Overlay ─────────────────────────────── */
 .gladiator-schedule__overlay {
   position: relative;
   z-index: 1;
@@ -532,189 +545,341 @@ body {
   cursor: grab;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  padding: 0.5rem 0;
+  padding: 0.75rem 0;
+  scroll-snap-type: x proximity;
 }
 
 .gladiator-scroll::-webkit-scrollbar {
   display: none;
 }
 
-/* ── Week row — inline flex for drag scroll */
+/* ── Week row ────────────────────────────── */
 .gladiator-week {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.4rem;
   min-width: min-content;
 }
 
 /* ══════════════════════════════════════════════
-   STONE CARD — Each day tablet
+   FORGE CARD — Forged metal day tablet
    ══════════════════════════════════════════════ */
-.stone-card {
-  flex: 0 0 160px;
+.forge-card {
+  flex: 0 0 148px;
+  position: relative;
   display: flex;
   flex-direction: column;
-  border-radius: 6px;
+  border-radius: 5px;
   overflow: hidden;
-  transition: transform 0.25s, box-shadow 0.25s;
+  scroll-snap-align: center;
+  cursor: pointer;
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease;
 
-  /* Stone slab texture */
+  /* Burnt metal / dark bronze base */
   background:
     linear-gradient(
-      175deg,
-      #3d3529 0%,
-      #2e2820 35%,
-      #252019 60%,
-      #1e1a14 100%
+      178deg,
+      #2a231a 0%,
+      #1f1a13 40%,
+      #181410 70%,
+      #12100c 100%
     );
-  border: 1px solid rgba(160, 130, 70, 0.25);
+
+  /* Gold gradient border via box-shadow trick */
   box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    /* outer gold frame */
+    inset 0 0 0 1px rgba(180, 145, 60, 0.25),
+    /* depth behind card */
+    0 8px 24px rgba(0, 0, 0, 0.65),
+    0 2px 6px rgba(0, 0, 0, 0.4),
+    /* subtle warm ambient from fire */
+    0 0 40px rgba(255, 160, 40, 0.04);
+
+  /* Inner depth — embedded in wall */
+  border: none;
 }
 
-.stone-card:hover {
-  transform: translateY(-2px);
+/* Top/bottom gold accent lines */
+.forge-card::before,
+.forge-card::after {
+  content: "";
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  z-index: 2;
+}
+
+.forge-card::before {
+  top: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(202, 168, 94, 0.5) 20%,
+    rgba(202, 168, 94, 0.7) 50%,
+    rgba(202, 168, 94, 0.5) 80%,
+    transparent
+  );
+}
+
+.forge-card::after {
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(202, 168, 94, 0.3) 20%,
+    rgba(202, 168, 94, 0.4) 50%,
+    rgba(202, 168, 94, 0.3) 80%,
+    transparent
+  );
+}
+
+/* ── Hover state ─────────────────────────── */
+.forge-card:hover {
+  transform: translateY(-3px) scale(1.03);
   box-shadow:
-    0 6px 20px rgba(0, 0, 0, 0.6),
-    0 0 10px rgba(212, 168, 67, 0.08);
+    inset 0 0 0 1px rgba(202, 168, 94, 0.4),
+    0 12px 32px rgba(0, 0, 0, 0.7),
+    0 0 20px rgba(255, 179, 71, 0.08),
+    0 0 50px rgba(255, 160, 40, 0.06);
 }
 
-.stone-card--today {
-  border-color: rgba(212, 168, 67, 0.5);
+/* ── Active press ────────────────────────── */
+.forge-card:active {
+  transform: scale(0.97);
+  transition-duration: 0.1s;
+}
+
+/* ── Today — fire glow ───────────────────── */
+.forge-card--today {
   box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.5),
-    0 0 12px rgba(212, 168, 67, 0.12);
+    inset 0 0 0 1px rgba(212, 168, 67, 0.55),
+    0 8px 24px rgba(0, 0, 0, 0.65),
+    0 0 25px rgba(255, 160, 40, 0.12),
+    0 0 60px rgba(255, 120, 20, 0.08);
 }
 
-.stone-card--past {
-  opacity: 0.4;
-  filter: saturate(0.6);
+.forge-card--today::before {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 179, 71, 0.7) 20%,
+    rgba(255, 200, 80, 0.9) 50%,
+    rgba(255, 179, 71, 0.7) 80%,
+    transparent
+  );
+  animation: border-glow-pulse 3s ease-in-out infinite;
 }
 
-/* ── Header — engraved look ────────────── */
-.stone-card__header {
+.forge-card--today:hover {
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 200, 80, 0.6),
+    0 12px 32px rgba(0, 0, 0, 0.7),
+    0 0 30px rgba(255, 160, 40, 0.18),
+    0 0 70px rgba(255, 120, 20, 0.1);
+}
+
+/* ── Past days ───────────────────────────── */
+.forge-card--past {
+  opacity: 0.35;
+  filter: saturate(0.4) brightness(0.85);
+}
+
+.forge-card--past:hover {
+  opacity: 0.55;
+}
+
+/* ── Header — engraved metal look ────────── */
+.forge-card__header {
   position: relative;
-  padding: 0.65rem 0.5rem 0.5rem;
+  padding: 0.7rem 0.5rem 0.55rem;
   text-align: center;
   background:
     linear-gradient(
       180deg,
-      rgba(160, 130, 70, 0.12) 0%,
+      rgba(160, 130, 60, 0.1) 0%,
+      rgba(120, 95, 40, 0.04) 60%,
       transparent 100%
     );
-  border-bottom: 1px solid rgba(160, 130, 70, 0.15);
 }
 
-.stone-card__day {
+/* Vignette inside header */
+.forge-card__header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 50%,
+    rgba(0, 0, 0, 0.15) 100%
+  );
+  pointer-events: none;
+}
+
+.forge-card__day {
   display: block;
   font-family: var(--font-display);
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: #c8a84e;
+  letter-spacing: 0.25em;
+  color: #caa85e;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
-.stone-card__date {
+.forge-card__date {
   display: flex;
   flex-direction: column;
   align-items: center;
   line-height: 1;
-  margin-top: 0.2rem;
+  margin-top: 0.15rem;
 }
 
-.stone-card__num {
-  font-family: var(--font-ui);
-  font-size: 1.6rem;
-  font-weight: 300;
-  color: #e8dcc8;
-  letter-spacing: -0.02em;
-}
-
-.stone-card__month {
+.forge-card__num {
   font-family: var(--font-display);
-  font-size: 0.5rem;
+  font-size: 1.75rem;
+  font-weight: 400;
+  color: #e8d8a6;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.forge-card--today .forge-card__num {
+  color: #ffd98a;
+  text-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.6),
+    0 0 12px rgba(255, 179, 71, 0.25);
+}
+
+.forge-card__month {
+  font-family: var(--font-display);
+  font-size: 0.48rem;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: #8a7d6a;
+  letter-spacing: 0.22em;
+  color: #7a6f5c;
   margin-top: 0.1rem;
 }
 
-.stone-card__active-mark {
-  position: absolute;
-  bottom: -1px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 24px;
-  height: 2px;
-  background: #c8a84e;
-  border-radius: 1px;
+/* ── Engraved divider ──────────────────── */
+.forge-card__divider {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 0.6rem;
+  height: 10px;
 }
 
-/* ── Chisel line (divider) ─────────────── */
-.stone-card__chisel {
+.forge-card__divider-line {
+  flex: 1;
   height: 1px;
-  margin: 0 0.75rem;
   background: linear-gradient(
     90deg,
-    transparent 0%,
-    rgba(160, 130, 70, 0.3) 30%,
-    rgba(160, 130, 70, 0.3) 70%,
-    transparent 100%
+    transparent,
+    rgba(180, 145, 60, 0.35)
   );
 }
 
+.forge-card__divider-line:last-child {
+  background: linear-gradient(
+    90deg,
+    rgba(180, 145, 60, 0.35),
+    transparent
+  );
+}
+
+.forge-card__divider-gem {
+  width: 4px;
+  height: 4px;
+  background: rgba(202, 168, 94, 0.5);
+  transform: rotate(45deg);
+  flex-shrink: 0;
+  margin: 0 2px;
+}
+
+.forge-card--today .forge-card__divider-gem {
+  background: rgba(255, 200, 80, 0.8);
+  box-shadow: 0 0 6px rgba(255, 179, 71, 0.4);
+}
+
 /* ── Body (stream list) ────────────────── */
-.stone-card__body {
-  padding: 0.5rem;
+.forge-card__body {
+  padding: 0.4rem 0.5rem 0.6rem;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.3rem;
   flex: 1;
 }
 
+/* ── Ember glow (today only) ───────────── */
+.forge-card__ember {
+  position: absolute;
+  bottom: 0;
+  left: 5%;
+  right: 5%;
+  height: 40%;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at bottom center,
+    rgba(255, 140, 30, 0.12) 0%,
+    rgba(255, 100, 20, 0.06) 40%,
+    transparent 80%
+  );
+  animation: ember-flicker 4s ease-in-out infinite;
+  z-index: 0;
+}
+
 /* ══════════════════════════════════════════════
-   STONE SLOT — Individual stream entry
+   FORGE SLOT — Individual stream entry
    ══════════════════════════════════════════════ */
-.stone-slot {
-  padding: 0.45rem 0.4rem;
-  border-radius: 4px;
+.forge-slot {
+  position: relative;
+  z-index: 1;
+  padding: 0.4rem 0.35rem;
+  border-radius: 3px;
   text-align: center;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(160, 130, 70, 0.1);
-  transition: background 0.2s;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(120, 95, 40, 0.12);
+  transition: all 0.2s ease;
 }
 
-.stone-slot:hover {
-  background: rgba(160, 130, 70, 0.08);
+.forge-slot:hover {
+  background: rgba(180, 145, 60, 0.06);
+  border-color: rgba(180, 145, 60, 0.2);
 }
 
-.stone-slot--special {
-  border-color: rgba(212, 168, 67, 0.3);
-  background: rgba(212, 168, 67, 0.06);
+.forge-slot--special {
+  border-color: rgba(255, 179, 71, 0.25);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 160, 40, 0.06) 0%,
+      rgba(255, 120, 20, 0.03) 100%
+    );
 }
 
-.stone-slot--empty {
+.forge-slot--empty {
   background: transparent;
   border-color: transparent;
 }
 
-.stone-slot__time {
-  font-family: var(--font-ui);
-  font-size: 0.78rem;
-  font-weight: 500;
-  color: #c8a84e;
-  letter-spacing: 0.03em;
+.forge-slot__time {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #caa85e;
+  letter-spacing: 0.06em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
-.stone-slot__title {
+.forge-slot__title {
   font-family: var(--font-display);
-  font-size: 0.65rem;
-  font-weight: 600;
-  color: #e0d6c4;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #e8d8a6;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   margin-top: 0.15rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -722,28 +887,38 @@ body {
   -webkit-box-orient: vertical;
 }
 
-.stone-slot__meta {
+/* Special slot title glows */
+.forge-slot--special .forge-slot__title {
+  color: #ffd98a;
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.5),
+    0 0 8px rgba(255, 179, 71, 0.2);
+}
+
+.forge-slot__meta {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.3rem;
-  margin-top: 0.25rem;
+  gap: 0.25rem;
+  margin-top: 0.2rem;
 }
 
-.stone-slot__icon {
-  font-size: 0.7rem;
+.forge-slot__icon {
+  font-size: 0.65rem;
 }
 
-.stone-slot__casino {
-  font-family: var(--font-ui);
-  font-size: 0.55rem;
-  color: #8a7d6a;
-  letter-spacing: 0.04em;
+.forge-slot__casino {
+  font-family: var(--font-display);
+  font-size: 0.5rem;
+  color: #7a6f5c;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
-.stone-slot__dash {
-  color: #5a5042;
+.forge-slot__dash {
+  color: #3d362c;
   font-size: 1rem;
+  font-family: var(--font-display);
 }
 
 /* ── Responsive ────────────────────────────── */
@@ -760,14 +935,18 @@ body {
     margin-top: 18%;
   }
 
-  .stone-card {
-    flex: 0 0 140px;
+  .forge-card {
+    flex: 0 0 136px;
+  }
+
+  .gladiator-scroll {
+    scroll-snap-type: x mandatory;
   }
 }
 
 @media (max-width: 480px) {
-  .stone-card {
-    flex: 0 0 130px;
+  .forge-card {
+    flex: 0 0 126px;
   }
 }
 

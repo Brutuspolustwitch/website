@@ -163,47 +163,53 @@ export function StreamCalendar() {
                   const month = formatMonth(date);
 
                   return (
-                    <div key={date} className={`stone-card ${active ? "stone-card--today" : ""} ${past ? "stone-card--past" : ""}`}>
-                      {/* ── Stone tablet header ── */}
-                      <div className="stone-card__header">
-                        <span className="stone-card__day">{DAY_NAMES_PT[dow]}</span>
-                        <div className="stone-card__date">
-                          <span className="stone-card__num">{dayNum}</span>
-                          <span className="stone-card__month">{month}</span>
+                    <div key={date} className={`forge-card ${active ? "forge-card--today" : ""} ${past ? "forge-card--past" : ""}`}>
+                      {/* ── Forged header ── */}
+                      <div className="forge-card__header">
+                        <span className="forge-card__day">{DAY_NAMES_PT[dow]}</span>
+                        <div className="forge-card__date">
+                          <span className="forge-card__num">{dayNum}</span>
+                          <span className="forge-card__month">{month}</span>
                         </div>
-                        {active && <div className="stone-card__active-mark" />}
                       </div>
 
-                      {/* ── Chisel line ── */}
-                      <div className="stone-card__chisel" />
+                      {/* ── Engraved divider ── */}
+                      <div className="forge-card__divider">
+                        <div className="forge-card__divider-line" />
+                        <div className="forge-card__divider-gem" />
+                        <div className="forge-card__divider-line" />
+                      </div>
 
                       {/* ── Content ── */}
-                      <div className="stone-card__body">
+                      <div className="forge-card__body">
                         {dayStreams.length > 0 ? (
                           dayStreams.map((stream) => {
                             const cats = stream.categories || ["Outro"];
                             return (
-                              <div key={stream.id} className={`stone-slot ${stream.is_special ? "stone-slot--special" : ""}`}>
-                                <div className="stone-slot__time">
+                              <div key={stream.id} className={`forge-slot ${stream.is_special ? "forge-slot--special" : ""}`}>
+                                <div className="forge-slot__time">
                                   {stream.start_time.slice(0, 5)}
                                   {stream.end_time ? ` – ${stream.end_time.slice(0, 5)}` : ""}
                                 </div>
-                                <div className="stone-slot__title">{stream.title}</div>
-                                <div className="stone-slot__meta">
+                                <div className="forge-slot__title">{stream.title}</div>
+                                <div className="forge-slot__meta">
                                   {cats.map((c) => (
-                                    <span key={c} className="stone-slot__icon">{CATEGORY_ICONS[c] || "📺"}</span>
+                                    <span key={c} className="forge-slot__icon">{CATEGORY_ICONS[c] || "📺"}</span>
                                   ))}
-                                  {stream.casino && <span className="stone-slot__casino">{stream.casino}</span>}
+                                  {stream.casino && <span className="forge-slot__casino">{stream.casino}</span>}
                                 </div>
                               </div>
                             );
                           })
                         ) : (
-                          <div className="stone-slot stone-slot--empty">
-                            <span className="stone-slot__dash">—</span>
+                          <div className="forge-slot forge-slot--empty">
+                            <span className="forge-slot__dash">—</span>
                           </div>
                         )}
                       </div>
+
+                      {/* ── Ember glow at bottom (active day only) ── */}
+                      {active && <div className="forge-card__ember" />}
                     </div>
                   );
                 })}
