@@ -1939,12 +1939,12 @@ body {
 }
 .liga-scroll-subtitle {
   font-family: 'Cinzel', 'Georgia', serif;
-  font-size: 0.9rem;
+  font-size: 1.2rem;
   font-weight: 700;
-  background: linear-gradient(to bottom, #f3d47a 0%, #c49a3f 50%, #8b6e2a 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #1a1205;
+  -webkit-text-fill-color: #1a1205;
+  -webkit-text-stroke: 0.5px #c49a3f;
+  paint-order: stroke fill;
   letter-spacing: 0.25em;
   text-align: center;
   text-transform: uppercase;

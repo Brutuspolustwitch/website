@@ -174,14 +174,8 @@ export default function LigaDosBrutusContent() {
                 <DustParticles />
 
                 {/* Scroll Header */}
-                <div className="liga-scroll-header">
-                  <div className="liga-scroll-title-ornament">⚔</div>
-                  <h2 className="liga-scroll-title">LIGA DOS BRUTUS</h2>
-                  <div className="liga-scroll-title-ornament">⚔</div>
-                </div>
-
                 {selectedYear && (
-                  <p className="liga-scroll-subtitle">Vencedores {selectedYear.year}</p>
+                  <h2 className="liga-scroll-subtitle">Vencedores {selectedYear.year}</h2>
                 )}
 
                 <div className="liga-divider" />
