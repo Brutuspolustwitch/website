@@ -4,10 +4,11 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import type { CasinoOfferRow } from "@/lib/supabase";
+import type { CasinoOfferRow, BonusHuntSlot } from "@/lib/supabase";
 import { OfferCard } from "@/components/OfferCard";
 import type { CasinoOffer } from "@/components/OfferCard";
 import { BonusHuntTracker } from "@/components/BonusHuntTracker";
+import { SlotHighlightCard } from "@/components/SlotHighlightCard";
 
 /* ═══════════════════════════════════════════════════════════════════
    TYPES
@@ -226,6 +227,8 @@ export default function DailySessionContent() {
   const [session, setSession] = useState<DailySessionData | null>(null);
   const [monthly, setMonthly] = useState<MonthlyStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [bestSlot, setBestSlot] = useState<BonusHuntSlot | null>(null);
+  const [worstSlot, setWorstSlot] = useState<BonusHuntSlot | null>(null);
 
   const fetchSession = useCallback(async () => {
     try {
@@ -259,6 +262,59 @@ export default function DailySessionContent() {
 
     return () => { supabase.removeChannel(channel); };
   }, [fetchSession, session?.id]);
+
+  // Fetch best & worst slots from latest bonus hunt session
+  useEffect(() => {
+    async function loadHighlightSlots() {
+      // Get latest session
+      const { data: sessions } = await supabase
+        .from("bonus_hunt_sessions")
+        .select("id")
+        .order("hunt_date", { ascending: false })
+        .order("created_at", { ascending: false })
+        .limit(1);
+
+      if (!sessions || sessions.length === 0) return;
+
+      const { data: openedSlots } = await supabase
+        .from("bonus_hunt_slots")
+        .select("*")
+        .eq("session_id", sessions[0].id)
+        .eq("opened", true)
+        .not("payout", "is", null);
+
+      if (!openedSlots || openedSlots.length === 0) return;
+
+      // Calculate multiplier for each and find best/worst
+      let best: BonusHuntSlot | null = null;
+      let worst: BonusHuntSlot | null = null;
+      let bestMulti = -Infinity;
+      let worstMulti = Infinity;
+
+      for (const s of openedSlots) {
+        const bet = s.bet_size ?? s.buy_value;
+        if (!bet || bet <= 0 || s.payout == null) continue;
+        const multi = s.payout / bet;
+        if (multi > bestMulti) { bestMulti = multi; best = s; }
+        if (multi < worstMulti) { worstMulti = multi; worst = s; }
+      }
+
+      setBestSlot(best);
+      setWorstSlot(worst);
+    }
+
+    loadHighlightSlots();
+
+    // Also listen for slot updates
+    const ch = supabase
+      .channel("slot-highlights")
+      .on("postgres_changes", { event: "*", schema: "public", table: "bonus_hunt_slots" }, () => {
+        loadHighlightSlots();
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(ch); };
+  }, []);
 
   const net = (session?.withdrawals ?? 0) - (session?.deposits ?? 0);
   const netGlow = net > 0 ? "green" : net < 0 ? "red" : "gold";
@@ -427,15 +483,38 @@ export default function DailySessionContent() {
             ) : <div />}
           </motion.div>
 
-          {/* ── Main grid: Bonus Hunt | Sidebar ──── */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
+          {/* ── Main grid: Slot Highlights | Bonus Hunt | Sidebar ──── */}
+          <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr_1fr] gap-4 items-start">
 
-            {/* LEFT — Bonus Hunt (2/3) */}
+            {/* FAR LEFT — Best/Worst slot mini cards */}
+            <div className="hidden lg:flex flex-col gap-3 pt-2">
+              {bestSlot && (
+                <SlotHighlightCard
+                  label="Melhor"
+                  slotName={bestSlot.name}
+                  thumbnailUrl={bestSlot.thumbnail_url ?? undefined}
+                  payout={bestSlot.payout ?? 0}
+                  betValue={bestSlot.bet_size ?? bestSlot.buy_value}
+                  currency={session?.casino ? "€" : "€"}
+                />
+              )}
+              {worstSlot && worstSlot.id !== bestSlot?.id && (
+                <SlotHighlightCard
+                  label="Pior"
+                  slotName={worstSlot.name}
+                  thumbnailUrl={worstSlot.thumbnail_url ?? undefined}
+                  payout={worstSlot.payout ?? 0}
+                  betValue={worstSlot.bet_size ?? worstSlot.buy_value}
+                  currency="€"
+                />
+              )}
+            </div>
+
+            {/* CENTER — Bonus Hunt (spans rest) */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
-              className="lg:col-span-2"
             >
               <BonusHuntTracker compact />
             </motion.div>

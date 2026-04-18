@@ -430,8 +430,60 @@ body {
 }
 .daily-session-card .flip-hint {
   font-size: 0.6rem;
-  margin-top: 0px;
-  padding-bottom: 4px;
+  margin-top: 4px;
+  padding-bottom: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SLOT HIGHLIGHT CARDS — Best / Worst spinning mini cards
+   ═══════════════════════════════════════════════════════════════════ */
+.slot-highlight-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 90px;
+}
+.slot-highlight-label {
+  font-family: var(--font-display), 'Cinzel', serif;
+  font-size: 0.45rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--arena-smoke, #e0ddd4);
+  text-align: center;
+}
+.slot-highlight-flipper {
+  position: relative;
+  width: 80px;
+  height: 100px;
+  transform-style: preserve-3d;
+}
+.slot-highlight-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.slot-highlight-front {
+  /* default — faces the viewer */
+}
+.slot-highlight-back {
+  transform: rotateY(180deg);
+}
+.slot-highlight-name {
+  font-family: var(--font-display), 'Cinzel', serif;
+  font-size: 0.45rem;
+  font-weight: 600;
+  color: var(--arena-ash, #8a877e);
+  text-align: center;
+  line-height: 1.2;
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ══════════════════════════════════════════════════════════════════
