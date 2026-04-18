@@ -147,26 +147,32 @@ export function StreamerHub() {
               )}
             </div>
 
-            {/* Prev / Next clip buttons — below the player */}
+            {/* Prev / Next clip buttons — sword buttons below the player */}
             {!isLive && !loading && activeClip && clips.length > 1 && (
               <div className="flex items-center justify-between mt-3 lg:col-span-1" style={{ gridColumn: "1" }}>
                 <button
                   onClick={goPrevClip}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-arena-charcoal/80 hover:bg-arena-crimson/30 text-arena-gold text-xs font-medium tracking-wide uppercase transition-colors border border-arena-steel/30 hover:border-arena-crimson/40 arena-btn-press"
+                  className="sword-btn sword-btn--prev"
+                  aria-label="Clip anterior"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                  </svg>
-                  Clip anterior
+                  <img
+                    src="/images/buttons/Anterior.png"
+                    alt="Clip Anterior"
+                    className="sword-btn__img"
+                    draggable={false}
+                  />
                 </button>
                 <button
                   onClick={goNextClip}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-arena-charcoal/80 hover:bg-arena-crimson/30 text-arena-gold text-xs font-medium tracking-wide uppercase transition-colors border border-arena-steel/30 hover:border-arena-crimson/40 arena-btn-press"
+                  className="sword-btn sword-btn--next"
+                  aria-label="Próximo clip"
                 >
-                  Próximo clip
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
+                  <img
+                    src="/images/buttons/Proximo.png"
+                    alt="Próximo Clip"
+                    className="sword-btn__img"
+                    draggable={false}
+                  />
                 </button>
               </div>
             )}

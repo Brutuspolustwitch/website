@@ -43,47 +43,44 @@ function getWeekDates(offset = 0): string[] {
 
 /* ═══════════════════════════════════════════════════════════════
    DRAG SCROLL HOOK
+   Uses mousedown on element + mousemove/mouseup on document
+   so drag keeps working even when cursor leaves the container.
+   Touch scrolling is handled natively by overflow-x: scroll.
    ═══════════════════════════════════════════════════════════════ */
 function useDragScroll() {
   const ref = useRef<HTMLDivElement>(null);
-  const isDragging = useRef(false);
-  const startX = useRef(0);
-  const scrollLeft = useRef(0);
+  const state = useRef({ dragging: false, startX: 0, scrollLeft: 0 });
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
 
-    const onDown = (e: PointerEvent) => {
-      isDragging.current = true;
-      startX.current = e.clientX;
-      scrollLeft.current = el.scrollLeft;
+    const onMouseDown = (e: MouseEvent) => {
+      state.current = { dragging: true, startX: e.clientX, scrollLeft: el.scrollLeft };
       el.style.cursor = "grabbing";
-      el.setPointerCapture(e.pointerId);
+      e.preventDefault();                 // block text-selection / image-drag
     };
 
-    const onMove = (e: PointerEvent) => {
-      if (!isDragging.current) return;
-      e.preventDefault();
-      const dx = e.clientX - startX.current;
-      el.scrollLeft = scrollLeft.current - dx;
+    const onMouseMove = (e: MouseEvent) => {
+      if (!state.current.dragging) return;
+      const dx = e.clientX - state.current.startX;
+      el.scrollLeft = state.current.scrollLeft - dx;
     };
 
-    const onUp = () => {
-      isDragging.current = false;
+    const onMouseUp = () => {
+      if (!state.current.dragging) return;
+      state.current.dragging = false;
       el.style.cursor = "grab";
     };
 
-    el.addEventListener("pointerdown", onDown);
-    el.addEventListener("pointermove", onMove);
-    el.addEventListener("pointerup", onUp);
-    el.addEventListener("pointercancel", onUp);
+    el.addEventListener("mousedown", onMouseDown);
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
 
     return () => {
-      el.removeEventListener("pointerdown", onDown);
-      el.removeEventListener("pointermove", onMove);
-      el.removeEventListener("pointerup", onUp);
-      el.removeEventListener("pointercancel", onUp);
+      el.removeEventListener("mousedown", onMouseDown);
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseup", onMouseUp);
     };
   }, []);
 

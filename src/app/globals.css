@@ -546,8 +546,9 @@ body {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   padding: 0.75rem 0;
-  scroll-snap-type: x proximity;
-  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
 }
 
 .gladiator-scroll::-webkit-scrollbar {
@@ -939,15 +940,58 @@ body {
   .forge-card {
     flex: 0 0 136px;
   }
-
-  .gladiator-scroll {
-    scroll-snap-type: x mandatory;
-  }
 }
 
 @media (max-width: 480px) {
   .forge-card {
     flex: 0 0 126px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SWORD BUTTONS — /live clip navigation
+   ══════════════════════════════════════════════════════════════════ */
+.sword-btn {
+  position: relative;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: filter 0.3s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.35))
+          drop-shadow(0 0 14px rgba(212, 175, 55, 0.15));
+}
+
+.sword-btn:hover {
+  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.6))
+          drop-shadow(0 0 24px rgba(212, 175, 55, 0.3))
+          drop-shadow(0 0 40px rgba(255, 190, 60, 0.15));
+  transform: scale(1.05);
+}
+
+.sword-btn:active {
+  filter: drop-shadow(0 0 4px rgba(212, 175, 55, 0.5))
+          drop-shadow(0 0 10px rgba(212, 175, 55, 0.2));
+  transform: scale(0.96);
+}
+
+.sword-btn__img {
+  display: block;
+  height: 52px;
+  width: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (max-width: 768px) {
+  .sword-btn__img {
+    height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sword-btn__img {
+    height: 32px;
   }
 }
 
