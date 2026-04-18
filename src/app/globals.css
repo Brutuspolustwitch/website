@@ -388,6 +388,13 @@ body {
 .daily-session-card .papyrus-flip-face {
   position: relative;
 }
+.daily-session-card .papyrus-flip-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
 .daily-session-card .casino-banner-inner {
   height: 60px;
 }
