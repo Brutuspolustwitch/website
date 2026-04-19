@@ -163,7 +163,7 @@ function SpotifyEmbed({ url }: { url: string | null }) {
   return (
     <motion.div
       className="papyrus-scroll greek-key-border"
-      style={{ maxWidth: "none", overflow: "hidden" }}
+      style={{ maxWidth: "100%", overflow: "hidden" }}
       whileHover={{ scale: 1.01 }}
       transition={{ type: "spring", stiffness: 300 }}
     >
@@ -386,13 +386,13 @@ export default function DailySessionContent() {
 
       {/* Content */}
       <div className="relative z-10 pt-20 pb-8">
-        <div className="max-w-[1400px] mx-auto px-2 sm:px-4 lg:px-4 space-y-4">
+        <div className="max-w-[1400px] mx-auto px-2 sm:px-4 lg:px-4 space-y-6">
 
           {/* ── Main grid: Stats + Bonus Hunt | Sidebar ──── */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 
             {/* LEFT — Stats + Best/Worst + Bonus Hunt (2/3) */}
-            <div className="lg:col-span-2 space-y-4">
+            <div className="lg:col-span-2 space-y-6">
 
               {/* Session stats */}
               <motion.div
@@ -487,7 +487,7 @@ export default function DailySessionContent() {
             </div>
 
             {/* RIGHT — Sidebar (1/3) */}
-            <div className="lg:col-span-1 space-y-1">
+            <div className="lg:col-span-1 space-y-4">
 
               {/* Monthly summary */}
               {monthly && monthly.sessions_count > 0 && (
@@ -581,7 +581,9 @@ export default function DailySessionContent() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.25 }}
               >
-                <SpotifyEmbed url={session.spotify_url} />
+                <div className="daily-session-card">
+                  <SpotifyEmbed url={session.spotify_url} />
+                </div>
               </motion.div>
             </div>
           </div>
