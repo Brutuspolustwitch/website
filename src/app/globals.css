@@ -382,6 +382,9 @@ body {
   max-width: 100%;
   height: auto;
 }
+.daily-session-card .papyrus-scroll {
+  max-width: 100%;
+}
 .daily-session-card .papyrus-flip-inner {
   height: auto;
 }
