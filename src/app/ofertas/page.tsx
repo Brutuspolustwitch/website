@@ -14,7 +14,7 @@ export default function OfertasPage() {
   return (
     <div className="relative min-h-screen overflow-hidden">
       {/* Content */}
-      <div className="relative z-10 pt-2 pb-16">
+      <div className="relative z-10 pt-16 pb-16">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-6">
           <OfferCards />
         </div>
