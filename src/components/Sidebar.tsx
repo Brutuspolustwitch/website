@@ -25,10 +25,8 @@ interface NavItem {
 
 /* ── Sidebar link definitions (custom order) ────────────────────── */
 const MAIN_LINKS: NavItem[] = [
-  {
-    href: "/ofertas",
-    label: "Ofertas",
-  },
+  { href: "/ofertas", label: "Ofertas" },
+  { href: "/casinos", label: "Casinos" },
   {
     href: "/stream",
     label: "Stream",
@@ -37,6 +35,8 @@ const MAIN_LINKS: NavItem[] = [
       { href: "/daily-session", label: "Sessão do Dia" },
       { href: "/destaques", label: "Destaques" },
       { href: "/bonus-hunt", label: "Bonus Hunt" },
+      { href: "/slots", label: "Slots" },
+      { href: "/calendario", label: "Calendário" },
     ],
   },
   {
@@ -46,11 +46,14 @@ const MAIN_LINKS: NavItem[] = [
       { href: "/roda-diaria", label: "Roda Diária" },
       { href: "/giveaways", label: "Giveaways" },
       { href: "/liga-dos-brutus", label: "Liga dos Brutus" },
+      { href: "/leaderboard", label: "Leaderboard" },
       { href: "/hall-of-victories", label: "Bruta do Mês" },
       { href: "/adivinha-o-resultado", label: "Adivinha o Resultado" },
     ],
   },
   { href: "/loja", label: "Loja" },
+  { href: "/perfil", label: "Perfil" },
+  { href: "/contactos", label: "Contactos" },
   { href: "/sobre", label: "Sobre" },
 ];
 
@@ -155,6 +158,36 @@ const ICONS: Record<string, React.ReactNode> = {
       <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
     </svg>
   ),
+  "/casinos": (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.6}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+    </svg>
+  ),
+  "/slots": (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.6}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" />
+    </svg>
+  ),
+  "/calendario": (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.6}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+    </svg>
+  ),
+  "/leaderboard": (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.6}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+    </svg>
+  ),
+  "/perfil": (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.6}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    </svg>
+  ),
+  "/contactos": (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.6}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+    </svg>
+  ),
 };
 
 /* ── Sidebar Props ──────────────────────────────────────────────── */
@@ -196,7 +229,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         className={`
           group flex items-center gap-3 rounded-lg transition-all duration-200
           font-[family-name:var(--font-display)] tracking-wide uppercase
-          ${indent ? "px-3 py-2 ml-3 text-[13px]" : "px-3 py-2.5 text-[15px]"}
+          ${indent ? "px-2 py-2 ml-0 text-[12px]" : "px-3 py-2.5 text-[15px]"}
           ${
             isActive
               ? "bg-arena-gold/10 text-arena-gold border border-arena-gold/20"
@@ -220,7 +253,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         {indent && (
           <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isActive ? "bg-arena-gold" : "bg-arena-steel"}`} />
         )}
-        <span className="truncate">{link.label}</span>
+        <span className="min-w-0 flex-1">{link.label}</span>
         {isActive && (
           <span className="ml-auto w-1.5 h-1.5 rounded-full bg-arena-gold shadow-[0_0_6px_rgba(212,168,67,0.6)]" />
         )}
@@ -266,7 +299,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                 </svg>
               )}
             </span>
-            <span className="truncate">{item.label}</span>
+            <span className="min-w-0 flex-1">{item.label}</span>
           </Link>
 
           {/* Chevron toggle */}
@@ -323,11 +356,11 @@ export function Sidebar({ open, onClose }: SidebarProps) {
 
     return (
       <div key={item.href}>
-        <div className="flex items-center ml-8">
+        <div className="flex items-center ml-1">
           <button
             onClick={() => toggleExpand(item.href)}
             className={`
-              group flex-1 flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] transition-all duration-200
+              group flex-1 flex items-center gap-2 px-2 py-2 rounded-lg text-[12px] transition-all duration-200
               font-[family-name:var(--font-display)] tracking-wide uppercase
               ${subActive
                 ? "text-arena-gold"
@@ -335,7 +368,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             `}
           >
             <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${subActive ? "bg-arena-gold" : "bg-arena-steel"}`} />
-            <span className="truncate">{item.label}</span>
+            <span className="min-w-0 flex-1">{item.label}</span>
             <motion.svg
               animate={{ rotate: isSubOpen ? 180 : 0 }}
               transition={{ duration: 0.2 }}
