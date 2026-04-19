@@ -127,7 +127,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-arena-black border-b border-arena-gold/10">
       <div className="px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+          <div className="relative flex items-center justify-between h-16">
           {/* Left: hamburger + logo */}
           <div className="flex items-center gap-3">
             {/* Sidebar toggle (visible below lg) */}
@@ -170,8 +170,8 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
               </span>
             </div>
           ) : pageTitle ? (
-            <div className="hidden sm:flex items-center">
-              <h1 className="text-2xl sm:text-4xl font-bold font-[family-name:var(--font-display)] bg-gradient-to-r from-arena-gold via-arena-gold-light to-arena-gold bg-clip-text text-transparent uppercase tracking-wider">
+            <div className="hidden sm:flex items-center absolute left-1/2 -translate-x-1/2 pointer-events-none">
+              <h1 className="text-2xl sm:text-4xl font-bold font-[family-name:var(--font-display)] bg-gradient-to-r from-arena-gold via-arena-gold-light to-arena-gold bg-clip-text text-transparent uppercase tracking-wider pointer-events-auto">
                 {pageTitle}
               </h1>
             </div>

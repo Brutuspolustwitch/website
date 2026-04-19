@@ -605,11 +605,11 @@ body {
 
 /* ── Past days — dimmed ──────────────────── */
 .forge-card--past {
-  opacity: 0.4;
+  opacity: 0.62;
 }
 
 .forge-card--past:hover {
-  opacity: 0.6;
+  opacity: 0.8;
 }
 
 /* ── Header ──────────────────────────────── */
@@ -2408,10 +2408,10 @@ body {
   font-family: var(--font-display);
   font-size: clamp(1.1rem, 3vw, 1.5rem);
   font-weight: 700;
-  color: #c8841a;
+  color: #b87235;
   line-height: 1.15;
   letter-spacing: 0.04em;
-  text-shadow: 0 0 30px rgba(180,80,5,0.4), 0 2px 6px rgba(0,0,0,0.7);
+  text-shadow: 0 0 28px rgba(140,65,5,0.35), 0 2px 6px rgba(0,0,0,0.75);
 }
 
 /* ── Meta chips ───────────────────────────────────────────── */
@@ -2494,23 +2494,25 @@ body {
   flex-shrink: 0;
 }
 .schedule-modal-activity-icon {
-  color: rgba(180,100,10,0.65);
+  color: rgba(160,95,22,0.75);
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
 }
 .schedule-modal-activity-name {
   font-family: var(--font-display);
   font-size: 0.7rem;
   letter-spacing: 0.08em;
-  color: rgba(210,160,70,0.85);
+  color: rgba(195,182,158,0.88);
   text-transform: uppercase;
 }
 
 /* ── Description ──────────────────────────────────────────── */
 .schedule-modal-description {
   font-size: 0.82rem;
-  color: rgba(200,170,100,0.55);
+  color: rgba(195,182,158,0.78);
   line-height: 1.75;
-  border-left: 2px solid rgba(160,80,5,0.35);
+  border-left: 2px solid rgba(140,72,12,0.4);
   padding-left: 12px;
 }
 
@@ -2528,8 +2530,8 @@ body {
   justify-content: center;
   gap: 8px;
   padding: 11px 20px;
-  background: linear-gradient(135deg, #c8841a 0%, #a06010 50%, #7a4008 100%);
-  color: #f5e0b0;
+  background: linear-gradient(135deg, #b87235 0%, #8a4e16 50%, #5a3010 100%);
+  color: #e8d4b0;
   font-family: var(--font-display);
   font-size: 0.68rem;
   font-weight: 700;
