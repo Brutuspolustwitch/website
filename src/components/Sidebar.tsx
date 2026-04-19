@@ -38,6 +38,7 @@ const MAIN_LINKS: NavItem[] = [
       { href: "/destaques", label: "Destaques" },
       { href: "/calendario", label: "Calendário" },
       { href: "/bonus-hunt", label: "Bonus Hunt" },
+      { href: "/hall-of-victories", label: "Hall of Victories" },
     ],
   },
   {

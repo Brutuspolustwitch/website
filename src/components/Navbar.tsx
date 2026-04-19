@@ -59,6 +59,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
     "/admin/utilizadores": "Utilizadores",
     "/admin/parcerias": "Parcerias",
     "/admin/analitics": "Analytics",
+    "/hall-of-victories": "Hall of Victories",
   };
 
   const pageTitle = PAGE_TITLES[pathname] ?? null;

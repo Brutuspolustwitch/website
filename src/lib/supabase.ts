@@ -219,6 +219,21 @@ export interface ScheduledStreamRow {
   updated_at: string;
 }
 
+export interface UserClipRow {
+  id: string;
+  twitch_id: string;
+  username: string;
+  avatar_url: string | null;
+  title: string;
+  description: string | null;
+  url: string;
+  provider: string | null;
+  embed_type: "video" | "iframe" | "link";
+  embed_url: string;
+  honors: number;
+  created_at: string;
+}
+
 export interface ScheduledStreamRowWithExtra extends ScheduledStreamRow {
   prize?: string;
   duration?: string;
