@@ -71,13 +71,40 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
     })();
   }, [campaign]);
 
+  /* Real-time subscription — update slots live during active sessions */
+  useEffect(() => {
+    if (!campaign) return;
+    const channel = supabase
+      .channel(`gts-slots-${campaign.id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "bonus_hunt_slots", filter: `session_id=eq.${campaign.id}` },
+        (payload) => {
+          if (payload.eventType === "UPDATE") {
+            setSlots((prev) =>
+              prev.map((s) => (s.id === (payload.new as BonusHuntSlot).id ? (payload.new as BonusHuntSlot) : s))
+            );
+          } else if (payload.eventType === "INSERT") {
+            setSlots((prev) =>
+              [...prev, payload.new as BonusHuntSlot].sort((a, b) => a.order_index - b.order_index)
+            );
+          } else if (payload.eventType === "DELETE") {
+            setSlots((prev) => prev.filter((s) => s.id !== (payload.old as { id: string }).id));
+          }
+        }
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [campaign?.id]);
+
   /* Derived stats */
-  const victories = slots.filter((s) => s.status === "completed" && (s.result ?? 0) > 0).length;
+  const victories = slots.filter((s) => s.result != null && (s.result ?? 0) >= s.buy_value).length;
+  const opened = slots.filter((s) => s.opened).length;
   const total = slots.length;
   const totalWin = slots.reduce((s, r) => s + (r.result ?? 0), 0);
   const totalBuy = slots.reduce((s, r) => s + r.buy_value, 0);
   const currentBE = totalBuy > 0 ? totalWin / totalBuy : 0;
-  const progress = total > 0 ? (victories / total) * 100 : 0;
+  const progress = total > 0 ? (opened / total) * 100 : 0;
 
   const statusLabel =
     campaign?.status === "active" ? "EM BATALHA" :
@@ -127,7 +154,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
             >
-              <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom gts-scroll">
+              <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom gts-scroll" style={{ maxWidth: "100%" }}>
                 <CornerOrnament className="absolute top-2 left-2 w-5 h-5" />
                 <CornerOrnament className="absolute top-2 right-2 w-5 h-5 -scale-x-100" />
                 <CornerOrnament className="absolute bottom-2 left-2 w-5 h-5 -scale-y-100" />
@@ -189,17 +216,16 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                         fontSize: "0.75rem",
                         color: "var(--ink-light)",
                       }}>
-                        {victories} / {total} Victories
+                        {opened} / {total} Bónus
                       </span>
                     </div>
                   </div>
 
                   {/* Column headers */}
-                  <div className="bh-table-header" style={{ gridTemplateColumns: "40px 1fr 80px 80px 120px 100px" }}>
+                  <div className="bh-table-header" style={{ gridTemplateColumns: "40px 1fr 80px 120px 100px" }}>
                     <span>#</span>
-                    <span>SLOT (BATTLE)</span>
-                    <span>BET SIZE</span>
-                    <span>VOTES</span>
+                    <span>SLOT (BATALHA)</span>
+                    <span>BET</span>
                     <span>SPECIAL</span>
                     <span style={{ textAlign: "right" }}>WINNINGS</span>
                   </div>
@@ -213,8 +239,8 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.03 }}
-                      className="bh-table-row"
-                      style={{ gridTemplateColumns: "40px 1fr 80px 80px 120px 100px" }}
+                      className={`bh-table-row${slot.status === "active" ? " bh-row-active" : ""}`}
+                      style={{ gridTemplateColumns: "40px 1fr 80px 120px 100px" }}
                     >
                       {/* # */}
                       <span style={{
@@ -298,34 +324,6 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                         {slot.buy_value.toFixed(2)}€
                       </span>
 
-                      {/* Votes */}
-                      <div style={{ display: "flex", gap: "4px", justifyContent: "center" }}>
-                        <span style={{
-                          width: "24px",
-                          height: "24px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          borderRadius: "4px",
-                          border: "1px solid rgba(139,105,20,0.15)",
-                          background: "rgba(139,105,20,0.05)",
-                          fontSize: "0.6rem",
-                          color: "var(--ink-light)",
-                        }}>⚔</span>
-                        <span style={{
-                          width: "24px",
-                          height: "24px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          borderRadius: "4px",
-                          border: "1px solid rgba(139,105,20,0.15)",
-                          background: "rgba(139,105,20,0.05)",
-                          fontSize: "0.6rem",
-                          color: "var(--ink-light)",
-                        }}>⚙</span>
-                      </div>
-
                       {/* Special */}
                       <div style={{ display: "flex", gap: "4px", justifyContent: "center", flexWrap: "wrap" }}>
                         {slot.is_super_bonus && (
@@ -381,7 +379,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
               transition={{ duration: 0.6, delay: 0.15, ease: "easeOut" }}
               className="self-start"
             >
-              <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom gts-stats-scroll">
+                <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom gts-stats-scroll" style={{ maxWidth: "100%" }}>
                 <CornerOrnament className="absolute top-2 left-2 w-5 h-5" />
                 <CornerOrnament className="absolute top-2 right-2 w-5 h-5 -scale-x-100" />
                 <CornerOrnament className="absolute bottom-2 left-2 w-5 h-5 -scale-y-100" />
@@ -436,7 +434,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px" }}>
                         <StatBox icon="⚔" label="Start" value={`${campaign.start_money.toFixed(2)}€`} />
                         <StatBox icon="⭕" label="Stop" value={`${campaign.stop_loss.toFixed(2)}€`} />
-                        <StatBox icon="🎯" label="Target" value={`${(campaign.total_result ?? 0).toFixed(2)}€`} highlight />
+                        <StatBox icon="🎯" label="Buy-In" value={`${(campaign.total_buy ?? 0).toFixed(2)}€`} highlight />
                       </div>
 
                       {/* Campaign progress */}

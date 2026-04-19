@@ -901,6 +901,14 @@ body {
   max-width: 100% !important;
 }
 
+.gts-scroll {
+  max-width: 100% !important;
+}
+
+.gts-stats-scroll {
+  max-width: 100% !important;
+}
+
 .bh-nav-btn {
   width: 28px;
   height: 28px;
