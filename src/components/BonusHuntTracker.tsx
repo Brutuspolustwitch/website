@@ -7,9 +7,9 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { supabase } from "@/lib/supabase";
 import type { BonusHuntSession, BonusHuntSlot } from "@/lib/supabase";
 
-/* -
+/* ═══════════════════════════════════════════════════════════════════
    CORNER ORNAMENT — reused from the papyrus design system
-   - */
+   ═══════════════════════════════════════════════════════════════════ */
 function CornerOrnament({ className }: { className: string }) {
   return (
     <svg className={`scroll-ornament ${className}`} viewBox="0 0 24 24" fill="none">
@@ -24,7 +24,7 @@ function CornerOrnament({ className }: { className: string }) {
   );
 }
 
-export function BonusHuntTracker({ compact = false, hideTitle = false, statsBar }: { compact?: boolean; hideTitle?: boolean; statsBar?: React.ReactNode } = {}) {
+export function BonusHuntTracker({ compact = false, hideTitle = false }: { compact?: boolean; hideTitle?: boolean } = {}) {
   const [sessions, setSessions] = useState<BonusHuntSession[]>([]);
   const [selectedSession, setSelectedSession] = useState<BonusHuntSession | null>(null);
   const [slots, setSlots] = useState<BonusHuntSlot[]>([]);
@@ -142,14 +142,14 @@ export function BonusHuntTracker({ compact = false, hideTitle = false, statsBar 
     );
   }
 
-  /* - Inner content (header + papyrus table) - */
+  /* ── Inner content (header + papyrus table) ──────────── */
   const tableContent = (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
-            {/* - Header bar (outside card) - */}
+            {/* ── Header bar (outside card) ──────────── */}
             {!compact && (
             <div style={{
               display: "flex",
@@ -160,7 +160,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false, statsBar 
             }}>
               {/* Left: hunt title + session nav */}
               <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                <span style={{ fontSize: "1.5rem" }}>??</span>
+                <span style={{ fontSize: "1.5rem" }}>⚔️</span>
                   <span style={{
                     fontFamily: "var(--font-display)",
                     fontSize: "1.1rem",
@@ -231,55 +231,52 @@ export function BonusHuntTracker({ compact = false, hideTitle = false, statsBar 
               <CornerOrnament className="absolute bottom-2 left-2 w-5 h-5 -scale-y-100" />
               <CornerOrnament className="absolute bottom-2 right-2 w-5 h-5 -scale-x-100 -scale-y-100" />
 
-              {/* - Stats bar (top) — injected from parent for compact mode - */}
-              {compact && statsBar}
-              {/* - Stats bar (top) — default for full mode - */}
-              {!compact && (
-                <div className="scroll-content" style={{ padding: "18px 20px 0" }}>
-                  <div style={{
-                    borderBottom: "2px solid rgba(139,105,20,0.2)",
-                    padding: "6px 0 8px",
-                    display: "flex",
-                    justifyContent: "space-around",
-                    textAlign: "center" }}>
-                    <div>
-                      <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Start Money</p>
-                      <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "var(--ink-dark)" }}>
-                        {(selectedSession?.start_money ?? 0).toFixed(2)}{currency}
-                      </p>
-                    </div>
-                    <div>
-                      <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Total Win</p>
-                      <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "#2e7d32" }}>
-                        {(selectedSession?.total_result ?? 0).toFixed(2)}{currency}
-                      </p>
-                    </div>
-                    <div>
-                      <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Profit</p>
-                      <p style={{
-                        fontFamily: "var(--font-ui)",
-                        fontSize: "1rem",
-                        fontWeight: 700,
-                        color: (selectedSession?.profit ?? 0) >= 0 ? "#2e7d32" : "#8b1a1a",
-                      }}>
-                        {(selectedSession?.profit ?? 0) >= 0 ? "+" : ""}{(selectedSession?.profit ?? 0).toFixed(2)}{currency}
-                      </p>
-                    </div>
-                    <div>
-                      <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Best Multi</p>
-                      <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "var(--gold-dark)" }}>
-                        {(selectedSession?.best_multi ?? 0).toFixed(1)}x
-                      </p>
-                    </div>
-                    <div>
-                      <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Avg Multi</p>
-                      <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "var(--ink-dark)" }}>
-                        {(selectedSession?.avg_multi ?? 0).toFixed(1)}x
-                      </p>
-                    </div>
+              {/* ── Stats bar (top) ────────────────────── */}
+              <div className="scroll-content" style={{ padding: "18px 20px 0" }}>
+                <div style={{
+                  borderBottom: "2px solid rgba(139,105,20,0.2)",
+                  padding: "6px 0 8px",
+                  display: "flex",
+                  justifyContent: "space-around",
+                  textAlign: "center",
+                }}>
+                  <div>
+                    <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Start Money</p>
+                    <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "var(--ink-dark)" }}>
+                      {(selectedSession?.start_money ?? 0).toFixed(2)}{currency}
+                    </p>
+                  </div>
+                  <div>
+                    <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Total Win</p>
+                    <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "#2e7d32" }}>
+                      {(selectedSession?.total_result ?? 0).toFixed(2)}{currency}
+                    </p>
+                  </div>
+                  <div>
+                    <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Profit</p>
+                    <p style={{
+                      fontFamily: "var(--font-ui)",
+                      fontSize: "1rem",
+                      fontWeight: 700,
+                      color: (selectedSession?.profit ?? 0) >= 0 ? "#2e7d32" : "#8b1a1a",
+                    }}>
+                      {(selectedSession?.profit ?? 0) >= 0 ? "+" : ""}{(selectedSession?.profit ?? 0).toFixed(2)}{currency}
+                    </p>
+                  </div>
+                  <div>
+                    <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Best Multi</p>
+                    <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "var(--gold-dark)" }}>
+                      {(selectedSession?.best_multi ?? 0).toFixed(1)}x
+                    </p>
+                  </div>
+                  <div>
+                    <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Avg Multi</p>
+                    <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "var(--ink-dark)" }}>
+                      {(selectedSession?.avg_multi ?? 0).toFixed(1)}x
+                    </p>
                   </div>
                 </div>
-              )}
+
                 {/* Best slot callout (full page only) */}
                 {!compact && selectedSession?.best_slot_name && (
                   <div style={{ textAlign: "center", padding: "4px 0" }}>
@@ -290,12 +287,12 @@ export function BonusHuntTracker({ compact = false, hideTitle = false, statsBar 
                       letterSpacing: "0.15em",
                       textTransform: "uppercase",
                     }}>
-                      ?? Melhor Slot: {selectedSession.best_slot_name} ({selectedSession.best_multi.toFixed(1)}x)
+                      🏆 Melhor Slot: {selectedSession.best_slot_name} ({selectedSession.best_multi.toFixed(1)}x)
                     </span>
                   </div>
                 )}
 
-                {/* - Column headers - */}
+                {/* ── Column headers ──────────────────── */}
                 <div className="bh-table-header">
                   <span className="bh-col-num">#</span>
                   <span className="bh-col-slot">SLOT</span>
@@ -305,7 +302,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false, statsBar 
                 </div>
               </div>
 
-              {/* - Slot rows - */}
+              {/* ── Slot rows ────────────────────────── */}
               <div className="scroll-content" style={{ padding: "0 20px 8px" }}>
                 {(compact ? paginatedSlots : slots).map((slot, i) => {
                   const globalIndex = compact ? slotPage * SLOTS_PER_PAGE + i : i;
@@ -358,7 +355,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false, statsBar 
                             fontSize: "0.9rem",
                             flexShrink: 0,
                           }}>
-                            ??
+                            🎰
                           </div>
                         )}
                         <div style={{ minWidth: 0 }}>
@@ -434,7 +431,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false, statsBar 
                   );
                 })}
 
-                {/* - Pagination controls - */}
+                {/* ── Pagination controls ──────────── */}
                 {compact && totalPages > 1 && (
                   <div style={{
                     display: "flex",
@@ -487,17 +484,16 @@ export function BonusHuntTracker({ compact = false, hideTitle = false, statsBar 
                   </div>
                 )}
               </div>
-
-		</motion.div>
+            </div>
+          </motion.div>
   );
 
-
-  /* - Compact mode: skip section wrapper - */
+  /* ── Compact mode: skip section wrapper ──────────────── */
   if (compact) {
     return tableContent;
   }
 
-  /* - Full page mode - */
+  /* ── Full page mode ─────────────────────────────────── */
   return (
     <section id="bonus-hunt" className="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
 
@@ -517,11 +513,3 @@ export function BonusHuntTracker({ compact = false, hideTitle = false, statsBar 
     </section>
   );
 }
-
-
-
-
-
-
-
-
