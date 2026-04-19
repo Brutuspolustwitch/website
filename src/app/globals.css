@@ -523,6 +523,17 @@ body {
   background-repeat: no-repeat;
 }
 
+/* Dim the lava/fire in the background image */
+.gladiator-schedule__poster::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 2, 1, 0.42);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 0;
+}
+
 /* ── Overlay ─────────────────────────────── */
 .gladiator-schedule__overlay {
   position: relative;
@@ -2330,7 +2341,7 @@ body {
   border: 1px solid rgba(160,90,12,0.4);
   border-top-color: rgba(200,130,30,0.5);
   border-radius: 10px;
-  max-width: 520px;
+  max-width: 580px;
   width: 100%;
   position: relative;
   overflow: hidden;
@@ -2353,7 +2364,7 @@ body {
 /* ── Hero banner ──────────────────────────────────────────── */
 .schedule-modal-hero {
   position: relative;
-  height: 152px;
+  height: 176px;
   background:
     radial-gradient(ellipse at 20% 100%, rgba(180,80,5,0.28) 0%, transparent 50%),
     radial-gradient(ellipse at 80% 80%, rgba(140,50,5,0.18) 0%, transparent 45%),
@@ -2387,16 +2398,16 @@ body {
 .schedule-modal-hero-content {
   position: relative;
   z-index: 2;
-  padding: 22px 26px 16px;
+  padding: 26px 30px 20px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 /* ── Badge / inscription ──────────────────────────────────── */
 .schedule-modal-badge {
   font-family: var(--font-display);
-  font-size: 0.54rem;
+  font-size: 0.65rem;
   letter-spacing: 0.26em;
   text-transform: uppercase;
   color: rgba(210,140,45,0.88);
@@ -2409,7 +2420,7 @@ body {
 /* ── Title ────────────────────────────────────────────────── */
 .schedule-modal-title {
   font-family: var(--font-display);
-  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  font-size: clamp(1.3rem, 3.5vw, 1.75rem);
   font-weight: 700;
   color: #b87235;
   line-height: 1.15;
@@ -2427,13 +2438,13 @@ body {
 .schedule-modal-meta-chip {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 0.7rem;
+  gap: 6px;
+  font-size: 0.78rem;
   color: rgba(210,172,105,0.9);
   background: rgba(0,0,0,0.3);
   border: 1px solid rgba(150,82,12,0.45);
   border-radius: 4px;
-  padding: 3px 9px;
+  padding: 4px 11px;
   letter-spacing: 0.04em;
 }
 
@@ -2455,18 +2466,18 @@ body {
 .schedule-modal-body {
   position: relative;
   z-index: 1;
-  padding: 20px 26px 24px;
+  padding: 24px 30px 28px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 .schedule-modal-section-label {
   font-family: var(--font-display);
-  font-size: 0.6rem;
+  font-size: 0.7rem;
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: rgba(200,118,25,0.82);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 /* ── Activity list (vertical) ─────────────────────────────── */
@@ -2482,7 +2493,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 9px 14px;
+  padding: 11px 16px;
   border-bottom: 1px solid rgba(100,50,5,0.2);
 }
 .schedule-modal-activity-row:last-child {
@@ -2504,7 +2515,7 @@ body {
 }
 .schedule-modal-activity-name {
   font-family: var(--font-display);
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   letter-spacing: 0.08em;
   color: rgba(195,182,158,0.88);
   text-transform: uppercase;
@@ -2512,11 +2523,11 @@ body {
 
 /* ── Description ──────────────────────────────────────────── */
 .schedule-modal-description {
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   color: rgba(195,182,158,0.78);
-  line-height: 1.75;
+  line-height: 1.8;
   border-left: 2px solid rgba(140,72,12,0.4);
-  padding-left: 12px;
+  padding-left: 14px;
 }
 
 /* ── Action buttons ───────────────────────────────────────── */
@@ -2617,8 +2628,8 @@ body {
 
 /* ── Responsive ───────────────────────────────────────────── */
 @media (max-width: 480px) {
-  .schedule-modal-hero-content { padding: 16px 16px 12px; }
-  .schedule-modal-body         { padding: 14px 16px 18px; }
-  .schedule-modal-hero         { height: 136px; }
+  .schedule-modal-hero-content { padding: 18px 18px 14px; }
+  .schedule-modal-body         { padding: 16px 18px 20px; }
+  .schedule-modal-hero         { height: 152px; }
   .schedule-modal-btn-primary  { min-width: 110px; padding: 10px 14px; }
 }
