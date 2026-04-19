@@ -42,6 +42,7 @@ function getCenteredDates(): string[] {
 export function StreamCalendar() {
   const [streams, setStreams] = useState<ScheduledStreamRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedStream, setSelectedStream] = useState<ScheduledStreamRow | null>(null);
 
   const fetchStreams = useCallback(async () => {
     try {
@@ -106,7 +107,12 @@ export function StreamCalendar() {
                       dayStreams.map((stream) => {
                         const cats = stream.categories || ["Outro"];
                         return (
-                          <div key={stream.id} className={`forge-slot ${stream.is_special ? "forge-slot--special" : ""}`}>
+                          <div
+                            key={stream.id}
+                            className={`forge-slot ${stream.is_special ? "forge-slot--special" : ""}`}
+                            style={{ cursor: "pointer" }}
+                            onClick={() => setSelectedStream(stream)}
+                          >
                             <div className="forge-slot__time">
                               {stream.start_time.slice(0, 5)}
                               {stream.end_time ? ` – ${stream.end_time.slice(0, 5)}` : ""}
@@ -133,6 +139,67 @@ export function StreamCalendar() {
           </div>
         </div>
       </div>
+
+      {/* Modal Pop-out for Stream Details */}
+      {selectedStream && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
+          onClick={() => setSelectedStream(null)}
+        >
+          <div
+            className="bg-arena-dark border-2 border-arena-gold rounded-xl p-8 max-w-md w-full relative shadow-2xl"
+            onClick={e => e.stopPropagation()}
+          >
+            <button
+              className="absolute top-2 right-2 text-arena-gold hover:text-white text-2xl"
+              onClick={() => setSelectedStream(null)}
+              aria-label="Fechar"
+            >
+              ×
+            </button>
+            <div className="flex flex-col gap-2 items-center">
+              <div className="text-lg font-bold text-arena-gold mb-2">{selectedStream.title}</div>
+              <div className="flex gap-2 items-center mb-2">
+                <span className="text-sm bg-arena-gold/10 px-2 py-1 rounded">
+                  {selectedStream.stream_date} {selectedStream.start_time.slice(0,5)}
+                  {selectedStream.end_time ? ` – ${selectedStream.end_time.slice(0,5)}` : ""}
+                </span>
+                {selectedStream.casino && (
+                  <span className="text-sm bg-arena-gold/10 px-2 py-1 rounded">
+                    {selectedStream.casino}
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-2 mb-2">
+                {(selectedStream.categories || ["Outro"]).map((c) => (
+                  <span key={c} className="text-2xl">{CATEGORY_ICONS[c] || "📺"}</span>
+                ))}
+              </div>
+              {selectedStream.description && (
+                <div className="text-sm text-arena-gold/80 mb-2 text-center">
+                  {selectedStream.description}
+                </div>
+              )}
+              {selectedStream.links && selectedStream.links.length > 0 && (
+                <div className="flex flex-col gap-1 mt-2 w-full">
+                  <div className="font-semibold text-arena-gold">Links:</div>
+                  {selectedStream.links.map((link: any, idx: number) => (
+                    <a
+                      key={idx}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-arena-gold underline hover:text-white"
+                    >
+                      {link.label || link.url}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
