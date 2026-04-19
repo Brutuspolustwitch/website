@@ -304,8 +304,8 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
 
               {/* ── Slot rows ────────────────────────── */}
               <div className="scroll-content" style={{ padding: "0 20px 8px" }}>
-                {paginatedSlots.map((slot, i) => {
-                  const globalIndex = slotPage * SLOTS_PER_PAGE + i;
+                {(compact ? paginatedSlots : slots).map((slot, i) => {
+                  const globalIndex = compact ? slotPage * SLOTS_PER_PAGE + i : i;
                   const multi = slot.bet_size && slot.bet_size > 0 && slot.payout
                     ? (slot.payout / slot.bet_size)
                     : null;
@@ -432,7 +432,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
                 })}
 
                 {/* ── Pagination controls ──────────── */}
-                {totalPages > 1 && (
+                {compact && totalPages > 1 && (
                   <div style={{
                     display: "flex",
                     alignItems: "center",
