@@ -12,20 +12,8 @@ export const metadata: Metadata = {
 
 export default function HallOfVictoriesPage() {
   return (
-    <main className="pt-24 pb-16 min-h-screen">
+    <main className="pt-20 pb-16 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* ── Page title ──────────────────────────────── */}
-        <div className="hov-hero">
-          <h1 className="hov-hero__title">
-            <span className="hov-hero__title-line1">Bruta</span>
-            <span className="hov-hero__title-line2">do Mês</span>
-          </h1>
-          <p className="hov-hero__subtitle">
-            A melhor vitória do mês, e as glórias da comunidade
-          </p>
-          <div className="hov-hero__divider" aria-hidden="true" />
-        </div>
-
         <HallOfVictoriesContent />
       </div>
     </main>
