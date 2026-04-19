@@ -30,6 +30,8 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
   const [slots, setSlots] = useState<BonusHuntSlot[]>([]);
   const [loading, setLoading] = useState(true);
   const [sessionIdx, setSessionIdx] = useState(0);
+  const [slotPage, setSlotPage] = useState(0);
+  const SLOTS_PER_PAGE = 15;
 
   /* Fetch all completed sessions on mount */
   useEffect(() => {
@@ -53,6 +55,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
   /* Load slots when session changes */
   useEffect(() => {
     if (!selectedSession) return;
+    setSlotPage(0);
 
     async function loadSlots() {
       const { data } = await supabase
@@ -69,6 +72,8 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
   const currency = selectedSession?.currency || "€";
   const openedCount = slots.filter((s) => s.opened).length;
   const totalSlots = selectedSession?.bonus_count || slots.length;
+  const totalPages = Math.max(1, Math.ceil(slots.length / SLOTS_PER_PAGE));
+  const paginatedSlots = slots.slice(slotPage * SLOTS_PER_PAGE, (slotPage + 1) * SLOTS_PER_PAGE);
 
   function prevSession() {
     if (sessionIdx < sessions.length - 1) {
@@ -299,7 +304,8 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
 
               {/* ── Slot rows ────────────────────────── */}
               <div className="scroll-content" style={{ padding: "0 20px 8px" }}>
-                {slots.map((slot, i) => {
+                {paginatedSlots.map((slot, i) => {
+                  const globalIndex = slotPage * SLOTS_PER_PAGE + i;
                   const multi = slot.bet_size && slot.bet_size > 0 && slot.payout
                     ? (slot.payout / slot.bet_size)
                     : null;
@@ -317,7 +323,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
                         fontWeight: 700,
                         color: "var(--ink-light)",
                       }}>
-                        #{i + 1}
+                        #{globalIndex + 1}
                       </span>
 
                       {/* Slot: thumbnail + name + provider */}
@@ -424,6 +430,59 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
                     </div>
                   );
                 })}
+
+                {/* ── Pagination controls ──────────── */}
+                {totalPages > 1 && (
+                  <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                    padding: "12px 0 4px",
+                    borderTop: "1px solid rgba(139,105,20,0.15)",
+                    marginTop: "8px",
+                  }}>
+                    <button
+                      onClick={() => setSlotPage((p) => Math.max(0, p - 1))}
+                      disabled={slotPage === 0}
+                      className="bh-nav-btn"
+                      style={{ borderColor: "rgba(139,105,20,0.25)", color: "var(--ink-dark)", opacity: slotPage === 0 ? 0.3 : 1 }}
+                      aria-label="Página anterior"
+                    >
+                      ‹
+                    </button>
+                    {Array.from({ length: totalPages }, (_, p) => (
+                      <button
+                        key={p}
+                        onClick={() => setSlotPage(p)}
+                        style={{
+                          fontFamily: "var(--font-display)",
+                          fontSize: "0.7rem",
+                          fontWeight: slotPage === p ? 700 : 500,
+                          width: "28px",
+                          height: "28px",
+                          borderRadius: "4px",
+                          border: slotPage === p ? "1px solid rgba(139,105,20,0.5)" : "1px solid rgba(139,105,20,0.15)",
+                          background: slotPage === p ? "rgba(139,105,20,0.15)" : "transparent",
+                          color: slotPage === p ? "var(--gold-dark)" : "var(--ink-light)",
+                          cursor: "pointer",
+                          transition: "all 0.2s ease",
+                        }}
+                      >
+                        {p + 1}
+                      </button>
+                    ))}
+                    <button
+                      onClick={() => setSlotPage((p) => Math.min(totalPages - 1, p + 1))}
+                      disabled={slotPage === totalPages - 1}
+                      className="bh-nav-btn"
+                      style={{ borderColor: "rgba(139,105,20,0.25)", color: "var(--ink-dark)", opacity: slotPage === totalPages - 1 ? 0.3 : 1 }}
+                      aria-label="Próxima página"
+                    >
+                      ›
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>
