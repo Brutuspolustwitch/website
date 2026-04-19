@@ -282,13 +282,13 @@ export function OfferCards({ emptyClassName = "" }: { emptyClassName?: string })
 
   if (loading) {
     return (
-      <div className="mt-12 text-center text-arena-ash py-12">A carregar ofertas...</div>
+      <div className="text-center text-arena-ash py-12">A carregar ofertas...</div>
     );
   }
 
   if (offers.length === 0) {
     return (
-      <div className={`mt-12 text-center text-arena-ash py-12 ${emptyClassName}`}>
+      <div className={`text-center text-arena-ash py-12 ${emptyClassName}`}>
         <p className="text-lg">Nenhuma oferta disponível de momento.</p>
         <p className="text-sm mt-2">Volta em breve para novas promoções!</p>
       </div>
@@ -296,7 +296,7 @@ export function OfferCards({ emptyClassName = "" }: { emptyClassName?: string })
   }
 
   return (
-    <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
       {offers.map((offer) => (
         <OfferCard key={offer.slug} offer={offer} />
       ))}
