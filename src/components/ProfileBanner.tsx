@@ -3,7 +3,6 @@
 import { useAuth } from "@/lib/auth-context";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 
 export function ProfileBanner() {
   const { user, loading } = useAuth();
@@ -38,11 +37,10 @@ export function ProfileBanner() {
   if (loading || !user) return null;
 
   return (
-    <Link
-      href="/perfil"
+    <div
       className="group flex items-center gap-4 bg-black/40 backdrop-blur-md border border-arena-gold/20
-                 rounded-xl px-5 py-3 mb-8 transition-all hover:border-arena-gold/50 hover:bg-black/60
-                 max-w-md mx-auto cursor-pointer"
+                 rounded-xl px-5 py-3 mb-8 transition-all
+                 max-w-md mx-auto"
     >
       {/* Avatar */}
       <div className="relative shrink-0">
@@ -75,6 +73,6 @@ export function ProfileBanner() {
       <svg className="w-4 h-4 text-arena-gold/40 group-hover:text-arena-gold ml-auto transition-colors shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
       </svg>
-    </Link>
+    </div>
   );
 }

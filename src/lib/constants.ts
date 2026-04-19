@@ -14,5 +14,4 @@ export const NAV_LINKS = [
   { href: "/liga-dos-brutus", label: "Liga dos Brutus" },
   { href: "/torneio", label: "Torneio Liga dos Brutus" },
   { href: "/loja", label: "Loja" },
-  { href: "/contactos", label: "Contactos" },
 ] as const;

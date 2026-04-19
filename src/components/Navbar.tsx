@@ -36,16 +36,13 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
     "/loja": "Armaria",
     "/roda-diaria": "Arrebanha Daily",
     "/bonus-hunt": "Bonus Hunt",
-    "/leaderboard": "Gladiator Ranks",
     "/liga-dos-brutus": "Liga dos Brutus",
     "/live": "Em Direto",
-    "/slots": "Slot Request",
     "/casinos": "Battle Arenas",
     "/adivinha-o-resultado": "Guess the Spoils",
     "/termos-e-condicoes": "Termos & Condições",
     "/politica-de-privacidade": "Política de Privacidade",
     "/politica-de-cookies": "Política de Cookies",
-    "/perfil": "Perfil",
     "/moderador": "Moderador",
     "/admin": "Admin",
     "/admin/outros": "Outros",
@@ -238,13 +235,6 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
                             <VipBadge level={vipLevel} />
                           </div>
                         </div>
-                        <Link
-                          href="/perfil"
-                          onClick={() => setUserMenuOpen(false)}
-                          className="block px-4 py-2.5 text-sm text-arena-smoke hover:text-arena-white hover:bg-arena-steel/20 transition-colors"
-                        >
-                          Perfil
-                        </Link>
                         <button
                           onClick={async () => {
                             await logout();

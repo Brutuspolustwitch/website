@@ -11,7 +11,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/liga-dos-brutus",
     "/torneio",
     "/loja",
-    "/contactos",
   ];
 
   return routes.map((route) => ({
