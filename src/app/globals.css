@@ -2290,171 +2290,224 @@ body {
 }
 
 /* ════════════════════════════════════════════════════════════
-   STREAM SCHEDULE MODAL  –  premium dark-forge / ember theme
+   STREAM SCHEDULE MODAL  –  scorched stone / ember / lava
    ════════════════════════════════════════════════════════════ */
 
 @keyframes schedule-modal-in {
-  from { opacity: 0; transform: scale(0.92) translateY(10px); }
+  from { opacity: 0; transform: scale(0.94) translateY(14px); }
   to   { opacity: 1; transform: scale(1)    translateY(0);    }
 }
 
 @keyframes schedule-glow-pulse {
-  0%,100% { box-shadow: 0 0 20px rgba(212,168,67,0.12), 0 30px 70px rgba(0,0,0,0.85); }
-  50%     { box-shadow: 0 0 36px rgba(212,168,67,0.22), 0 30px 70px rgba(0,0,0,0.85); }
+  0%,100% { box-shadow: 0 0 0 1px rgba(160,90,12,0.35), 0 28px 60px rgba(0,0,0,0.9), inset 0 1px 0 rgba(200,130,30,0.06); }
+  50%     { box-shadow: 0 0 0 1px rgba(200,120,20,0.5),  0 28px 60px rgba(0,0,0,0.9), inset 0 1px 0 rgba(200,130,30,0.1);  }
 }
 
 @keyframes schedule-ember {
-  0%   { opacity: 0;   transform: translateY(0)     translateX(0)                   scale(1);   }
-  18%  { opacity: 0.8; }
-  80%  { opacity: 0.15; }
-  100% { opacity: 0;   transform: translateY(-80px) translateX(var(--drift, 12px)) scale(0.2); }
+  0%   { opacity: 0;    transform: translateY(0)     translateX(0)                   scale(1);   }
+  15%  { opacity: 0.7; }
+  75%  { opacity: 0.12; }
+  100% { opacity: 0;    transform: translateY(-90px) translateX(var(--drift, 10px)) scale(0.15); }
+}
+
+@keyframes schedule-lava-crawl {
+  0%   { background-position: 0% 100%; }
+  100% { background-position: 100% 0%; }
 }
 
 .schedule-modal-panel {
-  background: linear-gradient(155deg, #1e1810 0%, #100e0b 45%, #161310 100%);
-  border: 1px solid rgba(212,168,67,0.38);
-  border-radius: 16px;
-  max-width: 580px;
+  background:
+    repeating-linear-gradient(0deg,   transparent, transparent 3px, rgba(0,0,0,0.06) 3px, rgba(0,0,0,0.06) 4px),
+    repeating-linear-gradient(90deg,  transparent, transparent 4px, rgba(0,0,0,0.04) 4px, rgba(0,0,0,0.04) 5px),
+    linear-gradient(160deg, #1a1108 0%, #0e0b07 40%, #120f0a 70%, #0a0806 100%);
+  border: 1px solid rgba(160,90,12,0.4);
+  border-top-color: rgba(200,130,30,0.5);
+  border-radius: 10px;
+  max-width: 520px;
   width: 100%;
   position: relative;
   overflow: hidden;
-  animation: schedule-modal-in 0.28s cubic-bezier(0.34,1.56,0.64,1) both,
-             schedule-glow-pulse 4s ease-in-out 0.6s infinite;
+  animation: schedule-modal-in 0.26s cubic-bezier(0.22,1,0.36,1) both,
+             schedule-glow-pulse 5s ease-in-out 0.8s infinite;
+}
+
+/* Stone crack texture overlay */
+.schedule-modal-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(ellipse at 15% 85%, rgba(180,80,5,0.07) 0%, transparent 45%),
+    radial-gradient(ellipse at 85% 20%, rgba(140,60,5,0.06) 0%, transparent 40%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* ── Hero banner ──────────────────────────────────────────── */
 .schedule-modal-hero {
   position: relative;
-  height: 168px;
+  height: 152px;
   background:
-    radial-gradient(ellipse at 22% 55%, rgba(212,168,67,0.16) 0%, transparent 55%),
-    radial-gradient(ellipse at 78% 30%, rgba(170, 90, 15,0.13) 0%, transparent 40%),
-    linear-gradient(135deg, #2b2009 0%, #1a1208 35%, #0e0c09 70%);
+    radial-gradient(ellipse at 20% 100%, rgba(180,80,5,0.28) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(140,50,5,0.18) 0%, transparent 45%),
+    linear-gradient(180deg, #1c1208 0%, #110d07 50%, #0a0704 100%);
   overflow: hidden;
+}
+/* Lava seam along the bottom */
+.schedule-modal-hero::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(180,80,5,0.0) 10%,
+    rgba(220,110,10,0.7) 30%,
+    rgba(255,140,20,0.9) 50%,
+    rgba(220,110,10,0.7) 70%,
+    rgba(180,80,5,0.0) 90%,
+    transparent 100%);
+  filter: blur(1px);
 }
 .schedule-modal-hero::after {
   content: '';
   position: absolute;
   bottom: 0; left: 0; right: 0;
-  height: 72px;
-  background: linear-gradient(to top, #100e0b, transparent);
+  height: 64px;
+  background: linear-gradient(to top, #0e0b07, transparent);
   pointer-events: none;
 }
 .schedule-modal-hero-content {
   position: relative;
   z-index: 2;
-  padding: 24px 28px 18px;
+  padding: 22px 26px 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-/* ── Badge ────────────────────────────────────────────────── */
+/* ── Badge / inscription ──────────────────────────────────── */
 .schedule-modal-badge {
   font-family: var(--font-display);
-  font-size: 0.58rem;
-  letter-spacing: 0.22em;
+  font-size: 0.52rem;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: rgba(212,168,67,0.75);
-  background: rgba(212,168,67,0.07);
-  border: 1px solid rgba(212,168,67,0.22);
-  border-radius: 4px;
-  padding: 3px 10px;
+  color: rgba(200,130,30,0.6);
   display: inline-block;
   width: fit-content;
+  padding: 0 2px 3px;
+  border-bottom: 1px solid rgba(180,100,10,0.3);
 }
 
 /* ── Title ────────────────────────────────────────────────── */
 .schedule-modal-title {
   font-family: var(--font-display);
-  font-size: clamp(1.2rem, 3vw, 1.65rem);
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
   font-weight: 700;
-  color: #d4a843;
+  color: #c8841a;
   line-height: 1.15;
-  letter-spacing: 0.025em;
-  text-shadow: 0 0 22px rgba(212,168,67,0.28), 0 2px 4px rgba(0,0,0,0.5);
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 30px rgba(180,80,5,0.4), 0 2px 6px rgba(0,0,0,0.7);
 }
 
 /* ── Meta chips ───────────────────────────────────────────── */
 .schedule-modal-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
 }
 .schedule-modal-meta-chip {
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 0.72rem;
-  color: rgba(255,255,255,0.65);
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.09);
-  border-radius: 6px;
-  padding: 4px 10px;
-  letter-spacing: 0.02em;
+  font-size: 0.68rem;
+  color: rgba(200,160,80,0.7);
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(130,70,5,0.35);
+  border-radius: 4px;
+  padding: 3px 9px;
+  letter-spacing: 0.04em;
 }
 
-/* ── Gold divider ─────────────────────────────────────────── */
+/* ── Lava-crack divider ───────────────────────────────────── */
 .schedule-modal-divider {
   height: 1px;
   background: linear-gradient(90deg,
     transparent 0%,
-    rgba(212,168,67,0.5) 25%,
-    rgba(212,168,67,0.7) 50%,
-    rgba(212,168,67,0.5) 75%,
+    rgba(140,65,5,0.4)  15%,
+    rgba(220,110,10,0.7) 40%,
+    rgba(255,140,20,0.85) 50%,
+    rgba(220,110,10,0.7) 60%,
+    rgba(140,65,5,0.4)  85%,
     transparent 100%);
-  margin: 0 0;
+  box-shadow: 0 0 6px rgba(200,100,5,0.25);
 }
 
 /* ── Body ─────────────────────────────────────────────────── */
 .schedule-modal-body {
-  padding: 22px 28px 26px;
+  position: relative;
+  z-index: 1;
+  padding: 20px 26px 24px;
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 20px;
 }
 .schedule-modal-section-label {
   font-family: var(--font-display);
-  font-size: 0.55rem;
-  letter-spacing: 0.22em;
+  font-size: 0.48rem;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: rgba(212,168,67,0.55);
+  color: rgba(180,100,10,0.55);
   margin-bottom: 10px;
 }
 
-/* ── Category chips ───────────────────────────────────────── */
-.schedule-modal-categories {
+/* ── Activity list (vertical) ─────────────────────────────── */
+.schedule-modal-activity-list {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-direction: column;
+  border: 1px solid rgba(120,60,5,0.3);
+  border-radius: 6px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.25);
 }
-.schedule-modal-category-chip {
+.schedule-modal-activity-row {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.73rem;
-  font-weight: 600;
-  color: rgba(212,168,67,0.88);
-  background: rgba(212,168,67,0.07);
-  border: 1px solid rgba(212,168,67,0.24);
-  border-radius: 8px;
-  padding: 6px 14px;
-  transition: background 0.18s, border-color 0.18s, box-shadow 0.18s;
+  gap: 12px;
+  padding: 9px 14px;
+  border-bottom: 1px solid rgba(100,50,5,0.2);
 }
-.schedule-modal-category-chip:hover {
-  background: rgba(212,168,67,0.13);
-  border-color: rgba(212,168,67,0.42);
-  box-shadow: 0 0 10px rgba(212,168,67,0.1);
+.schedule-modal-activity-row:last-child {
+  border-bottom: none;
+}
+.schedule-modal-activity-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #e08010 0%, #9a4a05 100%);
+  box-shadow: 0 0 5px rgba(200,100,5,0.5);
+  flex-shrink: 0;
+}
+.schedule-modal-activity-icon {
+  color: rgba(180,100,10,0.65);
+  flex-shrink: 0;
+}
+.schedule-modal-activity-name {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: rgba(210,160,70,0.85);
+  text-transform: uppercase;
 }
 
 /* ── Description ──────────────────────────────────────────── */
 .schedule-modal-description {
-  font-size: 0.84rem;
-  color: rgba(255,255,255,0.6);
-  line-height: 1.7;
-  border-left: 2px solid rgba(212,168,67,0.28);
-  padding-left: 14px;
+  font-size: 0.82rem;
+  color: rgba(200,170,100,0.55);
+  line-height: 1.75;
+  border-left: 2px solid rgba(160,80,5,0.35);
+  padding-left: 12px;
 }
 
 /* ── Action buttons ───────────────────────────────────────── */
@@ -2465,29 +2518,30 @@ body {
 }
 .schedule-modal-btn-primary {
   flex: 1;
-  min-width: 140px;
+  min-width: 130px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px 22px;
-  background: linear-gradient(135deg, #d4a843 0%, #c4902a 55%, #a87420 100%);
-  color: #0e0c09;
+  padding: 11px 20px;
+  background: linear-gradient(135deg, #c8841a 0%, #a06010 50%, #7a4008 100%);
+  color: #f5e0b0;
   font-family: var(--font-display);
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  border-radius: 8px;
-  border: none;
+  border-radius: 6px;
+  border: 1px solid rgba(180,100,20,0.5);
+  border-top-color: rgba(220,140,40,0.6);
   cursor: pointer;
   text-decoration: none;
-  transition: filter 0.18s, box-shadow 0.18s, transform 0.15s;
-  box-shadow: 0 4px 18px rgba(212,168,67,0.22), 0 1px 3px rgba(0,0,0,0.4);
+  transition: filter 0.18s, box-shadow 0.18s, transform 0.14s;
+  box-shadow: 0 4px 20px rgba(150,70,5,0.3), inset 0 1px 0 rgba(255,180,60,0.15);
 }
 .schedule-modal-btn-primary:hover {
-  filter: brightness(1.1);
-  box-shadow: 0 6px 28px rgba(212,168,67,0.38), 0 1px 3px rgba(0,0,0,0.4);
+  filter: brightness(1.12);
+  box-shadow: 0 6px 28px rgba(180,80,5,0.45), inset 0 1px 0 rgba(255,180,60,0.2);
   transform: translateY(-1px);
 }
 .schedule-modal-btn-secondary {
@@ -2495,69 +2549,67 @@ body {
   align-items: center;
   justify-content: center;
   gap: 7px;
-  padding: 12px 20px;
-  background: rgba(212,168,67,0.05);
-  color: rgba(212,168,67,0.82);
+  padding: 11px 18px;
+  background: rgba(0,0,0,0.35);
+  color: rgba(190,120,20,0.75);
   font-family: var(--font-display);
-  font-size: 0.7rem;
+  font-size: 0.66rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  border-radius: 8px;
-  border: 1px solid rgba(212,168,67,0.25);
+  border-radius: 6px;
+  border: 1px solid rgba(120,60,5,0.4);
   cursor: pointer;
   text-decoration: none;
-  transition: background 0.18s, border-color 0.18s, color 0.18s, box-shadow 0.18s, transform 0.15s;
+  transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.14s;
 }
 .schedule-modal-btn-secondary:hover {
-  background: rgba(212,168,67,0.11);
-  border-color: rgba(212,168,67,0.45);
-  color: rgba(212,168,67,1);
-  box-shadow: 0 0 14px rgba(212,168,67,0.12);
+  background: rgba(100,50,5,0.2);
+  border-color: rgba(180,90,10,0.5);
+  color: rgba(220,150,40,0.9);
   transform: translateY(-1px);
 }
 
 /* ── Close button ─────────────────────────────────────────── */
 .schedule-modal-close {
   position: absolute;
-  top: 14px;
-  right: 14px;
+  top: 12px;
+  right: 12px;
   z-index: 10;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.45);
-  border: 1px solid rgba(212,168,67,0.28);
-  color: rgba(212,168,67,0.65);
+  border-radius: 4px;
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(130,65,5,0.4);
+  color: rgba(180,100,10,0.6);
   cursor: pointer;
-  transition: background 0.18s, border-color 0.18s, color 0.18s, box-shadow 0.18s;
+  transition: background 0.16s, border-color 0.16s, color 0.16s;
 }
 .schedule-modal-close:hover {
-  background: rgba(212,168,67,0.1);
-  border-color: rgba(212,168,67,0.55);
-  color: #d4a843;
-  box-shadow: 0 0 12px rgba(212,168,67,0.18);
+  background: rgba(100,40,5,0.3);
+  border-color: rgba(200,100,10,0.6);
+  color: #c8841a;
 }
 
 /* ── Ember particles ──────────────────────────────────────── */
 .schedule-modal-ember {
   position: absolute;
-  width: 3px;
-  height: 3px;
+  width: 2px;
+  height: 2px;
   border-radius: 50%;
-  background: radial-gradient(circle, #f0c050 0%, #d4a843 60%, transparent 100%);
+  background: radial-gradient(circle, #ff9020 0%, #c05010 70%, transparent 100%);
   pointer-events: none;
   animation: schedule-ember var(--dur, 3s) ease-out var(--delay, 0s) infinite;
-  box-shadow: 0 0 4px rgba(212,168,67,0.6);
+  box-shadow: 0 0 3px rgba(220,100,5,0.7);
 }
 
 /* ── Responsive ───────────────────────────────────────────── */
 @media (max-width: 480px) {
-  .schedule-modal-hero-content { padding: 18px 18px 14px; }
-  .schedule-modal-body         { padding: 16px 18px 20px; }
-  .schedule-modal-hero         { height: 148px; }
-  .schedule-modal-btn-primary  { min-width: 120px; padding: 10px 16px; }
+  .schedule-modal-hero-content { padding: 16px 16px 12px; }
+  .schedule-modal-body         { padding: 14px 16px 18px; }
+  .schedule-modal-hero         { height: 136px; }
+  .schedule-modal-btn-primary  { min-width: 110px; padding: 10px 14px; }
 }

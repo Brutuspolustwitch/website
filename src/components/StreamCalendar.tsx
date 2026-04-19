@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import {
   Calendar, Clock, X, CalendarDays,
-  Tv, Target, Trophy, Star, Gift, Gamepad2, Zap, Play,
+  Tv, Target, Trophy, Gift, Gamepad2, Zap, Play,
+  Inbox, Shield, Award,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import type { ScheduledStreamRow } from "@/lib/supabase";
@@ -11,12 +12,14 @@ import type { ScheduledStreamRow } from "@/lib/supabase";
 /* ── Category icons (Lucide) ───────────────────────────────── */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const CATEGORY_LUCIDE: Record<string, React.ComponentType<any>> = {
-  "Slots":      Gamepad2,
-  "Bonus Hunt": Target,
-  "Torneio":    Trophy,
-  "Especial":   Star,
-  "Giveaway":   Gift,
-  "Outro":      Tv,
+  "Slots":                   Gamepad2,
+  "Bonus Hunt":              Target,
+  "Torneio":                 Trophy,
+  "Slot Request":            Inbox,
+  "Liga dos Brutus":         Shield,
+  "Torneio Liga dos Brutus": Award,
+  "Giveaway":                Gift,
+  "Outro":                   Tv,
 };
 
 /* ── Month names (PT) ─────────────────────────────────────── */
@@ -233,17 +236,20 @@ export function StreamCalendar() {
             {/* ── Body ──────────────────────────────────────── */}
             <div className="schedule-modal-body">
 
-              {/* Categories */}
+              {/* Activities — vertical list */}
               <div>
                 <div className="schedule-modal-section-label">Actividades</div>
-                <div className="schedule-modal-categories">
+                <div className="schedule-modal-activity-list">
                   {(selectedStream.categories || ["Outro"]).map((c) => {
                     const CatIcon = CATEGORY_LUCIDE[c] || Tv;
                     return (
-                      <span key={c} className="schedule-modal-category-chip">
-                        <CatIcon size={13} />
-                        {c}
-                      </span>
+                      <div key={c} className="schedule-modal-activity-row">
+                        <span className="schedule-modal-activity-dot" />
+                        <span className="schedule-modal-activity-icon">
+                          <CatIcon size={12} strokeWidth={1.8} />
+                        </span>
+                        <span className="schedule-modal-activity-name">{c}</span>
+                      </div>
                     );
                   })}
                 </div>
