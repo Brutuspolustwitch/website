@@ -56,7 +56,7 @@ export function SlotHighlightCard({
         {/* Right — Info */}
         <div style={{
           flex: 1,
-          padding: "10px 14px",
+          padding: "14px 18px",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
@@ -84,29 +84,23 @@ export function SlotHighlightCard({
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
-            marginBottom: "6px",
+            marginBottom: "8px",
           }}>{slotName}</p>
 
-          {/* Stats row */}
-          <div style={{ display: "flex", gap: "14px" }}>
-            {/* Payout */}
-            <div>
-              <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1px" }}>Payout</p>
-              <p style={{ fontFamily: "var(--font-ui)", fontSize: "0.85rem", fontWeight: 700, color: isWin ? "#2e7d32" : "#8b1a1a" }}>{payout.toFixed(2)}{currency}</p>
-            </div>
+          {/* Payout label */}
+          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1px" }}>Payout</p>
+          {/* Payout value */}
+          <p style={{ fontFamily: "var(--font-ui)", fontSize: "0.95rem", fontWeight: 700, color: isWin ? "#2e7d32" : "#8b1a1a", marginBottom: "8px" }}>{payout.toFixed(2)}{currency}</p>
 
-            {/* Bet Size */}
-            <div>
-              <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1px" }}>Bet Size</p>
-              <p style={{ fontFamily: "var(--font-ui)", fontSize: "0.85rem", fontWeight: 600, color: "var(--ink-dark, #3a2a14)" }}>{betValue.toFixed(2)}{currency}</p>
-            </div>
+          {/* Bet Size label */}
+          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1px" }}>Bet Size</p>
+          {/* Bet Size value */}
+          <p style={{ fontFamily: "var(--font-ui)", fontSize: "0.95rem", fontWeight: 600, color: "var(--ink-dark, #3a2a14)", marginBottom: "8px" }}>{betValue.toFixed(2)}{currency}</p>
 
-            {/* Multi */}
-            <div>
-              <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1px" }}>Multi</p>
-              <p style={{ fontFamily: "var(--font-ui)", fontSize: "0.85rem", fontWeight: 700, color: isWin ? "#d4a017" : "#8b1a1a" }}>{multi.toFixed(1)}x</p>
-            </div>
-          </div>
+          {/* Multi label */}
+          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1px" }}>Multi</p>
+          {/* Multi value */}
+          <p style={{ fontFamily: "var(--font-ui)", fontSize: "0.95rem", fontWeight: 700, color: isWin ? "#d4a017" : "#8b1a1a" }}>{multi.toFixed(1)}x</p>
         </div>
       </div>
     </div>
