@@ -400,8 +400,8 @@ export default function DailySessionContent() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
               >
-                <div className="papyrus-scroll greek-key-border w-full" style={{ padding: 0 }}>
-                  <div className="scroll-content" style={{ padding: "10px 16px", width: "850px" }}>
+                <div className="papyrus-scroll greek-key-border" style={{ padding: 0 }}>
+                  <div className="scroll-content" style={{ padding: "10px 16px" }}>
                     <div className="flex flex-wrap items-center justify-around gap-x-6 gap-y-2 text-center">
                       <div>
                         <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Depósitos</p>
