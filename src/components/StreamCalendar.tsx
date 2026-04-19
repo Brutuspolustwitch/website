@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {
-  Calendar, Clock, X, CalendarDays,
+  Calendar, Clock, X,
   Tv, Target, Trophy, Gift, Gamepad2, Zap, Play,
   Inbox, Shield, Award,
 } from "lucide-react";
@@ -273,10 +273,6 @@ export function StreamCalendar() {
                 >
                   <Play size={14} fill="currentColor" />
                   Ver ao Vivo
-                </a>
-                <a href="/calendario" className="schedule-modal-btn-secondary">
-                  <CalendarDays size={13} />
-                  Calendário
                 </a>
               </div>
             </div>
