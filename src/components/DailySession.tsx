@@ -140,7 +140,7 @@ function StatPlate({ label, value, glow }: {
 function SpotifyEmbed({ url }: { url: string | null }) {
   if (!url) {
     return (
-      <div className="papyrus-scroll greek-key-border" style={{ maxWidth: "100%" }}>
+      <div className="papyrus-scroll greek-key-border" style={{ maxWidth: "none" }}>
         <div className="scroll-content" style={{ textAlign: "center", padding: "32px 16px" }}>
           <svg style={{ width: 40, height: 40, margin: "0 auto 12px", color: "var(--ink-light)" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
@@ -163,7 +163,7 @@ function SpotifyEmbed({ url }: { url: string | null }) {
   return (
     <motion.div
       className="papyrus-scroll greek-key-border"
-      style={{ maxWidth: "100%", overflow: "hidden" }}
+      style={{ maxWidth: "none", overflow: "hidden" }}
       whileHover={{ scale: 1.01 }}
       transition={{ type: "spring", stiffness: 300 }}
     >
@@ -197,7 +197,7 @@ function SpotifyEmbed({ url }: { url: string | null }) {
         <iframe
           src={embedUrl}
           width="100%"
-          height="152"
+          height="352"
           frameBorder="0"
           allowFullScreen
           allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
