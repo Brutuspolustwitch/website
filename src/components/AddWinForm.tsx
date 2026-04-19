@@ -60,13 +60,6 @@ export default function AddWinForm({ onSuccess, onCancel }: AddWinFormProps) {
       >
         {/* Header */}
         <div className="add-win-form__header">
-          <div className="add-win-form__laurel" aria-hidden="true">
-            <svg viewBox="0 0 64 24" fill="none" stroke="currentColor" strokeWidth={1.2}>
-              <path d="M4 12 C10 4, 20 4, 26 12 C20 20, 10 20, 4 12Z" />
-              <path d="M60 12 C54 4, 44 4, 38 12 C44 20, 54 20, 60 12Z" />
-              <line x1="26" y1="12" x2="38" y2="12" />
-            </svg>
-          </div>
           <h2 id="add-win-title" className="add-win-form__title">Registar Vitória</h2>
           <button
             className="add-win-form__close"

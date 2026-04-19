@@ -59,7 +59,8 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
     "/admin/utilizadores": "Utilizadores",
     "/admin/parcerias": "Parcerias",
     "/admin/analitics": "Analytics",
-    "/hall-of-victories": "Hall of Victories",
+    "/admin/outros/bruta-do-mes": "Bruta do Mês",
+    "/hall-of-victories": "Bruta do Mês",
   };
 
   const pageTitle = PAGE_TITLES[pathname] ?? null;

@@ -71,3 +71,36 @@ create or replace function decrement_clip_honors(clip_id_arg uuid)
 returns void language sql security definer as $$
   update user_clips set honors = greatest(0, honors - 1) where id = clip_id_arg;
 $$;
+
+-- ── 5. Bruta do Mês table (admin-curated featured win) ────────
+create table if not exists bruta_do_mes (
+  id          uuid        primary key default gen_random_uuid(),
+  month_label text        not null,
+  title       text        not null,
+  description text,
+  url         text        not null,
+  provider    text,
+  embed_type  text        not null check (embed_type in ('video','iframe','link')),
+  embed_url   text        not null,
+  is_active   boolean     not null default true,
+  created_at  timestamptz not null default now()
+);
+
+create index if not exists bruta_do_mes_is_active_idx  on bruta_do_mes(is_active);
+create index if not exists bruta_do_mes_created_at_idx on bruta_do_mes(created_at desc);
+
+alter table bruta_do_mes enable row level security;
+
+-- Anyone can read the featured win
+create policy "Public read bruta_do_mes"
+  on bruta_do_mes for select
+  using (true);
+
+-- Service role manages inserts and updates (API handles role check)
+create policy "Service insert bruta_do_mes"
+  on bruta_do_mes for insert
+  with check (true);
+
+create policy "Service update bruta_do_mes"
+  on bruta_do_mes for update
+  using (true);

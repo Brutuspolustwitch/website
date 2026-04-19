@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import HallOfVictoriesContent from "@/components/HallOfVictoriesContent";
 
 export const metadata: Metadata = {
-  title: "Hall of Victories | Brutuspolus",
-  description: "As maiores vitórias da comunidade Brutuspolus. Partilha os teus melhores momentos e recebe honra dos guerreiros.",
+  title: "Bruta do Mês | Brutuspolus",
+  description: "A melhor vitória do mês escolhida pela comunidade Brutuspolus. Partilha os teus melhores momentos e recebe honra dos guerreiros.",
   openGraph: {
-    title: "Hall of Victories | Brutuspolus",
-    description: "As maiores vitórias da comunidade Brutuspolus.",
+    title: "Bruta do Mês | Brutuspolus",
+    description: "A melhor vitória do mês escolhida pela comunidade Brutuspolus.",
   },
 };
 
@@ -26,11 +26,11 @@ export default function HallOfVictoriesPage() {
             </svg>
           </div>
           <h1 className="hov-hero__title">
-            <span className="hov-hero__title-line1">Hall of</span>
-            <span className="hov-hero__title-line2">Victories</span>
+            <span className="hov-hero__title-line1">Bruta</span>
+            <span className="hov-hero__title-line2">do Mês</span>
           </h1>
           <p className="hov-hero__subtitle">
-            Onde as lendas da comunidade são gravadas na pedra para a eternidade
+            A melhor vitória do mês, eleita pelo admin — e as glórias da comunidade
           </p>
           <div className="hov-hero__divider" aria-hidden="true" />
         </div>
