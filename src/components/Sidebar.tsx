@@ -38,7 +38,6 @@ const MAIN_LINKS: NavItem[] = [
       { href: "/destaques", label: "Destaques" },
       { href: "/calendario", label: "Calendário" },
       { href: "/bonus-hunt", label: "Bonus Hunt" },
-      { href: "/hall-of-victories", label: "Hall of Victories" },
     ],
   },
   {
@@ -48,6 +47,7 @@ const MAIN_LINKS: NavItem[] = [
       { href: "/roda-diaria", label: "Roda Diária" },
       { href: "/giveaways", label: "Giveaways" },
       { href: "/liga-dos-brutus", label: "Liga dos Brutus" },
+      { href: "/hall-of-victories", label: "Hall of Victories" },
       { href: "/adivinha-o-resultado", label: "Adivinha o Resultado" },
     ],
   },
