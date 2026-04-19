@@ -3279,6 +3279,111 @@ body {
   letter-spacing: 0.02em;
 }
 
+/* ── Row (two columns) ──────────────────────────────────────── */
+.add-win-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ── Number inputs with prefix/suffix ──────────────────────── */
+.add-win-form__number-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.add-win-form__number-prefix,
+.add-win-form__number-suffix {
+  position: absolute;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(212, 168, 67, 0.55);
+  pointer-events: none;
+  user-select: none;
+  line-height: 1;
+}
+
+.add-win-form__number-prefix { left: 12px; }
+.add-win-form__number-suffix { right: 12px; }
+
+.add-win-form__input--number {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+/* prefix variant — add left padding */
+.add-win-form__number-wrap:has(.add-win-form__number-prefix) .add-win-form__input--number {
+  padding-left: 26px;
+  padding-right: 13px;
+  text-align: left;
+}
+
+/* suffix variant — add right padding */
+.add-win-form__number-wrap:has(.add-win-form__number-suffix) .add-win-form__input--number {
+  padding-right: 28px;
+}
+
+/* ── Provider combobox ──────────────────────────────────────── */
+.add-win-form__combobox { position: relative; }
+
+.add-win-form__input--combobox { padding-right: 36px; }
+
+.add-win-form__combobox-icon {
+  position: absolute;
+  right: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 15px;
+  height: 15px;
+  color: rgba(180, 155, 110, 0.4);
+  pointer-events: none;
+}
+
+.add-win-form__provider-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #1a150a;
+  border: 1px solid rgba(212, 168, 67, 0.18);
+  border-radius: 10px;
+  list-style: none;
+  padding: 4px;
+  margin: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 9999;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212, 168, 67, 0.2) transparent;
+}
+
+.add-win-form__provider-list::-webkit-scrollbar { width: 4px; }
+.add-win-form__provider-list::-webkit-scrollbar-track { background: transparent; }
+.add-win-form__provider-list::-webkit-scrollbar-thumb { background: rgba(212, 168, 67, 0.2); border-radius: 4px; }
+
+.add-win-form__provider-item {
+  font-size: 0.82rem;
+  color: rgba(200, 180, 140, 0.75);
+  padding: 8px 12px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.add-win-form__provider-item:hover {
+  background: rgba(212, 168, 67, 0.1);
+  color: rgba(232, 210, 155, 0.95);
+}
+
+.add-win-form__provider-item--selected {
+  color: #d4a843;
+  background: rgba(212, 168, 67, 0.08);
+  font-weight: 600;
+}
+
 /* ── Error ──────────────────────────────────────────────────── */
 .add-win-form__error {
   font-size: 0.78rem;
@@ -3356,6 +3461,7 @@ body {
   .hov-submit-btn { width: 100%; justify-content: center; }
   .add-win-form { border-radius: 0; max-height: 100dvh; }
   .add-win-form__overlay { padding: 0; align-items: flex-end; }
+  .add-win-form__row { grid-template-columns: 1fr; }
 }
 
 /* ═══ BRUTA DO MÊS — tabs, featured win, admin form ═══════════ */
