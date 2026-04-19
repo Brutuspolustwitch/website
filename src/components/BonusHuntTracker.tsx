@@ -277,8 +277,8 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
                   </div>
                 </div>
 
-                {/* Best slot callout */}
-                {selectedSession?.best_slot_name && (
+                {/* Best slot callout (full page only) */}
+                {!compact && selectedSession?.best_slot_name && (
                   <div style={{ textAlign: "center", padding: "4px 0" }}>
                     <span style={{
                       fontFamily: "var(--font-display)",

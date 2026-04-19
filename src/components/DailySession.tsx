@@ -386,7 +386,7 @@ export default function DailySessionContent() {
 
       {/* Content */}
       <div className="relative z-10 pt-20 pb-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+        <div className="max-w-[1400px] mx-auto px-2 sm:px-4 lg:px-4 space-y-4">
 
           {/* ── Main grid: Stats + Bonus Hunt | Sidebar ──── */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
