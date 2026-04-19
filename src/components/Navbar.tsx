@@ -235,6 +235,13 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
                             <VipBadge level={vipLevel} />
                           </div>
                         </div>
+                        <Link
+                          href="/perfil"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="block px-4 py-2.5 text-sm text-arena-smoke hover:text-arena-white hover:bg-arena-steel/20 transition-colors"
+                        >
+                          Perfil
+                        </Link>
                         <button
                           onClick={async () => {
                             await logout();

@@ -37,6 +37,7 @@ const CANONICAL_PAGES: { slug: string; name: string }[] = [
   { slug: "adivinha-o-resultado", name: "Adivinha o Resultado" },
   { slug: "moderador", name: "Moderador" },
   { slug: "hall-of-victories", name: "Bruta do Mês" },
+  { slug: "perfil", name: "Perfil" },
   { slug: "politica-de-privacidade", name: "Política de Privacidade" },
   { slug: "politica-de-cookies", name: "Política de Cookies" },
   { slug: "termos-e-condicoes", name: "Termos e Condições" },
