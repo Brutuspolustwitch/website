@@ -25,8 +25,8 @@ interface ImportBonus {
     max_win_multiplier?: number | null;
   };
   opened: boolean;
-  payout?: number;
-  result: number;
+  payout?: number;        // Optional if not opened
+  result?: number;        // Optional if not opened
   betSize: number;
   slotName: string;
   isSuperBonus: boolean;
@@ -40,13 +40,14 @@ interface WebhookPayload {
   hunt_date?: string;
   start_money: number;
   stop_loss: number;
+  initial_buy?: number;  // Initial buy-in/bankroll entry
   total_bet?: number;
-  total_win: number;
-  profit: number;
+  total_win?: number;     // Optional during hunting
+  profit?: number;        // Optional during hunting
   bonus_count: number;
-  bonuses_opened: number;
-  avg_multi: number;
-  best_multi: number;
+  bonuses_opened?: number;  // Optional during hunting (will be 0)
+  avg_multi?: number;     // Optional during hunting
+  best_multi?: number;    // Optional during hunting
   best_slot_name?: string;
   bonuses: ImportBonus[];
 }
@@ -87,6 +88,7 @@ export async function POST(request: NextRequest) {
   }
 
   const totalBuy = data.bonuses.reduce((sum, b) => sum + (b.betSize ?? 0), 0);
+  const openedCount = data.bonuses.filter((b) => b.opened === true).length;
 
   // Insert session
   const { data: sessionRow, error: sessionError } = await supabase
@@ -98,11 +100,11 @@ export async function POST(request: NextRequest) {
       currency: data.currency ?? "€",
       total_buy: totalBuy,
       total_result: data.total_win ?? 0,
-      start_money: data.start_money ?? 0,
+      start_money: data.initial_buy ?? data.start_money ?? 0,
       stop_loss: data.stop_loss ?? 0,
       profit: data.profit ?? 0,
       bonus_count: data.bonus_count ?? data.bonuses.length,
-      bonuses_opened: data.bonuses_opened ?? data.bonuses.filter((b) => b.opened).length,
+      bonuses_opened: data.bonuses_opened ?? openedCount,
       avg_multi: data.avg_multi ?? 0,
       best_multi: data.best_multi ?? 0,
       best_slot_name: data.best_slot_name ?? null,
