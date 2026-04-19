@@ -487,8 +487,6 @@ export function BonusHuntTracker({ compact = false, hideTitle = false, statsBar 
                   </div>
                 )}
               </div>
-
-		</motion.div>
   );
 
 

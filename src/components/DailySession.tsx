@@ -402,48 +402,31 @@ export default function DailySessionContent() {
                 transition={{ delay: 0.1 }}
               >
                 <div className="flex flex-col gap-4 w-full min-w-0 flex-1">
-                  {/* Stats bar */}
-                  <div className="papyrus-scroll greek-key-border w-full min-w-0 flex-1" style={{ padding: 0 }}>
-                    <div className="scroll-content w-full min-w-0 flex-1" style={{ padding: 0 }}>
-                      <div className="flex flex-wrap items-center justify-around gap-x-6 gap-y-2 text-center w-full min-w-0 flex-1">
-                        <div>
-                          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Depósitos</p>
-                          <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "#8b1a1a" }}>
+                  {/* Redesigned Stats Bar (full-width, above bonus hunt) */}
+                  <div className="w-full">
+                    <div className="papyrus-scroll greek-key-border w-full" style={{ marginBottom: 0, padding: 0 }}>
+                      <div className="flex flex-row w-full min-w-0 divide-x divide-[rgba(139,105,20,0.18)]">
+                        {/* Depósitos */}
+                        <div className="flex-1 flex flex-col items-center justify-center py-3">
+                          <span style={{ fontFamily: 'var(--font-display)', fontSize: '0.65rem', fontWeight: 700, color: 'var(--ink-light)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 2 }}>Depósitos</span>
+                          <span style={{ fontFamily: 'var(--font-ui)', fontSize: '1.5rem', fontWeight: 700, color: '#8b1a1a', letterSpacing: '0.03em' }}>
                             <AnimatedCounter value={session.deposits} suffix="€" />
                           </span>
                         </div>
-                        <div style={{ width: "1px", height: "28px", background: "rgba(139,105,20,0.2)" }} className="hidden sm:block" />
-                        <div>
-                          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Levantamentos</p>
-                          <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "#2e7d32" }}>
+                        {/* Levantamentos */}
+                        <div className="flex-1 flex flex-col items-center justify-center py-3">
+                          <span style={{ fontFamily: 'var(--font-display)', fontSize: '0.65rem', fontWeight: 700, color: 'var(--ink-light)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 2 }}>Levantamentos</span>
+                          <span style={{ fontFamily: 'var(--font-ui)', fontSize: '1.5rem', fontWeight: 700, color: '#2e7d32', letterSpacing: '0.03em' }}>
                             <AnimatedCounter value={session.withdrawals} suffix="€" />
                           </span>
                         </div>
-                        <div style={{ width: "1px", height: "28px", background: "rgba(139,105,20,0.2)" }} className="hidden sm:block" />
-                        <div>
-                          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Resultado</p>
-                          <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: net >= 0 ? "#2e7d32" : "#8b1a1a" }}>
+                        {/* Resultado */}
+                        <div className="flex-1 flex flex-col items-center justify-center py-3">
+                          <span style={{ fontFamily: 'var(--font-display)', fontSize: '0.65rem', fontWeight: 700, color: 'var(--ink-light)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 2 }}>Resultado</span>
+                          <span style={{ fontFamily: 'var(--font-ui)', fontSize: '1.5rem', fontWeight: 700, color: net >= 0 ? '#2e7d32' : '#8b1a1a', letterSpacing: '0.03em' }}>
                             <AnimatedCounter value={net} suffix="€" />
                           </span>
                         </div>
-                        {session.bonuses_count > 0 && (
-                          <>
-                            <div style={{ width: "1px", height: "28px", background: "rgba(139,105,20,0.2)" }} className="hidden sm:block" />
-                            <div>
-                              <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Bónus</p>
-                              <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "var(--gold-dark)" }}>{session.bonuses_count}</span>
-                            </div>
-                          </>
-                        )}
-                        {session.biggest_win > 0 && (
-                          <>
-                            <div style={{ width: "1px", height: "28px", background: "rgba(139,105,20,0.2)" }} className="hidden sm:block" />
-                            <div>
-                              <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Maior Win</p>
-                              <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "#2e7d32" }}>{session.biggest_win.toFixed(2)}€</span>
-                            </div>
-                          </>
-                        )}
                       </div>
                     </div>
                   </div>
