@@ -180,10 +180,10 @@ export function StreamCalendar() {
                   {selectedStream.description}
                 </div>
               )}
-              {selectedStream.links && selectedStream.links.length > 0 && (
+              {Array.isArray((selectedStream as any).links) && (selectedStream as any).links.length > 0 && (
                 <div className="flex flex-col gap-1 mt-2 w-full">
                   <div className="font-semibold text-arena-gold">Links:</div>
-                  {selectedStream.links.map((link: any, idx: number) => (
+                  {(selectedStream as any).links.map((link: any, idx: number) => (
                     <a
                       key={idx}
                       href={link.url}
