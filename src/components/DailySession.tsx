@@ -386,7 +386,7 @@ export default function DailySessionContent() {
 
       {/* Content */}
       <div className="relative z-10 pt-20 pb-8">
-        <div className="max-w-[1400px] mx-auto px-2 sm:px-4 lg:px-4 space-y-4">
+        <div className="max-w-[1400px] mx-auto space-y-4">
 
           {/* ── Main grid: Stats + Bonus Hunt | Sidebar ──── */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
@@ -401,11 +401,11 @@ export default function DailySessionContent() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
               >
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-4 w-full min-w-0 flex-1">
                   {/* Stats bar */}
-                  <div className="papyrus-scroll greek-key-border w-full" style={{ padding: 0 }}>
-                    <div className="scroll-content p-0 w-full">
-                      <div className="flex flex-wrap items-center justify-around gap-x-6 gap-y-2 text-center w-full">
+                  <div className="papyrus-scroll greek-key-border w-full min-w-0 flex-1" style={{ padding: 0 }}>
+                    <div className="scroll-content w-full min-w-0 flex-1" style={{ padding: 0 }}>
+                      <div className="flex flex-wrap items-center justify-around gap-x-6 gap-y-2 text-center w-full min-w-0 flex-1">
                         <div>
                           <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Depósitos</p>
                           <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "#8b1a1a" }}>
