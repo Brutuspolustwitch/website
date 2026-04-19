@@ -362,25 +362,50 @@ export default function AdminDailySessionPage() {
                 <h2 className="text-xs font-bold text-arena-gold uppercase tracking-wider font-[family-name:var(--font-display)]">
                   Casino Ativo
                 </h2>
-                <select
-                  value={showOutros ? "__outros__" : casinoId}
-                  onChange={(e) => {
-                    if (e.target.value === "__outros__") {
-                      setShowOutros(true);
-                      setCasinoId("");
-                    } else {
-                      setShowOutros(false);
-                      setCasinoId(e.target.value);
-                    }
-                  }}
-                  className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded-lg px-3 py-2.5 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors [color-scheme:dark]"
-                >
-                  <option value="">Selecionar casino...</option>
+                <div className="space-y-1 max-h-40 overflow-y-auto rounded-lg border border-arena-gold/15 bg-arena-iron/60 p-1">
+                  <button
+                    onClick={() => { setShowOutros(false); setCasinoId(""); }}
+                    className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
+                      !casinoId && !showOutros ? "bg-arena-gold/20 text-arena-gold" : "text-arena-smoke hover:bg-arena-iron hover:text-arena-white"
+                    }`}
+                  >
+                    Selecionar casino...
+                  </button>
                   {casinos.map((c) => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
+                    <div key={c.id} className={`flex items-center gap-1 rounded transition-colors ${
+                      casinoId === c.id ? "bg-arena-gold/20" : "hover:bg-arena-iron"
+                    }`}>
+                      <button
+                        onClick={() => { setShowOutros(false); setCasinoId(c.id); }}
+                        className={`flex-1 text-left px-3 py-2 text-sm ${
+                          casinoId === c.id ? "text-arena-gold font-bold" : "text-arena-white"
+                        }`}
+                      >
+                        {c.name}
+                      </button>
+                      <button
+                        onClick={async () => {
+                          if (!confirm(`Apagar "${c.name}"?`)) return;
+                          await supabase.from("casino_offers").delete().eq("id", c.id);
+                          if (casinoId === c.id) setCasinoId("");
+                          const { data: updated } = await supabase.from("casino_offers").select("*").eq("visible", true).order("sort_order");
+                          if (updated) setCasinos(updated);
+                          showToast(`"${c.name}" apagado.`);
+                        }}
+                        className="px-2 py-1 text-xs text-red-400 hover:text-red-300 hover:bg-red-900/30 rounded transition-colors mr-1"
+                        title="Apagar casino"
+                      >
+                        ✕
+                      </button>
+                    </div>
                   ))}
-                  <option value="__outros__">➕ Outros (adicionar novo)</option>
-                </select>
+                  <button
+                    onClick={() => { setShowOutros(true); setCasinoId(""); }}
+                    className="w-full text-left px-3 py-2 rounded text-sm text-arena-gold/70 hover:bg-arena-iron hover:text-arena-gold transition-colors"
+                  >
+                    ➕ Outros (adicionar novo)
+                  </button>
+                </div>
 
                 {/* "Outros" quick-add form */}
                 {showOutros && (
@@ -471,7 +496,7 @@ export default function AdminDailySessionPage() {
                 Financeiro
               </h2>
 
-              <div className="grid grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs text-arena-smoke mb-1">Depósitos (€)</label>
                   <input
@@ -492,29 +517,6 @@ export default function AdminDailySessionPage() {
                     min="0"
                     value={withdrawals}
                     onChange={(e) => setWithdrawals(e.target.value)}
-                    placeholder="0.00"
-                    className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded-lg px-3 py-2.5 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs text-arena-smoke mb-1">Bónus Jogados</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={bonusesCount}
-                    onChange={(e) => setBonusesCount(e.target.value)}
-                    placeholder="0"
-                    className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded-lg px-3 py-2.5 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs text-arena-smoke mb-1">Maior Vitória (€)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={biggestWin}
-                    onChange={(e) => setBiggestWin(e.target.value)}
                     placeholder="0.00"
                     className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded-lg px-3 py-2.5 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors"
                   />
