@@ -228,12 +228,12 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                   </div>
 
                   {/* Column headers */}
-                  <div className="bh-table-header" style={{ gridTemplateColumns: "40px 1fr 80px 120px 100px" }}>
+                  <div className="bh-table-header" style={{ gridTemplateColumns: "40px 1fr 90px 120px 110px" }}>
                     <span>#</span>
-                    <span>SLOT (BATALHA)</span>
-                    <span>BET</span>
+                    <span>SLOT</span>
+                    <span>BET / PAYOUT</span>
                     <span>SPECIAL</span>
-                    <span style={{ textAlign: "right" }}>WINNINGS</span>
+                    <span style={{ textAlign: "right" }}>RESULTADO</span>
                   </div>
                 </div>
 
@@ -246,7 +246,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.03 }}
                       className={`bh-table-row${slot.status === "active" ? " bh-row-active" : ""}`}
-                      style={{ gridTemplateColumns: "40px 1fr 80px 120px 100px" }}
+                      style={{ gridTemplateColumns: "40px 1fr 90px 120px 110px" }}
                     >
                       {/* # */}
                       <span style={{
@@ -304,31 +304,38 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                           }}>
                             {slot.name}
                           </p>
-                          {slot.provider && (
-                            <p style={{
-                              fontFamily: "var(--font-display)",
-                              fontSize: "0.55rem",
-                              color: "var(--ink-light)",
-                              letterSpacing: "0.1em",
-                              textTransform: "uppercase",
-                              lineHeight: 1.4,
-                            }}>
-                              {slot.provider}
-                            </p>
-                          )}
+                          <p style={{
+                            fontFamily: "var(--font-display)",
+                            fontSize: "0.5rem",
+                            color: "var(--ink-light)",
+                            letterSpacing: "0.08em",
+                            textTransform: "uppercase",
+                            lineHeight: 1.5,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}>
+                            {[slot.provider, slot.rtp != null && `RTP ${slot.rtp}%`, slot.volatility, slot.potential_multiplier ? `Max ${slot.potential_multiplier}x` : null].filter(Boolean).join(" · ")}
+                          </p>
                         </div>
                       </div>
 
-                      {/* Bet size */}
-                      <span style={{
-                        fontFamily: "var(--font-ui)",
-                        fontSize: "0.85rem",
-                        fontWeight: 600,
-                        color: "var(--ink-dark)",
-                        textAlign: "center",
-                      }}>
-                        {slot.buy_value.toFixed(2)}€
-                      </span>
+                      {/* Bet / Payout */}
+                      <div style={{ textAlign: "center" }}>
+                        <p style={{ fontFamily: "var(--font-ui)", fontSize: "0.8rem", fontWeight: 700, color: "var(--ink-dark)", lineHeight: 1.3 }}>
+                          {slot.buy_value.toFixed(2)}€
+                        </p>
+                        {slot.bet_size != null && (
+                          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.08em", lineHeight: 1.3 }}>
+                            bet {slot.bet_size.toFixed(2)}€
+                          </p>
+                        )}
+                        {slot.payout != null && slot.payout !== slot.result && (
+                          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--gold-dark)", letterSpacing: "0.08em", lineHeight: 1.3 }}>
+                            pay {slot.payout.toFixed(2)}€
+                          </p>
+                        )}
+                      </div>
 
                       {/* Special */}
                       <div style={{ display: "flex", gap: "4px", justifyContent: "center", flexWrap: "wrap" }}>
@@ -344,26 +351,35 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                       </div>
 
                       {/* Winnings */}
-                      <span style={{
-                        fontFamily: "var(--font-ui)",
-                        fontSize: "0.85rem",
-                        fontWeight: 700,
-                        textAlign: "right",
-                        color: slot.result != null
-                          ? (slot.result >= slot.buy_value ? "#2e7d32" : "#8b1a1a")
-                          : "var(--ink-light)",
-                      }}>
-                        {slot.result != null
-                          ? <>{slot.result.toFixed(2)}€
-                              {slot.buy_value > 0 && (
-                                <span style={{ fontSize: "0.65rem", fontWeight: 400, color: "var(--ink-light)", marginLeft: "4px" }}>
-                                  ({(slot.result / slot.buy_value).toFixed(1)}x)
-                                </span>
-                              )}
-                            </>
-                          : <span style={{ fontFamily: "var(--font-display)", letterSpacing: "0.1em" }}>—</span>
-                        }
-                      </span>
+                      <div style={{ textAlign: "right" }}>
+                        {slot.result != null ? (
+                          <>
+                            <p style={{
+                              fontFamily: "var(--font-ui)",
+                              fontSize: "0.85rem",
+                              fontWeight: 700,
+                              color: slot.result >= slot.buy_value ? "#2e7d32" : "#8b1a1a",
+                              lineHeight: 1.3,
+                            }}>
+                              {slot.result.toFixed(2)}€
+                            </p>
+                            {slot.buy_value > 0 && (
+                              <p style={{
+                                fontFamily: "var(--font-display)",
+                                fontSize: "0.55rem",
+                                fontWeight: 700,
+                                color: slot.result >= slot.buy_value ? "rgba(46,125,50,0.7)" : "rgba(139,26,26,0.7)",
+                                letterSpacing: "0.06em",
+                                lineHeight: 1.3,
+                              }}>
+                                {(slot.result / slot.buy_value).toFixed(2)}x
+                              </p>
+                            )}
+                          </>
+                        ) : (
+                          <span style={{ fontFamily: "var(--font-display)", letterSpacing: "0.1em", color: "var(--ink-light)" }}>—</span>
+                        )}
+                      </div>
                     </motion.div>
                   ))}
 
