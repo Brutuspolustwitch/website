@@ -8,6 +8,7 @@ create table if not exists bonus_hunt_sessions (
   id uuid primary key default gen_random_uuid(),
   title text not null default 'Bonus Hunt',
   status text not null default 'active' check (status in ('active', 'completed', 'upcoming')),
+  phase text not null default 'hunting' check (phase in ('hunting', 'opening', 'completed')),
   currency text not null default '€',
   total_buy numeric not null default 0,
   total_result numeric not null default 0,

@@ -16,6 +16,7 @@ export interface BonusHuntSession {
   id: string;
   title: string;
   status: "active" | "completed" | "upcoming";
+  phase: "hunting" | "opening" | "completed";
   currency: string;
   total_buy: number;
   total_result: number;

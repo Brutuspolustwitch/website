@@ -112,6 +112,10 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
   const worstSlot = openedSlots.reduce<BonusHuntSlot | null>((worst, s) =>
     !worst || (s.result! / s.buy_value) < (worst.result! / worst.buy_value) ? s : worst, null);
 
+  const phaseLabel =
+    campaign?.phase === "hunting" ? "🎯 HUNTING" :
+    campaign?.phase === "opening" ? "🎰 OPENING" : "✅ COMPLETED";
+
   const statusLabel =
     campaign?.status === "active" ? "EM BATALHA" :
     campaign?.status === "completed" ? "COMPLETA" : "PRÓXIMA";
@@ -201,21 +205,25 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                       )}
                       <span style={{
                         fontFamily: "var(--font-display)",
-                        fontSize: "0.65rem",
+                        fontSize: "0.6rem",
                         fontWeight: 600,
                         letterSpacing: "0.12em",
                         textTransform: "uppercase",
                         padding: "4px 10px",
                         borderRadius: "4px",
-                        background: campaign.status === "active"
-                          ? "rgba(34,197,94,0.15)"
-                          : "rgba(139,105,20,0.12)",
-                        color: campaign.status === "active"
-                          ? "#22c55e"
-                          : "var(--gold-dark)",
-                        border: `1px solid ${campaign.status === "active" ? "rgba(34,197,94,0.3)" : "rgba(139,105,20,0.2)"}`,
+                        background: campaign.phase === "completed"
+                          ? "rgba(139,105,20,0.12)"
+                          : campaign.phase === "opening"
+                          ? "rgba(212,168,67,0.15)"
+                          : "rgba(34,197,94,0.15)",
+                        color: campaign.phase === "completed"
+                          ? "var(--gold-dark)"
+                          : campaign.phase === "opening"
+                          ? "#d4a843"
+                          : "#22c55e",
+                        border: `1px solid ${campaign.phase === "completed" ? "rgba(139,105,20,0.2)" : campaign.phase === "opening" ? "rgba(212,168,67,0.3)" : "rgba(34,197,94,0.3)"}`,
                       }}>
-                        {statusLabel}
+                        {phaseLabel}
                       </span>
                       <span style={{
                         fontFamily: "var(--font-ui)",

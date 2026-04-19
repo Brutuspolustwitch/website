@@ -42,6 +42,7 @@ interface ImportPayload {
   avg_multi: number;
   best_multi: number;
   best_slot_name: string;
+  phase?: "hunting" | "opening" | "completed";
   bonuses: ImportBonus[];
 }
 
@@ -90,6 +91,7 @@ export async function POST(request: NextRequest) {
     .insert({
       title: data.hunt_name,
       status: "completed",
+      phase: data.phase ?? "completed",
       currency: data.currency || "€",
       total_buy: totalBuy,
       total_result: data.total_win ?? 0,

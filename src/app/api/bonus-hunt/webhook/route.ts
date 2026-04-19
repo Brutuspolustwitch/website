@@ -35,6 +35,7 @@ interface ImportBonus {
 
 interface WebhookPayload {
   hunt_name: string;
+  phase: "hunting" | "opening" | "completed";
   currency?: string;
   hunt_date?: string;
   start_money: number;
@@ -71,9 +72,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "JSON inválido" }, { status: 400 });
   }
 
-  if (!data.hunt_name || !Array.isArray(data.bonuses)) {
+  if (!data.hunt_name || !Array.isArray(data.bonuses) || !data.phase) {
     return NextResponse.json(
-      { error: "Campos obrigatórios em falta: hunt_name, bonuses" },
+      { error: "Campos obrigatórios em falta: hunt_name, phase, bonuses" },
+      { status: 400 }
+    );
+  }
+
+  if (!['hunting', 'opening', 'completed'].includes(data.phase)) {
+    return NextResponse.json(
+      { error: "phase deve ser 'hunting', 'opening' ou 'completed'" },
       { status: 400 }
     );
   }
@@ -85,7 +93,8 @@ export async function POST(request: NextRequest) {
     .from("bonus_hunt_sessions")
     .insert({
       title: data.hunt_name,
-      status: "completed",
+      status: data.phase === "completed" ? "completed" : "active",
+      phase: data.phase,
       currency: data.currency ?? "€",
       total_buy: totalBuy,
       total_result: data.total_win ?? 0,
@@ -98,7 +107,7 @@ export async function POST(request: NextRequest) {
       best_multi: data.best_multi ?? 0,
       best_slot_name: data.best_slot_name ?? null,
       hunt_date: data.hunt_date ?? null,
-      completed_at: new Date().toISOString(),
+      completed_at: data.phase === "completed" ? new Date().toISOString() : null,
     })
     .select("id")
     .single();
