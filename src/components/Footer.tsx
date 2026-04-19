@@ -59,7 +59,7 @@ export function Footer() {
         {/* Bottom: disclaimer */}
         <div className="mt-3 pt-3 border-t border-arena-steel/30">
           <p className="text-[9px] text-arena-ash/60 text-center leading-relaxed">
-            O jogo envolve risco. Joga apenas com dinheiro que podes perder. 18+ para participar. Joga com responsabilidade. Contém links de afiliados. Não nos responsabilizamos por quaisquer perdas resultantes do jogo em casinos e sites de apostas que estejam ligados ou promovidos no nosso website. Enquanto jogador, és o único responsável pelas tuas apostas.
+            O jogo envolve risco. Joga apenas com dinheiro que podes perder. 18+ para participar. Joga com responsabilidade.
           </p>
         </div>
       </div>

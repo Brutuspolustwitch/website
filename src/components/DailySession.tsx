@@ -487,7 +487,9 @@ export default function DailySessionContent() {
             </div>
 
             {/* RIGHT — Sidebar (1/3) */}
-            <div className="lg:col-span-1 space-y-4">
+            <div className="lg:col-span-1">
+              {/* Invisible container: all 3 cards share the same width */}
+              <div className="w-full flex flex-col gap-4">
 
               {/* Monthly summary */}
               {monthly && monthly.sessions_count > 0 && (
@@ -496,7 +498,7 @@ export default function DailySessionContent() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.08 }}
                 >
-                  <div className="papyrus-scroll greek-key-border" style={{ padding: 0 }}>
+                  <div className="papyrus-scroll greek-key-border" style={{ padding: 0, maxWidth: "100%" }}>
                     <div className="scroll-content" style={{ padding: "10px 16px" }}>
                       <p style={{
                         fontFamily: "var(--font-display)",
@@ -542,7 +544,7 @@ export default function DailySessionContent() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <div className="daily-session-card">
+                <div className="daily-session-card w-full">
                   {session.casino ? (
                     <OfferCard offer={{
                       slug: session.casino.slug,
@@ -581,10 +583,12 @@ export default function DailySessionContent() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.25 }}
               >
-                <div className="daily-session-card">
+                <div className="daily-session-card w-full">
                   <SpotifyEmbed url={session.spotify_url} />
                 </div>
               </motion.div>
+
+              </div>{/* end shared-width container */}
             </div>
           </div>
         </div>
