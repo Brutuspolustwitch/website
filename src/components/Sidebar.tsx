@@ -194,19 +194,20 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         href={link.href}
         onClick={onClose}
         className={`
-          group flex items-center gap-3 rounded-lg text-sm font-medium transition-all duration-200
-          ${indent ? "px-3 py-2 ml-8" : "px-3 py-2.5"}
+          group flex items-center gap-3 rounded-lg transition-all duration-200
+          font-[family-name:var(--font-display)] tracking-wide uppercase
+          ${indent ? "px-3 py-2 ml-8 text-[13px]" : "px-3 py-2.5 text-[15px]"}
           ${
             isActive
               ? "bg-arena-gold/10 text-arena-gold border border-arena-gold/20"
-              : "text-arena-smoke hover:text-arena-white hover:bg-white/[0.04] border border-transparent"
+              : "text-white hover:text-arena-gold hover:bg-white/[0.04] border border-transparent"
           }
         `}
       >
         {!indent && (
           <span
             className={`shrink-0 transition-colors duration-200 ${
-              isActive ? "text-arena-gold" : "text-arena-ash group-hover:text-arena-gold/70"
+              isActive ? "text-arena-gold" : "text-white/60 group-hover:text-arena-gold/70"
             }`}
           >
             {ICONS[link.href] || (
@@ -245,17 +246,18 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               onClose();
             }}
             className={`
-              group flex-1 flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
+              group flex-1 flex items-center gap-3 px-3 py-2.5 rounded-lg text-[15px] transition-all duration-200
+              font-[family-name:var(--font-display)] tracking-wide uppercase
               ${
                 groupActive
                   ? "bg-arena-gold/10 text-arena-gold border border-arena-gold/20"
-                  : "text-arena-smoke hover:text-arena-white hover:bg-white/[0.04] border border-transparent"
+                  : "text-white hover:text-arena-gold hover:bg-white/[0.04] border border-transparent"
               }
             `}
           >
             <span
               className={`shrink-0 transition-colors duration-200 ${
-                groupActive ? "text-arena-gold" : "text-arena-ash group-hover:text-arena-gold/70"
+                groupActive ? "text-arena-gold" : "text-white/60 group-hover:text-arena-gold/70"
               }`}
             >
               {ICONS[item.href] || (
@@ -325,10 +327,11 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           <button
             onClick={() => toggleExpand(item.href)}
             className={`
-              group flex-1 flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
+              group flex-1 flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] transition-all duration-200
+              font-[family-name:var(--font-display)] tracking-wide uppercase
               ${subActive
                 ? "text-arena-gold"
-                : "text-arena-smoke hover:text-arena-white hover:bg-white/[0.04]"}
+                : "text-white hover:text-arena-gold hover:bg-white/[0.04]"}
             `}
           >
             <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${subActive ? "bg-arena-gold" : "bg-arena-steel"}`} />
