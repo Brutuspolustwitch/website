@@ -1,16 +1,16 @@
-import { createClient } from "@supabase/supabase-js";
+﻿import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
 
 export const supabase = createClient(supabaseUrl || "https://placeholder.supabase.co", supabaseAnonKey || "placeholder");
 
-/* ── Database Types ──────────────────────────────────────────────────
+/* â”€â”€ Database Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    These mirror the Supabase tables used by the arena platform.
    bonus_hunts: tracks active/past bonus hunt sessions
    slot_requests: user-submitted slot requests via !sr
    leaderboard: gladiator rank progression
-──────────────────────────────────────────────────────────────────── */
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 export interface BonusHuntSession {
   id: string;
@@ -217,4 +217,9 @@ export interface ScheduledStreamRow {
   is_cancelled: boolean;
   created_at: string;
   updated_at: string;
+}
+
+export interface ScheduledStreamRowWithExtra extends ScheduledStreamRow {
+  prize?: string;
+  duration?: string;
 }

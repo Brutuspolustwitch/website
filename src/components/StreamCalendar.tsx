@@ -1,14 +1,15 @@
-﻿import { EventDetailModal } from "./EventDetailModal";
+﻿"use client";
+
+import { EventDetailModal } from "./EventDetailModal";
 import {
   CalendarDays, Clock, Sword, Star, Trophy, X, Tv2, Flame, AlarmClock, PlayCircle, BellRing, ListOrdered
 } from "lucide-react";
-"use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
-import type { ScheduledStreamRow } from "@/lib/supabase";
+import type { ScheduledStreamRowWithExtra } from "@/lib/supabase";
 
-/* ── Category icons ────────────────────────────────────── */
+/* -- Category icons -------------------------------------- */
 const CATEGORY_ICONS: Record<string, string> = {
   "Slots": "🎰",
   "Bonus Hunt": "🎯",
@@ -17,10 +18,10 @@ const CATEGORY_ICONS: Record<string, string> = {
   "Outro": "📺",
 };
 
-/* ── Day abbreviations ─────────────────────────────────── */
+/* -- Day abbreviations ----------------------------------- */
 const DAY_NAMES_PT = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
 
-/* ── Helpers ────────────────────────────────────────────────── */
+/* -- Helpers -------------------------------------------------- */
 const formatDay = (dateStr: string) => new Date(dateStr + "T00:00:00").getDate();
 
 const formatMonth = (dateStr: string) =>
@@ -29,7 +30,7 @@ const formatMonth = (dateStr: string) =>
 const isToday = (dateStr: string) => dateStr === new Date().toISOString().split("T")[0];
 const isPast = (dateStr: string) => dateStr < new Date().toISOString().split("T")[0];
 
-/* ── 7 days centered on today (3 past + today + 3 future) ── */
+/* -- 7 days centered on today (3 past + today + 3 future) -- */
 function getCenteredDates(): string[] {
   const now = new Date();
   return Array.from({ length: 7 }, (_, i) => {
@@ -39,13 +40,13 @@ function getCenteredDates(): string[] {
   });
 }
 
-/* ═══════════════════════════════════════════════════════════════
+/* ---------------------------------------------------------------
    MAIN COMPONENT
-   ═══════════════════════════════════════════════════════════════ */
+   --------------------------------------------------------------- */
 export function StreamCalendar() {
-  const [streams, setStreams] = useState<ScheduledStreamRow[]>([]);
+  const [streams, setStreams] = useState<ScheduledStreamRowWithExtra[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedStream, setSelectedStream] = useState<ScheduledStreamRow | null>(null);
+  const [selectedStream, setSelectedStream] = useState<ScheduledStreamRowWithExtra | null>(null);
 
   const fetchStreams = useCallback(async () => {
     try {
@@ -123,7 +124,7 @@ export function StreamCalendar() {
                             <div className="forge-slot__title">{stream.title}</div>
                             <div className="forge-slot__meta">
                               {cats.map((c) => (
-                                <span key={c} className="forge-slot__icon">{CATEGORY_ICONS[c] || "📺"}</span>
+                                <span key={c} className="forge-slot__icon">{CATEGORY_ICONS[c] || "??"}</span>
                               ))}
                               {stream.casino && <span className="forge-slot__casino">{stream.casino}</span>}
                             </div>
@@ -146,3 +147,5 @@ export function StreamCalendar() {
     </div>
   );
 }
+
+
