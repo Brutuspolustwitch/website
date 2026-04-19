@@ -102,23 +102,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Acesso negado" }, { status: 403 });
   }
 
-  // Get overlay API key from body or query
-  const { searchParams } = new URL(request.url);
-  let overlayApiKey = searchParams.get("key");
+  // Get overlay API key from environment variable
+  const overlayApiKey = process.env.OVERLAY_API_KEY;
 
   if (!overlayApiKey) {
-    try {
-      const body = await request.json();
-      overlayApiKey = body.overlay_api_key || body.key || body.apiKey;
-    } catch {
-      // No body, continue
-    }
-  }
-
-  if (!overlayApiKey) {
+    console.error("[sync] OVERLAY_API_KEY is not configured");
     return NextResponse.json(
-      { error: "Overlay API key em falta (body.overlay_api_key ou ?key=...)" },
-      { status: 400 }
+      { error: "OVERLAY_API_KEY não configurada no servidor" },
+      { status: 503 }
     );
   }
 
