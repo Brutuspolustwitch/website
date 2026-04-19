@@ -19,24 +19,28 @@ interface Stream {
   is_cancelled: boolean;
 }
 
-const CATEGORIES = ["Slots", "Bonus Hunt", "Torneio", "Especial", "Giveaway", "Outro"] as const;
+const CATEGORIES = ["Slots", "Bonus Hunt", "Torneio", "Slot Request", "Liga dos Brutus", "Torneio Liga dos Brutus", "Giveaway", "Outro"] as const;
 
 const CATEGORY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  "Slots":      { bg: "bg-amber-500/10", text: "text-amber-400", border: "border-amber-500/30" },
-  "Bonus Hunt": { bg: "bg-purple-500/10", text: "text-purple-400", border: "border-purple-500/30" },
-  "Torneio":    { bg: "bg-blue-500/10", text: "text-blue-400", border: "border-blue-500/30" },
-  "Especial":   { bg: "bg-arena-gold/10", text: "text-arena-gold", border: "border-arena-gold/30" },
-  "Giveaway":   { bg: "bg-green-500/10", text: "text-green-400", border: "border-green-500/30" },
-  "Outro":      { bg: "bg-gray-500/10", text: "text-gray-400", border: "border-gray-500/30" },
+  "Slots":                  { bg: "bg-amber-500/10",   text: "text-amber-400",   border: "border-amber-500/30" },
+  "Bonus Hunt":             { bg: "bg-purple-500/10",  text: "text-purple-400",  border: "border-purple-500/30" },
+  "Torneio":                { bg: "bg-blue-500/10",    text: "text-blue-400",    border: "border-blue-500/30" },
+  "Slot Request":           { bg: "bg-pink-500/10",    text: "text-pink-400",    border: "border-pink-500/30" },
+  "Liga dos Brutus":        { bg: "bg-arena-gold/10",  text: "text-arena-gold",  border: "border-arena-gold/30" },
+  "Torneio Liga dos Brutus":{ bg: "bg-cyan-500/10",    text: "text-cyan-400",    border: "border-cyan-500/30" },
+  "Giveaway":               { bg: "bg-green-500/10",   text: "text-green-400",   border: "border-green-500/30" },
+  "Outro":                  { bg: "bg-gray-500/10",    text: "text-gray-400",    border: "border-gray-500/30" },
 };
 
 const CATEGORY_ICONS: Record<string, string> = {
-  "Slots": "🎰",
-  "Bonus Hunt": "🎯",
-  "Torneio": "⚔️",
-  "Especial": "⭐",
-  "Giveaway": "🎁",
-  "Outro": "📺",
+  "Slots":                   "🎰",
+  "Bonus Hunt":              "🎯",
+  "Torneio":                 "⚔️",
+  "Slot Request":            "📥",
+  "Liga dos Brutus":         "🛡️",
+  "Torneio Liga dos Brutus": "🏆",
+  "Giveaway":                "🎁",
+  "Outro":                   "📺",
 };
 
 const EMPTY_STREAM: Omit<Stream, "id"> = {
@@ -358,11 +362,6 @@ export default function AdminCalendarioConfig() {
                                 </span>
                               );
                             })}
-                            {stream.is_special && (
-                              <span className="px-2 py-0.5 rounded-md text-xs font-medium bg-arena-gold/10 text-arena-gold border border-arena-gold/30">
-                                ⭐ Especial
-                              </span>
-                            )}
                             {stream.is_cancelled && (
                               <span className="px-2 py-0.5 rounded-md text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/30">
                                 Cancelada
@@ -470,7 +469,7 @@ export default function AdminCalendarioConfig() {
                 {/* Category (multi-select) */}
                 <div>
                   <label className="text-xs text-arena-ash uppercase tracking-wider">Categoria</label>
-                  <div className="mt-1 grid grid-cols-3 gap-2">
+                  <div className="mt-1 grid grid-cols-2 gap-2">
                     {CATEGORIES.map((cat) => {
                       const c = CATEGORY_COLORS[cat];
                       const isSelected = draft.categories.includes(cat);
@@ -517,19 +516,6 @@ export default function AdminCalendarioConfig() {
                     className="mt-1 w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-sm text-arena-white placeholder:text-arena-ash/50 focus:border-arena-gold/50 focus:ring-1 focus:ring-arena-gold/20 outline-none resize-none"
                     placeholder="Notas sobre a stream..."
                   />
-                </div>
-
-                {/* Toggles */}
-                <div className="flex items-center gap-6">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={draft.is_special}
-                      onChange={(e) => setDraft((p) => ({ ...p, is_special: e.target.checked }))}
-                      className="rounded border-white/20 bg-white/[0.04] text-arena-gold focus:ring-arena-gold/30"
-                    />
-                    <span className="text-sm text-arena-smoke">⭐ Especial</span>
-                  </label>
                 </div>
 
                 {/* Actions */}
