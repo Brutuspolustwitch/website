@@ -38,7 +38,6 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
     "/bonus-hunt": "Bonus Hunt",
     "/liga-dos-brutus": "Liga dos Brutus",
     "/live": "Em Direto",
-    "/casinos": "Battle Arenas",
     "/adivinha-o-resultado": "Guess the Spoils",
     "/termos-e-condicoes": "Termos & Condições",
     "/politica-de-privacidade": "Política de Privacidade",

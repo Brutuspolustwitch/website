@@ -17,6 +17,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${SITE_URL}${route}`,
     lastModified: new Date(),
     changeFrequency: route === "" ? "daily" : "weekly",
-    priority: route === "" ? 1 : route.startsWith("/casinos/") ? 0.8 : 0.7,
+    priority: route === "" ? 1 : 0.7,
   }));
 }

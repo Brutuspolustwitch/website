@@ -22,7 +22,6 @@ async function requireAdmin() {
 const CANONICAL_PAGES: { slug: string; name: string }[] = [
   { slug: "home", name: "Página Inicial" },
   { slug: "ofertas", name: "Ofertas" },
-  { slug: "casinos", name: "Casinos" },
   { slug: "destaques", name: "Destaques" },
   { slug: "stream", name: "Stream" },
   { slug: "liga-dos-brutus", name: "Liga dos Brutus" },

@@ -12,11 +12,6 @@ export function generateWebsiteSchema() {
     name: SITE_NAME,
     url: SITE_URL,
     description: "The ultimate iGaming casino streamer arena. Live streams, bonus hunts, and gladiator rankings.",
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${SITE_URL}/casinos?q={search_term_string}`,
-      "query-input": "required name=search_term_string",
-    },
   };
 }
 

@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArenaCard } from "@/components/ui/ArenaCard";
 import { ArenaButton } from "@/components/ui/ArenaButton";
@@ -152,11 +151,11 @@ export function CasinoSection({ hideTitle = false }: { hideTitle?: boolean } = {
 
                 {/* CTA */}
                 <div className="flex gap-3 mt-auto">
-                  <Link href={`/casinos/${casino.slug}`} className="flex-1">
+                  <div className="flex-1">
                     <ArenaButton variant="secondary" size="sm" className="w-full">
                       Full Review
                     </ArenaButton>
-                  </Link>
+                  </div>
                   <ArenaButton variant="primary" size="sm" className="flex-1">
                     Claim Bonus
                   </ArenaButton>
