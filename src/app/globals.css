@@ -399,42 +399,42 @@ body {
   bottom: 0;
 }
 .daily-session-card .casino-banner-inner {
-  height: 60px;
+  height: 100px;
 }
 .daily-session-card .promo-section {
-  padding: 6px 12px 4px;
+  padding: 12px 16px 8px;
 }
 .daily-session-card .promo-label {
-  font-size: 0.55rem;
-  margin-bottom: 2px;
+  font-size: 0.65rem;
+  margin-bottom: 4px;
 }
 .daily-session-card .promo-bonus {
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 .daily-session-card .promo-bonus-accent {
-  font-size: 1.4rem;
+  font-size: 1.6rem;
 }
 .daily-session-card .promo-detail {
-  font-size: 0.6rem;
-}
-.daily-session-card .promo-code-wrapper {
-  padding: 3px 10px;
-  margin-top: 3px;
-}
-.daily-session-card .cta-button {
-  padding: 6px 14px;
   font-size: 0.7rem;
 }
+.daily-session-card .promo-code-wrapper {
+  padding: 5px 12px;
+  margin-top: 6px;
+}
+.daily-session-card .cta-button {
+  padding: 9px 18px;
+  font-size: 0.75rem;
+}
 .daily-session-card .cta-subtext {
-  font-size: 0.5rem;
+  font-size: 0.55rem;
 }
 .daily-session-card .cta-section {
-  padding: 4px 12px;
+  padding: 8px 16px 4px;
 }
 .daily-session-card .flip-hint {
-  font-size: 0.6rem;
-  margin-top: 4px;
-  padding-bottom: 8px;
+  font-size: 0.65rem;
+  margin-top: 6px;
+  padding-bottom: 12px;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
