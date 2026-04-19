@@ -106,6 +106,12 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
   const currentBE = totalBuy > 0 ? totalWin / totalBuy : 0;
   const progress = total > 0 ? (opened / total) * 100 : 0;
 
+  const openedSlots = slots.filter((s) => s.result != null && s.buy_value > 0);
+  const bestSlot = openedSlots.reduce<BonusHuntSlot | null>((best, s) =>
+    !best || (s.result! / s.buy_value) > (best.result! / best.buy_value) ? s : best, null);
+  const worstSlot = openedSlots.reduce<BonusHuntSlot | null>((worst, s) =>
+    !worst || (s.result! / s.buy_value) < (worst.result! / worst.buy_value) ? s : worst, null);
+
   const statusLabel =
     campaign?.status === "active" ? "EM BATALHA" :
     campaign?.status === "completed" ? "COMPLETA" : "PRÓXIMA";
@@ -508,6 +514,58 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                           1.00x
                         </span>
                       </div>
+
+                      {/* Best Slot */}
+                      <div style={{
+                        borderTop: "1px solid rgba(139,105,20,0.12)",
+                        padding: "8px 4px 4px",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        gap: "8px",
+                      }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px", minWidth: 0 }}>
+                          <span style={{ fontSize: "0.8rem", flexShrink: 0 }}>🏆</span>
+                          <div style={{ minWidth: 0 }}>
+                            <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, marginBottom: "1px" }}>
+                              Melhor Slot
+                            </p>
+                            <p style={{ fontFamily: "var(--font-ui)", fontSize: "0.75rem", fontWeight: 700, color: "var(--ink-dark)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              {bestSlot?.name ?? campaign.best_slot_name ?? "—"}
+                            </p>
+                          </div>
+                        </div>
+                        <span style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "#2e7d32", flexShrink: 0 }}>
+                          {bestSlot ? (bestSlot.result! / bestSlot.buy_value).toFixed(1) : (campaign.best_multi ?? 0).toFixed(1)}x
+                        </span>
+                      </div>
+
+                      {/* Worst Slot */}
+                      {worstSlot && (
+                        <div style={{
+                          borderTop: "1px solid rgba(139,105,20,0.08)",
+                          padding: "4px 4px 0",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          gap: "8px",
+                        }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "6px", minWidth: 0 }}>
+                            <span style={{ fontSize: "0.8rem", flexShrink: 0 }}>💀</span>
+                            <div style={{ minWidth: 0 }}>
+                              <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, marginBottom: "1px" }}>
+                                Pior Slot
+                              </p>
+                              <p style={{ fontFamily: "var(--font-ui)", fontSize: "0.75rem", fontWeight: 700, color: "var(--ink-dark)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                {worstSlot.name}
+                              </p>
+                            </div>
+                          </div>
+                          <span style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "#8b1a1a", flexShrink: 0 }}>
+                            {(worstSlot.result! / worstSlot.buy_value).toFixed(1)}x
+                          </span>
+                        </div>
+                      )}
                     </div>
                   )}
 
