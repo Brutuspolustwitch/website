@@ -31,7 +31,7 @@ interface WinCardProps {
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("pt-PT", {
     day:   "2-digit",
-    month: "long",
+    month: "short",
     year:  "numeric",
   });
 }
@@ -60,43 +60,16 @@ export default function WinCard({ clip, currentUserId, onHonor, honored }: WinCa
   return (
     <motion.article
       className="win-card"
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
       layout
     >
-      {/* Engraved header */}
-      <div className="win-card__header">
-        <div className="win-card__avatar">
-          {clip.avatar_url ? (
-            <Image
-              src={clip.avatar_url}
-              alt={clip.username}
-              width={40}
-              height={40}
-              className="win-card__avatar-img"
-              unoptimized
-            />
-          ) : (
-            <div className="win-card__avatar-placeholder" aria-hidden="true" />
-          )}
-        </div>
-
-        <div className="win-card__meta">
-          <span className="win-card__username">{clip.username}</span>
-          <span className="win-card__date">{formatDate(clip.created_at)}</span>
-        </div>
-
+      {/* ── Media block (full width, 16:9) ──────────── */}
+      <div className="win-card__media">
         {clip.provider && (
-          <span className="win-card__badge">{clip.provider}</span>
+          <span className="win-card__provider-badge">{clip.provider}</span>
         )}
-      </div>
-
-      {/* Title */}
-      <h3 className="win-card__title">{clip.title}</h3>
-
-      {/* Embed area */}
-      <div className="win-card__embed">
         <EmbedRenderer
           type={clip.embed_type}
           embedUrl={clip.embed_url}
@@ -104,26 +77,60 @@ export default function WinCard({ clip, currentUserId, onHonor, honored }: WinCa
         />
       </div>
 
-      {/* Description */}
-      {clip.description && (
-        <p className="win-card__description">{clip.description}</p>
-      )}
+      {/* ── Info block ────────────────────────────── */}
+      <div className="win-card__body">
+        {/* User row */}
+        <div className="win-card__user-row">
+          <div className="win-card__avatar">
+            {clip.avatar_url ? (
+              <Image
+                src={clip.avatar_url}
+                alt={clip.username}
+                width={32}
+                height={32}
+                className="win-card__avatar-img"
+                unoptimized
+              />
+            ) : (
+              <div className="win-card__avatar-placeholder" aria-hidden="true" />
+            )}
+          </div>
+          <span className="win-card__username">{clip.username}</span>
+          <span className="win-card__dot" aria-hidden="true">·</span>
+          <span className="win-card__date">{formatDate(clip.created_at)}</span>
+        </div>
 
-      {/* Footer: honor button */}
-      <div className="win-card__footer">
-        <button
-          className={`win-card__honor-btn${localHonored ? " win-card__honor-btn--active" : ""}`}
-          onClick={handleHonor}
-          disabled={!currentUserId || loading}
-          aria-label={localHonored ? "Remover Honra" : "Dar Honra"}
-          title={!currentUserId ? "Faz login para dar honra" : undefined}
-        >
-          {/* Shield stamp icon */}
-          <svg className="win-card__shield" viewBox="0 0 24 24" fill={localHonored ? "currentColor" : "none"} stroke="currentColor" strokeWidth={1.5}>
-            <path d="M12 2L3 6v6c0 5.25 3.75 10.15 9 11.33C17.25 22.15 21 17.25 21 12V6L12 2Z" />
-          </svg>
-          <span className="win-card__honor-count">{localHonors}</span>
-        </button>
+        {/* Title */}
+        <h3 className="win-card__title">{clip.title}</h3>
+
+        {/* Description */}
+        {clip.description && (
+          <p className="win-card__description">{clip.description}</p>
+        )}
+
+        {/* Honor */}
+        <div className="win-card__footer">
+          <button
+            className={`win-card__honor-btn${
+              localHonored ? " win-card__honor-btn--active" : ""
+            }`}
+            onClick={handleHonor}
+            disabled={!currentUserId || loading}
+            aria-label={localHonored ? "Remover Honra" : "Dar Honra"}
+            title={!currentUserId ? "Faz login para dar honra" : undefined}
+          >
+            <svg
+              className="win-card__honor-icon"
+              viewBox="0 0 24 24"
+              fill={localHonored ? "currentColor" : "none"}
+              stroke="currentColor"
+              strokeWidth={1.8}
+            >
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            </svg>
+            <span className="win-card__honor-count">{localHonors}</span>
+          </button>
+        </div>
       </div>
     </motion.article>
   );

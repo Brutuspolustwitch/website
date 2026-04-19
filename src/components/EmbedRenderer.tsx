@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 
 export type EmbedType = "video" | "iframe" | "link";
 
@@ -10,69 +10,107 @@ interface EmbedRendererProps {
   title: string;
 }
 
-/* ── Video player ───────────────────────────────────────────── */
-function VideoEmbed({ src, title }: { src: string; title: string }) {
-  return (
-    <video
-      className="win-embed__video"
-      controls
-      preload="metadata"
-      aria-label={title}
-    >
-      <source src={src} />
-      <p className="win-embed__unsupported">
-        O teu browser não suporta vídeo HTML5.{" "}
-        <a href={src} target="_blank" rel="noopener noreferrer" className="win-embed__link">
-          Ver Battle Replay
-        </a>
-      </p>
-    </video>
-  );
+/* ── Extract YouTube video ID from an embed URL ───────────── */
+function extractYTId(embedUrl: string): string | null {
+  return embedUrl.match(/\/embed\/([a-zA-Z0-9_-]{8,15})/)?.[1] ?? null;
 }
 
-/* ── iFrame embed (YouTube etc.) ────────────────────────────── */
+/* ── YouTube — thumbnail facade + lazy iframe ─────────────── */
 function IframeEmbed({ src, title }: { src: string; title: string }) {
-  const [loaded, setLoaded] = useState(false);
+  const [active, setActive] = useState(false);
+  const videoId = extractYTId(src);
+  const thumb   = videoId
+    ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
+    : null;
+
+  if (!active && thumb) {
+    return (
+      <div
+        className="win-embed__thumb"
+        role="button"
+        tabIndex={0}
+        aria-label={`Reproduzir ${title}`}
+        onClick={() => setActive(true)}
+        onKeyDown={(e) => e.key === "Enter" && setActive(true)}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={thumb}
+          alt={title}
+          className="win-embed__thumb-img"
+          loading="lazy"
+          decoding="async"
+        />
+        <div className="win-embed__play-btn" aria-hidden="true">
+          <svg viewBox="0 0 36 36" fill="currentColor">
+            <circle cx="18" cy="18" r="18" className="win-embed__play-bg" />
+            <path d="M14 11l14 7-14 7V11z" className="win-embed__play-arrow" />
+          </svg>
+        </div>
+        <div className="win-embed__thumb-overlay" aria-hidden="true" />
+      </div>
+    );
+  }
+
+  /* Active — load iframe (with autoplay if user clicked thumbnail) */
+  const activeSrc = active && !src.includes("autoplay")
+    ? `${src}&autoplay=1`
+    : src;
 
   return (
     <div className="win-embed__iframe-wrap">
-      {!loaded && <div className="win-embed__skeleton" aria-hidden="true" />}
       <iframe
         className="win-embed__iframe"
-        src={src}
+        src={activeSrc}
         title={title}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
         loading="lazy"
         referrerPolicy="strict-origin-when-cross-origin"
         sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"
-        onLoad={() => setLoaded(true)}
       />
     </div>
   );
 }
 
-/* ── Link fallback ──────────────────────────────────────────── */
+/* ── Direct video file ────────────────────────────────────── */
+function VideoEmbed({ src, title }: { src: string; title: string }) {
+  return (
+    <div className="win-embed__iframe-wrap">
+      <video
+        className="win-embed__video"
+        controls
+        preload="metadata"
+        aria-label={title}
+        playsInline
+      >
+        <source src={src} />
+        <a href={src} target="_blank" rel="noopener noreferrer" className="win-embed__ext-link">
+          Ver vídeo
+        </a>
+      </video>
+    </div>
+  );
+}
+
+/* ── Link fallback ────────────────────────────────────────── */
 function LinkFallback({ href, title }: { href: string; title: string }) {
-  const iconRef = useRef<SVGSVGElement>(null);
   return (
     <div className="win-embed__link-fallback">
-      <div className="win-embed__sword-icon" aria-hidden="true">
-        <svg ref={iconRef} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.2}>
-          <path d="M14.5 2L2 14.5l7.5 7.5L22 9.5V2h-7.5Z" />
-          <path d="M2 22l4-4M14.5 2l-4 4" />
-          <circle cx="19" cy="5" r="1.5" fill="currentColor" stroke="none" />
-        </svg>
-      </div>
+      <svg className="win-embed__link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+        <path d="M13 10H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" />
+        <path d="M8 10V6a4 4 0 0 1 8 0v1" />
+        <path d="M18 2l4 4-4 4M22 6H13" />
+      </svg>
       <p className="win-embed__link-label">{title}</p>
       <a
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="win-embed__battle-btn"
+        className="win-embed__cta"
       >
-        <span>Ver Battle Replay</span>
-        <svg className="win-embed__arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={2}>
+        Abrir Replay
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={2}>
           <path d="M3 8h10M9 4l4 4-4 4" />
         </svg>
       </a>
@@ -80,7 +118,6 @@ function LinkFallback({ href, title }: { href: string; title: string }) {
   );
 }
 
-/* ── Main renderer ──────────────────────────────────────────── */
 export default function EmbedRenderer({ type, embedUrl, title }: EmbedRendererProps) {
   if (type === "video")  return <VideoEmbed  src={embedUrl} title={title} />;
   if (type === "iframe") return <IframeEmbed src={embedUrl} title={title} />;
