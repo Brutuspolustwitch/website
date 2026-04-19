@@ -403,9 +403,9 @@ export default function DailySessionContent() {
               >
                 <div className="flex flex-col gap-4">
                   {/* Stats bar */}
-                  <div className="papyrus-scroll greek-key-border" style={{ padding: 0 }}>
-                    <div className="scroll-content" style={{ padding: "10px 16px" }}>
-                      <div className="flex flex-wrap items-center justify-around gap-x-6 gap-y-2 text-center">
+                  <div className="papyrus-scroll greek-key-border w-full" style={{ padding: 0 }}>
+                    <div className="scroll-content p-0 w-full">
+                      <div className="flex flex-wrap items-center justify-around gap-x-6 gap-y-2 text-center w-full">
                         <div>
                           <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Depósitos</p>
                           <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "#8b1a1a" }}>
