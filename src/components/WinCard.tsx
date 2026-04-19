@@ -36,6 +36,20 @@ function formatDate(iso: string) {
   });
 }
 
+/* Detect payout "€12500" or "12500€" patterns */
+function parsePayout(s: string): string | null {
+  const t = s.trim();
+  if (/^\d+(\.\d+)?€$/.test(t)) return t;
+  if (/^€\d+(\.\d+)?$/.test(t)) return t;
+  return null;
+}
+
+/* Detect multiplier "2000x" pattern */
+function parseMultiplier(s: string): string | null {
+  const t = s.trim();
+  return /^\d+(\.\d+)?x$/i.test(t) ? t : null;
+}
+
 export default function WinCard({ clip, currentUserId, onHonor, honored }: WinCardProps) {
   const [localHonors, setLocalHonors] = useState(clip.honors);
   const [localHonored, setLocalHonored] = useState(honored);
@@ -57,6 +71,12 @@ export default function WinCard({ clip, currentUserId, onHonor, honored }: WinCa
     }
   };
 
+  const payout     = clip.title       ? parsePayout(clip.title)           : null;
+  const multiplier = clip.description ? parseMultiplier(clip.description) : null;
+  /* Fall back to plain text display if not stat-format */
+  const textTitle = !payout       ? clip.title                 : null;
+  const textDesc  = !multiplier   ? (clip.description ?? null) : null;
+
   return (
     <motion.article
       className="win-card"
@@ -65,19 +85,15 @@ export default function WinCard({ clip, currentUserId, onHonor, honored }: WinCa
       transition={{ duration: 0.35, ease: "easeOut" }}
       layout
     >
-      {/* ── Media block (full width, 16:9) ──────────── */}
+      {/* ── Media ───────────────────────────────────── */}
       <div className="win-card__media">
         {clip.provider && (
           <span className="win-card__provider-badge">{clip.provider}</span>
         )}
-        <EmbedRenderer
-          type={clip.embed_type}
-          embedUrl={clip.embed_url}
-          title={clip.title}
-        />
+        <EmbedRenderer type={clip.embed_type} embedUrl={clip.embed_url} title={clip.title} />
       </div>
 
-      {/* ── Info block ────────────────────────────── */}
+      {/* ── Body ────────────────────────────────────── */}
       <div className="win-card__body">
         {/* User row */}
         <div className="win-card__user-row">
@@ -100,20 +116,33 @@ export default function WinCard({ clip, currentUserId, onHonor, honored }: WinCa
           <span className="win-card__date">{formatDate(clip.created_at)}</span>
         </div>
 
-        {/* Title */}
-        <h3 className="win-card__title">{clip.title}</h3>
-
-        {/* Description */}
-        {clip.description && (
-          <p className="win-card__description">{clip.description}</p>
+        {/* Stats (payout + multiplier) */}
+        {(payout || multiplier) && (
+          <div className="win-card__stats">
+            {payout && (
+              <div className="win-card__stat">
+                <span className="win-card__stat-label">Payout</span>
+                <span className="win-card__stat-value">{payout}</span>
+              </div>
+            )}
+            {payout && multiplier && <div className="win-card__stat-divider" aria-hidden="true" />}
+            {multiplier && (
+              <div className="win-card__stat">
+                <span className="win-card__stat-label">Multiplier</span>
+                <span className="win-card__stat-value win-card__stat-value--multiplier">{multiplier}</span>
+              </div>
+            )}
+          </div>
         )}
+
+        {/* Fallback plain-text title/description for legacy entries */}
+        {textTitle && <h3 className="win-card__title">{textTitle}</h3>}
+        {textDesc  && <p  className="win-card__description">{textDesc}</p>}
 
         {/* Honor */}
         <div className="win-card__footer">
           <button
-            className={`win-card__honor-btn${
-              localHonored ? " win-card__honor-btn--active" : ""
-            }`}
+            className={`win-card__honor-btn${localHonored ? " win-card__honor-btn--active" : ""}`}
             onClick={handleHonor}
             disabled={!currentUserId || loading}
             aria-label={localHonored ? "Remover Honra" : "Dar Honra"}

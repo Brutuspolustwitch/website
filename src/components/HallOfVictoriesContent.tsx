@@ -68,7 +68,12 @@ function FeaturedWin({ win, loading }: { win: BrutaDoMes | null; loading: boolea
         <EmbedRenderer type={win.embed_type} embedUrl={win.embed_url} title={win.title} />
       </div>
       <div className="bdm-featured__body">
-        <h2 className="bdm-featured__title">{win.title}</h2>
+        <div className="bdm-featured__game-row">
+          <svg className="bdm-featured__game-icon" viewBox="0 0 20 14" fill="currentColor" aria-hidden="true">
+            <path d="M0 14 L3 4 L7 9 L10 0 L13 9 L17 4 L20 14 Z" />
+          </svg>
+          <h2 className="bdm-featured__title">{win.title}</h2>
+        </div>
         {win.description && <p className="bdm-featured__desc">{win.description}</p>}
       </div>
     </motion.article>
