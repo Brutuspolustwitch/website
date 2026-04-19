@@ -21,6 +21,13 @@
 
   --font-display: "Cinzel", serif;
   --font-ui: "Bebas Neue", sans-serif;
+
+  --animate-marquee: marquee 28s linear infinite;
+
+  @keyframes marquee {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
 }
 
 /* ── Base ───────────────────────────────────────────────────────────── */

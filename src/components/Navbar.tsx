@@ -61,6 +61,24 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
 
   const pageTitle = PAGE_TITLES[pathname] ?? null;
   const isDailySession = pathname === "/daily-session";
+  const isLive = pathname === "/live";
+
+  /* ── Next stream (for /live marquee) ─────────── */
+  const [nextStream, setNextStream] = useState<{ title: string; stream_date: string; start_time: string; categories: string[]; casino: string | null } | null>(null);
+
+  useEffect(() => {
+    if (!isLive) { setNextStream(null); return; }
+    const today = new Date().toISOString().split("T")[0];
+    fetch("/api/scheduled-streams")
+      .then((r) => r.json())
+      .then((d) => {
+        const upcoming = (d.streams ?? []).filter(
+          (s: { stream_date: string; is_cancelled: boolean }) => s.stream_date >= today && !s.is_cancelled
+        );
+        if (upcoming.length > 0) setNextStream(upcoming[0]);
+      })
+      .catch(() => {});
+  }, [isLive]);
 
   /* ── Daily Session live info ──────────────────── */
   const [sessionInfo, setSessionInfo] = useState<{ title: string; date: string; is_active: boolean } | null>(null);
@@ -151,8 +169,56 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
             </Link>
           </div>
 
-          {/* Center: page title or daily session info */}
-          {isDailySession && sessionInfo ? (
+          {/* Center: page title, daily session info, or live marquee */}
+          {isLive ? (
+            <div className="hidden sm:flex flex-1 mx-6 overflow-hidden">
+              <div className="relative w-full overflow-hidden rounded-md border border-arena-gold/20 bg-black/30 h-7 flex items-center">
+                {/* Left fade */}
+                <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-arena-black to-transparent z-10 pointer-events-none" />
+                {/* Right fade */}
+                <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-arena-black to-transparent z-10 pointer-events-none" />
+                <div className="flex animate-marquee whitespace-nowrap">
+                  {nextStream ? (
+                    [0, 1].map((i) => (
+                      <span key={i} className="inline-flex items-center gap-3 px-8 text-xs font-medium">
+                        <span className="text-arena-gold/70 tracking-widest uppercase font-[family-name:var(--font-display)] text-[0.6rem]">Próxima Stream</span>
+                        <span className="text-arena-gold">⚔</span>
+                        <span className="text-arena-white font-semibold">{nextStream.title}</span>
+                        <span className="text-arena-gold/40">·</span>
+                        <span className="text-arena-smoke">
+                          {new Date(nextStream.stream_date + "T00:00:00").toLocaleDateString("pt-PT", { weekday: "short", day: "numeric", month: "short" })}
+                        </span>
+                        <span className="text-arena-gold/40">·</span>
+                        <span className="text-arena-smoke">{nextStream.start_time.slice(0, 5)}</span>
+                        {nextStream.categories.length > 0 && (
+                          <>
+                            <span className="text-arena-gold/40">·</span>
+                            <span className="text-arena-ash">{nextStream.categories.join(" & ")}</span>
+                          </>
+                        )}
+                        {nextStream.casino && (
+                          <>
+                            <span className="text-arena-gold/40">·</span>
+                            <span className="text-arena-ash">{nextStream.casino}</span>
+                          </>
+                        )}
+                        <span className="text-arena-gold px-6">✦</span>
+                      </span>
+                    ))
+                  ) : (
+                    [0, 1].map((i) => (
+                      <span key={i} className="inline-flex items-center gap-3 px-8 text-xs">
+                        <span className="text-arena-gold/70 tracking-widest uppercase font-[family-name:var(--font-display)] text-[0.6rem]">Próxima Stream</span>
+                        <span className="text-arena-gold">⚔</span>
+                        <span className="text-arena-smoke">Em breve...</span>
+                        <span className="text-arena-gold px-6">✦</span>
+                      </span>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : isDailySession && sessionInfo ? (
             <div className="hidden sm:flex items-center gap-3">
               <h1 className="text-2xl sm:text-4xl font-bold font-[family-name:var(--font-display)] bg-gradient-to-r from-arena-gold via-arena-gold-light to-arena-gold bg-clip-text text-transparent">
                 {sessionInfo.title}
