@@ -401,7 +401,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             <Image src="/images/icons/fa-instagram.png" alt="Instagram" width={32} height={32} className="w-8 h-8 object-contain" />
           </a>
           <a
-            href="https://www.twitch.tv/arena_gladiator"
+            href="https://www.twitch.tv/brutuspolus"
             target="_blank"
             rel="noopener noreferrer"
             className="opacity-60 hover:opacity-100 transition-opacity duration-200"
