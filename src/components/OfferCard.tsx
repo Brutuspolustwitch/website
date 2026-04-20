@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import type { CasinoOfferRow } from "@/lib/supabase";
-import { WaxSealBadge } from "@/components/WaxSealBadge";
 import { trackOfferClick } from "@/lib/analytics/tracker";
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -111,17 +110,6 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
 
         {/* ═══ FRONT ═══ */}
         <div className="papyrus-flip-face papyrus-flip-front relative">
-          {/* Wax Seal Badge — on the front face so it moves with the card */}
-          {offer.badge && (
-            <div className="absolute top-3 left-3" style={{ zIndex: 20 }}>
-              <WaxSealBadge
-                text={offer.badge === "NEW" ? "NOVUS" : offer.badge}
-                variant={offer.badge === "ELITE" ? "gold" : "red"}
-                rotation={offer.badge === "HOT" ? 8 : offer.badge === "ELITE" ? -4 : -7}
-                size={52}
-              />
-            </div>
-          )}
           <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom">
             <CornerOrnament className="top-left" />
             <CornerOrnament className="top-right" />
@@ -139,6 +127,37 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
                       style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
                     />
                   ) : null}
+                  
+                  {/* Modern Badge Overlay */}
+                  {offer.badge && (
+                    <div style={{
+                      position: "absolute",
+                      top: "8px",
+                      left: "8px",
+                      zIndex: 10,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      padding: "4px 10px",
+                      borderRadius: "4px",
+                      fontSize: "0.7rem",
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.5px",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+                      background: offer.badge === "HOT" 
+                        ? "linear-gradient(135deg, #dc2626 0%, #991b1b 100%)"
+                        : offer.badge === "NEW"
+                        ? "linear-gradient(135deg, #16a34a 0%, #15803d 100%)"
+                        : "linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)",
+                      color: "#fff",
+                    }}>
+                      <span style={{ fontSize: "0.9rem" }}>
+                        {offer.badge === "HOT" ? "🔥" : offer.badge === "NEW" ? "⭐" : "💎"}
+                      </span>
+                      <span>{offer.badge}</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
