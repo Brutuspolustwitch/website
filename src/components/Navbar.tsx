@@ -29,6 +29,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
     "/calendario": "Calendário",
     "/sobre": "Sobre Nós",
     "/contactos": "Contactos",
+    "/comunidade": "Comunidade",
     "/giveaways": "Giveaways",
     "/ofertas": "Ofertas",
     "/destaques": "Destaques",
