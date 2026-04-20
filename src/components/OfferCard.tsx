@@ -129,7 +129,7 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
                   ) : null}
                   
                   {/* Modern Badge Overlay */}
-                  {offer.badge && (
+                  {offer.badge && offer.badge !== "ELITE" && (
                     <div style={{
                       position: "absolute",
                       top: "8px",
@@ -145,15 +145,11 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
                       textTransform: "uppercase",
                       letterSpacing: "0.5px",
                       boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
-                      background: offer.badge === "HOT" 
-                        ? "linear-gradient(135deg, #dc2626 0%, #991b1b 100%)"
-                        : offer.badge === "NEW"
-                        ? "linear-gradient(135deg, #16a34a 0%, #15803d 100%)"
-                        : "linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)",
+                      background: "rgba(0, 0, 0, 0.7)",
                       color: "#fff",
                     }}>
                       <span style={{ fontSize: "0.9rem" }}>
-                        {offer.badge === "HOT" ? "🔥" : offer.badge === "NEW" ? "⭐" : "💎"}
+                        {offer.badge === "HOT" ? "🔥" : "⭐"}
                       </span>
                       <span>{offer.badge}</span>
                     </div>
