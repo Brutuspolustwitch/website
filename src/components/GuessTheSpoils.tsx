@@ -590,37 +590,41 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
               {/* Best Slot Card */}
               {bestSlot && (
                 <motion.div
-                  className="papyrus-scroll greek-key-border"
+                  className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
                   style={{
                     position: "relative",
-                    overflow: "hidden",
+                    overflow: "visible",
                     background: "linear-gradient(135deg, rgba(46,125,50,0.05) 0%, rgba(139,105,20,0.08) 100%)",
                     padding: "12px",
                   }}
                 >
-                  <div style={{ position: "absolute", top: 8, right: 8, zIndex: 2 }}>
-                    <div style={{
-                      background: "linear-gradient(135deg, #2e7d32, #1b5e20)",
-                      color: "#fff",
-                      padding: "3px 8px",
-                      borderRadius: "4px",
-                      fontFamily: "var(--font-display)",
-                      fontSize: "0.45rem",
-                      letterSpacing: "0.1em",
-                      textTransform: "uppercase",
-                      fontWeight: 700,
-                      boxShadow: "0 2px 8px rgba(46,125,50,0.3)",
-                    }}>
-                      🏆 Melhor Slot
-                    </div>
-                  </div>
+                  <CornerOrnament className="absolute top-2 left-2 w-4 h-4" />
+                  <CornerOrnament className="absolute top-2 right-2 w-4 h-4 -scale-x-100" />
+                  <CornerOrnament className="absolute bottom-2 left-2 w-4 h-4 -scale-y-100" />
+                  <CornerOrnament className="absolute bottom-2 right-2 w-4 h-4 -scale-x-100 -scale-y-100" />
 
                   <div style={{ display: "flex", gap: "12px" }}>
                     {/* Image on left */}
                     <div style={{ flexShrink: 0, width: "140px", position: "relative" }}>
+                      <div style={{ position: "absolute", top: -4, left: -4, zIndex: 2 }}>
+                        <div style={{
+                          background: "linear-gradient(135deg, #2e7d32, #1b5e20)",
+                          color: "#fff",
+                          padding: "3px 8px",
+                          borderRadius: "4px",
+                          fontFamily: "var(--font-display)",
+                          fontSize: "0.45rem",
+                          letterSpacing: "0.1em",
+                          textTransform: "uppercase",
+                          fontWeight: 700,
+                          boxShadow: "0 2px 8px rgba(46,125,50,0.3)",
+                        }}>
+                          🏆 Melhor
+                        </div>
+                      </div>
                       <div style={{ aspectRatio: "3/4", background: "#000", borderRadius: "6px", overflow: "hidden", border: "2px solid rgba(46,125,50,0.3)" }}>
                         {bestSlot.thumbnail_url ? (
                           <img
@@ -740,37 +744,41 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
               {/* Worst Slot Card */}
               {worstSlot && (
                 <motion.div
-                  className="papyrus-scroll greek-key-border"
+                  className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
                   style={{
                     position: "relative",
-                    overflow: "hidden",
+                    overflow: "visible",
                     background: "linear-gradient(135deg, rgba(139,26,26,0.05) 0%, rgba(139,105,20,0.08) 100%)",
                     padding: "12px",
                   }}
                 >
-                  <div style={{ position: "absolute", top: 8, right: 8, zIndex: 2 }}>
-                    <div style={{
-                      background: "linear-gradient(135deg, #8b1a1a, #5d1111)",
-                      color: "#fff",
-                      padding: "3px 8px",
-                      borderRadius: "4px",
-                      fontFamily: "var(--font-display)",
-                      fontSize: "0.45rem",
-                      letterSpacing: "0.1em",
-                      textTransform: "uppercase",
-                      fontWeight: 700,
-                      boxShadow: "0 2px 8px rgba(139,26,26,0.3)",
-                    }}>
-                      💀 Pior Slot
-                    </div>
-                  </div>
+                  <CornerOrnament className="absolute top-2 left-2 w-4 h-4" />
+                  <CornerOrnament className="absolute top-2 right-2 w-4 h-4 -scale-x-100" />
+                  <CornerOrnament className="absolute bottom-2 left-2 w-4 h-4 -scale-y-100" />
+                  <CornerOrnament className="absolute bottom-2 right-2 w-4 h-4 -scale-x-100 -scale-y-100" />
 
                   <div style={{ display: "flex", gap: "12px" }}>
                     {/* Image on left */}
                     <div style={{ flexShrink: 0, width: "140px", position: "relative" }}>
+                      <div style={{ position: "absolute", top: -4, left: -4, zIndex: 2 }}>
+                        <div style={{
+                          background: "linear-gradient(135deg, #8b1a1a, #5d1111)",
+                          color: "#fff",
+                          padding: "3px 8px",
+                          borderRadius: "4px",
+                          fontFamily: "var(--font-display)",
+                          fontSize: "0.45rem",
+                          letterSpacing: "0.1em",
+                          textTransform: "uppercase",
+                          fontWeight: 700,
+                          boxShadow: "0 2px 8px rgba(139,26,26,0.3)",
+                        }}>
+                          💀 Pior
+                        </div>
+                      </div>
                       <div style={{ aspectRatio: "3/4", background: "#000", borderRadius: "6px", overflow: "hidden", border: "2px solid rgba(139,26,26,0.3)" }}>
                         {worstSlot.thumbnail_url ? (
                           <img
