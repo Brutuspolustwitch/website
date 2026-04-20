@@ -4,12 +4,14 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import type { CasinoOfferRow } from "@/lib/supabase";
 import { WaxSealBadge } from "@/components/WaxSealBadge";
+import { trackOfferClick } from "@/lib/analytics/tracker";
 
 /* ═══════════════════════════════════════════════════════════════════
    TYPES
    ═══════════════════════════════════════════════════════════════════ */
 
 export interface CasinoOffer {
+  id: string;
   slug: string;
   name: string;
   logo_url?: string;
@@ -98,8 +100,13 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
 
   const externalUrl = offer.affiliate_url.startsWith("http") ? offer.affiliate_url : `https://${offer.affiliate_url}`;
 
+  const handleOfferClick = useCallback(() => {
+    trackOfferClick(offer.id, offer.name);
+    window.open(externalUrl, '_blank', 'noopener,noreferrer');
+  }, [offer.id, offer.name, externalUrl]);
+
   return (
-    <div className="papyrus-flip-container" onClick={() => { window.open(externalUrl, '_blank', 'noopener,noreferrer'); }}>
+    <div className="papyrus-flip-container" onClick={handleOfferClick}>
       <div className={`papyrus-flip-inner ${flipped ? "papyrus-flipped" : ""}`}>
 
         {/* ═══ FRONT ═══ */}
@@ -162,7 +169,7 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
 
               {/* CTA */}
               <div className="cta-section">
-                <a href={externalUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                <a href={externalUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => { e.stopPropagation(); trackOfferClick(offer.id, offer.name); }}>
                   <button className="cta-button">⚔ Resgatar Bónus ⚔</button>
                 </a>
                 <p className="cta-subtext">18+ · T&Cs Aplicáveis · Joga com responsabilidade</p>
@@ -218,7 +225,7 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
 
               {/* CTA */}
               <div className="cta-section">
-                <a href={externalUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                <a href={externalUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => { e.stopPropagation(); trackOfferClick(offer.id, offer.name); }}>
                   <button className="cta-button">⚔ Resgatar Bónus ⚔</button>
                 </a>
               </div>
@@ -253,6 +260,7 @@ export function OfferCards({ emptyClassName = "" }: { emptyClassName?: string })
       if (!error && data) {
         setOffers(
           (data as CasinoOfferRow[]).map((r) => ({
+            id: r.id,
             slug: r.slug,
             name: r.name,
             logo_url: r.logo_url ?? undefined,

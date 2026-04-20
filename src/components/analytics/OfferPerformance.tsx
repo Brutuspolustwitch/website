@@ -85,12 +85,12 @@ export default function OfferPerformance() {
     const offerIds = [...new Set(events.map((e) => e.offer_id))];
     const { data: offerData } = await supabase
       .from("casino_offers")
-      .select("id, title, casino_name")
+      .select("id, name")
       .in("id", offerIds);
 
-    const offerMap: Record<string, { title: string; casino_name: string }> = {};
+    const offerMap: Record<string, { name: string }> = {};
     for (const o of offerData ?? []) {
-      offerMap[o.id] = { title: o.title, casino_name: o.casino_name };
+      offerMap[o.id] = { name: o.name };
     }
 
     // Aggregate stats
@@ -101,8 +101,8 @@ export default function OfferPerformance() {
         const info = offerMap[oid];
         statsMap[oid] = {
           offer_id: oid,
-          offer_name: info?.title ?? "Desconhecida",
-          casino_name: info?.casino_name ?? "—",
+          offer_name: info?.name ?? "Desconhecida",
+          casino_name: "—",
           total_clicks: 0,
           unique_sessions: 0,
           suspicious_clicks: 0,

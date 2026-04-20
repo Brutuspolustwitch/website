@@ -547,6 +547,7 @@ export default function DailySessionContent() {
                 <div className="daily-session-card w-full">
                   {session.casino ? (
                     <OfferCard offer={{
+                      id: session.casino.id,
                       slug: session.casino.slug,
                       name: session.casino.name,
                       logo_url: session.casino.logo_url ?? undefined,
