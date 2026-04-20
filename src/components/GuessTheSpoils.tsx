@@ -583,12 +583,10 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                   )}
                 </div>
               </div>
-            </motion.div>
-          </div>
 
-          {/* Best & Worst Slot Showcase Cards */}
-          {(bestSlot || worstSlot) && (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px", marginTop: "20px" }}>
+              {/* Best & Worst Slot Showcase Cards */}
+              {(bestSlot || worstSlot) && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginTop: "20px" }}>
               {/* Best Slot Card */}
               {bestSlot && (
                 <motion.div
@@ -880,6 +878,8 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
               )}
             </div>
           )}
+            </motion.div>
+          </div>
         </ScrollReveal>
         )}
       </div>
