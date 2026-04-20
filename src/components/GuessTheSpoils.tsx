@@ -538,58 +538,6 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                           1.00x
                         </span>
                       </div>
-
-                      {/* Best Slot */}
-                      <div style={{
-                        borderTop: "1px solid rgba(139,105,20,0.12)",
-                        padding: "8px 4px 4px",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        gap: "8px",
-                      }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "6px", minWidth: 0 }}>
-                          <span style={{ fontSize: "0.8rem", flexShrink: 0 }}>🏆</span>
-                          <div style={{ minWidth: 0 }}>
-                            <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, marginBottom: "1px" }}>
-                              Melhor Slot
-                            </p>
-                            <p style={{ fontFamily: "var(--font-ui)", fontSize: "0.75rem", fontWeight: 700, color: "var(--ink-dark)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                              {bestSlot?.name ?? campaign.best_slot_name ?? "—"}
-                            </p>
-                          </div>
-                        </div>
-                        <span style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "#2e7d32", flexShrink: 0 }}>
-                          {bestSlot ? (bestSlot.result! / bestSlot.buy_value).toFixed(1) : (campaign.best_multi ?? 0).toFixed(1)}x
-                        </span>
-                      </div>
-
-                      {/* Worst Slot */}
-                      {worstSlot && (
-                        <div style={{
-                          borderTop: "1px solid rgba(139,105,20,0.08)",
-                          padding: "4px 4px 0",
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          gap: "8px",
-                        }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: "6px", minWidth: 0 }}>
-                            <span style={{ fontSize: "0.8rem", flexShrink: 0 }}>💀</span>
-                            <div style={{ minWidth: 0 }}>
-                              <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, marginBottom: "1px" }}>
-                                Pior Slot
-                              </p>
-                              <p style={{ fontFamily: "var(--font-ui)", fontSize: "0.75rem", fontWeight: 700, color: "var(--ink-dark)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                {worstSlot.name}
-                              </p>
-                            </div>
-                          </div>
-                          <span style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "#8b1a1a", flexShrink: 0 }}>
-                            {(worstSlot.result! / worstSlot.buy_value).toFixed(1)}x
-                          </span>
-                        </div>
-                      )}
                     </div>
                   )}
 
@@ -637,6 +585,301 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
               </div>
             </motion.div>
           </div>
+
+          {/* Best & Worst Slot Showcase Cards */}
+          {(bestSlot || worstSlot) && (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px", marginTop: "20px" }}>
+              {/* Best Slot Card */}
+              {bestSlot && (
+                <motion.div
+                  className="papyrus-scroll greek-key-border"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  style={{
+                    position: "relative",
+                    overflow: "hidden",
+                    background: "linear-gradient(135deg, rgba(46,125,50,0.05) 0%, rgba(139,105,20,0.08) 100%)",
+                  }}
+                >
+                  <div style={{ position: "absolute", top: 8, left: 8, zIndex: 2 }}>
+                    <div style={{
+                      background: "linear-gradient(135deg, #2e7d32, #1b5e20)",
+                      color: "#fff",
+                      padding: "4px 10px",
+                      borderRadius: "4px",
+                      fontFamily: "var(--font-display)",
+                      fontSize: "0.5rem",
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      fontWeight: 700,
+                      boxShadow: "0 2px 8px rgba(46,125,50,0.3)",
+                    }}>
+                      🏆 Melhor Slot
+                    </div>
+                  </div>
+
+                  <div style={{ position: "relative", aspectRatio: "16/9", background: "#000", overflow: "hidden" }}>
+                    {bestSlot.thumbnail_url ? (
+                      <img
+                        src={bestSlot.thumbnail_url}
+                        alt={bestSlot.name}
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      />
+                    ) : (
+                      <div style={{
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: "linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%)",
+                        fontSize: "3rem",
+                      }}>
+                        🎰
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={{ padding: "16px", background: "rgba(237,232,213,0.95)" }}>
+                    <div style={{ marginBottom: "12px" }}>
+                      <h3 style={{
+                        fontFamily: "var(--font-display)",
+                        fontSize: "1.1rem",
+                        fontWeight: 700,
+                        color: "var(--ink-dark)",
+                        marginBottom: "4px",
+                        lineHeight: 1.2,
+                      }}>
+                        {bestSlot.name}
+                      </h3>
+                      {bestSlot.provider && (
+                        <p style={{
+                          fontFamily: "var(--font-ui)",
+                          fontSize: "0.7rem",
+                          color: "var(--ink-light)",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.08em",
+                        }}>
+                          {bestSlot.provider}
+                        </p>
+                      )}
+                    </div>
+
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}>
+                      <div>
+                        <p style={{
+                          fontFamily: "var(--font-display)",
+                          fontSize: "0.5rem",
+                          color: "var(--ink-light)",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.1em",
+                          marginBottom: "2px",
+                        }}>
+                          Payout
+                        </p>
+                        <p style={{
+                          fontFamily: "var(--font-ui)",
+                          fontSize: "1rem",
+                          fontWeight: 700,
+                          color: "#2e7d32",
+                        }}>
+                          {bestSlot.result?.toFixed(2) ?? "0.00"}€
+                        </p>
+                      </div>
+
+                      <div>
+                        <p style={{
+                          fontFamily: "var(--font-display)",
+                          fontSize: "0.5rem",
+                          color: "var(--ink-light)",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.1em",
+                          marginBottom: "2px",
+                        }}>
+                          Bet Size
+                        </p>
+                        <p style={{
+                          fontFamily: "var(--font-ui)",
+                          fontSize: "0.85rem",
+                          fontWeight: 600,
+                          color: "var(--ink-dark)",
+                        }}>
+                          {bestSlot.buy_value.toFixed(2)}€
+                        </p>
+                      </div>
+
+                      <div>
+                        <p style={{
+                          fontFamily: "var(--font-display)",
+                          fontSize: "0.5rem",
+                          color: "var(--ink-light)",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.1em",
+                          marginBottom: "2px",
+                        }}>
+                          Multi
+                        </p>
+                        <p style={{
+                          fontFamily: "var(--font-ui)",
+                          fontSize: "1.3rem",
+                          fontWeight: 700,
+                          color: "#2e7d32",
+                        }}>
+                          {(bestSlot.result! / bestSlot.buy_value).toFixed(1)}x
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Worst Slot Card */}
+              {worstSlot && (
+                <motion.div
+                  className="papyrus-scroll greek-key-border"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  style={{
+                    position: "relative",
+                    overflow: "hidden",
+                    background: "linear-gradient(135deg, rgba(139,26,26,0.05) 0%, rgba(139,105,20,0.08) 100%)",
+                  }}
+                >
+                  <div style={{ position: "absolute", top: 8, left: 8, zIndex: 2 }}>
+                    <div style={{
+                      background: "linear-gradient(135deg, #8b1a1a, #5d1111)",
+                      color: "#fff",
+                      padding: "4px 10px",
+                      borderRadius: "4px",
+                      fontFamily: "var(--font-display)",
+                      fontSize: "0.5rem",
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      fontWeight: 700,
+                      boxShadow: "0 2px 8px rgba(139,26,26,0.3)",
+                    }}>
+                      💀 Pior Slot
+                    </div>
+                  </div>
+
+                  <div style={{ position: "relative", aspectRatio: "16/9", background: "#000", overflow: "hidden" }}>
+                    {worstSlot.thumbnail_url ? (
+                      <img
+                        src={worstSlot.thumbnail_url}
+                        alt={worstSlot.name}
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      />
+                    ) : (
+                      <div style={{
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: "linear-gradient(135deg, #8b1a1a 0%, #5d1111 100%)",
+                        fontSize: "3rem",
+                      }}>
+                        🎰
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={{ padding: "16px", background: "rgba(237,232,213,0.95)" }}>
+                    <div style={{ marginBottom: "12px" }}>
+                      <h3 style={{
+                        fontFamily: "var(--font-display)",
+                        fontSize: "1.1rem",
+                        fontWeight: 700,
+                        color: "var(--ink-dark)",
+                        marginBottom: "4px",
+                        lineHeight: 1.2,
+                      }}>
+                        {worstSlot.name}
+                      </h3>
+                      {worstSlot.provider && (
+                        <p style={{
+                          fontFamily: "var(--font-ui)",
+                          fontSize: "0.7rem",
+                          color: "var(--ink-light)",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.08em",
+                        }}>
+                          {worstSlot.provider}
+                        </p>
+                      )}
+                    </div>
+
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}>
+                      <div>
+                        <p style={{
+                          fontFamily: "var(--font-display)",
+                          fontSize: "0.5rem",
+                          color: "var(--ink-light)",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.1em",
+                          marginBottom: "2px",
+                        }}>
+                          Payout
+                        </p>
+                        <p style={{
+                          fontFamily: "var(--font-ui)",
+                          fontSize: "1rem",
+                          fontWeight: 700,
+                          color: "#8b1a1a",
+                        }}>
+                          {worstSlot.result?.toFixed(2) ?? "0.00"}€
+                        </p>
+                      </div>
+
+                      <div>
+                        <p style={{
+                          fontFamily: "var(--font-display)",
+                          fontSize: "0.5rem",
+                          color: "var(--ink-light)",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.1em",
+                          marginBottom: "2px",
+                        }}>
+                          Bet Size
+                        </p>
+                        <p style={{
+                          fontFamily: "var(--font-ui)",
+                          fontSize: "0.85rem",
+                          fontWeight: 600,
+                          color: "var(--ink-dark)",
+                        }}>
+                          {worstSlot.buy_value.toFixed(2)}€
+                        </p>
+                      </div>
+
+                      <div>
+                        <p style={{
+                          fontFamily: "var(--font-display)",
+                          fontSize: "0.5rem",
+                          color: "var(--ink-light)",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.1em",
+                          marginBottom: "2px",
+                        }}>
+                          Multi
+                        </p>
+                        <p style={{
+                          fontFamily: "var(--font-ui)",
+                          fontSize: "1.3rem",
+                          fontWeight: 700,
+                          color: "#8b1a1a",
+                        }}>
+                          {(worstSlot.result! / worstSlot.buy_value).toFixed(1)}x
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          )}
         </ScrollReveal>
         )}
       </div>
