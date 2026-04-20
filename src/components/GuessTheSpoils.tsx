@@ -597,8 +597,6 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                   style={{
                     position: "relative",
                     overflow: "visible",
-                    background: "linear-gradient(135deg, rgba(46,125,50,0.05) 0%, rgba(139,105,20,0.08) 100%)",
-                    padding: "12px",
                   }}
                 >
                   <CornerOrnament className="absolute top-2 left-2 w-4 h-4" />
@@ -606,7 +604,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                   <CornerOrnament className="absolute bottom-2 left-2 w-4 h-4 -scale-y-100" />
                   <CornerOrnament className="absolute bottom-2 right-2 w-4 h-4 -scale-x-100 -scale-y-100" />
 
-                  <div style={{ display: "flex", gap: "12px" }}>
+                  <div className="scroll-content" style={{ display: "flex", gap: "12px" }}>
                     {/* Image on left */}
                     <div style={{ flexShrink: 0, width: "140px", position: "relative" }}>
                       <div style={{ position: "absolute", top: -4, left: -4, zIndex: 2 }}>
@@ -751,8 +749,6 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                   style={{
                     position: "relative",
                     overflow: "visible",
-                    background: "linear-gradient(135deg, rgba(139,26,26,0.05) 0%, rgba(139,105,20,0.08) 100%)",
-                    padding: "12px",
                   }}
                 >
                   <CornerOrnament className="absolute top-2 left-2 w-4 h-4" />
@@ -760,7 +756,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                   <CornerOrnament className="absolute bottom-2 left-2 w-4 h-4 -scale-y-100" />
                   <CornerOrnament className="absolute bottom-2 right-2 w-4 h-4 -scale-x-100 -scale-y-100" />
 
-                  <div style={{ display: "flex", gap: "12px" }}>
+                  <div className="scroll-content" style={{ display: "flex", gap: "12px" }}>
                     {/* Image on left */}
                     <div style={{ flexShrink: 0, width: "140px", position: "relative" }}>
                       <div style={{ position: "absolute", top: -4, left: -4, zIndex: 2 }}>
