@@ -9,7 +9,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/destaques",
     "/stream",
     "/liga-dos-brutus",
-    "/torneio",
     "/loja",
   ];
 

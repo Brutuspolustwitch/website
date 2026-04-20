@@ -27,7 +27,6 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
   /* ── Page title map ─────────────────────────── */
   const PAGE_TITLES: Record<string, string> = {
     "/calendario": "Calendário",
-    "/torneio": "Torneio Liga dos Brutus",
     "/sobre": "Sobre Nós",
     "/contactos": "Contactos",
     "/giveaways": "Giveaways",
