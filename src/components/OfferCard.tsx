@@ -121,8 +121,8 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
             {offer.badge && (
               <div style={{
                 position: "absolute",
-                top: "-8px",
-                right: "-8px",
+                top: "4px",
+                right: "4px",
                 zIndex: 10,
               }}>
                 <WaxSealBadge
