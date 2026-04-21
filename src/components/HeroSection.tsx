@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import Link from "next/link";
 import gsap from "gsap";
 import { supabase } from "@/lib/supabase";
 
@@ -109,21 +110,22 @@ export function HeroSection() {
   }, [reduceMotion]);
 
   return (
-    <section ref={heroRef} className="relative min-h-[100svh] overflow-hidden border-b border-white/[0.08]">
-      {/* Background image layer */}
-      <div className="absolute inset-0">
-        <motion.img
-          ref={imageRef}
-          src={heroImage}
-          alt="Gladiator standing in a stormy colosseum"
-          className="h-full w-full object-cover"
-          style={{ filter: heroFilter, objectPosition: heroPosition }}
-          initial={reduceMotion ? false : { scale: 1.03, opacity: 0.84 }}
-          animate={reduceMotion ? { opacity: 0.96 } : { opacity: 0.96 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-          fetchPriority="high"
-          loading="eager"
-          decoding="async"
+    <Link href="/ofertas" className="block group">
+      <section ref={heroRef} className="relative min-h-[100svh] overflow-hidden border-b border-white/[0.08] cursor-pointer transition-opacity hover:opacity-95">
+        {/* Background image layer */}
+        <div className="absolute inset-0">
+          <motion.img
+            ref={imageRef}
+            src={heroImage}
+            alt="Gladiator standing in a stormy colosseum"
+            className="h-full w-full object-cover"
+            style={{ filter: heroFilter, objectPosition: heroPosition }}
+            initial={reduceMotion ? false : { scale: 1.03, opacity: 0.84 }}
+            animate={reduceMotion ? { opacity: 0.96 } : { opacity: 0.96 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+            fetchPriority="high"
+            loading="eager"
+            decoding="async"
         />
 
         {/* Gradient overlays */}
@@ -183,5 +185,6 @@ export function HeroSection() {
         </div>
       </div>
     </section>
+    </Link>
   );
 }
