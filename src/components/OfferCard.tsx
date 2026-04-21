@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import type { CasinoOfferRow } from "@/lib/supabase";
 import { trackOfferClick } from "@/lib/analytics/tracker";
+import { WaxSealBadge } from "@/components/WaxSealBadge";
 
 /* ═══════════════════════════════════════════════════════════════════
    TYPES
@@ -128,30 +129,20 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
                     />
                   ) : null}
                   
-                  {/* Modern Badge Overlay */}
+                  {/* Wax Seal Badge - Top Right */}
                   {offer.badge && (
                     <div style={{
                       position: "absolute",
-                      top: "0",
-                      left: "0",
+                      top: "-8px",
+                      right: "-8px",
                       zIndex: 10,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      padding: "4px 10px",
-                      borderRadius: "0 0 4px 0",
-                      fontSize: "0.7rem",
-                      fontWeight: 700,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.5px",
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
-                      background: offer.badge === "TOP" ? "rgba(212, 168, 67, 0.95)" : "rgba(0, 0, 0, 0.7)",
-                      color: "#fff",
                     }}>
-                      <span style={{ fontSize: "0.9rem" }}>
-                        {offer.badge === "HOT" ? "🔥" : offer.badge === "TOP" ? "👑" : "⭐"}
-                      </span>
-                      <span>{offer.badge}</span>
+                      <WaxSealBadge
+                        text={offer.badge === "NEW" ? "NOVUS" : offer.badge}
+                        variant={offer.badge === "TOP" ? "gold" : "red"}
+                        rotation={8}
+                        size={56}
+                      />
                     </div>
                   )}
                 </div>
