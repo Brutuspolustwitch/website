@@ -75,7 +75,7 @@ export async function PUT(request: Request) {
   if (!admin) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   const body = await request.json();
-  const { id, background_image, hero_image, effect, effect_intensity, overlay_opacity, bg_brightness, bg_saturation, bg_contrast, bg_position_x, bg_position_y, bg_zoom, bg_color } = body;
+  const { id, background_image, hero_image, hero_title, hero_description, effect, effect_intensity, overlay_opacity, bg_brightness, bg_saturation, bg_contrast, bg_position_x, bg_position_y, bg_zoom, bg_color } = body;
 
   if (!id) {
     return NextResponse.json({ error: "ID is required" }, { status: 400 });
@@ -89,6 +89,8 @@ export async function PUT(request: Request) {
   const updates: Record<string, unknown> = { updated_at: new Date().toISOString() };
   if (background_image !== undefined) updates.background_image = background_image || null;
   if (hero_image !== undefined) updates.hero_image = hero_image || null;
+  if (hero_title !== undefined) updates.hero_title = hero_title || null;
+  if (hero_description !== undefined) updates.hero_description = hero_description || null;
   if (effect !== undefined) updates.effect = effect;
   if (effect_intensity !== undefined) updates.effect_intensity = Math.min(2, Math.max(0, Number(effect_intensity)));
   if (overlay_opacity !== undefined) updates.overlay_opacity = Math.min(1, Math.max(0, Number(overlay_opacity)));
