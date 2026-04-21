@@ -23,10 +23,16 @@ export function HeroSection() {
   const [heroImage, setHeroImage] = useState("/images/arena-gladiator.jpg");
   const [heroFilter, setHeroFilter] = useState("brightness(0.35) saturate(0.7) contrast(0.95)");
   const [heroPosition, setHeroPosition] = useState("50% 50%");
+  const [heroTitle, setHeroTitle] = useState("ENTER THE ARENA");
+  const [heroDescription, setHeroDescription] = useState(
+    "A brutal cinematic iGaming coliseum for live slot battles, bonus hunts, ranked challengers, and high-conversion casino discovery."
+  );
   const homeIdRef = useRef<string | null>(null);
 
   const applyHome = (home: Record<string, unknown>) => {
     if (home.hero_image) setHeroImage(home.hero_image as string);
+    if (home.hero_title) setHeroTitle(home.hero_title as string);
+    if (home.hero_description) setHeroDescription(home.hero_description as string);
     const b = (home.bg_brightness as number) ?? 0.35;
     const s = (home.bg_saturation as number) ?? 0.7;
     const c = (home.bg_contrast as number) ?? 0.95;
@@ -135,7 +141,7 @@ export function HeroSection() {
               animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
               transition={{ duration: 0.9, ease: "easeOut", delay: 0.25 }}
             >
-              ENTER THE ARENA
+              {heroTitle}
             </motion.h1>
 
             {/* Subline */}
@@ -145,8 +151,7 @@ export function HeroSection() {
               animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
               transition={{ duration: 0.9, ease: "easeOut", delay: 0.4 }}
             >
-              A brutal cinematic iGaming coliseum for live slot battles, bonus hunts,
-              ranked challengers, and high-conversion casino discovery.
+              {heroDescription}
             </motion.p>
 
 

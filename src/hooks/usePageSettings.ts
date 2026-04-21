@@ -8,6 +8,8 @@ export interface PageSetting {
   page_name: string;
   background_image: string | null;
   hero_image: string | null;
+  hero_title: string | null;
+  hero_description: string | null;
   effect: "none" | "snow" | "rain" | "thunder" | "fireflies" | "embers";
   effect_intensity: number;
   overlay_opacity: number;
