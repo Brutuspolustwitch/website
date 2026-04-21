@@ -237,9 +237,9 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
               {/* Notes */}
               {offer.notes && offer.notes.length > 0 && (
                 <div className="notes-scroll" style={{ 
-                  marginTop: "12px", 
+                  marginTop: "6px", 
                   textAlign: "center",
-                  maxHeight: "120px",
+                  maxHeight: "140px",
                   overflowY: "auto",
                   padding: "0 4px"
                 }}>
