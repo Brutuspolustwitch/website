@@ -151,7 +151,9 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
 
               {/* Promo Section */}
               <div className="promo-section">
-                <p className="promo-label">✦ Oferta{offer.is_exclusive !== false ? " Exclusiva" : ""} ✦</p>
+                {offer.is_exclusive !== false && (
+                  <p className="promo-label">✦ OFERTA EXCLUSIVA ✦</p>
+                )}
                 <p className="promo-bonus">
                   {offer.headline}
                   <span className="promo-bonus-accent">{offer.bonus_value}</span>
