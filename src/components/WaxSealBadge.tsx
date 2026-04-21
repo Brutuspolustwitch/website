@@ -7,7 +7,7 @@
  *  - "red"  → Deep crimson wax (default)
  *  - "gold" → Dark gold / bronze wax
  *
- * Text options: "NOVUS" (NEW), "HOT", "ELITE", or any short string.
+ * Text options: "NOVUS" (NEW), "HOT", "TOP", or any short string.
  *
  * Place with position:absolute in a relative container.
  * The seal has an imperfect circle shape via CSS clip-path + pseudo-elements

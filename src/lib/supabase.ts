@@ -127,7 +127,7 @@ export interface CasinoOfferRow {
   logo_url: string | null;
   logo_bg: string;
   banner_url: string | null;
-  badge: "NEW" | "HOT" | "ELITE" | null;
+  badge: "NEW" | "HOT" | "TOP" | null;
   tags: string[];
   headline: string;
   bonus_value: string;

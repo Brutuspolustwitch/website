@@ -211,7 +211,7 @@ export default function ParceriasPage() {
                   <div className="flex items-center gap-2">
                     <h3 className="font-bold text-white truncate">{offer.name}</h3>
                     {offer.badge && (
-                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded text-white ${offer.badge === "NEW" ? "bg-green-600" : offer.badge === "ELITE" ? "bg-yellow-600" : "bg-orange-600"}`}>
+                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded text-white ${offer.badge === "NEW" ? "bg-green-600" : offer.badge === "TOP" ? "bg-yellow-600" : "bg-orange-600"}`}>
                         {offer.badge}
                       </span>
                     )}
@@ -311,7 +311,7 @@ function OfferForm({ initial, onSave, saving, nextOrder }: OfferFormProps) {
       logo_url: initial.logo_url ?? null,
       logo_bg: form.logo_bg,
       banner_url: form.banner_url || null,
-      badge: (form.badge as "NEW" | "HOT" | "ELITE") || null,
+      badge: (form.badge as "NEW" | "HOT" | "TOP") || null,
       tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
       headline: form.headline,
       bonus_value: form.bonus_value,
@@ -405,7 +405,7 @@ function OfferForm({ initial, onSave, saving, nextOrder }: OfferFormProps) {
             <option value="">Nenhum</option>
             <option value="NEW">NEW</option>
             <option value="HOT">HOT</option>
-            <option value="ELITE">ELITE</option>
+            <option value="TOP">TOP</option>
           </select>
         </div>
         <div>
