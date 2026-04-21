@@ -29,6 +29,10 @@ export function HeroSection() {
   );
   const [heroTitleSize, setHeroTitleSize] = useState(1.0);
   const [heroDescriptionSize, setHeroDescriptionSize] = useState(1.0);
+  const [heroTextAlign, setHeroTextAlign] = useState<"left" | "center" | "right">("left");
+  const [heroPositionX, setHeroPositionX] = useState(6);
+  const [heroPositionY, setHeroPositionY] = useState(32);
+  const [heroMaxWidth, setHeroMaxWidth] = useState(768);
   const homeIdRef = useRef<string | null>(null);
 
   const applyHome = (home: Record<string, unknown>) => {
@@ -37,6 +41,10 @@ export function HeroSection() {
     if (home.hero_description) setHeroDescription(home.hero_description as string);
     if (home.hero_title_size !== undefined) setHeroTitleSize((home.hero_title_size as number) ?? 1.0);
     if (home.hero_description_size !== undefined) setHeroDescriptionSize((home.hero_description_size as number) ?? 1.0);
+    if (home.hero_text_align) setHeroTextAlign(home.hero_text_align as "left" | "center" | "right");
+    if (home.hero_position_x !== undefined) setHeroPositionX((home.hero_position_x as number) ?? 6);
+    if (home.hero_position_y !== undefined) setHeroPositionY((home.hero_position_y as number) ?? 32);
+    if (home.hero_max_width !== undefined) setHeroMaxWidth((home.hero_max_width as number) ?? 768);
     const b = (home.bg_brightness as number) ?? 0.35;
     const s = (home.bg_saturation as number) ?? 0.7;
     const c = (home.bg_contrast as number) ?? 0.95;
@@ -134,13 +142,21 @@ export function HeroSection() {
         />
       </div>
 
-      {/* Content — bottom-left aligned */}
-      <div className="relative z-10 flex min-h-[100svh] items-end">
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 pt-28 sm:pb-36 sm:pt-32 lg:pb-40 lg:pt-36">
-          <div className="max-w-3xl">
+      {/* Content — positioned by admin settings */}
+      <div className="relative z-10 flex min-h-[100svh]" style={{ alignItems: heroPositionY < 50 ? 'flex-start' : 'flex-end' }}>
+        <div 
+          className="w-full px-4 sm:px-6 lg:px-8"
+          style={{
+            paddingLeft: `${heroPositionX}%`,
+            paddingTop: heroPositionY < 50 ? `${heroPositionY}%` : undefined,
+            paddingBottom: heroPositionY >= 50 ? `${100 - heroPositionY}%` : undefined,
+            maxWidth: '100%',
+          }}
+        >
+          <div style={{ maxWidth: `${heroMaxWidth}px`, textAlign: heroTextAlign }}>
             {/* Headline */}
             <motion.h1
-              className="gladiator-title max-w-2xl leading-[0.92]"
+              className="gladiator-title leading-[0.92]"
               style={{
                 fontSize: `clamp(${3.2 * heroTitleSize}rem, ${10 * heroTitleSize}vw, ${7.8 * heroTitleSize}rem)`,
               }}
@@ -153,7 +169,7 @@ export function HeroSection() {
 
             {/* Subline */}
             <motion.p
-              className="mt-5 max-w-xl leading-7 text-white/[0.76]"
+              className="mt-5 leading-7 text-white/[0.76]"
               style={{
                 fontSize: `${1 * heroDescriptionSize}rem`,
               }}

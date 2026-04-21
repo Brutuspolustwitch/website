@@ -391,6 +391,64 @@ function PageSettingsCard({
                     onCommit={(v) => saveField(page.id, { hero_description_size: v } as Partial<PageSetting>)}
                   />
                 </div>
+
+                {/* Text Alignment */}
+                <div className="space-y-1.5 pt-2">
+                  <label className="text-[11px] font-medium text-arena-smoke/70 uppercase tracking-wider">
+                    Alinhamento do Texto
+                  </label>
+                  <select
+                    value={page.hero_text_align ?? "left"}
+                    onChange={(e) => {
+                      const value = e.target.value as "left" | "center" | "right";
+                      updateLocal("hero_text_align", value);
+                      saveField(page.id, { hero_text_align: value } as Partial<PageSetting>);
+                    }}
+                    className="w-full px-3 py-2 rounded-md bg-black/40 border border-white/10 text-white focus:outline-none focus:border-arena-gold/50 transition-colors text-sm"
+                  >
+                    <option value="left">Esquerda</option>
+                    <option value="center">Centro</option>
+                    <option value="right">Direita</option>
+                  </select>
+                </div>
+
+                {/* Position and Width Controls */}
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  <Slider
+                    label="Posição Horizontal"
+                    value={page.hero_position_x ?? 6}
+                    min={0}
+                    max={100}
+                    step={1}
+                    format={(v) => `${v}%`}
+                    onChange={(v) => updateLocal("hero_position_x", v)}
+                    onCommit={(v) => saveField(page.id, { hero_position_x: v } as Partial<PageSetting>)}
+                  />
+                  <Slider
+                    label="Posição Vertical"
+                    value={page.hero_position_y ?? 32}
+                    min={0}
+                    max={100}
+                    step={1}
+                    format={(v) => `${v}%`}
+                    onChange={(v) => updateLocal("hero_position_y", v)}
+                    onCommit={(v) => saveField(page.id, { hero_position_y: v } as Partial<PageSetting>)}
+                  />
+                </div>
+
+                {/* Max Width */}
+                <div className="pt-2">
+                  <Slider
+                    label="Largura Máxima do Texto"
+                    value={page.hero_max_width ?? 768}
+                    min={300}
+                    max={1920}
+                    step={50}
+                    format={(v) => `${v}px`}
+                    onChange={(v) => updateLocal("hero_max_width", v)}
+                    onCommit={(v) => saveField(page.id, { hero_max_width: v } as Partial<PageSetting>)}
+                  />
+                </div>
               </div>
             )}
 

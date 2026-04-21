@@ -12,6 +12,10 @@ export interface PageSetting {
   hero_description: string | null;
   hero_title_size: number;
   hero_description_size: number;
+  hero_text_align: "left" | "center" | "right";
+  hero_position_x: number;
+  hero_position_y: number;
+  hero_max_width: number;
   effect: "none" | "snow" | "rain" | "thunder" | "fireflies" | "embers";
   effect_intensity: number;
   overlay_opacity: number;

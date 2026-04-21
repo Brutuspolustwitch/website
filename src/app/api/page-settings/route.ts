@@ -84,7 +84,7 @@ export async function PUT(request: Request) {
   if (!admin) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   const body = await request.json();
-  const { id, background_image, hero_image, hero_title, hero_description, hero_title_size, hero_description_size, effect, effect_intensity, overlay_opacity, bg_brightness, bg_saturation, bg_contrast, bg_position_x, bg_position_y, bg_zoom, bg_color } = body;
+  const { id, background_image, hero_image, hero_title, hero_description, hero_title_size, hero_description_size, hero_text_align, hero_position_x, hero_position_y, hero_max_width, effect, effect_intensity, overlay_opacity, bg_brightness, bg_saturation, bg_contrast, bg_position_x, bg_position_y, bg_zoom, bg_color } = body;
 
   if (!id) {
     return NextResponse.json({ error: "ID is required" }, { status: 400 });
@@ -102,6 +102,10 @@ export async function PUT(request: Request) {
   if (hero_description !== undefined) updates.hero_description = hero_description || null;
   if (hero_title_size !== undefined) updates.hero_title_size = Math.min(2, Math.max(0.5, Number(hero_title_size)));
   if (hero_description_size !== undefined) updates.hero_description_size = Math.min(2, Math.max(0.5, Number(hero_description_size)));
+  if (hero_text_align !== undefined) updates.hero_text_align = ['left', 'center', 'right'].includes(hero_text_align) ? hero_text_align : 'left';
+  if (hero_position_x !== undefined) updates.hero_position_x = Math.min(100, Math.max(0, Number(hero_position_x)));
+  if (hero_position_y !== undefined) updates.hero_position_y = Math.min(100, Math.max(0, Number(hero_position_y)));
+  if (hero_max_width !== undefined) updates.hero_max_width = Math.min(1920, Math.max(300, Number(hero_max_width)));
   if (effect !== undefined) updates.effect = effect;
   if (effect_intensity !== undefined) updates.effect_intensity = Math.min(2, Math.max(0, Number(effect_intensity)));
   if (overlay_opacity !== undefined) updates.overlay_opacity = Math.min(1, Math.max(0, Number(overlay_opacity)));
