@@ -172,7 +172,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
           {/* Center: page title, daily session info, or live marquee */}
           {isLive ? (
             <div className="hidden sm:flex flex-1 mx-6 overflow-hidden">
-              <div className="relative w-full overflow-hidden rounded-md border border-arena-gold/20 bg-black/30 h-7 flex items-center">
+              <div className="relative w-full overflow-hidden rounded-md border border-arena-gold/20 bg-black/30 h-12 flex items-center">
                 {/* Left fade */}
                 <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-arena-black to-transparent z-10 pointer-events-none" />
                 {/* Right fade */}
@@ -180,8 +180,8 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
                 <div className="flex animate-marquee whitespace-nowrap">
                   {nextStream ? (
                     [0, 1].map((i) => (
-                      <span key={i} className="inline-flex items-center gap-3 px-8 text-xs font-medium">
-                        <span className="text-arena-gold/70 tracking-widest uppercase font-[family-name:var(--font-display)] text-[0.6rem]">Próxima Stream</span>
+                      <span key={i} className="inline-flex items-center gap-3 px-8 text-sm font-medium">
+                        <span className="text-arena-gold/70 tracking-widest uppercase font-[family-name:var(--font-display)] text-[0.7rem]">Próxima Stream</span>
                         <span className="text-arena-gold">⚔</span>
                         <span className="text-arena-white font-semibold">{nextStream.title}</span>
                         <span className="text-arena-gold/40">·</span>
@@ -207,8 +207,8 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
                     ))
                   ) : (
                     [0, 1].map((i) => (
-                      <span key={i} className="inline-flex items-center gap-3 px-8 text-xs">
-                        <span className="text-arena-gold/70 tracking-widest uppercase font-[family-name:var(--font-display)] text-[0.6rem]">Próxima Stream</span>
+                      <span key={i} className="inline-flex items-center gap-3 px-8 text-sm">
+                        <span className="text-arena-gold/70 tracking-widest uppercase font-[family-name:var(--font-display)] text-[0.7rem]">Próxima Stream</span>
                         <span className="text-arena-gold">⚔</span>
                         <span className="text-arena-smoke">Em breve...</span>
                         <span className="text-arena-gold px-6">✦</span>
