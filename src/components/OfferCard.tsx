@@ -236,7 +236,13 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
 
               {/* Notes */}
               {offer.notes && offer.notes.length > 0 && (
-                <div style={{ marginTop: "12px", textAlign: "center" }}>
+                <div style={{ 
+                  marginTop: "12px", 
+                  textAlign: "center",
+                  maxHeight: "120px",
+                  overflowY: "auto",
+                  padding: "0 4px"
+                }}>
                   {offer.notes.map((note, idx) => (
                     <p key={idx} style={{ 
                       fontSize: "0.7rem", 
