@@ -502,6 +502,7 @@ export default function AdminSettingsPage() {
   const [saving, setSaving] = useState<string | null>(null);
   const [uploading, setUploading] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadTarget, setUploadTarget] = useState<{
     id: string;
@@ -522,6 +523,25 @@ export default function AdminSettingsPage() {
       .catch(() => showToast("Erro ao carregar definições"))
       .finally(() => setLoading(false));
   }, [showToast]);
+
+  /* ── Keyboard navigation ────────────────────────────────── */
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only allow keyboard nav when not focused in an input
+      if (["INPUT", "TEXTAREA", "SELECT"].includes((e.target as HTMLElement).tagName)) return;
+
+      if (e.key === "ArrowLeft" && currentPageIndex > 0) {
+        e.preventDefault();
+        setCurrentPageIndex((prev) => prev - 1);
+      } else if (e.key === "ArrowRight" && currentPageIndex < settings.length - 1) {
+        e.preventDefault();
+        setCurrentPageIndex((prev) => prev + 1);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [currentPageIndex, settings.length]);
 
   /* ── Save a field ───────────────────────────────────────── */
   const saveField = useCallback(
@@ -634,22 +654,73 @@ export default function AdminSettingsPage() {
 
         {loading ? (
           <div className="text-arena-smoke animate-pulse">A carregar páginas...</div>
+        ) : settings.length === 0 ? (
+          <div className="text-arena-smoke/60">Nenhuma página encontrada</div>
         ) : (
-          <div className="space-y-3">
-            {settings.map((page) => (
-              <PageSettingsCard
-                key={page.id}
-                page={page}
-                isHome={page.page_slug === "home"}
-                isPageUploading={uploading === page.id}
-                uploadTarget={uploadTarget}
-                saving={saving}
-                setSettings={setSettings}
-                saveField={saveField}
-                triggerUpload={triggerUpload}
-              />
-            ))}
-          </div>
+          <>
+            {/* Page Navigation */}
+            <div className="flex items-center gap-4 mb-6">
+              {/* Previous Button */}
+              <button
+                onClick={() => setCurrentPageIndex((prev) => Math.max(0, prev - 1))}
+                disabled={currentPageIndex === 0}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] disabled:opacity-30 disabled:cursor-not-allowed transition-all group"
+              >
+                <svg className="w-4 h-4 text-arena-gold group-disabled:text-arena-smoke/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+                <span className="text-sm font-medium text-arena-smoke group-disabled:text-arena-smoke/30">Anterior</span>
+              </button>
+
+              {/* Page Selector Dropdown */}
+              <div className="flex-1 relative">
+                <select
+                  value={currentPageIndex}
+                  onChange={(e) => setCurrentPageIndex(Number(e.target.value))}
+                  className="w-full px-4 py-2.5 rounded-lg border border-white/10 bg-black/40 text-arena-gold font-medium text-sm appearance-none cursor-pointer hover:border-arena-gold/40 focus:outline-none focus:border-arena-gold/60 transition-all"
+                >
+                  {settings.map((page, index) => (
+                    <option key={page.id} value={index} className="bg-black text-white">
+                      {page.page_name} {page.page_slug === "home" ? "🏛️" : ""}
+                    </option>
+                  ))}
+                </select>
+                <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-arena-gold/60 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+
+              {/* Page Counter */}
+              <div className="px-4 py-2 rounded-lg border border-white/10 bg-white/[0.02] text-arena-smoke/70 text-sm font-medium tabular-nums whitespace-nowrap">
+                {currentPageIndex + 1} / {settings.length}
+              </div>
+
+              {/* Next Button */}
+              <button
+                onClick={() => setCurrentPageIndex((prev) => Math.min(settings.length - 1, prev + 1))}
+                disabled={currentPageIndex === settings.length - 1}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] disabled:opacity-30 disabled:cursor-not-allowed transition-all group"
+              >
+                <span className="text-sm font-medium text-arena-smoke group-disabled:text-arena-smoke/30">Próxima</span>
+                <svg className="w-4 h-4 text-arena-gold group-disabled:text-arena-smoke/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Current Page Card */}
+            <PageSettingsCard
+              key={settings[currentPageIndex].id}
+              page={settings[currentPageIndex]}
+              isHome={settings[currentPageIndex].page_slug === "home"}
+              isPageUploading={uploading === settings[currentPageIndex].id}
+              uploadTarget={uploadTarget}
+              saving={saving}
+              setSettings={setSettings}
+              saveField={saveField}
+              triggerUpload={triggerUpload}
+            />
+          </>
         )}
 
         {/* Toast */}
