@@ -27,12 +27,16 @@ export function HeroSection() {
   const [heroDescription, setHeroDescription] = useState(
     "A brutal cinematic iGaming coliseum for live slot battles, bonus hunts, ranked challengers, and high-conversion casino discovery."
   );
+  const [heroTitleSize, setHeroTitleSize] = useState(1.0);
+  const [heroDescriptionSize, setHeroDescriptionSize] = useState(1.0);
   const homeIdRef = useRef<string | null>(null);
 
   const applyHome = (home: Record<string, unknown>) => {
     if (home.hero_image) setHeroImage(home.hero_image as string);
     if (home.hero_title) setHeroTitle(home.hero_title as string);
     if (home.hero_description) setHeroDescription(home.hero_description as string);
+    if (home.hero_title_size !== undefined) setHeroTitleSize((home.hero_title_size as number) ?? 1.0);
+    if (home.hero_description_size !== undefined) setHeroDescriptionSize((home.hero_description_size as number) ?? 1.0);
     const b = (home.bg_brightness as number) ?? 0.35;
     const s = (home.bg_saturation as number) ?? 0.7;
     const c = (home.bg_contrast as number) ?? 0.95;
@@ -136,7 +140,10 @@ export function HeroSection() {
           <div className="max-w-3xl">
             {/* Headline */}
             <motion.h1
-              className="gladiator-title max-w-2xl text-[clamp(3.2rem,10vw,7.8rem)] leading-[0.92]"
+              className="gladiator-title max-w-2xl leading-[0.92]"
+              style={{
+                fontSize: `clamp(${3.2 * heroTitleSize}rem, ${10 * heroTitleSize}vw, ${7.8 * heroTitleSize}rem)`,
+              }}
               initial={reduceMotion ? false : { opacity: 0, y: 22 }}
               animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
               transition={{ duration: 0.9, ease: "easeOut", delay: 0.25 }}
@@ -146,7 +153,10 @@ export function HeroSection() {
 
             {/* Subline */}
             <motion.p
-              className="mt-5 max-w-xl text-base leading-7 text-white/[0.76] sm:text-lg"
+              className="mt-5 max-w-xl leading-7 text-white/[0.76]"
+              style={{
+                fontSize: `${1 * heroDescriptionSize}rem`,
+              }}
               initial={reduceMotion ? false : { opacity: 0, y: 18 }}
               animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
               transition={{ duration: 0.9, ease: "easeOut", delay: 0.4 }}

@@ -367,6 +367,30 @@ function PageSettingsCard({
                     className="w-full px-3 py-2 rounded-md bg-black/40 border border-white/10 text-white placeholder:text-arena-smoke/30 focus:outline-none focus:border-arena-gold/50 transition-colors text-sm resize-none"
                   />
                 </div>
+
+                {/* Font Size Controls */}
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  <Slider
+                    label="Tamanho do Título"
+                    value={page.hero_title_size ?? 1.0}
+                    min={0.5}
+                    max={2.0}
+                    step={0.05}
+                    format={(v) => `${(v * 100).toFixed(0)}%`}
+                    onChange={(v) => updateLocal("hero_title_size", v)}
+                    onCommit={(v) => saveField(page.id, { hero_title_size: v } as Partial<PageSetting>)}
+                  />
+                  <Slider
+                    label="Tamanho da Descrição"
+                    value={page.hero_description_size ?? 1.0}
+                    min={0.5}
+                    max={2.0}
+                    step={0.05}
+                    format={(v) => `${(v * 100).toFixed(0)}%`}
+                    onChange={(v) => updateLocal("hero_description_size", v)}
+                    onCommit={(v) => saveField(page.id, { hero_description_size: v } as Partial<PageSetting>)}
+                  />
+                </div>
               </div>
             )}
 

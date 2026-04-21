@@ -66,7 +66,16 @@ export async function GET() {
     existing.sort((a, b) => a.page_name.localeCompare(b.page_name));
   }
 
-  return NextResponse.json({ settings: existing });
+  return NextResponse.json(
+    { settings: existing },
+    {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+        "Pragma": "no-cache",
+        "Expires": "0",
+      },
+    }
+  );
 }
 
 /* ── PUT — update a single page setting ────────────────────── */
@@ -75,7 +84,7 @@ export async function PUT(request: Request) {
   if (!admin) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   const body = await request.json();
-  const { id, background_image, hero_image, hero_title, hero_description, effect, effect_intensity, overlay_opacity, bg_brightness, bg_saturation, bg_contrast, bg_position_x, bg_position_y, bg_zoom, bg_color } = body;
+  const { id, background_image, hero_image, hero_title, hero_description, hero_title_size, hero_description_size, effect, effect_intensity, overlay_opacity, bg_brightness, bg_saturation, bg_contrast, bg_position_x, bg_position_y, bg_zoom, bg_color } = body;
 
   if (!id) {
     return NextResponse.json({ error: "ID is required" }, { status: 400 });
@@ -91,6 +100,8 @@ export async function PUT(request: Request) {
   if (hero_image !== undefined) updates.hero_image = hero_image || null;
   if (hero_title !== undefined) updates.hero_title = hero_title || null;
   if (hero_description !== undefined) updates.hero_description = hero_description || null;
+  if (hero_title_size !== undefined) updates.hero_title_size = Math.min(2, Math.max(0.5, Number(hero_title_size)));
+  if (hero_description_size !== undefined) updates.hero_description_size = Math.min(2, Math.max(0.5, Number(hero_description_size)));
   if (effect !== undefined) updates.effect = effect;
   if (effect_intensity !== undefined) updates.effect_intensity = Math.min(2, Math.max(0, Number(effect_intensity)));
   if (overlay_opacity !== undefined) updates.overlay_opacity = Math.min(1, Math.max(0, Number(overlay_opacity)));

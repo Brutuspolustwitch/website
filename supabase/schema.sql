@@ -570,6 +570,8 @@ create table if not exists page_settings (
   hero_image text,
   hero_title text,
   hero_description text,
+  hero_title_size numeric not null default 1.0 check (hero_title_size >= 0.5 and hero_title_size <= 2.0),
+  hero_description_size numeric not null default 1.0 check (hero_description_size >= 0.5 and hero_description_size <= 2.0),
   effect text not null default 'none' check (effect in ('none', 'snow', 'rain', 'thunder', 'fireflies', 'embers')),
   effect_intensity numeric not null default 1.0 check (effect_intensity >= 0 and effect_intensity <= 2),
   overlay_opacity numeric not null default 0.6 check (overlay_opacity >= 0 and overlay_opacity <= 1),
