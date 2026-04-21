@@ -234,7 +234,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
               </span>
             </div>
           ) : pageTitle ? (
-            <div className="hidden sm:flex items-center absolute left-[calc(50%+0.3em)] lg:left-[calc(50%+7rem+0.3em)] -translate-x-1/2 pointer-events-none">
+            <div className={`hidden sm:flex items-center absolute ${pathname === "/calendario" || pathname === "/admin/outros/calendario" ? "left-[calc(50%+0.3em)] lg:left-[calc(50%+7rem+0.3em)]" : "left-1/2 lg:left-[calc(50%+7rem)]"} -translate-x-1/2 pointer-events-none`}>
               <h1 className="text-2xl sm:text-4xl font-bold font-[family-name:var(--font-display)] bg-gradient-to-r from-arena-gold via-arena-gold-light to-arena-gold bg-clip-text text-transparent uppercase tracking-wider pointer-events-auto">
                 {pageTitle}
               </h1>
