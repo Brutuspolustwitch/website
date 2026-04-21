@@ -143,12 +143,56 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
   }
 
   /* ── Inner content (header + papyrus table) ──────────── */
+  const openedSlots = slots.filter((s) => s.result != null && s.buy_value > 0);
+  const bestSlot = openedSlots.reduce<BonusHuntSlot | null>((best, s) =>
+    !best || (s.result! / s.buy_value) > (best.result! / best.buy_value) ? s : best, null);
+  const worstSlot = openedSlots.reduce<BonusHuntSlot | null>((worst, s) =>
+    !worst || (s.result! / s.buy_value) < (worst.result! / worst.buy_value) ? s : worst, null);
+
   const tableContent = (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
+            {/* ── Hunt Navigation Bar (above card) ──────────── */}
+            {!compact && sessions.length > 1 && (
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-end",
+                marginBottom: "12px",
+                gap: "8px",
+              }}>
+                <button
+                  onClick={prevSession}
+                  disabled={sessionIdx >= sessions.length - 1}
+                  className="bh-nav-btn"
+                  style={{ borderColor: "rgba(255,255,255,0.15)", color: "var(--arena-smoke, #e0ddd4)" }}
+                  aria-label="Hunt anterior"
+                >
+                  ‹
+                </button>
+                <span style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: "0.75rem",
+                  color: "var(--arena-smoke, #e0ddd4)",
+                  letterSpacing: "0.1em",
+                }}>
+                  Hunt {sessionIdx + 1} / {sessions.length}
+                </span>
+                <button
+                  onClick={nextSession}
+                  disabled={sessionIdx <= 0}
+                  className="bh-nav-btn"
+                  style={{ borderColor: "rgba(255,255,255,0.15)", color: "var(--arena-smoke, #e0ddd4)" }}
+                  aria-label="Próximo hunt"
+                >
+                  ›
+                </button>
+              </div>
+            )}
+
             <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom bonus-hunt-scroll">
               <CornerOrnament className="absolute top-2 left-2 w-5 h-5" />
               <CornerOrnament className="absolute top-2 right-2 w-5 h-5 -scale-x-100" />
@@ -409,6 +453,309 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
                 )}
               </div>
             </div>
+
+            {/* ── Best & Worst Slot Cards ──────────────────── */}
+            {!compact && (bestSlot || worstSlot) && (
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginTop: "20px" }}>
+                {/* Best Slot Card */}
+                {bestSlot && (
+                  <motion.div
+                    className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    style={{ position: "relative", overflow: "visible" }}
+                  >
+                    <CornerOrnament className="absolute top-2 left-2 w-4 h-4" />
+                    <CornerOrnament className="absolute top-2 right-2 w-4 h-4 -scale-x-100" />
+                    <CornerOrnament className="absolute bottom-2 left-2 w-4 h-4 -scale-y-100" />
+                    <CornerOrnament className="absolute bottom-2 right-2 w-4 h-4 -scale-x-100 -scale-y-100" />
+
+                    <div className="scroll-content" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                      {/* Badge */}
+                      <div style={{ textAlign: "center" }}>
+                        <div style={{
+                          display: "inline-block",
+                          background: "linear-gradient(135deg, #2e7d32, #1b5e20)",
+                          color: "#fff",
+                          padding: "4px 12px",
+                          borderRadius: "4px",
+                          fontFamily: "var(--font-display)",
+                          fontSize: "0.5rem",
+                          letterSpacing: "0.1em",
+                          textTransform: "uppercase",
+                          fontWeight: 700,
+                          boxShadow: "0 2px 8px rgba(46,125,50,0.3)",
+                        }}>
+                          🏆 Melhor Slot
+                        </div>
+                      </div>
+
+                      {/* Image */}
+                      <div style={{ margin: "0 auto", width: "160px" }}>
+                        <div style={{ aspectRatio: "3/4", background: "#000", borderRadius: "6px", overflow: "hidden", border: "2px solid rgba(46,125,50,0.3)" }}>
+                          {bestSlot.thumbnail_url ? (
+                            <img
+                              src={bestSlot.thumbnail_url}
+                              alt={bestSlot.name}
+                              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                            />
+                          ) : (
+                            <div style={{
+                              width: "100%",
+                              height: "100%",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              background: "linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%)",
+                              fontSize: "3rem",
+                            }}>
+                              🎰
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Name */}
+                      <div style={{ textAlign: "center" }}>
+                        <h3 style={{
+                          fontFamily: "var(--font-display)",
+                          fontSize: "0.9rem",
+                          fontWeight: 700,
+                          color: "var(--ink-dark)",
+                          marginBottom: "2px",
+                        }}>
+                          {bestSlot.name}
+                        </h3>
+                        {bestSlot.provider && (
+                          <p style={{
+                            fontFamily: "var(--font-ui)",
+                            fontSize: "0.6rem",
+                            color: "var(--ink-light)",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.08em",
+                          }}>
+                            {bestSlot.provider}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Stats */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: "4px", borderBottom: "1px solid rgba(139,105,20,0.12)" }}>
+                          <span style={{
+                            fontFamily: "var(--font-display)",
+                            fontSize: "0.5rem",
+                            color: "var(--ink-light)",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.1em",
+                          }}>
+                            Payout
+                          </span>
+                          <span style={{
+                            fontFamily: "var(--font-ui)",
+                            fontSize: "0.95rem",
+                            fontWeight: 700,
+                            color: "#2e7d32",
+                          }}>
+                            {(bestSlot.result ?? 0).toFixed(2)}{currency}
+                          </span>
+                        </div>
+
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: "4px", borderBottom: "1px solid rgba(139,105,20,0.12)" }}>
+                          <span style={{
+                            fontFamily: "var(--font-display)",
+                            fontSize: "0.5rem",
+                            color: "var(--ink-light)",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.1em",
+                          }}>
+                            Bet Size
+                          </span>
+                          <span style={{
+                            fontFamily: "var(--font-ui)",
+                            fontSize: "0.8rem",
+                            fontWeight: 600,
+                            color: "var(--ink-dark)",
+                          }}>
+                            {bestSlot.buy_value.toFixed(2)}{currency}
+                          </span>
+                        </div>
+
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <span style={{
+                            fontFamily: "var(--font-display)",
+                            fontSize: "0.5rem",
+                            color: "var(--ink-light)",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.1em",
+                          }}>
+                            Multi
+                          </span>
+                          <span style={{
+                            fontFamily: "var(--font-ui)",
+                            fontSize: "1.2rem",
+                            fontWeight: 700,
+                            color: "#2e7d32",
+                          }}>
+                            {((bestSlot.result ?? 0) / bestSlot.buy_value).toFixed(1)}x
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Worst Slot Card */}
+                {worstSlot && (
+                  <motion.div
+                    className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    style={{ position: "relative", overflow: "visible" }}
+                  >
+                    <CornerOrnament className="absolute top-2 left-2 w-4 h-4" />
+                    <CornerOrnament className="absolute top-2 right-2 w-4 h-4 -scale-x-100" />
+                    <CornerOrnament className="absolute bottom-2 left-2 w-4 h-4 -scale-y-100" />
+                    <CornerOrnament className="absolute bottom-2 right-2 w-4 h-4 -scale-x-100 -scale-y-100" />
+
+                    <div className="scroll-content" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                      {/* Badge */}
+                      <div style={{ textAlign: "center" }}>
+                        <div style={{
+                          display: "inline-block",
+                          background: "linear-gradient(135deg, #8b1a1a, #5d1111)",
+                          color: "#fff",
+                          padding: "4px 12px",
+                          borderRadius: "4px",
+                          fontFamily: "var(--font-display)",
+                          fontSize: "0.5rem",
+                          letterSpacing: "0.1em",
+                          textTransform: "uppercase",
+                          fontWeight: 700,
+                          boxShadow: "0 2px 8px rgba(139,26,26,0.3)",
+                        }}>
+                          💀 Pior Slot
+                        </div>
+                      </div>
+
+                      {/* Image */}
+                      <div style={{ margin: "0 auto", width: "160px" }}>
+                        <div style={{ aspectRatio: "3/4", background: "#000", borderRadius: "6px", overflow: "hidden", border: "2px solid rgba(139,26,26,0.3)" }}>
+                          {worstSlot.thumbnail_url ? (
+                            <img
+                              src={worstSlot.thumbnail_url}
+                              alt={worstSlot.name}
+                              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                            />
+                          ) : (
+                            <div style={{
+                              width: "100%",
+                              height: "100%",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              background: "linear-gradient(135deg, #8b1a1a 0%, #5d1111 100%)",
+                              fontSize: "3rem",
+                            }}>
+                              🎰
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Name */}
+                      <div style={{ textAlign: "center" }}>
+                        <h3 style={{
+                          fontFamily: "var(--font-display)",
+                          fontSize: "0.9rem",
+                          fontWeight: 700,
+                          color: "var(--ink-dark)",
+                          marginBottom: "2px",
+                        }}>
+                          {worstSlot.name}
+                        </h3>
+                        {worstSlot.provider && (
+                          <p style={{
+                            fontFamily: "var(--font-ui)",
+                            fontSize: "0.6rem",
+                            color: "var(--ink-light)",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.08em",
+                          }}>
+                            {worstSlot.provider}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Stats */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: "4px", borderBottom: "1px solid rgba(139,105,20,0.12)" }}>
+                          <span style={{
+                            fontFamily: "var(--font-display)",
+                            fontSize: "0.5rem",
+                            color: "var(--ink-light)",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.1em",
+                          }}>
+                            Payout
+                          </span>
+                          <span style={{
+                            fontFamily: "var(--font-ui)",
+                            fontSize: "0.95rem",
+                            fontWeight: 700,
+                            color: "#8b1a1a",
+                          }}>
+                            {(worstSlot.result ?? 0).toFixed(2)}{currency}
+                          </span>
+                        </div>
+
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: "4px", borderBottom: "1px solid rgba(139,105,20,0.12)" }}>
+                          <span style={{
+                            fontFamily: "var(--font-display)",
+                            fontSize: "0.5rem",
+                            color: "var(--ink-light)",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.1em",
+                          }}>
+                            Bet Size
+                          </span>
+                          <span style={{
+                            fontFamily: "var(--font-ui)",
+                            fontSize: "0.8rem",
+                            fontWeight: 600,
+                            color: "var(--ink-dark)",
+                          }}>
+                            {worstSlot.buy_value.toFixed(2)}{currency}
+                          </span>
+                        </div>
+
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <span style={{
+                            fontFamily: "var(--font-display)",
+                            fontSize: "0.5rem",
+                            color: "var(--ink-light)",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.1em",
+                          }}>
+                            Multi
+                          </span>
+                          <span style={{
+                            fontFamily: "var(--font-ui)",
+                            fontSize: "1.2rem",
+                            fontWeight: 700,
+                            color: "#8b1a1a",
+                          }}>
+                            {((worstSlot.result ?? 0) / worstSlot.buy_value).toFixed(1)}x
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            )}
           </motion.div>
   );
 
