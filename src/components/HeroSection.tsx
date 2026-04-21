@@ -23,10 +23,8 @@ export function HeroSection() {
   const [heroImage, setHeroImage] = useState("/images/arena-gladiator.jpg");
   const [heroFilter, setHeroFilter] = useState("brightness(0.35) saturate(0.7) contrast(0.95)");
   const [heroPosition, setHeroPosition] = useState("50% 50%");
-  const [heroTitle, setHeroTitle] = useState("ENTER THE ARENA");
-  const [heroDescription, setHeroDescription] = useState(
-    "A brutal cinematic iGaming coliseum for live slot battles, bonus hunts, ranked challengers, and high-conversion casino discovery."
-  );
+  const [heroTitle, setHeroTitle] = useState("");
+  const [heroDescription, setHeroDescription] = useState("");
   const [heroTitleSize, setHeroTitleSize] = useState(1.0);
   const [heroDescriptionSize, setHeroDescriptionSize] = useState(1.0);
   const [heroTextAlign, setHeroTextAlign] = useState<"left" | "center" | "right">("left");
