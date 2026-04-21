@@ -116,6 +116,24 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
             <CornerOrnament className="top-right" />
             <CornerOrnament className="bottom-left" />
             <CornerOrnament className="bottom-right" />
+            
+            {/* Wax Seal Badge - Top Right of Card */}
+            {offer.badge && (
+              <div style={{
+                position: "absolute",
+                top: "-8px",
+                right: "-8px",
+                zIndex: 10,
+              }}>
+                <WaxSealBadge
+                  text={offer.badge}
+                  variant={offer.badge === "TOP" ? "gold" : "red"}
+                  rotation={8}
+                  size={56}
+                />
+              </div>
+            )}
+            
             <div className="scroll-content">
 
               {/* Banner */}
@@ -128,23 +146,6 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
                       style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
                     />
                   ) : null}
-                  
-                  {/* Wax Seal Badge - Top Right */}
-                  {offer.badge && (
-                    <div style={{
-                      position: "absolute",
-                      top: "-8px",
-                      right: "-8px",
-                      zIndex: 10,
-                    }}>
-                      <WaxSealBadge
-                        text={offer.badge === "NEW" ? "NOVUS" : offer.badge}
-                        variant={offer.badge === "TOP" ? "gold" : "red"}
-                        rotation={8}
-                        size={56}
-                      />
-                    </div>
-                  )}
                 </div>
               </div>
 

@@ -59,12 +59,6 @@ export function WaxSealBadge({
       {/* Center engraving */}
       <div className="wax-seal-badge__text">
         <span className="wax-seal-badge__label">{text}</span>
-        <span
-          className="wax-seal-badge__sub"
-          style={{ fontSize: `${subFontSize}px` }}
-        >
-          {isGold ? "·AVRVS·" : "·S·P·Q·R·"}
-        </span>
       </div>
     </div>
   );
