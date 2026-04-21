@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import type { CasinoOfferRow } from "@/lib/supabase";
 import { trackOfferClick } from "@/lib/analytics/tracker";
+import { WaxSealBadge } from "@/components/WaxSealBadge";
 
 /* ═══════════════════════════════════════════════════════════════════
    TYPES
@@ -116,6 +117,23 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
             <CornerOrnament className="bottom-left" />
             <CornerOrnament className="bottom-right" />
             
+            {/* Wax Seal Badge - Top Right of Card */}
+            {offer.badge && (
+              <div style={{
+                position: "absolute",
+                top: "4px",
+                right: "4px",
+                zIndex: 10,
+              }}>
+                <WaxSealBadge
+                  text={offer.badge}
+                  variant={offer.badge === "TOP" ? "gold" : "red"}
+                  rotation={8}
+                  size={56}
+                />
+              </div>
+            )}
+            
             <div className="scroll-content">
 
               {/* Banner */}
@@ -161,24 +179,6 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
                   <div className="promo-code-wrapper" style={{ visibility: 'hidden' }}>
                     <span className="promo-code-label">Código:</span>
                     <span className="promo-code-value">&nbsp;</span>
-                  </div>
-                )}
-
-                {/* Notes */}
-                {offer.notes && offer.notes.length > 0 && (
-                  <div style={{ marginTop: "12px", padding: "0 8px" }}>
-                    {offer.notes.map((note, idx) => (
-                      <p key={idx} style={{ 
-                        fontSize: "0.75rem", 
-                        color: "var(--ink-mid)", 
-                        marginBottom: "4px",
-                        textTransform: "uppercase",
-                        fontWeight: 600,
-                        letterSpacing: "0.5px"
-                      }}>
-                        {note}
-                      </p>
-                    ))}
                   </div>
                 )}
               </div>
@@ -234,10 +234,23 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
                 ))}
               </div>
 
-              {/* Wax Seal */}
-              <div style={{ margin: "8px 0" }}>
-                <div className="wax-seal" />
-              </div>
+              {/* Notes */}
+              {offer.notes && offer.notes.length > 0 && (
+                <div style={{ marginTop: "12px", textAlign: "center" }}>
+                  {offer.notes.map((note, idx) => (
+                    <p key={idx} style={{ 
+                      fontSize: "0.7rem", 
+                      color: "var(--ink-mid)", 
+                      marginBottom: "4px",
+                      textTransform: "uppercase",
+                      fontWeight: 600,
+                      letterSpacing: "0.5px"
+                    }}>
+                      {note}
+                    </p>
+                  ))}
+                </div>
+              )}
 
               {/* CTA */}
               <div className="cta-section">
