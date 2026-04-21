@@ -158,10 +158,17 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
                   {offer.headline}
                   <span className="promo-bonus-accent">{offer.bonus_value}</span>
                 </p>
-                <p className="promo-detail">
-                  {offer.free_spins !== "—" ? `+ ${offer.free_spins} Free Spins` : ""}
-                  {offer.cashback ? ` · ${offer.cashback} Cashback` : ""}
-                </p>
+                {(offer.free_spins && offer.free_spins !== "—" && offer.free_spins.trim() !== "" || 
+                  offer.cashback && offer.cashback.trim() !== "") && (
+                  <p className="promo-detail">
+                    {offer.free_spins && offer.free_spins !== "—" && offer.free_spins.trim() !== "" 
+                      ? `+ ${offer.free_spins} Free Spins` 
+                      : ""}
+                    {offer.cashback && offer.cashback.trim() !== "" 
+                      ? ` · ${offer.cashback} Cashback` 
+                      : ""}
+                  </p>
+                )}
 
                 {offer.code && offer.code !== "—" ? (
                   <div className="promo-code-wrapper" onClick={handleCopyCode} role="button" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && handleCopyCode(e)}>
