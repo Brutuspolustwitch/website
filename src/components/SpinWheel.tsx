@@ -598,10 +598,12 @@ export function SpinWheel() {
 
     const winnerIndex = weightedRandom(rewards);
     const extraSpins = 5 + Math.floor(Math.random() * 3);
-    // Pointer is on the right (90 degrees), so we subtract 90 to align the segment tip
-    const targetSegAngle = winnerIndex * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
-    const totalDelta = extraSpins * 360 + (360 - targetSegAngle) - 90;
     const startRotation = rotation % 360;
+    // Pointer is at 90° (right/sword). Compute the exact delta needed so the winner
+    // segment centre lands at 90°, accounting for the current startRotation.
+    const targetSegAngle = winnerIndex * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
+    const remainder = ((90 - targetSegAngle - startRotation) % 360 + 360) % 360;
+    const totalDelta = extraSpins * 360 + remainder;
 
     const DURATION = 6000;
     const startTime = performance.now();
