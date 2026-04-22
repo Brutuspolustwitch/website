@@ -267,7 +267,7 @@ export default function GiveawayAdmin() {
 
   /* ── Auth gate ──────────────────────────────────────────── */
   if (authLoading) return <div className="pt-24 pb-16 min-h-screen flex items-center justify-center"><div className="text-arena-smoke animate-pulse">A carregar...</div></div>;
-  if (!user || !hasRole(user.role, "configurador")) return <div className="pt-24 pb-16 min-h-screen flex items-center justify-center"><div className="text-red-400">Acesso negado</div></div>;
+  if (!user || !hasRole(user.role, "moderador")) return <div className="pt-24 pb-16 min-h-screen flex items-center justify-center"><div className="text-red-400">Acesso negado</div></div>;
 
   return (
     <div className="pt-24 pb-16 min-h-screen">

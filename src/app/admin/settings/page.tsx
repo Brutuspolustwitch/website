@@ -699,7 +699,7 @@ export default function AdminSettingsPage() {
     );
   }
 
-  if (!user || !hasRole(user.role, "configurador")) {
+  if (!user || !hasRole(user.role, "moderador")) {
     return (
       <div className="pt-24 pb-16 min-h-screen flex items-center justify-center">
         <div className="text-red-400 text-lg">Acesso negado</div>
