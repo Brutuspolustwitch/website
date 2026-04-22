@@ -303,34 +303,63 @@ function WheelSVG({ rewards }: { rewards: Reward[] }) {
   return (
     <svg viewBox={`0 0 ${size} ${size}`} className="w-full h-full" aria-hidden="true">
       <defs>
-        <radialGradient id="rimGrad" cx="50%" cy="50%" r="50%">
-          <stop offset="82%" stopColor="#1a1a1a" />
-          <stop offset="90%" stopColor="#2a2a2a" />
-          <stop offset="95%" stopColor="#444" />
-          <stop offset="100%" stopColor="#1a1a1a" />
+        <radialGradient id="woodRim" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#3a2817" />
+          <stop offset="40%" stopColor="#5c4033" />
+          <stop offset="70%" stopColor="#4a3426" />
+          <stop offset="85%" stopColor="#3a2817" />
+          <stop offset="100%" stopColor="#2a1f15" />
         </radialGradient>
+        <linearGradient id="woodGrain" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#5c4033" stopOpacity="0.3" />
+          <stop offset="25%" stopColor="#3a2817" stopOpacity="0.5" />
+          <stop offset="50%" stopColor="#4a3426" stopOpacity="0.3" />
+          <stop offset="75%" stopColor="#3a2817" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#5c4033" stopOpacity="0.3" />
+        </linearGradient>
         <filter id="segShadow">
           <feDropShadow dx="0" dy="1" stdDeviation="2" floodColor="#000" floodOpacity="0.6" />
         </filter>
+        <filter id="woodTexture">
+          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" result="noise" />
+          <feColorMatrix in="noise" type="saturate" values="0.1" result="desaturatedNoise" />
+          <feComponentTransfer in="desaturatedNoise" result="theNoise">
+            <feFuncA type="discrete" tableValues="0 0 0 0 1 1 1 1" />
+          </feComponentTransfer>
+          <feBlend in="SourceGraphic" in2="theNoise" mode="multiply" />
+        </filter>
       </defs>
 
-      {/* Outer metallic rim */}
-      <circle cx={cx} cy={cy} r={r + 8} fill="url(#rimGrad)" stroke="#555" strokeWidth="1" />
-      <circle cx={cx} cy={cy} r={r + 5} fill="none" stroke="#d4a843" strokeWidth="0.5" opacity="0.3" />
+      {/* Outer wooden shield rim */}
+      <circle cx={cx} cy={cy} r={r + 8} fill="url(#woodRim)" filter="url(#woodTexture)" stroke="#2a1f15" strokeWidth="2" />
+      <circle cx={cx} cy={cy} r={r + 7} fill="none" stroke="url(#woodGrain)" strokeWidth="4" opacity="0.6" />
+      <circle cx={cx} cy={cy} r={r + 5} fill="none" stroke="#8b6914" strokeWidth="1" opacity="0.4" />
+      
+      {/* Wood grain rings */}
+      <circle cx={cx} cy={cy} r={r + 6.5} fill="none" stroke="#3a2817" strokeWidth="0.5" opacity="0.5" />
+      <circle cx={cx} cy={cy} r={r + 4} fill="none" stroke="#4a3426" strokeWidth="0.8" opacity="0.4" />
 
-      {/* Rim tick marks */}
-      {Array.from({ length: segCount * 3 }).map((_, i) => {
-        const angle = (i * (360 / (segCount * 3)) - 90) * (Math.PI / 180);
-        const isMajor = i % 3 === 0;
-        const outerR = r + 6;
-        const innerR = isMajor ? r - 2 : r + 1;
+      {/* Metal studs around rim (shield rivets) */}
+      {Array.from({ length: segCount }).map((_, i) => {
+        const angle = (i * segAngle - 90) * (Math.PI / 180);
+        const studR = r + 6.5;
         return (
-          <line
-            key={`tick-${i}`}
-            x1={cx + innerR * Math.cos(angle)} y1={cy + innerR * Math.sin(angle)}
-            x2={cx + outerR * Math.cos(angle)} y2={cy + outerR * Math.sin(angle)}
-            stroke={isMajor ? "#888" : "#555"} strokeWidth={isMajor ? 2 : 1}
-          />
+          <g key={`stud-${i}`}>
+            <circle
+              cx={cx + studR * Math.cos(angle)}
+              cy={cy + studR * Math.sin(angle)}
+              r="3"
+              fill="#4a4a4a"
+              stroke="#6a6a6a"
+              strokeWidth="0.5"
+            />
+            <circle
+              cx={cx + studR * Math.cos(angle)}
+              cy={cy + studR * Math.sin(angle)}
+              r="1.5"
+              fill="#3a3a3a"
+            />
+          </g>
         );
       })}
 
