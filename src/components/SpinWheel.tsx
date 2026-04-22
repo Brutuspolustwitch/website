@@ -296,57 +296,10 @@ function WheelSVG({ rewards }: { rewards: Reward[] }) {
   return (
     <svg viewBox={`0 0 ${size} ${size}`} className="w-full h-full" aria-hidden="true">
       <defs>
-        <radialGradient id="woodRim" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#3a2817" />
-          <stop offset="40%" stopColor="#5c4033" />
-          <stop offset="70%" stopColor="#4a3426" />
-          <stop offset="85%" stopColor="#3a2817" />
-          <stop offset="100%" stopColor="#2a1f15" />
-        </radialGradient>
-        <linearGradient id="woodGrain" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#5c4033" stopOpacity="0.3" />
-          <stop offset="25%" stopColor="#3a2817" stopOpacity="0.5" />
-          <stop offset="50%" stopColor="#4a3426" stopOpacity="0.3" />
-          <stop offset="75%" stopColor="#3a2817" stopOpacity="0.5" />
-          <stop offset="100%" stopColor="#5c4033" stopOpacity="0.3" />
-        </linearGradient>
         <filter id="segShadow">
           <feDropShadow dx="0" dy="1" stdDeviation="2" floodColor="#000" floodOpacity="0.6" />
         </filter>
       </defs>
-
-      {/* Outer wooden shield rim */}
-      <circle cx={cx} cy={cy} r={r + 8} fill="url(#woodRim)" stroke="#2a1f15" strokeWidth="2" />
-      <circle cx={cx} cy={cy} r={r + 7} fill="none" stroke="url(#woodGrain)" strokeWidth="4" opacity="0.6" />
-      <circle cx={cx} cy={cy} r={r + 5} fill="none" stroke="#8b6914" strokeWidth="1" opacity="0.4" />
-      
-      {/* Wood grain rings */}
-      <circle cx={cx} cy={cy} r={r + 6.5} fill="none" stroke="#3a2817" strokeWidth="0.5" opacity="0.5" />
-      <circle cx={cx} cy={cy} r={r + 4} fill="none" stroke="#4a3426" strokeWidth="0.8" opacity="0.4" />
-
-      {/* Metal studs around rim (shield rivets) */}
-      {Array.from({ length: segCount }).map((_, i) => {
-        const angle = (i * segAngle - 90) * (Math.PI / 180);
-        const studR = r + 6.5;
-        return (
-          <g key={`stud-${i}`}>
-            <circle
-              cx={cx + studR * Math.cos(angle)}
-              cy={cy + studR * Math.sin(angle)}
-              r="3"
-              fill="#4a4a4a"
-              stroke="#6a6a6a"
-              strokeWidth="0.5"
-            />
-            <circle
-              cx={cx + studR * Math.cos(angle)}
-              cy={cy + studR * Math.sin(angle)}
-              r="1.5"
-              fill="#3a3a3a"
-            />
-          </g>
-        );
-      })}
 
       {/* Segments with horizontal text */}
       {rewards.map((reward, i) => {
@@ -714,17 +667,113 @@ export function SpinWheel() {
           <div className={`relative w-[min(90vw,600px)] lg:w-[min(75vh,700px)] aspect-square transition-transform duration-500 ${zoom ? "scale-[1.04]" : "scale-100"}`}>
             <Pointer />
 
-            <div className="absolute inset-0 rounded-full transition-shadow duration-500"
-              style={{ boxShadow: spinning ? "0 0 50px rgba(212,168,67,0.25), 0 0 100px rgba(139,0,0,0.15)" : "0 0 25px rgba(0,0,0,0.5)" }}
-            />
-
-            {/* Rotating wheel disc */}
-            <div className="w-full h-full" style={{ transform: `rotate(${rotation}deg)`, willChange: spinning ? "transform" : "auto" }}>
-              <WheelSVG rewards={rewards} />
+            {/* Shield-clipped spinning area */}
+            <div
+              className="absolute inset-0 transition-[filter] duration-500"
+              style={{
+                clipPath: "polygon(6% 2.3%, 94% 2.3%, 97% 6%, 97% 58.3%, 50% 97%, 3% 58.3%, 3% 6%)",
+                filter: spinning
+                  ? "drop-shadow(0 0 18px rgba(212,168,67,0.4)) drop-shadow(0 0 40px rgba(139,0,0,0.2))"
+                  : "drop-shadow(0 0 14px rgba(0,0,0,0.7))",
+              }}
+            >
+              {/* Rotating wheel disc */}
+              <div className="w-full h-full" style={{ transform: `rotate(${rotation}deg)`, willChange: spinning ? "transform" : "auto" }}>
+                <WheelSVG rewards={rewards} />
+              </div>
             </div>
 
+            {/* Static shield border — does NOT rotate */}
+            <svg
+              className="absolute inset-0 w-full h-full pointer-events-none z-10"
+              viewBox="0 0 600 600"
+              aria-hidden="true"
+            >
+              <defs>
+                <radialGradient id="shieldWoodRim" cx="50%" cy="30%" r="70%">
+                  <stop offset="0%" stopColor="#5c4033" />
+                  <stop offset="35%" stopColor="#3a2817" />
+                  <stop offset="65%" stopColor="#4a3426" />
+                  <stop offset="100%" stopColor="#2a1f15" />
+                </radialGradient>
+              </defs>
+
+              {/* Wooden shield rim fill */}
+              <path
+                d="M 28,4 L 572,4 Q 596,4 596,28 L 596,358 Q 596,478 300,596 Q 4,478 4,358 L 4,28 Q 4,4 28,4 Z"
+                fill="url(#shieldWoodRim)"
+                stroke="#2a1f15"
+                strokeWidth="2"
+              />
+              {/* Wood grain inner line */}
+              <path
+                d="M 30,9 L 570,9 Q 590,9 590,30 L 590,355 Q 590,474 300,590 Q 10,474 10,355 L 10,30 Q 10,9 30,9 Z"
+                fill="none"
+                stroke="#5c4033"
+                strokeWidth="2"
+                opacity="0.35"
+              />
+              {/* Gold inner edge */}
+              <path
+                d="M 36,14 L 564,14 Q 582,14 582,36 L 582,350 Q 582,464 300,582 Q 18,464 18,350 L 18,36 Q 18,14 36,14 Z"
+                fill="none"
+                stroke="#d4a843"
+                strokeWidth="1"
+                opacity="0.4"
+              />
+              {/* Outer gold highlight */}
+              <path
+                d="M 28,4 L 572,4 Q 596,4 596,28 L 596,358 Q 596,478 300,596 Q 4,478 4,358 L 4,28 Q 4,4 28,4 Z"
+                fill="none"
+                stroke="#d4a843"
+                strokeWidth="0.8"
+                opacity="0.2"
+              />
+
+              {/* Rivets — top edge */}
+              {[60, 130, 210, 300, 390, 470, 540].map((x, i) => (
+                <g key={`tr-${i}`}>
+                  <circle cx={x} cy={9} r="3.5" fill="#4a4a4a" stroke="#6a6a6a" strokeWidth="0.5" />
+                  <circle cx={x} cy={9} r="1.5" fill="#3a3a3a" />
+                </g>
+              ))}
+              {/* Rivets — right straight side */}
+              {[[594, 100], [594, 200], [594, 300]].map(([rx, ry], i) => (
+                <g key={`rs-${i}`}>
+                  <circle cx={rx} cy={ry} r="3.5" fill="#4a4a4a" stroke="#6a6a6a" strokeWidth="0.5" />
+                  <circle cx={rx} cy={ry} r="1.5" fill="#3a3a3a" />
+                </g>
+              ))}
+              {/* Rivets — right curved side */}
+              {[[578, 418], [522, 478], [430, 537]].map(([rx, ry], i) => (
+                <g key={`rc-${i}`}>
+                  <circle cx={rx} cy={ry} r="3.5" fill="#4a4a4a" stroke="#6a6a6a" strokeWidth="0.5" />
+                  <circle cx={rx} cy={ry} r="1.5" fill="#3a3a3a" />
+                </g>
+              ))}
+              {/* Rivets — left straight side (mirrored) */}
+              {[[6, 100], [6, 200], [6, 300]].map(([lx, ly], i) => (
+                <g key={`ls-${i}`}>
+                  <circle cx={lx} cy={ly} r="3.5" fill="#4a4a4a" stroke="#6a6a6a" strokeWidth="0.5" />
+                  <circle cx={lx} cy={ly} r="1.5" fill="#3a3a3a" />
+                </g>
+              ))}
+              {/* Rivets — left curved side (mirrored) */}
+              {[[22, 418], [78, 478], [170, 537]].map(([lx, ly], i) => (
+                <g key={`lc-${i}`}>
+                  <circle cx={lx} cy={ly} r="3.5" fill="#4a4a4a" stroke="#6a6a6a" strokeWidth="0.5" />
+                  <circle cx={lx} cy={ly} r="1.5" fill="#3a3a3a" />
+                </g>
+              ))}
+              {/* Bottom point rivet */}
+              <g>
+                <circle cx={300} cy={592} r="3.5" fill="#4a4a4a" stroke="#6a6a6a" strokeWidth="0.5" />
+                <circle cx={300} cy={592} r="1.5" fill="#3a3a3a" />
+              </g>
+            </svg>
+
             {/* Static center mascot — does NOT rotate */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
               <div className="w-[22%] h-[22%] rounded-full overflow-hidden border-2 border-arena-gold/30 shadow-[0_0_20px_rgba(212,168,67,0.15)] bg-arena-dark">
                 <Image src="/images/superbruta.png" alt="Superbruta" width={120} height={120} className="w-full h-full object-cover" priority />
               </div>
