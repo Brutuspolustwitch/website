@@ -199,7 +199,7 @@ export default function AdminRewardsPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <Field label="Tier">
                       <div className="flex gap-2">
-                        {(["common", "elite", "legendary"] as const).map((t) => (
+                        {(["common", "legendary"] as const).map((t) => (
                           <button
                             key={t}
                             type="button"
@@ -208,13 +208,11 @@ export default function AdminRewardsPage() {
                               ${editing.tier === t
                                 ? t === "common"
                                   ? "bg-arena-steel/30 border-arena-smoke/40 text-arena-white"
-                                  : t === "elite"
-                                    ? "bg-arena-gold/15 border-arena-gold/40 text-arena-gold"
-                                    : "bg-arena-crimson/15 border-arena-red/40 text-arena-red"
+                                  : "bg-arena-crimson/15 border-arena-red/40 text-arena-red"
                                 : "bg-transparent border-white/10 text-arena-ash hover:border-white/20"
                               }`}
                           >
-                            {t === "common" ? "⚔️" : t === "elite" ? "🏆" : "👑"} {t}
+                            {t === "common" ? "⚔️ Loja dos Brutus" : "👑 Tempo Limitado"}
                           </button>
                         ))}
                       </div>

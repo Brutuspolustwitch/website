@@ -125,7 +125,7 @@ export default function LojaPage() {
                     <div className="h-px flex-1 bg-gradient-to-r from-transparent to-arena-crimson/20" />
                     <h3 className="font-[family-name:var(--font-display)] text-xs text-arena-crimson/70 tracking-[0.25em] uppercase flex items-center gap-3">
                       <span className="text-base">🔥</span>
-                      Relíquias Lendárias
+                      Tempo Limitado
                       <span className="text-base">🔥</span>
                     </h3>
                     <div className="h-px flex-1 bg-gradient-to-l from-transparent to-arena-crimson/20" />
@@ -160,7 +160,7 @@ export default function LojaPage() {
                       <div className="h-px flex-1 bg-gradient-to-r from-transparent to-arena-gold/15" />
                       <h3 className="font-[family-name:var(--font-display)] text-xs text-arena-gold/50 tracking-[0.25em] uppercase flex items-center gap-3">
                         <span className="text-base">⚔️</span>
-                        Arsenal
+                        Loja dos Brutus
                         <span className="text-base">⚔️</span>
                       </h3>
                       <div className="h-px flex-1 bg-gradient-to-l from-transparent to-arena-gold/15" />

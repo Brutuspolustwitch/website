@@ -31,7 +31,7 @@ interface RewardCardProps {
 /* Tier-specific accents overlaid on top of the papyrus base */
 const tierAccents = {
   common: {
-    label: "COMMON",
+    label: "LOJA DOS BRUTUS",
     badgeBg: "rgba(90,72,40,0.25)",
     badgeText: "var(--ink-mid)",
     badgeBorder: "var(--parchment-edge)",
@@ -47,7 +47,7 @@ const tierAccents = {
     ribbonColor: "var(--gold-dark)",
   },
   legendary: {
-    label: "LEGENDARY",
+    label: "TEMPO LIMITADO",
     badgeBg: "rgba(139,26,26,0.2)",
     badgeText: "var(--deep-red)",
     badgeBorder: "var(--deep-red)",
