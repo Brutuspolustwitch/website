@@ -57,7 +57,7 @@ export default function AdminBonusHuntPage() {
   const [deleting, setDeleting] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
-  const isAdmin = user?.role === "admin" || user?.role === "configurador";
+  const isAdmin = user?.role === "admin" || user?.role === "configurador" || user?.role === "moderador";
 
   const fetchHistory = useCallback(async () => {
     setHistoryLoading(true);
@@ -204,7 +204,7 @@ export default function AdminBonusHuntPage() {
     return (
       <div className="pt-24 pb-16 min-h-screen">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="mt-4 text-arena-smoke/60">Apenas administradores e configuradores podem importar bonus hunts.</p>
+          <p className="mt-4 text-arena-smoke/60">Apenas administradores, configuradores e moderadores podem importar bonus hunts.</p>
         </div>
       </div>
     );
