@@ -284,7 +284,7 @@ function BurstCanvas({ active, color }: { active: boolean; color: string }) {
 function WheelSVG({ rewards }: { rewards: Reward[] }) {
   const segCount = rewards.length;
   const segAngle = 360 / segCount;
-  const size = 400;
+  const size = 600;
   const cx = size / 2;
   const cy = size / 2;
   const r = size / 2 - 10;
@@ -342,8 +342,8 @@ function WheelSVG({ rewards }: { rewards: Reward[] }) {
         const letters = reward.label.toUpperCase().split("");
 
         const iconR = r * 0.85;
-        const letterStartR = r * 0.73;
-        const letterStep = Math.min((r * 0.40) / Math.max(letters.length, 1), 13);
+        const letterStartR = r * 0.35;
+        const letterStep = Math.min((r * 0.45) / Math.max(letters.length, 1), 18);
 
         return (
           <g key={i}>
@@ -352,20 +352,20 @@ function WheelSVG({ rewards }: { rewards: Reward[] }) {
             {/* Emoji icon at outer edge */}
             <text
               x={cx + iconR * Math.cos(midAngle)} y={cy + iconR * Math.sin(midAngle)}
-              textAnchor="middle" dominantBaseline="central" fontSize="17"
+              textAnchor="middle" dominantBaseline="central" fontSize="24"
               transform={`rotate(${midAngleDeg}, ${cx + iconR * Math.cos(midAngle)}, ${cy + iconR * Math.sin(midAngle)})`}
             >{reward.icon}</text>
 
-            {/* Letters stacked along radial line inward */}
+            {/* Letters stacked along radial line from inside out */}
             {letters.map((letter, li) => {
-              const lr = letterStartR - li * letterStep;
+              const lr = letterStartR + li * letterStep;
               const lx = cx + lr * Math.cos(midAngle);
               const ly = cy + lr * Math.sin(midAngle);
               return (
                 <text
                   key={li} x={lx} y={ly}
                   textAnchor="middle" dominantBaseline="central"
-                  fontSize="8" fontWeight="800" fill={reward.color}
+                  fontSize="12" fontWeight="800" fill={reward.color}
                   fontFamily="'Cinzel', serif" opacity="0.85"
                   transform={`rotate(${midAngleDeg}, ${lx}, ${ly})`}
                 >{letter}</text>
@@ -388,8 +388,8 @@ function WheelSVG({ rewards }: { rewards: Reward[] }) {
 
 function Pointer() {
   return (
-    <div className="absolute top-0 left-1/2 -translate-x-1/2 z-20" style={{ marginTop: "-28px" }}>
-      <svg width="36" height="64" viewBox="0 0 36 64" fill="none">
+    <div className="absolute top-0 left-1/2 -translate-x-1/2 z-20" style={{ marginTop: "-38px" }}>
+      <svg width="48" height="84" viewBox="0 0 36 64" fill="none">
         {/* Cross-guard */}
         <rect x="6" y="14" width="24" height="5" rx="1.5" fill="#b8860b" stroke="#8b6914" strokeWidth="0.8" />
         <rect x="10" y="14.5" width="16" height="4" rx="1" fill="url(#guardShine)" opacity="0.3" />
@@ -664,7 +664,7 @@ export function SpinWheel() {
 
         <div className="relative z-10 flex flex-col items-center">
           {/* Wheel */}
-          <div className={`relative w-[min(85vw,420px)] lg:w-[min(60vh,480px)] aspect-square transition-transform duration-500 ${zoom ? "scale-[1.04]" : "scale-100"}`}>
+          <div className={`relative w-[min(90vw,600px)] lg:w-[min(75vh,700px)] aspect-square transition-transform duration-500 ${zoom ? "scale-[1.04]" : "scale-100"}`}>
             <Pointer />
 
             <div className="absolute inset-0 rounded-full transition-shadow duration-500"
