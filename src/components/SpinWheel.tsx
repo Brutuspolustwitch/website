@@ -692,7 +692,7 @@ export function SpinWheel() {
       {!loading && rewards.length > 0 && (
         <>
           {/* ── CENTER: Wheel + Controls ─────────────────────── */}
-          <div className="flex-1 flex flex-col items-center justify-center min-w-0 relative w-full">
+          <div className="flex-1 flex flex-col items-center justify-start pt-4 min-w-0 relative w-full">
 
         {/* Flash */}
         <AnimatePresence>
@@ -720,7 +720,7 @@ export function SpinWheel() {
 
             {/* Static center mascot — does NOT rotate */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-              <div className="w-[22%] h-[22%] rounded-full overflow-hidden border-2 border-arena-gold/30 shadow-[0_0_20px_rgba(212,168,67,0.15)] bg-arena-dark">
+              <div className="w-[17%] h-[17%] rounded-full overflow-hidden border-2 border-arena-gold/30 shadow-[0_0_20px_rgba(212,168,67,0.15)] bg-arena-dark">
                 <Image src="/images/superbruta.png" alt="Superbruta" width={120} height={120} className="w-full h-full object-cover" priority />
               </div>
             </div>

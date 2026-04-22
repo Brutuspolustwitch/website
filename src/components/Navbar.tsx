@@ -34,7 +34,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
     "/ofertas": "Ofertas",
     "/destaques": "Destaques",
     "/loja": "Armaria",
-    "/roda-diaria": "Arrebanha Daily",
+    "/roda-diaria": "Arrebanha Diária",
     "/bonus-hunt": "Bonus Hunt",
     "/liga-dos-brutus": "Liga dos Brutus",
     "/live": "Em Direto",
