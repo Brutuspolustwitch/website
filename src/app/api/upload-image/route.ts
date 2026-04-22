@@ -1,8 +1,16 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
+
+// Lazy getter — only instantiated at request time, not build time
+function getAdminClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+}
 
 /* ── Auth helper ───────────────────────────────────────────── */
 async function requireAdmin() {
@@ -54,7 +62,8 @@ export async function POST(request: Request) {
   const buffer = new Uint8Array(arrayBuffer);
 
   // Upload to Supabase Storage
-  const { error: uploadError } = await supabase.storage
+  const supabaseAdmin = getAdminClient();
+  const { error: uploadError } = await supabaseAdmin.storage
     .from("images")
     .upload(path, buffer, {
       contentType: file.type,
@@ -66,7 +75,7 @@ export async function POST(request: Request) {
   }
 
   // Get public URL
-  const { data: urlData } = supabase.storage.from("images").getPublicUrl(path);
+  const { data: urlData } = supabaseAdmin.storage.from("images").getPublicUrl(path);
 
   return NextResponse.json({ url: urlData.publicUrl });
 }
