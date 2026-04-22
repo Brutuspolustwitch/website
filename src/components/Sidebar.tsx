@@ -58,9 +58,6 @@ const SECONDARY_LINKS: NavItem[] = [
     label: "Admin Area",
     minRole: "configurador",
     children: [
-      { href: "/admin/settings", label: "Definições" },
-      { href: "/admin/outros/daily-session", label: "Sessão do Dia" },
-      { href: "/admin/outros/bonus-hunt", label: "Bonus Hunt" },
       {
         href: "/admin/analitics",
         label: "Analitics",
@@ -74,8 +71,6 @@ const SECONDARY_LINKS: NavItem[] = [
           { href: "/admin/analitics/fraude", label: "Fraude" },
         ],
       },
-      { href: "/admin/outros/calendario", label: "Calendário" },
-      { href: "/admin/outros/bruta-do-mes", label: "Bruta do Mês" },
       {
         href: "/admin/outros",
         label: "Outros",
@@ -89,15 +84,26 @@ const SECONDARY_LINKS: NavItem[] = [
               { href: "/admin/loja/gestao", label: "Gestão" },
             ],
           },
-          { href: "/admin/outros/giveaways", label: "Giveaways" },
           { href: "/admin/outros/daily-wheel", label: "Daily Wheel" },
-          { href: "/admin/outros/liga", label: "Liga dos Brutus" },
           { href: "/admin/utilizadores", label: "Utilizadores" },
         ],
       },
     ],
   },
-  { href: "/moderador", label: "Moderador Area", minRole: "moderador" },
+  {
+    href: "/moderador",
+    label: "Moderador Area",
+    minRole: "moderador",
+    children: [
+      { href: "/admin/settings", label: "Definições" },
+      { href: "/admin/outros/daily-session", label: "Sessão do Dia" },
+      { href: "/admin/outros/bonus-hunt", label: "Bonus Hunt" },
+      { href: "/admin/outros/calendario", label: "Calendário" },
+      { href: "/admin/outros/bruta-do-mes", label: "Bruta do Mês" },
+      { href: "/admin/outros/giveaways", label: "Giveaways" },
+      { href: "/admin/outros/liga", label: "Liga dos Brutus" },
+    ],
+  },
 ];
 
 /* ── Icons per route ────────────────────────────────────────────── */
@@ -232,14 +238,21 @@ export function Sidebar({ open, onClose }: SidebarProps) {
   };
 
   /* Render a nav item (with or without dropdown) */
-  const renderNavItem = (item: NavItem) => {
+  const renderNavItem = (item: NavItem, isSecondary = false) => {
     if (!item.children) return renderLink(item);
 
     const groupActive = isGroupActive(item);
     const isOpen = expanded[item.href] ?? groupActive;
+    
+    // Determine background color for admin/moderador areas
+    const bgColor = isSecondary && item.href === "/admin" 
+      ? "bg-red-950/20" 
+      : isSecondary && item.href === "/moderador" 
+      ? "bg-green-950/20" 
+      : "";
 
     return (
-      <div key={item.href}>
+      <div key={item.href} className={`${bgColor} rounded-lg ${bgColor ? "p-2" : ""}`}>
         {/* Parent row: link + chevron toggle */}
         <div className="flex items-center">
           <Link
@@ -377,13 +390,13 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       {/* Navigation links */}
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
         {/* Main links */}
-        {MAIN_LINKS.map(renderNavItem)}
+        {MAIN_LINKS.map((item) => renderNavItem(item, false))}
 
         {/* Secondary links (role-gated) */}
         {visibleSecondary.length > 0 && (
           <>
             <div className="!my-3 mx-1 h-px bg-gradient-to-r from-transparent via-arena-steel/30 to-transparent" />
-            {visibleSecondary.map(renderNavItem)}
+            {visibleSecondary.map((item) => renderNavItem(item, true))}
           </>
         )}
       </nav>
