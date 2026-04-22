@@ -145,29 +145,18 @@ export default function LeaderboardPage() {
                     className="p-4 arena-shine hover:border-arena-gold/50 transition-colors"
                   >
                     <div className="flex items-center gap-4">
-                      {/* Position */}
+                      {/* Position / Medal */}
                       <div className="w-10 text-center">
-                        <span
-                          className={`font-[family-name:var(--font-display)] text-xl ${
-                            i === 0
-                              ? "text-gold-gradient"
-                              : i === 1
-                              ? "text-arena-smoke"
-                              : i === 2
-                              ? "text-arena-bronze"
-                              : "text-arena-ash"
-                          }`}
-                        >
-                          #{entry.rank}
-                        </span>
+                        {i < 3 ? (
+                          <span className="text-2xl">
+                            {i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉"}
+                          </span>
+                        ) : (
+                          <span className="font-[family-name:var(--font-display)] text-xl text-arena-ash">
+                            #{entry.rank}
+                          </span>
+                        )}
                       </div>
-
-                      {/* Medal icon for top 3 */}
-                      {i < 3 && (
-                        <div className="text-2xl">
-                          {i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉"}
-                        </div>
-                      )}
 
                       {/* Username */}
                       <div className="flex-1 min-w-0">
