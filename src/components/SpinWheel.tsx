@@ -677,8 +677,8 @@ export function SpinWheel() {
       {/* Wheel Content */}
       {!loading && rewards.length > 0 && (
         <>
-          {/* ── CENTER: Wheel + Controls ─────────────────────── */}
-          <div className="flex-1 flex flex-col items-center justify-center min-w-0 relative w-full">
+          {/* ── TWO-COLUMN LAYOUT: Wheel left, History right ── */}
+          <div className="flex-1 flex flex-col lg:flex-row items-center lg:items-start justify-start min-w-0 relative w-full lg:gap-8 lg:pl-8 xl:pl-16">
 
         {/* Flash */}
         <AnimatePresence>
@@ -690,9 +690,9 @@ export function SpinWheel() {
           )}
         </AnimatePresence>
 
-        <div className="relative z-10 flex flex-col items-center">
+        <div className="relative z-10 flex flex-col items-center lg:items-start">
           {/* Wheel */}
-          <div className={`relative w-[min(90vw,600px)] lg:w-[min(75vh,700px)] aspect-square transition-transform duration-500 ${zoom ? "scale-[1.04]" : "scale-100"}`}>
+          <div className={`relative w-[min(90vw,600px)] lg:w-[min(70vh,580px)] aspect-square transition-transform duration-500 ${zoom ? "scale-[1.04]" : "scale-100"}`}>
             <Pointer />
 
             <div className="absolute inset-0 rounded-full transition-shadow duration-500"
@@ -772,8 +772,8 @@ export function SpinWheel() {
         </div>
       </div>
 
-      {/* ── HISTORY — below wheel on mobile, floating top-right on desktop ── */}
-      <div className="relative z-30 mx-4 mt-3 max-h-[25vh] rounded-xl border border-arena-gold/10 bg-arena-dark/90 backdrop-blur-md p-2.5 flex flex-col overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.5)] lg:absolute lg:top-4 lg:right-4 lg:mx-0 lg:mt-0 lg:w-52 lg:max-h-[35vh] lg:p-3">
+      {/* ── HISTORY — below wheel on mobile, right column on desktop ── */}
+      <div className="relative z-30 mx-4 mt-3 max-h-[25vh] rounded-xl border border-arena-gold/10 bg-arena-dark/90 backdrop-blur-md p-2.5 flex flex-col overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.5)] lg:mx-0 lg:mt-0 lg:w-64 lg:max-h-[60vh] lg:p-3 lg:self-center lg:shrink-0">
         <WinHistory history={history} />
       </div>
         </>
