@@ -5,6 +5,15 @@ import { motion } from "framer-motion";
 
 const CATEGORIES = [
   {
+    href: "/leaderboard",
+    title: "Leaderboard",
+    description: "Vê os top membros da comunidade por pontos SE",
+    icon: "🏆",
+    color: "from-yellow-600/20 to-yellow-500/10",
+    borderColor: "border-arena-gold/30",
+    hoverColor: "hover:border-arena-gold/50",
+  },
+  {
     href: "/roda-diaria",
     title: "Roda Diária",
     description: "Gira a roda todos os dias e ganha prémios exclusivos",
@@ -26,7 +35,7 @@ const CATEGORIES = [
     href: "/liga-dos-brutus",
     title: "Liga dos Brutus",
     description: "Compete no ranking e torna-te o melhor gladiador",
-    icon: "🏆",
+    icon: "⚔️",
     color: "from-yellow-600/20 to-yellow-500/10",
     borderColor: "border-arena-gold/30",
     hoverColor: "hover:border-arena-gold/50",
