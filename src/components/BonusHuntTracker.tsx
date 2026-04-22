@@ -156,10 +156,10 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
       {/* Flex Container: Table on Left, Cards on Right */}
-      <div style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
+      <div style={{ display: "flex", gap: "24px", alignItems: "flex-start" }}>
         
         {/* Left Side: Table */}
-        <div style={{ flex: "1", minWidth: 0 }}>
+        <div style={{ flex: "1", minWidth: 0, maxWidth: "calc(100% - 344px)" }}>
             {/* ── Hunt Navigation Bar (above card) ──────────── */}
             {!compact && sessions.length > 1 && (
               <div style={{
@@ -184,7 +184,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
                   color: "var(--arena-smoke, #e0ddd4)",
                   letterSpacing: "0.1em",
                 }}>
-                  Hunt {sessionIdx + 1} / {sessions.length}
+                  Bonus Hunt {sessionIdx + 1} / {sessions.length}
                 </span>
                 <button
                   onClick={nextSession}
@@ -462,7 +462,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
 
         {/* Right Side: Best & Worst Slot Cards */}
         {!compact && (bestSlot || worstSlot) && (
-          <div style={{ width: "280px", flexShrink: 0, display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div style={{ width: "320px", flexShrink: 0, display: "flex", flexDirection: "column", gap: "16px" }}>
             {/* Spacer to align with navigation bar when present */}
             {sessions.length > 1 && (
               <div style={{ height: "40px" }} />
@@ -498,7 +498,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
                         fontWeight: 700,
                         boxShadow: "0 2px 8px rgba(46,125,50,0.3)",
                       }}>
-                        🏆 Melhor
+                        🏆 A Bruta
                       </div>
                     </div>
                     <div style={{ aspectRatio: "3/4", background: "#000", borderRadius: "6px", overflow: "hidden", border: "2px solid rgba(46,125,50,0.3)" }}>
@@ -647,7 +647,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
                         fontWeight: 700,
                         boxShadow: "0 2px 8px rgba(139,26,26,0.3)",
                       }}>
-                        💀 Pior
+                        💀 A Tenebrosa
                       </div>
                     </div>
                     <div style={{ aspectRatio: "3/4", background: "#000", borderRadius: "6px", overflow: "hidden", border: "2px solid rgba(139,26,26,0.3)" }}>
