@@ -306,18 +306,10 @@ function WheelSVG({ rewards }: { rewards: Reward[] }) {
         <filter id="segShadow">
           <feDropShadow dx="0" dy="1" stdDeviation="2" floodColor="#000" floodOpacity="0.6" />
         </filter>
-        <filter id="woodTexture">
-          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" result="noise" />
-          <feColorMatrix in="noise" type="saturate" values="0.1" result="desaturatedNoise" />
-          <feComponentTransfer in="desaturatedNoise" result="theNoise">
-            <feFuncA type="discrete" tableValues="0 0 0 0 1 1 1 1" />
-          </feComponentTransfer>
-          <feBlend in="SourceGraphic" in2="theNoise" mode="multiply" />
-        </filter>
       </defs>
 
       {/* Outer wooden shield rim */}
-      <circle cx={cx} cy={cy} r={r + 8} fill="url(#woodRim)" filter="url(#woodTexture)" stroke="#2a1f15" strokeWidth="2" />
+      <circle cx={cx} cy={cy} r={r + 8} fill="url(#woodRim)" stroke="#2a1f15" strokeWidth="2" />
       <circle cx={cx} cy={cy} r={r + 7} fill="none" stroke="url(#woodGrain)" strokeWidth="4" opacity="0.6" />
       <circle cx={cx} cy={cy} r={r + 5} fill="none" stroke="#8b6914" strokeWidth="1" opacity="0.4" />
       
