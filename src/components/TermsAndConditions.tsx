@@ -136,7 +136,7 @@ export function TermsAndConditions({ hideTitle = false }: { hideTitle?: boolean 
 
         <ScrollReveal>
           <div className="mt-12 text-center text-arena-ash text-xs">
-            <p>Última atualização: 03 de julho de 2024</p>
+
             <p className="mt-1">
               Para questões contacte{" "}
               <a
