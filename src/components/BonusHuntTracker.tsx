@@ -103,8 +103,8 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
       );
     }
     return (
-      <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-arena-dark/50">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="relative py-20 px-2 sm:px-4 lg:px-6 bg-arena-dark/50">
+        <div className="max-w-7xl mx-auto text-center">
           {!hideTitle && <SectionHeading title="Bonus Hunt" subtitle="A carregar..." />}
           <div className="papyrus-scroll greek-key-border" style={{ maxWidth: "100%", padding: "32px" }}>
             <div className="animate-pulse space-y-3">
@@ -129,8 +129,8 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
       );
     }
     return (
-      <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-arena-dark/50">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="relative py-20 px-2 sm:px-4 lg:px-6 bg-arena-dark/50">
+        <div className="max-w-7xl mx-auto text-center">
           {!hideTitle && <SectionHeading title="Bonus Hunt" subtitle="Sem bonus hunts registados" />}
           <div className="papyrus-scroll greek-key-border" style={{ maxWidth: "100%", padding: "32px", textAlign: "center" }}>
             <p style={{ fontFamily: "var(--font-display)", color: "var(--ink-light)", fontSize: "0.9rem" }}>
@@ -778,9 +778,9 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
 
   /* Full page mode */
   return (
-    <section id="bonus-hunt" className="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <section id="bonus-hunt" className="relative py-20 px-2 sm:px-4 lg:px-6 overflow-hidden">
 
-      <div className="relative max-w-4xl mx-auto">
+      <div className="relative max-w-7xl mx-auto">
         {!hideTitle && (
         <ScrollReveal>
           <SectionHeading
