@@ -463,10 +463,6 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
         {/* Right Side: Best & Worst Slot Cards */}
         {!compact && (bestSlot || worstSlot) && (
           <div style={{ width: "320px", flexShrink: 0, display: "flex", flexDirection: "column", gap: "16px" }}>
-            {/* Spacer to align with navigation bar when present */}
-            {sessions.length > 1 && (
-              <div style={{ height: "40px" }} />
-            )}
             
             {/* Best Slot Card */}
             {bestSlot && (
