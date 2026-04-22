@@ -65,16 +65,6 @@ export default function AdminPage() {
   return (
     <div className="pt-24 pb-16 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl text-arena-gold tracking-wide mb-4">
-            Admin Area
-          </h1>
-          <p className="text-arena-smoke/70 text-lg max-w-2xl mx-auto">
-            Painel de administração da Arena Gladiator
-          </p>
-        </div>
-
         {/* Admin Category Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {ADMIN_CATEGORIES.map((category, index) => (
