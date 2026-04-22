@@ -47,6 +47,7 @@ const STORAGE_KEY = "arena-spin-last";
 
 interface HistoryEntry {
   player: string;
+  avatar: string | null;
   reward: string;
   icon: string;
   color: string;
@@ -102,6 +103,7 @@ async function fetchHistory(): Promise<HistoryEntry[]> {
   if (!data) return [];
   return (data as SpinHistoryRow[]).map((row) => ({
     player: row.player,
+    avatar: row.avatar ?? null,
     reward: row.reward,
     icon: row.icon,
     color: row.color,
@@ -113,6 +115,7 @@ async function fetchHistory(): Promise<HistoryEntry[]> {
 async function addHistory(entry: HistoryEntry) {
   await supabase.from("spin_history").insert({
     player: entry.player,
+    avatar: entry.avatar,
     reward: entry.reward,
     icon: entry.icon,
     color: entry.color,
@@ -453,7 +456,11 @@ function WinHistory({ history }: { history: HistoryEntry[] }) {
               }}
             >
               <div className="flex items-center gap-1.5">
-                <span className="text-base shrink-0 leading-none">{entry.icon}</span>
+                {entry.avatar ? (
+                  <img src={entry.avatar} alt={entry.player} className="w-6 h-6 rounded-full shrink-0 object-cover border border-[#c4a35a]/60" />
+                ) : (
+                  <span className="text-base shrink-0 leading-none">{entry.icon}</span>
+                )}
                 <div className="flex-1 min-w-0">
                   <p className="text-[11px] font-bold leading-tight truncate" style={{ color: "#3a1f08", fontFamily: "'Cinzel', serif" }}>{entry.player}</p>
                   <p className="text-[10px] font-semibold leading-tight truncate" style={{ color: entry.tier === "loss" ? "#8b0000" : "#6b3a00" }}>{entry.reward}</p>
@@ -525,6 +532,7 @@ export function SpinWheel() {
         const row = payload.new as SpinHistoryRow;
         const entry: HistoryEntry = {
           player: row.player,
+          avatar: row.avatar ?? null,
           reward: row.reward,
           icon: row.icon,
           color: row.color,
@@ -629,7 +637,7 @@ export function SpinWheel() {
         playImpact(); triggerShake();
         if (hapticsEnabled) vibrate([80, 30, 120]);
 
-        addHistory({ player: user?.display_name ?? randomGladiator(), reward: winner.label, icon: winner.icon, color: winner.color, tier: winner.tier, time: Date.now() });
+        addHistory({ player: user?.display_name ?? randomGladiator(), avatar: user?.profile_image_url ?? null, reward: winner.label, icon: winner.icon, color: winner.color, tier: winner.tier, time: Date.now() });
 
         setTimeout(() => {
           triggerFlash();
