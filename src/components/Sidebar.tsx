@@ -71,21 +71,15 @@ const SECONDARY_LINKS: NavItem[] = [
           { href: "/admin/analitics/fraude", label: "Fraude" },
         ],
       },
+      { href: "/admin/parcerias", label: "Parcerias" },
+      { href: "/admin/outros/daily-wheel", label: "Daily Wheel" },
+      { href: "/admin/utilizadores", label: "Utilizadores" },
       {
-        href: "/admin/outros",
-        label: "Outros",
+        href: "/admin/loja",
+        label: "Loja",
         children: [
-          { href: "/admin/parcerias", label: "Parcerias" },
-          {
-            href: "/admin/loja",
-            label: "Loja",
-            children: [
-              { href: "/admin/loja", label: "Criação" },
-              { href: "/admin/loja/gestao", label: "Gestão" },
-            ],
-          },
-          { href: "/admin/outros/daily-wheel", label: "Daily Wheel" },
-          { href: "/admin/utilizadores", label: "Utilizadores" },
+          { href: "/admin/loja", label: "Criação" },
+          { href: "/admin/loja/gestao", label: "Gestão" },
         ],
       },
     ],
