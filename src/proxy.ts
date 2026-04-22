@@ -12,6 +12,15 @@ function hasRole(userRole: Role | undefined, requiredRole: Role): boolean {
 
 /** Route prefix → minimum role required */
 const PROTECTED: { prefix: string; role: Role }[] = [
+  // Moderador Area pages (must come before general /admin rule)
+  { prefix: "/admin/settings", role: "moderador" },
+  { prefix: "/admin/outros/daily-session", role: "moderador" },
+  { prefix: "/admin/outros/bonus-hunt", role: "moderador" },
+  { prefix: "/admin/outros/calendario", role: "moderador" },
+  { prefix: "/admin/outros/bruta-do-mes", role: "moderador" },
+  { prefix: "/admin/outros/giveaways", role: "moderador" },
+  { prefix: "/admin/outros/liga", role: "moderador" },
+  // General admin area
   { prefix: "/admin", role: "configurador" },
   { prefix: "/moderador", role: "moderador" },
 ];
@@ -19,7 +28,7 @@ const PROTECTED: { prefix: string; role: Role }[] = [
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Find matching protection rule
+  // Find matching protection rule (first match wins, so order matters)
   const rule = PROTECTED.find((r) => pathname.startsWith(r.prefix));
   if (!rule) return NextResponse.next();
 
