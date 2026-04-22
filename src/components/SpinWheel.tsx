@@ -386,7 +386,7 @@ function WheelSVG({ rewards }: { rewards: Reward[] }) {
 
 function Pointer() {
   return (
-    <div className="absolute top-0 left-1/2 -translate-x-1/2 z-20" style={{ marginTop: "-38px" }}>
+    <div className="absolute right-0 top-1/2 z-20" style={{ marginRight: "-38px", transform: "translateY(-50%) rotate(90deg)" }}>
       <svg width="48" height="84" viewBox="0 0 36 64" fill="none">
         {/* Cross-guard */}
         <rect x="6" y="14" width="24" height="5" rx="1.5" fill="#b8860b" stroke="#8b6914" strokeWidth="0.8" />
@@ -579,8 +579,9 @@ export function SpinWheel() {
 
     const winnerIndex = weightedRandom(rewards);
     const extraSpins = 5 + Math.floor(Math.random() * 3);
+    // Pointer is on the right (90 degrees), so we subtract 90 to align the segment tip
     const targetSegAngle = winnerIndex * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
-    const totalDelta = extraSpins * 360 + (360 - targetSegAngle);
+    const totalDelta = extraSpins * 360 + (360 - targetSegAngle) - 90;
     const startRotation = rotation % 360;
 
     const DURATION = 6000;
