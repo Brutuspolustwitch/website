@@ -43,7 +43,6 @@ function weightedRandom(rewards: Reward[]): number {
 }
 
 const COOLDOWN_MS = 24 * 60 * 60 * 1000;
-const STORAGE_KEY = "arena-spin-last";
 
 interface HistoryEntry {
   player: string;
@@ -58,28 +57,6 @@ interface HistoryEntry {
 /* ═══════════════════════════════════════════════════════════════════
    HELPERS
    ═══════════════════════════════════════════════════════════════════ */
-
-function getLastSpin(): number | null {
-  if (typeof window === "undefined") return null;
-  const stored = localStorage.getItem(STORAGE_KEY);
-  return stored ? parseInt(stored, 10) : null;
-}
-
-function setLastSpin(time: number) {
-  localStorage.setItem(STORAGE_KEY, time.toString());
-}
-
-function canSpin(): boolean {
-  const last = getLastSpin();
-  if (!last) return true;
-  return Date.now() - last >= COOLDOWN_MS;
-}
-
-function getRemainingMs(): number {
-  const last = getLastSpin();
-  if (!last) return 0;
-  return Math.max(0, COOLDOWN_MS - (Date.now() - last));
-}
 
 function formatCountdown(ms: number): string {
   const h = Math.floor(ms / 3_600_000);
@@ -505,7 +482,13 @@ export function SpinWheel() {
 
   useEffect(() => {
     setMounted(true);
-    setCooldown(getRemainingMs());
+
+    // Fetch server-side cooldown
+    fetch("/api/spin-cooldown")
+      .then((r) => r.json())
+      .then((d) => setCooldown(d.remainingMs ?? 0))
+      .catch(() => setCooldown(0));
+
     fetchHistory().then(setHistory);
 
     // Fetch wheel segments from DB
@@ -546,7 +529,12 @@ export function SpinWheel() {
     return () => { supabase.removeChannel(channel); };
   }, []);
   useEffect(() => {
-    const interval = setInterval(() => setCooldown(getRemainingMs()), 1000);
+    const interval = setInterval(() => {
+      setCooldown((prev) => {
+        const next = Math.max(0, prev - 1000);
+        return next;
+      });
+    }, 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -591,9 +579,18 @@ export function SpinWheel() {
   }, []);
 
   /* ── SPIN ────────────────────────────────────────────────── */
-  const spin = useCallback(() => {
-    if (spinning || !canSpin() || rewards.length === 0) return;
+  const spin = useCallback(async () => {
+    if (spinning || cooldown > 0 || rewards.length === 0) return;
     if (!tickAudioRef.current) tickAudioRef.current = new AudioContext();
+
+    // Record spin server-side first (enforces cooldown)
+    const res = await fetch("/api/spin-cooldown", { method: "POST" });
+    if (!res.ok) {
+      const data = await res.json();
+      if (data.remainingMs) setCooldown(data.remainingMs);
+      return;
+    }
+    setCooldown(COOLDOWN_MS);
 
     setResult(null); setShowResult(false); setBurstActive(false);
     setSpinning(true); setZoom(true);
@@ -630,7 +627,8 @@ export function SpinWheel() {
         spinAnimRef.current = requestAnimationFrame(animate);
       } else {
         setSpinning(false); setZoom(false);
-        setLastSpin(Date.now()); setCooldown(COOLDOWN_MS);
+        // Cooldown already set server-side, just ensure local state reflects it
+        setCooldown(COOLDOWN_MS);
 
         const winner = rewards[winnerIndex];
         setResult(winner);
@@ -661,7 +659,7 @@ export function SpinWheel() {
 
   useEffect(() => { return () => { if (spinAnimRef.current) cancelAnimationFrame(spinAnimRef.current); }; }, []);
 
-  const isOnCooldown = mounted && cooldown > 0 && !canSpin();
+  const isOnCooldown = mounted && cooldown > 0;
 
   const resultTitle = result
     ? result.tier === "loss" ? "DEFEAT"

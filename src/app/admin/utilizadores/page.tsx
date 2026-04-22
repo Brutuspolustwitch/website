@@ -231,6 +231,20 @@ function UserDetail({
   const [editSE, setEditSE] = useState(false);
   const [seUsername, setSeUsername] = useState(user.se_username || "");
 
+  // Spin cooldown reset
+  const [spinResetting, setSpinResetting] = useState(false);
+
+  const resetSpinCooldown = async () => {
+    setSpinResetting(true);
+    const res = await fetch(`/api/spin-cooldown?userId=${user.id}`, { method: "DELETE" });
+    setSpinResetting(false);
+    if (res.ok) {
+      onToast(`✅ Cooldown da roda resetado para ${user.display_name}`);
+    } else {
+      onToast("Erro ao resetar cooldown");
+    }
+  };
+
   const inputCls = "bg-arena-charcoal border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-arena-ash/50 focus:outline-none focus:border-arena-gold/40 transition-colors";
 
   /* Fetch SE points */
@@ -428,10 +442,47 @@ function UserDetail({
         </div>
       </div>
 
+      {/* Wheel Cooldown Card */}
+      <div className="p-5 rounded-xl bg-arena-dark border border-white/10">
+        <h3 className="font-bold text-arena-gold uppercase text-sm tracking-wider mb-3">🎡 Roda Diária — Cooldown</h3>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-arena-smoke">
+              Último spin:{" "}
+              <span className="text-white font-medium">
+                {user.last_spin_at
+                  ? new Date(user.last_spin_at).toLocaleString("pt-PT")
+                  : "Nunca girou"}
+              </span>
+            </p>
+            {user.last_spin_at && (() => {
+              const elapsed = Date.now() - new Date(user.last_spin_at).getTime();
+              const remaining = 24 * 3600 * 1000 - elapsed;
+              return remaining > 0 ? (
+                <p className="text-xs text-arena-ash mt-0.5">
+                  Cooldown ativo — ainda faltam{" "}
+                  <span className="text-arena-gold font-mono">
+                    {Math.ceil(remaining / 3600000)}h
+                  </span>
+                </p>
+              ) : (
+                <p className="text-xs text-green-400 mt-0.5">Pode girar</p>
+              );
+            })()}
+          </div>
+          <button
+            onClick={resetSpinCooldown}
+            disabled={spinResetting}
+            className="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider border border-arena-gold/30 text-arena-gold hover:bg-arena-gold/10 transition-all disabled:opacity-50"
+          >
+            {spinResetting ? "A resetar..." : "Reset Cooldown"}
+          </button>
+        </div>
+      </div>
+
       {/* Role Management Card */}
       <div className="p-5 rounded-xl bg-arena-dark border border-white/10">
         <h3 className="font-bold text-arena-gold uppercase text-sm tracking-wider mb-4">Gestão de Role</h3>
-
         {!editRole ? (
           <div className="flex items-center gap-4">
             <p className="text-sm text-arena-smoke">
