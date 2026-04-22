@@ -476,7 +476,7 @@ function WinHistory({ history }: { history: HistoryEntry[] }) {
    ═══════════════════════════════════════════════════════════════════ */
 
 export function SpinWheel() {
-  const { user } = useAuth();
+  const { user, login } = useAuth();
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [loading, setLoading] = useState(true);
   const [rotation, setRotation] = useState(0);
@@ -589,7 +589,7 @@ export function SpinWheel() {
 
   /* ── SPIN ────────────────────────────────────────────────── */
   const spin = useCallback(() => {
-    if (spinning || !canSpin() || rewards.length === 0) return;
+    if (spinning || !canSpin() || rewards.length === 0 || !user) return;
     if (!tickAudioRef.current) tickAudioRef.current = new AudioContext();
 
     setResult(null); setShowResult(false); setBurstActive(false);
@@ -766,22 +766,33 @@ export function SpinWheel() {
 
           {/* Button + cooldown */}
           <div className="mt-3 flex flex-col items-center gap-1.5">
-            <button onClick={spin} disabled={spinning || isOnCooldown}
-              className={`arena-btn-press relative px-7 py-2.5 rounded-xl gladiator-label text-xs font-black transition-all duration-300 border-2 overflow-hidden ${
-                spinning || isOnCooldown
-                  ? "border-arena-steel/30 bg-arena-dark text-arena-ash/50 cursor-not-allowed"
-                  : "border-arena-gold/40 bg-gradient-to-b from-arena-charcoal to-arena-dark text-arena-gold hover:border-arena-gold/70 hover:shadow-[0_0_30px_rgba(212,168,67,0.2)] active:scale-95"
-              }`}
-            >
-              {!spinning && !isOnCooldown && <span className="absolute inset-0 bg-gradient-to-r from-transparent via-arena-gold/10 to-transparent animate-[shimmer_3s_infinite]" />}
-              <span className="relative z-10">{spinning ? "A GIRAR..." : isOnCooldown ? "ARENA FECHADA" : "⚔ SPIN FOR GLORY ⚔"}</span>
-            </button>
+            {!user ? (
+              <button onClick={login}
+                className="arena-btn-press relative px-7 py-2.5 rounded-xl gladiator-label text-xs font-black transition-all duration-300 border-2 overflow-hidden border-arena-gold/40 bg-gradient-to-b from-arena-charcoal to-arena-dark text-arena-gold hover:border-arena-gold/70 hover:shadow-[0_0_30px_rgba(212,168,67,0.2)] active:scale-95"
+              >
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-arena-gold/10 to-transparent animate-[shimmer_3s_infinite]" />
+                <span className="relative z-10">⚔ LOGIN PARA GIRAR ⚔</span>
+              </button>
+            ) : (
+              <>
+                <button onClick={spin} disabled={spinning || isOnCooldown}
+                  className={`arena-btn-press relative px-7 py-2.5 rounded-xl gladiator-label text-xs font-black transition-all duration-300 border-2 overflow-hidden ${
+                    spinning || isOnCooldown
+                      ? "border-arena-steel/30 bg-arena-dark text-arena-ash/50 cursor-not-allowed"
+                      : "border-arena-gold/40 bg-gradient-to-b from-arena-charcoal to-arena-dark text-arena-gold hover:border-arena-gold/70 hover:shadow-[0_0_30px_rgba(212,168,67,0.2)] active:scale-95"
+                  }`}
+                >
+                  {!spinning && !isOnCooldown && <span className="absolute inset-0 bg-gradient-to-r from-transparent via-arena-gold/10 to-transparent animate-[shimmer_3s_infinite]" />}
+                  <span className="relative z-10">{spinning ? "A GIRAR..." : isOnCooldown ? "ARENA FECHADA" : "⚔ SPIN FOR GLORY ⚔"}</span>
+                </button>
 
-            {isOnCooldown && !spinning && (
-              <div className="text-center">
-                <p className="text-[9px] uppercase tracking-[0.2em] text-arena-ash">Próximo combate em</p>
-                <p className="font-mono text-sm text-arena-gold font-bold tracking-wider">{formatCountdown(cooldown)}</p>
-              </div>
+                {isOnCooldown && !spinning && (
+                  <div className="text-center">
+                    <p className="text-[9px] uppercase tracking-[0.2em] text-arena-ash">Próximo combate em</p>
+                    <p className="font-mono text-sm text-arena-gold font-bold tracking-wider">{formatCountdown(cooldown)}</p>
+                  </div>
+                )}
+              </>
             )}
 
             <button onClick={() => setHapticsEnabled(!hapticsEnabled)} className="text-[9px] text-arena-ash/50 hover:text-arena-smoke transition-colors">
