@@ -4,8 +4,8 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
-import type { SpinHistoryRow, WheelSegmentRow } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth-context";
+import type { SpinHistoryRow, WheelSegmentRow } from "@/lib/supabase";
 
 /* ═══════════════════════════════════════════════════════════════════
    TYPES & CONFIG
@@ -47,8 +47,6 @@ const STORAGE_KEY = "arena-spin-last";
 
 interface HistoryEntry {
   player: string;
-  twitchLogin: string | null;
-  avatarUrl: string | null;
   reward: string;
   icon: string;
   color: string;
@@ -104,8 +102,6 @@ async function fetchHistory(): Promise<HistoryEntry[]> {
   if (!data) return [];
   return (data as SpinHistoryRow[]).map((row) => ({
     player: row.player,
-    twitchLogin: row.twitch_login ?? null,
-    avatarUrl: row.avatar_url ?? null,
     reward: row.reward,
     icon: row.icon,
     color: row.color,
@@ -117,8 +113,6 @@ async function fetchHistory(): Promise<HistoryEntry[]> {
 async function addHistory(entry: HistoryEntry) {
   await supabase.from("spin_history").insert({
     player: entry.player,
-    twitch_login: entry.twitchLogin,
-    avatar_url: entry.avatarUrl,
     reward: entry.reward,
     icon: entry.icon,
     color: entry.color,
@@ -296,10 +290,57 @@ function WheelSVG({ rewards }: { rewards: Reward[] }) {
   return (
     <svg viewBox={`0 0 ${size} ${size}`} className="w-full h-full" aria-hidden="true">
       <defs>
+        <radialGradient id="woodRim" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#3a2817" />
+          <stop offset="40%" stopColor="#5c4033" />
+          <stop offset="70%" stopColor="#4a3426" />
+          <stop offset="85%" stopColor="#3a2817" />
+          <stop offset="100%" stopColor="#2a1f15" />
+        </radialGradient>
+        <linearGradient id="woodGrain" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#5c4033" stopOpacity="0.3" />
+          <stop offset="25%" stopColor="#3a2817" stopOpacity="0.5" />
+          <stop offset="50%" stopColor="#4a3426" stopOpacity="0.3" />
+          <stop offset="75%" stopColor="#3a2817" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#5c4033" stopOpacity="0.3" />
+        </linearGradient>
         <filter id="segShadow">
           <feDropShadow dx="0" dy="1" stdDeviation="2" floodColor="#000" floodOpacity="0.6" />
         </filter>
       </defs>
+
+      {/* Outer wooden shield rim */}
+      <circle cx={cx} cy={cy} r={r + 8} fill="url(#woodRim)" stroke="#2a1f15" strokeWidth="2" />
+      <circle cx={cx} cy={cy} r={r + 7} fill="none" stroke="url(#woodGrain)" strokeWidth="4" opacity="0.6" />
+      <circle cx={cx} cy={cy} r={r + 5} fill="none" stroke="#8b6914" strokeWidth="1" opacity="0.4" />
+      
+      {/* Wood grain rings */}
+      <circle cx={cx} cy={cy} r={r + 6.5} fill="none" stroke="#3a2817" strokeWidth="0.5" opacity="0.5" />
+      <circle cx={cx} cy={cy} r={r + 4} fill="none" stroke="#4a3426" strokeWidth="0.8" opacity="0.4" />
+
+      {/* Metal studs around rim (shield rivets) */}
+      {Array.from({ length: segCount }).map((_, i) => {
+        const angle = (i * segAngle - 90) * (Math.PI / 180);
+        const studR = r + 6.5;
+        return (
+          <g key={`stud-${i}`}>
+            <circle
+              cx={cx + studR * Math.cos(angle)}
+              cy={cy + studR * Math.sin(angle)}
+              r="3"
+              fill="#4a4a4a"
+              stroke="#6a6a6a"
+              strokeWidth="0.5"
+            />
+            <circle
+              cx={cx + studR * Math.cos(angle)}
+              cy={cy + studR * Math.sin(angle)}
+              r="1.5"
+              fill="#3a3a3a"
+            />
+          </g>
+        );
+      })}
 
       {/* Segments with horizontal text */}
       {rewards.map((reward, i) => {
@@ -346,7 +387,7 @@ function WheelSVG({ rewards }: { rewards: Reward[] }) {
 
 function Pointer() {
   return (
-    <div className="absolute right-0 top-1/2 z-20 invisible" style={{ marginRight: "-38px", transform: "translateY(-50%) rotate(90deg)" }}>
+    <div className="absolute right-0 top-1/2 z-20" style={{ marginRight: "-38px", transform: "translateY(-50%) rotate(90deg)" }}>
       <svg width="48" height="84" viewBox="0 0 36 64" fill="none">
         {/* Cross-guard */}
         <rect x="6" y="14" width="24" height="5" rx="1.5" fill="#b8860b" stroke="#8b6914" strokeWidth="0.8" />
@@ -386,36 +427,39 @@ function Pointer() {
 function WinHistory({ history }: { history: HistoryEntry[] }) {
   return (
     <div className="flex flex-col h-full min-h-0">
-      <h3 className="gladiator-label text-xs text-arena-gold/80 mb-3 shrink-0">
-        ⚔ Histórico
-      </h3>
-      <div className="flex-1 overflow-y-auto space-y-1 min-h-0 pr-1">
+      {/* Papyrus header */}
+      <div className="flex items-center gap-1.5 mb-2 shrink-0">
+        <div className="h-px flex-1" style={{ background: "linear-gradient(to right, transparent, #8b6914)" }} />
+        <h3 className="text-[10px] uppercase tracking-[0.25em] font-bold" style={{ color: "#5c3a0a", fontFamily: "'Cinzel', serif" }}>📜 Histórico</h3>
+        <div className="h-px flex-1" style={{ background: "linear-gradient(to left, transparent, #8b6914)" }} />
+      </div>
+      <div className="flex-1 overflow-y-auto space-y-1.5 min-h-0 pr-0.5"
+        style={{ scrollbarWidth: "thin", scrollbarColor: "#b8860b40 transparent" }}
+      >
         {history.length === 0 ? (
-          <p className="text-[11px] text-arena-ash/50 italic">Nenhum gladiador girou ainda...</p>
+          <p className="text-[11px] italic text-center py-3" style={{ color: "#8b6a3a" }}>Nenhum guerreiro girou ainda...</p>
         ) : (
           history.map((entry, i) => (
             <motion.div
               key={`${entry.time}-${i}`}
-              initial={i === 0 ? { opacity: 0, x: 20 } : false}
-              animate={{ opacity: 1, x: 0 }}
+              initial={i === 0 ? { opacity: 0, y: -8 } : false}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.05]"
+              className="rounded px-2.5 py-1.5 border"
+              style={{
+                background: "linear-gradient(135deg, #f9f0dc 0%, #f0e2c0 50%, #e8d4a8 100%)",
+                borderColor: "#c4a35a",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.4)",
+              }}
             >
-              {/* Avatar */}
-              {entry.avatarUrl ? (
-                <div className="w-7 h-7 rounded-full overflow-hidden border border-arena-gold/20 shrink-0">
-                  <Image src={entry.avatarUrl} alt={entry.player} width={28} height={28} className="w-full h-full object-cover" unoptimized />
+              <div className="flex items-center gap-1.5">
+                <span className="text-base shrink-0 leading-none">{entry.icon}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[11px] font-bold leading-tight truncate" style={{ color: "#3a1f08", fontFamily: "'Cinzel', serif" }}>{entry.player}</p>
+                  <p className="text-[10px] font-semibold leading-tight truncate" style={{ color: entry.tier === "loss" ? "#8b0000" : "#6b3a00" }}>{entry.reward}</p>
                 </div>
-              ) : (
-                <span className="text-sm shrink-0">{entry.icon}</span>
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="text-[11px] font-semibold text-arena-white truncate">
-                  {entry.twitchLogin ? `@${entry.twitchLogin}` : entry.player}
-                </p>
-                <p className="text-[10px] truncate" style={{ color: entry.color }}>{entry.icon} {entry.reward}</p>
+                <span className="text-[9px] shrink-0 font-mono" style={{ color: "#8b6a3a" }}>{timeAgo(entry.time)}</span>
               </div>
-              <span className="text-[9px] text-arena-ash/50 shrink-0">{timeAgo(entry.time)}</span>
             </motion.div>
           ))
         )}
@@ -429,7 +473,7 @@ function WinHistory({ history }: { history: HistoryEntry[] }) {
    ═══════════════════════════════════════════════════════════════════ */
 
 export function SpinWheel() {
-  const { user, login } = useAuth();
+  const { user } = useAuth();
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [loading, setLoading] = useState(true);
   const [rotation, setRotation] = useState(0);
@@ -481,8 +525,6 @@ export function SpinWheel() {
         const row = payload.new as SpinHistoryRow;
         const entry: HistoryEntry = {
           player: row.player,
-          twitchLogin: row.twitch_login ?? null,
-          avatarUrl: row.avatar_url ?? null,
           reward: row.reward,
           icon: row.icon,
           color: row.color,
@@ -542,7 +584,7 @@ export function SpinWheel() {
 
   /* ── SPIN ────────────────────────────────────────────────── */
   const spin = useCallback(() => {
-    if (spinning || !canSpin() || rewards.length === 0 || !user) return;
+    if (spinning || !canSpin() || rewards.length === 0) return;
     if (!tickAudioRef.current) tickAudioRef.current = new AudioContext();
 
     setResult(null); setShowResult(false); setBurstActive(false);
@@ -587,7 +629,7 @@ export function SpinWheel() {
         playImpact(); triggerShake();
         if (hapticsEnabled) vibrate([80, 30, 120]);
 
-        addHistory({ player: user?.display_name ?? "Gladiador", twitchLogin: user?.login ?? null, avatarUrl: user?.profile_image_url ?? null, reward: winner.label, icon: winner.icon, color: winner.color, tier: winner.tier, time: Date.now() });
+        addHistory({ player: user?.display_name ?? randomGladiator(), reward: winner.label, icon: winner.icon, color: winner.color, tier: winner.tier, time: Date.now() });
 
         setTimeout(() => {
           triggerFlash();
@@ -667,113 +709,17 @@ export function SpinWheel() {
           <div className={`relative w-[min(90vw,600px)] lg:w-[min(75vh,700px)] aspect-square transition-transform duration-500 ${zoom ? "scale-[1.04]" : "scale-100"}`}>
             <Pointer />
 
-            {/* Shield-clipped spinning area */}
-            <div
-              className="absolute inset-0 transition-[filter] duration-500"
-              style={{
-                clipPath: "polygon(6% 2.3%, 94% 2.3%, 97% 6%, 97% 58.3%, 50% 97%, 3% 58.3%, 3% 6%)",
-                filter: spinning
-                  ? "drop-shadow(0 0 18px rgba(212,168,67,0.4)) drop-shadow(0 0 40px rgba(139,0,0,0.2))"
-                  : "drop-shadow(0 0 14px rgba(0,0,0,0.7))",
-              }}
-            >
-              {/* Rotating wheel disc */}
-              <div className="w-full h-full" style={{ transform: `rotate(${rotation}deg)`, willChange: spinning ? "transform" : "auto" }}>
-                <WheelSVG rewards={rewards} />
-              </div>
+            <div className="absolute inset-0 rounded-full transition-shadow duration-500"
+              style={{ boxShadow: spinning ? "0 0 50px rgba(212,168,67,0.25), 0 0 100px rgba(139,0,0,0.15)" : "0 0 25px rgba(0,0,0,0.5)" }}
+            />
+
+            {/* Rotating wheel disc */}
+            <div className="w-full h-full" style={{ transform: `rotate(${rotation}deg)`, willChange: spinning ? "transform" : "auto" }}>
+              <WheelSVG rewards={rewards} />
             </div>
 
-            {/* Static shield border — does NOT rotate */}
-            <svg
-              className="absolute inset-0 w-full h-full pointer-events-none z-10"
-              viewBox="0 0 600 600"
-              aria-hidden="true"
-            >
-              <defs>
-                <radialGradient id="shieldWoodRim" cx="50%" cy="30%" r="70%">
-                  <stop offset="0%" stopColor="#5c4033" />
-                  <stop offset="35%" stopColor="#3a2817" />
-                  <stop offset="65%" stopColor="#4a3426" />
-                  <stop offset="100%" stopColor="#2a1f15" />
-                </radialGradient>
-              </defs>
-
-              {/* Wooden shield rim fill */}
-              <path
-                d="M 28,4 L 572,4 Q 596,4 596,28 L 596,358 Q 596,478 300,596 Q 4,478 4,358 L 4,28 Q 4,4 28,4 Z"
-                fill="url(#shieldWoodRim)"
-                stroke="#2a1f15"
-                strokeWidth="2"
-              />
-              {/* Wood grain inner line */}
-              <path
-                d="M 30,9 L 570,9 Q 590,9 590,30 L 590,355 Q 590,474 300,590 Q 10,474 10,355 L 10,30 Q 10,9 30,9 Z"
-                fill="none"
-                stroke="#5c4033"
-                strokeWidth="2"
-                opacity="0.35"
-              />
-              {/* Gold inner edge */}
-              <path
-                d="M 36,14 L 564,14 Q 582,14 582,36 L 582,350 Q 582,464 300,582 Q 18,464 18,350 L 18,36 Q 18,14 36,14 Z"
-                fill="none"
-                stroke="#d4a843"
-                strokeWidth="1"
-                opacity="0.4"
-              />
-              {/* Outer gold highlight */}
-              <path
-                d="M 28,4 L 572,4 Q 596,4 596,28 L 596,358 Q 596,478 300,596 Q 4,478 4,358 L 4,28 Q 4,4 28,4 Z"
-                fill="none"
-                stroke="#d4a843"
-                strokeWidth="0.8"
-                opacity="0.2"
-              />
-
-              {/* Rivets — top edge */}
-              {[60, 130, 210, 300, 390, 470, 540].map((x, i) => (
-                <g key={`tr-${i}`}>
-                  <circle cx={x} cy={9} r="3.5" fill="#4a4a4a" stroke="#6a6a6a" strokeWidth="0.5" />
-                  <circle cx={x} cy={9} r="1.5" fill="#3a3a3a" />
-                </g>
-              ))}
-              {/* Rivets — right straight side */}
-              {[[594, 100], [594, 200], [594, 300]].map(([rx, ry], i) => (
-                <g key={`rs-${i}`}>
-                  <circle cx={rx} cy={ry} r="3.5" fill="#4a4a4a" stroke="#6a6a6a" strokeWidth="0.5" />
-                  <circle cx={rx} cy={ry} r="1.5" fill="#3a3a3a" />
-                </g>
-              ))}
-              {/* Rivets — right curved side */}
-              {[[578, 418], [522, 478], [430, 537]].map(([rx, ry], i) => (
-                <g key={`rc-${i}`}>
-                  <circle cx={rx} cy={ry} r="3.5" fill="#4a4a4a" stroke="#6a6a6a" strokeWidth="0.5" />
-                  <circle cx={rx} cy={ry} r="1.5" fill="#3a3a3a" />
-                </g>
-              ))}
-              {/* Rivets — left straight side (mirrored) */}
-              {[[6, 100], [6, 200], [6, 300]].map(([lx, ly], i) => (
-                <g key={`ls-${i}`}>
-                  <circle cx={lx} cy={ly} r="3.5" fill="#4a4a4a" stroke="#6a6a6a" strokeWidth="0.5" />
-                  <circle cx={lx} cy={ly} r="1.5" fill="#3a3a3a" />
-                </g>
-              ))}
-              {/* Rivets — left curved side (mirrored) */}
-              {[[22, 418], [78, 478], [170, 537]].map(([lx, ly], i) => (
-                <g key={`lc-${i}`}>
-                  <circle cx={lx} cy={ly} r="3.5" fill="#4a4a4a" stroke="#6a6a6a" strokeWidth="0.5" />
-                  <circle cx={lx} cy={ly} r="1.5" fill="#3a3a3a" />
-                </g>
-              ))}
-              {/* Bottom point rivet */}
-              <g>
-                <circle cx={300} cy={592} r="3.5" fill="#4a4a4a" stroke="#6a6a6a" strokeWidth="0.5" />
-                <circle cx={300} cy={592} r="1.5" fill="#3a3a3a" />
-              </g>
-            </svg>
-
             {/* Static center mascot — does NOT rotate */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
               <div className="w-[22%] h-[22%] rounded-full overflow-hidden border-2 border-arena-gold/30 shadow-[0_0_20px_rgba(212,168,67,0.15)] bg-arena-dark">
                 <Image src="/images/superbruta.png" alt="Superbruta" width={120} height={120} className="w-full h-full object-cover" priority />
               </div>
@@ -815,33 +761,22 @@ export function SpinWheel() {
 
           {/* Button + cooldown */}
           <div className="mt-3 flex flex-col items-center gap-1.5">
-            {!user ? (
-              <button onClick={login}
-                className="arena-btn-press relative px-7 py-2.5 rounded-xl gladiator-label text-xs font-black transition-all duration-300 border-2 overflow-hidden border-arena-gold/40 bg-gradient-to-b from-arena-charcoal to-arena-dark text-arena-gold hover:border-arena-gold/70 hover:shadow-[0_0_30px_rgba(212,168,67,0.2)] active:scale-95"
-              >
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-arena-gold/10 to-transparent animate-[shimmer_3s_infinite]" />
-                <span className="relative z-10">⚔ LOGIN PARA GIRAR ⚔</span>
-              </button>
-            ) : (
-              <>
-                <button onClick={spin} disabled={spinning || isOnCooldown}
-                  className={`arena-btn-press relative px-7 py-2.5 rounded-xl gladiator-label text-xs font-black transition-all duration-300 border-2 overflow-hidden ${
-                    spinning || isOnCooldown
-                      ? "border-arena-steel/30 bg-arena-dark text-arena-ash/50 cursor-not-allowed"
-                      : "border-arena-gold/40 bg-gradient-to-b from-arena-charcoal to-arena-dark text-arena-gold hover:border-arena-gold/70 hover:shadow-[0_0_30px_rgba(212,168,67,0.2)] active:scale-95"
-                  }`}
-                >
-                  {!spinning && !isOnCooldown && <span className="absolute inset-0 bg-gradient-to-r from-transparent via-arena-gold/10 to-transparent animate-[shimmer_3s_infinite]" />}
-                  <span className="relative z-10">{spinning ? "A GIRAR..." : isOnCooldown ? "ARENA FECHADA" : "⚔ SPIN FOR GLORY ⚔"}</span>
-                </button>
+            <button onClick={spin} disabled={spinning || isOnCooldown}
+              className={`arena-btn-press relative px-7 py-2.5 rounded-xl gladiator-label text-xs font-black transition-all duration-300 border-2 overflow-hidden ${
+                spinning || isOnCooldown
+                  ? "border-arena-steel/30 bg-arena-dark text-arena-ash/50 cursor-not-allowed"
+                  : "border-arena-gold/40 bg-gradient-to-b from-arena-charcoal to-arena-dark text-arena-gold hover:border-arena-gold/70 hover:shadow-[0_0_30px_rgba(212,168,67,0.2)] active:scale-95"
+              }`}
+            >
+              {!spinning && !isOnCooldown && <span className="absolute inset-0 bg-gradient-to-r from-transparent via-arena-gold/10 to-transparent animate-[shimmer_3s_infinite]" />}
+              <span className="relative z-10">{spinning ? "A GIRAR..." : isOnCooldown ? "ARENA FECHADA" : "⚔ SPIN FOR GLORY ⚔"}</span>
+            </button>
 
-                {isOnCooldown && !spinning && (
-                  <div className="text-center">
-                    <p className="text-[9px] uppercase tracking-[0.2em] text-arena-ash">Próximo combate em</p>
-                    <p className="font-mono text-sm text-arena-gold font-bold tracking-wider">{formatCountdown(cooldown)}</p>
-                  </div>
-                )}
-              </>
+            {isOnCooldown && !spinning && (
+              <div className="text-center">
+                <p className="text-[9px] uppercase tracking-[0.2em] text-arena-ash">Próximo combate em</p>
+                <p className="font-mono text-sm text-arena-gold font-bold tracking-wider">{formatCountdown(cooldown)}</p>
+              </div>
             )}
 
             <button onClick={() => setHapticsEnabled(!hapticsEnabled)} className="text-[9px] text-arena-ash/50 hover:text-arena-smoke transition-colors">
@@ -851,8 +786,21 @@ export function SpinWheel() {
         </div>
       </div>
 
-      {/* ── HISTORY — below wheel on mobile, floating top-right on desktop ── */}
-      <div className="relative z-30 mx-4 mt-3 max-h-[25vh] rounded-xl border border-arena-gold/10 bg-arena-dark/90 backdrop-blur-md p-2.5 flex flex-col overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.5)] lg:absolute lg:top-4 lg:right-4 lg:mx-0 lg:mt-0 lg:w-52 lg:max-h-[35vh] lg:p-3">
+      {/* ── HISTORY — papyrus card — below on mobile, floating top-left on desktop ── */}
+      <div className="relative z-30 mx-4 mt-3 max-h-[28vh] flex flex-col overflow-hidden
+        lg:absolute lg:top-4 lg:left-4 lg:mx-0 lg:mt-0 lg:w-56 lg:max-h-[40vh]"
+        style={{
+          background: "linear-gradient(160deg, #fdf3d8 0%, #f5e4b8 40%, #ecdaa0 100%)",
+          border: "1.5px solid #c4a35a",
+          borderRadius: "6px",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.4), inset 0 0 30px rgba(180,140,60,0.15)",
+          padding: "10px",
+        }}
+      >
+        {/* Aged paper edges */}
+        <div className="absolute inset-0 pointer-events-none rounded" style={{
+          background: "radial-gradient(ellipse at 0% 0%, rgba(100,60,10,0.12) 0%, transparent 50%), radial-gradient(ellipse at 100% 100%, rgba(100,60,10,0.12) 0%, transparent 50%)",
+        }} />
         <WinHistory history={history} />
       </div>
         </>
