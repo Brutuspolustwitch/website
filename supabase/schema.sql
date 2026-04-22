@@ -586,6 +586,8 @@ create table if not exists page_settings (
   bg_position_y integer not null default 50 check (bg_position_y >= 0 and bg_position_y <= 100),
   bg_zoom numeric not null default 100 check (bg_zoom >= 50 and bg_zoom <= 200),
   bg_color text not null default '#000000',
+  is_active boolean not null default true,
+  min_role text not null default 'viewer' check (min_role in ('viewer', 'moderador', 'configurador', 'admin')),
   updated_at timestamptz not null default now()
 );
 

@@ -89,7 +89,6 @@ const SECONDARY_LINKS: NavItem[] = [
     label: "Moderador Area",
     minRole: "moderador",
     children: [
-      { href: "/admin/settings", label: "Definições" },
       { href: "/admin/outros/daily-session", label: "Sessão do Dia" },
       { href: "/admin/outros/bonus-hunt", label: "Bonus Hunt" },
       { href: "/admin/outros/calendario", label: "Calendário" },

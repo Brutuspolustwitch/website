@@ -6,15 +6,6 @@ import { motion } from "framer-motion";
 
 const MODERADOR_CATEGORIES = [
   {
-    href: "/admin/settings",
-    title: "Definições",
-    description: "Configurações de páginas, imagens e efeitos",
-    icon: "⚙️",
-    color: "from-gray-600/20 to-gray-500/10",
-    borderColor: "border-gray-500/30",
-    hoverColor: "hover:border-gray-500/50",
-  },
-  {
     href: "/admin/outros/daily-session",
     title: "Sessão do Dia",
     description: "Gestão e configuração da sessão diária de streams",

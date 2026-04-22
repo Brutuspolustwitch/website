@@ -6,7 +6,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { EFFECT_OPTIONS } from "@/components/PageEffects";
 import type { PageSetting } from "@/hooks/usePageSettings";
 
-type Tab = "image" | "effects";
+type Tab = "image" | "effects" | "access";
 
 /* ── Reusable slider ──────────────────────────────────────── */
 function Slider({
@@ -253,6 +253,7 @@ function PageSettingsCard({
   const tabs: { key: Tab; label: string; icon: string }[] = [
     { key: "image", label: "Imagem & Posição", icon: "🖼️" },
     { key: "effects", label: "Efeitos & Filtros", icon: "✨" },
+    { key: "access", label: "Visibilidade & Acesso", icon: "🔒" },
   ];
 
   return (
@@ -568,6 +569,82 @@ function PageSettingsCard({
           </div>
         )}
 
+        {activeTab === "access" && (
+          <div className="space-y-4">
+            {/* Page Active Toggle */}
+            <div className="space-y-2 p-4 rounded-lg border border-white/10 bg-white/[0.02]">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-medium text-arena-smoke/70 uppercase tracking-wider">
+                    Estado da Página
+                  </label>
+                  <p className="text-[10px] text-arena-smoke/40">
+                    Desativar a página esconde-a de todos os utilizadores
+                  </p>
+                </div>
+                <button
+                  onClick={() => saveField(page.id, { is_active: !page.is_active } as Partial<PageSetting>)}
+                  disabled={saving === page.id}
+                  className={`relative w-14 h-7 rounded-full transition-colors ${
+                    page.is_active ? "bg-green-500" : "bg-red-500/50"
+                  } ${saving === page.id ? "opacity-50" : ""}`}
+                >
+                  <div
+                    className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${
+                      page.is_active ? "translate-x-7" : "translate-x-0"
+                    }`}
+                  />
+                </button>
+              </div>
+              <div className={`text-[10px] font-medium ${
+                page.is_active ? "text-green-400" : "text-red-400"
+              }`}>
+                {page.is_active ? "✓ Página Ativa" : "✗ Página Desativada"}
+              </div>
+            </div>
+
+            {/* Minimum Role Required */}
+            <div className="space-y-2 p-4 rounded-lg border border-white/10 bg-white/[0.02]">
+              <label className="text-[11px] font-medium text-arena-smoke/70 uppercase tracking-wider">
+                Nível Mínimo de Acesso
+              </label>
+              <p className="text-[10px] text-arena-smoke/40 mb-3">
+                Define o cargo mínimo necessário para visualizar esta página
+              </p>
+              <select
+                value={page.min_role ?? "viewer"}
+                onChange={(e) => {
+                  const value = e.target.value as "viewer" | "moderador" | "configurador" | "admin";
+                  saveField(page.id, { min_role: value } as Partial<PageSetting>);
+                }}
+                disabled={saving === page.id}
+                className="w-full px-3 py-2 rounded-md bg-black/40 border border-white/10 text-white focus:outline-none focus:border-arena-gold/50 transition-colors text-sm"
+              >
+                <option value="viewer">👁️ Viewer (Todos)</option>
+                <option value="moderador">🛡️ Moderador</option>
+                <option value="configurador">⚙️ Configurador</option>
+                <option value="admin">🔑 Admin</option>
+              </select>
+              <div className="text-[10px] text-arena-smoke/40 mt-2">
+                {page.min_role === "viewer" && "Página visível para todos os utilizadores"}
+                {page.min_role === "moderador" && "Página visível apenas para Moderadores, Configuradores e Admins"}
+                {page.min_role === "configurador" && "Página visível apenas para Configuradores e Admins"}
+                {page.min_role === "admin" && "Página visível apenas para Admins"}
+              </div>
+            </div>
+
+            {/* Info Box */}
+            <div className="p-4 rounded-lg border border-blue-500/20 bg-blue-500/5">
+              <div className="flex gap-2">
+                <span className="text-blue-400 text-sm">ℹ️</span>
+                <div className="text-[11px] text-blue-300/70 leading-relaxed">
+                  <strong className="text-blue-300">Nota:</strong> Se a página estiver desativada, nenhum utilizador conseguirá aceder, independentemente do seu cargo. As definições de acesso por cargo só se aplicam quando a página está ativa.
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {saving === page.id && (
           <div className="text-xs text-arena-gold animate-pulse mt-3">A guardar...</div>
         )}
@@ -699,10 +776,10 @@ export default function AdminSettingsPage() {
     );
   }
 
-  if (!user || !hasRole(user.role, "moderador")) {
+  if (!user || !hasRole(user.role, "admin")) {
     return (
       <div className="pt-24 pb-16 min-h-screen flex items-center justify-center">
-        <div className="text-red-400 text-lg">Acesso negado</div>
+        <div className="text-red-400 text-lg">Acesso negado - Apenas administradores</div>
       </div>
     );
   }

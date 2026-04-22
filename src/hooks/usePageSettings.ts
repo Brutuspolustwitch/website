@@ -26,6 +26,8 @@ export interface PageSetting {
   bg_position_y: number;
   bg_zoom: number;
   bg_color: string;
+  is_active: boolean;
+  min_role: "viewer" | "moderador" | "configurador" | "admin";
   updated_at: string;
 }
 
