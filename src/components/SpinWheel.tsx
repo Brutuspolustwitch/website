@@ -334,16 +334,14 @@ function WheelSVG({ rewards }: { rewards: Reward[] }) {
         );
       })}
 
-      {/* Segments with vertical text */}
+      {/* Segments with horizontal text */}
       {rewards.map((reward, i) => {
         const midAngleDeg = (i + 0.5) * segAngle;
         const midAngle = (midAngleDeg - 90) * (Math.PI / 180);
         const segColors = ["rgba(18,18,18,0.97)", "rgba(28,26,22,0.97)"];
-        const letters = reward.label.toUpperCase().split("");
 
         const iconR = r * 0.85;
-        const letterStartR = r * 0.35;
-        const letterStep = Math.min((r * 0.45) / Math.max(letters.length, 1), 18);
+        const textR = r * 0.55;
 
         return (
           <g key={i}>
@@ -356,21 +354,14 @@ function WheelSVG({ rewards }: { rewards: Reward[] }) {
               transform={`rotate(${midAngleDeg}, ${cx + iconR * Math.cos(midAngle)}, ${cy + iconR * Math.sin(midAngle)})`}
             >{reward.icon}</text>
 
-            {/* Letters stacked along radial line from inside out */}
-            {letters.map((letter, li) => {
-              const lr = letterStartR + li * letterStep;
-              const lx = cx + lr * Math.cos(midAngle);
-              const ly = cy + lr * Math.sin(midAngle);
-              return (
-                <text
-                  key={li} x={lx} y={ly}
-                  textAnchor="middle" dominantBaseline="central"
-                  fontSize="12" fontWeight="800" fill={reward.color}
-                  fontFamily="'Cinzel', serif" opacity="0.85"
-                  transform={`rotate(${midAngleDeg}, ${lx}, ${ly})`}
-                >{letter}</text>
-              );
-            })}
+            {/* Horizontal text label */}
+            <text
+              x={cx + textR * Math.cos(midAngle)} y={cy + textR * Math.sin(midAngle)}
+              textAnchor="middle" dominantBaseline="central"
+              fontSize="14" fontWeight="800" fill={reward.color}
+              fontFamily="'Cinzel', serif" opacity="0.9"
+              transform={`rotate(${midAngleDeg}, ${cx + textR * Math.cos(midAngle)}, ${cy + textR * Math.sin(midAngle)})`}
+            >{reward.label.toUpperCase()}</text>
           </g>
         );
       })}
