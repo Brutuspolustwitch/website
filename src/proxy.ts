@@ -13,7 +13,7 @@ function hasRole(userRole: Role | undefined, requiredRole: Role): boolean {
 /** Route prefix → minimum role required */
 const PROTECTED: { prefix: string; role: Role }[] = [
   // Admin-only pages (must come before general /admin rule)
-  { prefix: "/admin/settings", role: "admin" },
+  { prefix: "/admin/settings", role: "configurador" },
   // Moderador Area pages
   { prefix: "/admin/outros/daily-session", role: "moderador" },
   { prefix: "/admin/outros/bonus-hunt", role: "moderador" },

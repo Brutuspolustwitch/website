@@ -82,6 +82,7 @@ const SECONDARY_LINKS: NavItem[] = [
           { href: "/admin/loja/gestao", label: "Gestão" },
         ],
       },
+      { href: "/admin/settings", label: "Definições" },
     ],
   },
   {

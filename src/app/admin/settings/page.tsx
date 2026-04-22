@@ -776,10 +776,10 @@ export default function AdminSettingsPage() {
     );
   }
 
-  if (!user || !hasRole(user.role, "admin")) {
+  if (!user || !hasRole(user.role, "configurador")) {
     return (
       <div className="pt-24 pb-16 min-h-screen flex items-center justify-center">
-        <div className="text-red-400 text-lg">Acesso negado - Apenas administradores</div>
+        <div className="text-red-400 text-lg">Acesso negado - Apenas configuradores e administradores</div>
       </div>
     );
   }
