@@ -20,7 +20,7 @@ export async function GET() {
   const { data } = await supabase
     .from("users")
     .select("last_spin_at")
-    .eq("id", session.id)
+    .eq("twitch_id", session.id)
     .single();
 
   if (!data?.last_spin_at) {
@@ -47,7 +47,7 @@ export async function POST() {
   const { data: user } = await supabase
     .from("users")
     .select("last_spin_at")
-    .eq("id", session.id)
+    .eq("twitch_id", session.id)
     .single();
 
   if (user?.last_spin_at) {
@@ -62,9 +62,9 @@ export async function POST() {
   const { error } = await supabase
     .from("users")
     .update({ last_spin_at: new Date().toISOString() })
-    .eq("id", session.id);
+    .eq("twitch_id", session.id);
 
-  if (error) return NextResponse.json({ error: "Erro ao registar spin" }, { status: 500 });
+  if (error) return NextResponse.json({ error: "Erro ao registar spin", detail: error.message }, { status: 500 });
 
   return NextResponse.json({ ok: true });
 }
