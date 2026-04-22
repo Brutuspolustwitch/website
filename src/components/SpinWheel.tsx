@@ -19,20 +19,6 @@ interface Reward {
   weight: number;
 }
 
-/* Fallback rewards used until DB segments load */
-const FALLBACK_REWARDS: Reward[] = [
-  { label: "Jackpot",     icon: "👑", color: "#d4a843", glowColor: "rgba(212,168,67,0.6)",  tier: "legendary", weight: 5 },
-  { label: "Free Spin",   icon: "🔄", color: "#cd7f32", glowColor: "rgba(205,127,50,0.5)",  tier: "rare",      weight: 10 },
-  { label: "Bonus Coins", icon: "🪙", color: "#f0d78c", glowColor: "rgba(240,215,140,0.5)", tier: "common",    weight: 20 },
-  { label: "XP Boost",    icon: "⚡", color: "#ff6f00", glowColor: "rgba(255,111,0,0.5)",   tier: "common",    weight: 20 },
-  { label: "Mystery",     icon: "🎭", color: "#9c27b0", glowColor: "rgba(156,39,176,0.5)",  tier: "epic",      weight: 8 },
-  { label: "Defeat",      icon: "💀", color: "#8b0000", glowColor: "rgba(139,0,0,0.5)",     tier: "loss",      weight: 15 },
-  { label: "Bonus Coins", icon: "🪙", color: "#f0d78c", glowColor: "rgba(240,215,140,0.5)", tier: "common",    weight: 20 },
-  { label: "Free Spin",   icon: "🔄", color: "#cd7f32", glowColor: "rgba(205,127,50,0.5)",  tier: "rare",      weight: 10 },
-  { label: "XP Boost",    icon: "⚡", color: "#ff6f00", glowColor: "rgba(255,111,0,0.5)",   tier: "common",    weight: 20 },
-  { label: "Defeat",      icon: "💀", color: "#8b0000", glowColor: "rgba(139,0,0,0.5)",     tier: "loss",      weight: 15 },
-];
-
 function segmentRowToReward(row: WheelSegmentRow): Reward {
   return {
     label: row.label,
@@ -482,7 +468,8 @@ function WinHistory({ history }: { history: HistoryEntry[] }) {
    ═══════════════════════════════════════════════════════════════════ */
 
 export function SpinWheel() {
-  const [rewards, setRewards] = useState<Reward[]>(FALLBACK_REWARDS);
+  const [rewards, setRewards] = useState<Reward[]>([]);
+  const [loading, setLoading] = useState(true);
   const [rotation, setRotation] = useState(0);
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState<Reward | null>(null);
@@ -514,10 +501,16 @@ export function SpinWheel() {
       .then((d) => {
         if (d.segments && d.segments.length > 0) {
           const active = (d.segments as WheelSegmentRow[]).filter((s) => s.is_active);
-          if (active.length > 0) setRewards(active.map(segmentRowToReward));
+          if (active.length > 0) {
+            setRewards(active.map(segmentRowToReward));
+          }
         }
+        setLoading(false);
       })
-      .catch(() => {/* use fallback */});
+      .catch((err) => {
+        console.error('Failed to load wheel segments:', err);
+        setLoading(false);
+      });
 
     // Realtime: listen for new spins from other users
     const channel = supabase
@@ -585,7 +578,7 @@ export function SpinWheel() {
 
   /* ── SPIN ────────────────────────────────────────────────── */
   const spin = useCallback(() => {
-    if (spinning || !canSpin()) return;
+    if (spinning || !canSpin() || rewards.length === 0) return;
     if (!tickAudioRef.current) tickAudioRef.current = new AudioContext();
 
     setResult(null); setShowResult(false); setBurstActive(false);
@@ -669,8 +662,30 @@ export function SpinWheel() {
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0"><EmberCanvas /></div>
       <div className="fixed inset-0 pointer-events-none z-0 bg-[radial-gradient(circle,transparent_30%,rgba(0,0,0,0.5)_100%)]" />
 
-      {/* ── CENTER: Wheel + Controls ─────────────────────── */}
-      <div className="flex-1 flex flex-col items-center justify-center min-w-0 relative w-full">
+      {/* Loading State */}
+      {loading && (
+        <div className="flex flex-col items-center justify-center gap-4 z-10">
+          <div className="w-24 h-24 rounded-full border-4 border-arena-gold/20 border-t-arena-gold animate-spin" />
+          <p className="gladiator-label text-arena-gold text-sm">A carregar roda...</p>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!loading && rewards.length === 0 && (
+        <div className="flex flex-col items-center justify-center gap-4 z-10 max-w-md px-6 text-center">
+          <div className="text-6xl">⚔️</div>
+          <h3 className="gladiator-title text-2xl text-arena-gold">Roda não configurada</h3>
+          <p className="text-arena-smoke/70 text-sm leading-relaxed">
+            A roda diária ainda não foi configurada. Por favor, configure os segmentos na área de administração.
+          </p>
+        </div>
+      )}
+
+      {/* Wheel Content */}
+      {!loading && rewards.length > 0 && (
+        <>
+          {/* ── CENTER: Wheel + Controls ─────────────────────── */}
+          <div className="flex-1 flex flex-col items-center justify-center min-w-0 relative w-full">
 
         {/* Flash */}
         <AnimatePresence>
@@ -768,6 +783,8 @@ export function SpinWheel() {
       <div className="relative z-30 mx-4 mt-3 max-h-[25vh] rounded-xl border border-arena-gold/10 bg-arena-dark/90 backdrop-blur-md p-2.5 flex flex-col overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.5)] lg:absolute lg:top-4 lg:right-4 lg:mx-0 lg:mt-0 lg:w-52 lg:max-h-[35vh] lg:p-3">
         <WinHistory history={history} />
       </div>
+        </>
+      )}
     </div>
   );
 }
