@@ -10,7 +10,7 @@ export default function RodaDiariaPage() {
   return (
     <div className="min-h-screen relative pt-16 flex flex-col">
       {/* SpinWheel — fills remaining area */}
-      <div className="relative flex-1 pt-4">
+      <div className="relative flex-1 -mt-8">
         <SpinWheel />
       </div>
     </div>
