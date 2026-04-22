@@ -358,9 +358,9 @@ function WheelSVG({ rewards }: { rewards: Reward[] }) {
             <text
               x={cx + textR * Math.cos(midAngle)} y={cy + textR * Math.sin(midAngle)}
               textAnchor="middle" dominantBaseline="central"
-              fontSize="14" fontWeight="800" fill={reward.color}
+              fontSize="18" fontWeight="800" fill={reward.color}
               fontFamily="'Cinzel', serif" opacity="0.9"
-              transform={`rotate(${midAngleDeg}, ${cx + textR * Math.cos(midAngle)}, ${cy + textR * Math.sin(midAngle)})`}
+              transform={`rotate(${midAngleDeg - 90}, ${cx + textR * Math.cos(midAngle)}, ${cy + textR * Math.sin(midAngle)})`}
             >{reward.label.toUpperCase()}</text>
           </g>
         );
