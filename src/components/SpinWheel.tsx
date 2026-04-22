@@ -720,8 +720,8 @@ export function SpinWheel() {
 
             {/* Static center mascot — does NOT rotate */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-              <div className="w-[17%] h-[17%] rounded-full overflow-hidden border-2 border-arena-gold/30 shadow-[0_0_20px_rgba(212,168,67,0.15)] bg-arena-dark">
-                <Image src="/images/superbruta.png" alt="Superbruta" width={120} height={120} className="w-full h-full object-cover" priority />
+              <div className="w-[22%] h-[22%] rounded-full overflow-hidden border-2 border-arena-gold/30 shadow-[0_0_20px_rgba(212,168,67,0.15)] bg-arena-dark flex items-center justify-center">
+                <Image src="/images/superbruta.png" alt="Superbruta" width={120} height={120} className="w-[75%] h-[75%] object-contain" priority />
               </div>
             </div>
 
