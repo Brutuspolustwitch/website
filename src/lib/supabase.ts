@@ -95,6 +95,8 @@ export interface CasinoAffiliate {
 export interface SpinHistoryRow {
   id: string;
   player: string;
+  twitch_login: string | null;
+  avatar_url: string | null;
   reward: string;
   icon: string;
   color: string;

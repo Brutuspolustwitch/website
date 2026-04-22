@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import type { SpinHistoryRow, WheelSegmentRow } from "@/lib/supabase";
+import { useAuth } from "@/lib/auth-context";
 
 /* ═══════════════════════════════════════════════════════════════════
    TYPES & CONFIG
@@ -46,6 +47,8 @@ const STORAGE_KEY = "arena-spin-last";
 
 interface HistoryEntry {
   player: string;
+  twitchLogin: string | null;
+  avatarUrl: string | null;
   reward: string;
   icon: string;
   color: string;
@@ -101,6 +104,8 @@ async function fetchHistory(): Promise<HistoryEntry[]> {
   if (!data) return [];
   return (data as SpinHistoryRow[]).map((row) => ({
     player: row.player,
+    twitchLogin: row.twitch_login ?? null,
+    avatarUrl: row.avatar_url ?? null,
     reward: row.reward,
     icon: row.icon,
     color: row.color,
@@ -112,6 +117,8 @@ async function fetchHistory(): Promise<HistoryEntry[]> {
 async function addHistory(entry: HistoryEntry) {
   await supabase.from("spin_history").insert({
     player: entry.player,
+    twitch_login: entry.twitchLogin,
+    avatar_url: entry.avatarUrl,
     reward: entry.reward,
     icon: entry.icon,
     color: entry.color,
@@ -386,7 +393,7 @@ function WheelSVG({ rewards }: { rewards: Reward[] }) {
 
 function Pointer() {
   return (
-    <div className="absolute right-0 top-1/2 z-20" style={{ marginRight: "-38px", transform: "translateY(-50%) rotate(90deg)" }}>
+    <div className="absolute right-0 top-1/2 z-20 invisible" style={{ marginRight: "-38px", transform: "translateY(-50%) rotate(90deg)" }}>
       <svg width="48" height="84" viewBox="0 0 36 64" fill="none">
         {/* Cross-guard */}
         <rect x="6" y="14" width="24" height="5" rx="1.5" fill="#b8860b" stroke="#8b6914" strokeWidth="0.8" />
@@ -441,10 +448,19 @@ function WinHistory({ history }: { history: HistoryEntry[] }) {
               transition={{ duration: 0.3 }}
               className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.05]"
             >
-              <span className="text-sm shrink-0">{entry.icon}</span>
+              {/* Avatar */}
+              {entry.avatarUrl ? (
+                <div className="w-7 h-7 rounded-full overflow-hidden border border-arena-gold/20 shrink-0">
+                  <Image src={entry.avatarUrl} alt={entry.player} width={28} height={28} className="w-full h-full object-cover" unoptimized />
+                </div>
+              ) : (
+                <span className="text-sm shrink-0">{entry.icon}</span>
+              )}
               <div className="flex-1 min-w-0">
-                <p className="text-[11px] font-semibold text-arena-white truncate">{entry.player}</p>
-                <p className="text-[10px] truncate" style={{ color: entry.color }}>{entry.reward}</p>
+                <p className="text-[11px] font-semibold text-arena-white truncate">
+                  {entry.twitchLogin ? `@${entry.twitchLogin}` : entry.player}
+                </p>
+                <p className="text-[10px] truncate" style={{ color: entry.color }}>{entry.icon} {entry.reward}</p>
               </div>
               <span className="text-[9px] text-arena-ash/50 shrink-0">{timeAgo(entry.time)}</span>
             </motion.div>
@@ -460,6 +476,7 @@ function WinHistory({ history }: { history: HistoryEntry[] }) {
    ═══════════════════════════════════════════════════════════════════ */
 
 export function SpinWheel() {
+  const { user } = useAuth();
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [loading, setLoading] = useState(true);
   const [rotation, setRotation] = useState(0);
@@ -511,6 +528,8 @@ export function SpinWheel() {
         const row = payload.new as SpinHistoryRow;
         const entry: HistoryEntry = {
           player: row.player,
+          twitchLogin: row.twitch_login ?? null,
+          avatarUrl: row.avatar_url ?? null,
           reward: row.reward,
           icon: row.icon,
           color: row.color,
@@ -615,7 +634,7 @@ export function SpinWheel() {
         playImpact(); triggerShake();
         if (hapticsEnabled) vibrate([80, 30, 120]);
 
-        addHistory({ player: randomGladiator(), reward: winner.label, icon: winner.icon, color: winner.color, tier: winner.tier, time: Date.now() });
+        addHistory({ player: user?.display_name ?? "Gladiador", twitchLogin: user?.login ?? null, avatarUrl: user?.profile_image_url ?? null, reward: winner.label, icon: winner.icon, color: winner.color, tier: winner.tier, time: Date.now() });
 
         setTimeout(() => {
           triggerFlash();
