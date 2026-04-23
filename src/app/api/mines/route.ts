@@ -34,16 +34,15 @@ async function updateSEPoints(username: string, amount: number): Promise<boolean
   const channelId = process.env.STREAMELEMENTS_CHANNEL_ID;
   if (!token || !channelId) return false;
 
-  const absAmount = Math.abs(amount);
-  const method = amount < 0 ? "DELETE" : "PUT";
   try {
+    // SE API: PUT with negative amount deducts, positive adds
     const res = await fetch(
-      `${SE_API}/points/${channelId}/${encodeURIComponent(username)}/${absAmount}`,
-      { method, headers: { Accept: "application/json", Authorization: `Bearer ${token}` } }
+      `${SE_API}/points/${channelId}/${encodeURIComponent(username)}/${amount}`,
+      { method: "PUT", headers: { Accept: "application/json", Authorization: `Bearer ${token}` } }
     );
     if (!res.ok) {
       const detail = await res.text().catch(() => "");
-      console.error(`SE points ${method} failed: ${res.status}`, detail);
+      console.error(`SE points PUT failed: ${res.status}`, detail);
       return false;
     }
     return true;
