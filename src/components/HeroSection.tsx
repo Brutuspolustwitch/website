@@ -129,7 +129,7 @@ export function HeroSection() {
         />
 
         {/* Gradient overlays */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_32%,rgba(201,164,76,0.14),transparent_26%),radial-gradient(circle_at_78%_20%,rgba(139,0,0,0.35),transparent_26%),linear-gradient(90deg,rgba(11,11,13,0.94)_0%,rgba(11,11,13,0.72)_34%,rgba(11,11,13,0.22)_62%,rgba(11,11,13,0.9)_100%)]" />
+        <div className="absolute inset-0 hero-gradient-overlay" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,11,13,0.28),rgba(11,11,13,0.66))]" />
 
         {/* Ambient glow orb */}
@@ -145,7 +145,7 @@ export function HeroSection() {
       {/* Content — positioned by admin settings */}
       <div className="relative z-10 flex min-h-[100svh]" style={{ alignItems: heroPositionY < 50 ? 'flex-start' : 'flex-end' }}>
         <div 
-          className="w-full px-4 sm:px-6 lg:px-8"
+          className="w-full hero-content-wrapper"
           style={{
             paddingLeft: `${heroPositionX}%`,
             paddingTop: heroPositionY < 50 ? `${heroPositionY}%` : undefined,

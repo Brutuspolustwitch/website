@@ -119,16 +119,16 @@ export default function LigaDosBrutusContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-[50vh] flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-arena-gold/30 border-t-arena-gold rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative">
       {/* Content */}
-      <div className="relative z-10 pt-24 pb-16">
+      <div className="relative z-10 pt-20 pb-8 sm:pt-24 sm:pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* ── Header ──────────────────────────── */}

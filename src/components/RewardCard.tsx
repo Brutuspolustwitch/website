@@ -146,11 +146,11 @@ export function RewardCard({ reward, userPoints, userVipLevel, onRedeem, onHover
       {/* ── Image Banner ── */}
       {reward.image && (
         <div className="relative w-full overflow-hidden" style={{ borderRadius: "var(--scroll-radius) var(--scroll-radius) 0 0" }}>
-          <div className="aspect-[16/9] w-full">
+          <div className="relative w-full aspect-[16/9]">
             <img
               src={reward.image}
               alt={reward.title}
-              className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
               loading="lazy"
             />
           </div>

@@ -226,7 +226,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
 
                 {/* Campaign header bar */}
                 <div className="scroll-content" style={{ padding: "10px 20px 0" }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "6px", marginBottom: "6px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                       <span style={{ fontSize: "1.3rem" }}>🛡️</span>
                       <span style={{
@@ -290,12 +290,12 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                   </div>
 
                   {/* Column headers */}
-                  <div className="bh-table-header" style={{ gridTemplateColumns: "40px 1fr 90px 120px 110px" }}>
-                    <span>#</span>
-                    <span>SLOT</span>
-                    <span>BET / PAYOUT</span>
-                    <span>SPECIAL</span>
-                    <span style={{ textAlign: "right" }}>RESULTADO</span>
+                  <div className="bh-table-header">
+                    <span className="bh-col-num">#</span>
+                    <span className="bh-col-slot">SLOT</span>
+                    <span className="bh-col-bet">BET / PAYOUT</span>
+                    <span className="bh-col-special">SPECIAL</span>
+                    <span className="bh-col-win" style={{ textAlign: "right" }}>RESULTADO</span>
                   </div>
                 </div>
 
@@ -308,10 +308,9 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.03 }}
                       className={`bh-table-row${slot.status === "active" ? " bh-row-active" : ""}`}
-                      style={{ gridTemplateColumns: "40px 1fr 90px 120px 110px" }}
                     >
                       {/* # */}
-                      <span style={{
+                      <span className="bh-col-num" style={{
                         fontFamily: "var(--font-display)",
                         fontSize: "0.8rem",
                         fontWeight: 700,
@@ -322,7 +321,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                       </span>
 
                       {/* Slot info */}
-                      <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
+                      <div className="bh-col-slot" style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
                         {slot.thumbnail_url ? (
                           <img
                             src={slot.thumbnail_url}
@@ -383,7 +382,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                       </div>
 
                       {/* Bet / Payout */}
-                      <div style={{ textAlign: "center" }}>
+                      <div className="bh-col-bet" style={{ textAlign: "center" }}>
                         <p style={{ fontFamily: "var(--font-ui)", fontSize: "0.8rem", fontWeight: 700, color: "var(--ink-dark)", lineHeight: 1.3 }}>
                           {slot.buy_value.toFixed(2)}€
                         </p>
@@ -400,7 +399,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                       </div>
 
                       {/* Special */}
-                      <div style={{ display: "flex", gap: "4px", justifyContent: "center", flexWrap: "wrap" }}>
+                      <div className="bh-col-special" style={{ display: "flex", gap: "4px", justifyContent: "center", flexWrap: "wrap" }}>
                         {slot.is_super_bonus && (
                           <span className="bh-badge bh-badge-super">SUPER BÓNUS</span>
                         )}
@@ -413,7 +412,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                       </div>
 
                       {/* Winnings */}
-                      <div style={{ textAlign: "right" }}>
+                      <div className="bh-col-win" style={{ textAlign: "right" }}>
                         {slot.result != null ? (
                           <>
                             <p style={{

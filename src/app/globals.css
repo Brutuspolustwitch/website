@@ -4334,3 +4334,41 @@ body {
   .bdm-featured__body { padding: 16px 16px 20px; }
   .bdm-admin-form-wrap { padding: 16px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVENESS — hero, loja, liga, roda, adivinha
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Hero Section ─────────────────────────────────────────────── */
+
+/* Desktop: side-by-side radial + directional gradients */
+.hero-gradient-overlay {
+  background:
+    radial-gradient(circle at 20% 32%, rgba(201, 164, 76, 0.14), transparent 26%),
+    radial-gradient(circle at 78% 20%, rgba(139, 0, 0, 0.35), transparent 26%),
+    linear-gradient(90deg,
+      rgba(11, 11, 13, 0.94) 0%,
+      rgba(11, 11, 13, 0.72) 34%,
+      rgba(11, 11, 13, 0.22) 62%,
+      rgba(11, 11, 13, 0.9) 100%
+    );
+}
+
+/* Mobile: lighter overlay so the image is actually visible */
+@media (max-width: 639px) {
+  .hero-gradient-overlay {
+    background:
+      radial-gradient(circle at 50% 35%, rgba(201, 164, 76, 0.1), transparent 40%),
+      linear-gradient(180deg,
+        rgba(11, 11, 13, 0.35) 0%,
+        rgba(11, 11, 13, 0.5) 60%,
+        rgba(11, 11, 13, 0.72) 100%
+      );
+  }
+
+  /* Cap admin-set paddingLeft so content doesn't get crushed on narrow screens */
+  .hero-content-wrapper {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}
