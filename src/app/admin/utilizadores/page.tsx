@@ -223,7 +223,6 @@ function UserDetail({
   const [saving, setSaving] = useState(false);
 
   // SE edit
-  const [editPoints, setEditPoints] = useState(false);
   const [pointsAmount, setPointsAmount] = useState(0);
   const [pointsSaving, setPointsSaving] = useState(false);
 
@@ -308,19 +307,19 @@ function UserDetail({
   };
 
   /* Edit SE points */
-  const updatePoints = async () => {
-    if (pointsAmount === 0) return;
+  const updatePoints = async (direction: "add" | "remove") => {
+    if (pointsAmount <= 0) return;
     setPointsSaving(true);
     const username = user.se_username || user.login;
+    const amount = direction === "add" ? pointsAmount : -pointsAmount;
     try {
       const res = await fetch("/api/streamelements", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, amount: pointsAmount }),
+        body: JSON.stringify({ username, amount }),
       });
       if (!res.ok) throw new Error("Failed");
-      onToast(`Pontos ${pointsAmount > 0 ? "adicionados" : "removidos"} com sucesso`);
-      setEditPoints(false);
+      onToast(`Pontos ${direction === "add" ? "adicionados" : "removidos"} com sucesso`);
       setPointsAmount(0);
       fetchSEPoints(username);
     } catch {
@@ -415,30 +414,29 @@ function UserDetail({
         ) : null}
 
         {/* Edit points */}
-        <div className="mt-4">
-          {!editPoints ? (
-            <button onClick={() => setEditPoints(true)}
-              className="px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-blue-500/30 text-blue-400 hover:bg-blue-500/10 transition-all">
-              Editar Pontos
-            </button>
-          ) : (
-            <div className="flex items-center gap-3 p-3 bg-arena-charcoal rounded-lg">
-              <div className="flex-1">
-                <label className="block text-[10px] uppercase text-arena-ash mb-1">Valor (positivo = adicionar, negativo = remover)</label>
-                <input type="number" className={`${inputCls} w-full`} value={pointsAmount} onChange={(e) => setPointsAmount(parseInt(e.target.value) || 0)} />
-              </div>
-              <div className="flex gap-2 pt-4">
-                <button onClick={updatePoints} disabled={pointsSaving || pointsAmount === 0}
-                  className="px-4 py-2 rounded-lg text-xs font-bold bg-gradient-to-b from-arena-crimson to-arena-blood text-white border border-arena-red/40 hover:from-arena-red hover:to-arena-crimson transition-all disabled:opacity-50">
-                  {pointsSaving ? "..." : "Aplicar"}
-                </button>
-                <button onClick={() => { setEditPoints(false); setPointsAmount(0); }}
-                  className="px-4 py-2 rounded-lg text-xs text-arena-ash hover:text-white transition-colors">
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          )}
+        <div className="mt-4 flex items-center gap-3">
+          <input
+            type="number"
+            min={1}
+            className={`${inputCls} w-36`}
+            value={pointsAmount || ""}
+            placeholder="Pontos"
+            onChange={(e) => setPointsAmount(Math.max(0, parseInt(e.target.value) || 0))}
+          />
+          <button
+            onClick={() => updatePoints("add")}
+            disabled={pointsSaving || pointsAmount <= 0}
+            className="px-4 py-2 rounded-lg text-xs font-bold bg-green-600/20 border border-green-500/40 text-green-400 hover:bg-green-600/40 transition-all disabled:opacity-50"
+          >
+            {pointsSaving ? "..." : "+ Adicionar"}
+          </button>
+          <button
+            onClick={() => updatePoints("remove")}
+            disabled={pointsSaving || pointsAmount <= 0}
+            className="px-4 py-2 rounded-lg text-xs font-bold bg-red-600/20 border border-red-500/40 text-red-400 hover:bg-red-600/40 transition-all disabled:opacity-50"
+          >
+            {pointsSaving ? "..." : "− Remover"}
+          </button>
         </div>
       </div>
 
