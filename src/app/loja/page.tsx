@@ -160,7 +160,7 @@ export default function LojaPage() {
                       <div className="h-px flex-1 bg-gradient-to-r from-transparent to-arena-gold/15" />
                       <h3 className="font-[family-name:var(--font-display)] text-xl text-white tracking-[0.25em] uppercase flex items-center gap-3">
                         <span className="text-2xl">⚔️</span>
-                        Loja dos Brutus
+                        Loja
                         <span className="text-2xl">⚔️</span>
                       </h3>
                       <div className="h-px flex-1 bg-gradient-to-l from-transparent to-arena-gold/15" />
