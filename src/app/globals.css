@@ -1048,6 +1048,62 @@ body {
   .bh-col-special:empty { display: none; }
 }
 
+/* ── BH Responsive Layout ─────────────────────────────────── */
+.bh-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+.bh-layout-table {
+  flex: 1;
+  min-width: 0;
+}
+.bh-layout-sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.bh-stats-bar {
+  border-bottom: 2px solid rgba(139, 105, 20, 0.2);
+  padding: 6px 0 8px;
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .bh-layout {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .bh-layout-table {
+    max-width: 100% !important;
+    width: 100%;
+  }
+  .bh-layout-sidebar {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .bh-layout-sidebar > * {
+    flex: 1 1 min(200px, 100%);
+  }
+  .bh-stats-bar {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px 8px;
+    padding: 8px 4px;
+  }
+  .bh-stats-bar > div {
+    flex: 1 1 80px;
+    min-width: 64px;
+    text-align: center;
+  }
+}
+
 .papyrus-flip-inner {
   position: relative;
   width: 100%;

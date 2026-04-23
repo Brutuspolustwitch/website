@@ -156,10 +156,10 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
       {/* Flex Container: Table on Left, Cards on Right */}
-      <div style={{ display: "flex", gap: "24px", alignItems: "flex-start" }}>
+      <div className="bh-layout">
         
         {/* Left Side: Table */}
-        <div style={{ flex: "1", minWidth: 0, maxWidth: compact ? "100%" : "calc(100% - 344px)" }}>
+        <div className="bh-layout-table" style={{ maxWidth: compact ? "100%" : "calc(100% - 344px)" }}>
             {/* ── Hunt Navigation Bar (above card) ──────────── */}
             {!compact && sessions.length > 1 && (
               <div style={{
@@ -206,13 +206,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
 
               {/* ── Stats bar (top) ────────────────────── */}
               <div className="scroll-content" style={{ padding: "18px 20px 0" }}>
-                <div style={{
-                  borderBottom: "2px solid rgba(139,105,20,0.2)",
-                  padding: "6px 0 8px",
-                  display: "flex",
-                  justifyContent: "space-around",
-                  textAlign: "center",
-                }}>
+                <div className="bh-stats-bar">
                   <div>
                     <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Start Money</p>
                     <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "var(--ink-dark)" }}>
@@ -462,7 +456,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
 
         {/* Right Side: Best & Worst Slot Cards */}
         {!compact && (bestSlot || worstSlot) && (
-          <div style={{ width: "320px", flexShrink: 0, display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div className="bh-layout-sidebar">
             
             {/* Best Slot Card */}
             {bestSlot && (
@@ -774,7 +768,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
 
   /* Full page mode */
   return (
-    <section id="bonus-hunt" className="relative py-20 px-2 sm:px-4 lg:px-6 overflow-hidden">
+    <section id="bonus-hunt" className="relative py-10 sm:py-20 px-2 sm:px-4 lg:px-6 overflow-hidden">
 
       <div className="relative max-w-7xl mx-auto">
         {!hideTitle && (
