@@ -203,10 +203,8 @@ export default function HallOfVictoriesContent() {
             role="tab"
             aria-selected={tab === t}
             onClick={() => handleTabChange(t)}
-            className="px-5 py-2 rounded font-medium text-sm font-[family-name:var(--font-display)] tracking-wider uppercase transition-all"
-            style={tab === t
-              ? { background: "var(--ink-dark)", color: "var(--parchment-light)", border: "2px solid var(--gold-dark)" }
-              : { background: "rgba(180,130,20,0.08)", color: "var(--ink-mid)", border: "1px solid rgba(180,130,20,0.3)" }}
+            className={tab === t ? "cta-button" : "cta-button-inactive"}
+            style={{ width: "auto", padding: "0 1.5em" }}
           >
             {t === "featured" ? "⭐ Bruta do Mês" : "⚔ Comunidade"}
           </button>

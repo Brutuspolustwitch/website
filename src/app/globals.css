@@ -1681,6 +1681,38 @@ body {
     inset 0 -1px 1px 3px rgba(250, 227, 133, 1);
 }
 
+/* Inactive variant — used for unselected tab buttons */
+.cta-button-inactive {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 1em;
+  height: 2.75em;
+  line-height: 2.5em;
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(180, 130, 20, 0.7);
+  background: rgba(30, 20, 5, 0.6);
+  border: 1px solid rgba(165, 93, 7, 0.35);
+  border-radius: 0.3em;
+  cursor: pointer;
+  box-sizing: border-box;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(250, 227, 133, 0.06);
+  transition: all 0.2s ease-in-out;
+}
+
+.cta-button-inactive:hover {
+  color: rgba(250, 227, 133, 0.9);
+  border-color: rgba(165, 93, 7, 0.6);
+  background: rgba(50, 35, 5, 0.8);
+}
+
 .cta-subtext {
   font-size: 0.65rem;
   color: var(--ink-light);

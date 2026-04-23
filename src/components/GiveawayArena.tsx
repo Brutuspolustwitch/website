@@ -219,11 +219,8 @@ export default function GiveawayArena() {
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-4 py-2 rounded text-sm font-[family-name:var(--font-display)] tracking-wider uppercase transition-all border ${
-              tab === t
-                ? "border-[var(--gold-dark)] text-[var(--ink-dark)] bg-[var(--parchment-light)]"
-                : "border-[var(--gold-dark)]/30 text-[var(--gold-dark)] bg-transparent hover:bg-[var(--parchment-light)]/10"
-            }`}
+            className={tab === t ? "cta-button" : "cta-button-inactive"}
+            style={{ width: "auto", padding: "0 1.5em" }}
           >
             {t === "active" ? "⚔ Arena Ativa" : "📜 Arquivo"}
           </button>
