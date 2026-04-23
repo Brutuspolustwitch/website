@@ -336,8 +336,8 @@ export default function KenoGame() {
         {/* ── Grid ───────────────────────────────────────────── */}
         <div className="rounded-xl p-6"
           style={{ background: `linear-gradient(135deg, ${P.parchmentMid} 0%, ${P.parchment} 100%)`, border: `2px solid ${P.border}` }}>
-          <div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(8, minmax(0,1fr))", gap: 14 }}>
+          <div className="overflow-x-auto">
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(8, 62px)", gap: 14, width: "fit-content" }}>
               {Array.from({ length: GRID_SIZE }, (_, i) => {
                 const n     = i + 1;
                 const state = getCellState(n);
@@ -350,14 +350,16 @@ export default function KenoGame() {
                     type="button"
                     onClick={() => canClick && togglePick(n)}
                     style={{
-                      aspectRatio:     "1",
+                      width:           62,
+                      height:          62,
+                      flexShrink:      0,
                       background:      c.bg,
                       border:          `2px solid ${c.border}`,
                       borderRadius:    10,
                       display:         "flex",
                       alignItems:      "center",
                       justifyContent:  "center",
-                      fontSize:        "clamp(1.1rem, 2.2vw, 2rem)",
+                      fontSize:        "1.5rem",
                       fontWeight:      700,
                       fontFamily:      "var(--font-display)",
                       letterSpacing:   "0.03em",
