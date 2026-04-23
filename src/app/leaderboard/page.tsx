@@ -153,7 +153,7 @@ export default function LeaderboardPage() {
                           </span>
                         ) : (
                           <span className="font-[family-name:var(--font-display)] text-xl text-arena-ash">
-                            {entry.rank}
+                            {i + 1}
                           </span>
                         )}
                       </div>
