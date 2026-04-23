@@ -624,7 +624,7 @@ export default function AdminBonusHuntPage() {
 
                                     {/* Resolve form */}
                                     {guessSession.status !== "resolved" && (
-                                      <div className="flex items-center gap-2 flex-1 min-w-[240px]">
+                                      <div className="flex items-center gap-2 flex-1 min-w-[260px] flex-wrap">
                                         <input
                                           type="number"
                                           step="0.01"
@@ -632,12 +632,20 @@ export default function AdminBonusHuntPage() {
                                           placeholder="Payout total (ex: 1842.50)"
                                           value={guessPayoutInput}
                                           onChange={(e) => setGuessPayoutInput(e.target.value)}
-                                          className="flex-1 bg-arena-charcoal border border-arena-gold/20 rounded px-2 py-1 text-arena-smoke text-xs font-[family-name:var(--font-ui)] focus:outline-none focus:border-amber-400/50"
+                                          className="flex-1 min-w-[120px] bg-arena-charcoal border border-arena-gold/20 rounded px-2 py-1 text-arena-smoke text-xs font-[family-name:var(--font-ui)] focus:outline-none focus:border-amber-400/50"
                                         />
+                                        {/* Auto-fill from hunt's total_result */}
                                         <button
-                                          onClick={() => guessAction({ action: "resolve", guessSessionId: guessSession.id, finalPayout: parseFloat(guessPayoutInput.replace(",", ".")) })}
-                                          disabled={guessActionLoading || !guessPayoutInput}
-                                          className="px-3 py-1.5 text-xs rounded text-white font-[family-name:var(--font-display)] tracking-widest uppercase disabled:opacity-50 cursor-pointer"
+                                          onClick={() => setGuessPayoutInput(s.total_result.toFixed(2))}
+                                          className="px-2 py-1.5 text-xs rounded border border-arena-gold/30 text-arena-gold/70 hover:bg-arena-gold/10 hover:text-arena-gold transition-all cursor-pointer font-[family-name:var(--font-display)] tracking-widest uppercase whitespace-nowrap"
+                                          title={`Usar Total Win do hunt: ${s.currency}${s.total_result.toFixed(2)}`}
+                                        >
+                                          📥 {s.currency}{s.total_result.toFixed(2)}
+                                        </button>
+                                        <button
+                                          onClick={() => guessAction({ action: "resolve", guessSessionId: guessSession.id, finalPayout: parseFloat((guessPayoutInput || s.total_result.toFixed(2)).replace(",", ".")) })}
+                                          disabled={guessActionLoading}
+                                          className="px-3 py-1.5 text-xs rounded text-white font-[family-name:var(--font-display)] tracking-widest uppercase disabled:opacity-50 cursor-pointer whitespace-nowrap"
                                           style={{ background: "linear-gradient(135deg, #8b6914, #b89230)" }}
                                         >
                                           ⚔ Resolver
