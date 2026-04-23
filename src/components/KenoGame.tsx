@@ -218,7 +218,7 @@ export default function KenoGame() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
 
         {/* ── Left panel ─────────────────────────────────────── */}
         <div style={{ ...panelStyle, padding: 20 }} className="h-fit space-y-4">
@@ -267,7 +267,7 @@ export default function KenoGame() {
             <div className="flex gap-2">
               <button onClick={randomPicks}
                 className="cta-button flex-1" style={{ height: "2.4rem", fontSize: "0.8rem" }}>
-                🎲 Aleatório
+                Aleatório
               </button>
               <button onClick={clearPicks}
                 className="cta-button-inactive flex-1"
@@ -370,7 +370,7 @@ export default function KenoGame() {
         {/* ── Grid ───────────────────────────────────────────── */}
         <div className="flex items-start justify-center rounded-xl p-5"
           style={{ background: `linear-gradient(135deg, ${P.parchmentMid} 0%, ${P.parchment} 100%)`, border: `2px solid ${P.border}` }}>
-          <div style={{ width: "100%", maxWidth: 520 }}>
+          <div style={{ width: "100%" }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(8, minmax(0,1fr))", gap: 6 }}>
               {Array.from({ length: GRID_SIZE }, (_, i) => {
                 const n     = i + 1;
