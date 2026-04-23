@@ -159,7 +159,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
       <div style={{ display: "flex", gap: "24px", alignItems: "flex-start" }}>
         
         {/* Left Side: Table */}
-        <div style={{ flex: "1", minWidth: 0, maxWidth: "calc(100% - 344px)" }}>
+        <div style={{ flex: "1", minWidth: 0, maxWidth: compact ? "100%" : "calc(100% - 344px)" }}>
             {/* ── Hunt Navigation Bar (above card) ──────────── */}
             {!compact && sessions.length > 1 && (
               <div style={{

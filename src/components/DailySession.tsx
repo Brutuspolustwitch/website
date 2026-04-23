@@ -452,8 +452,37 @@ export default function DailySessionContent() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15 }}
               >
+                {/* Mobile: best/worst as horizontal row above bonus hunt */}
+                {(bestSlot || worstSlot) && (
+                  <div className="flex gap-3 mb-4 lg:hidden">
+                    {bestSlot && (
+                      <div className="flex-1 min-w-0">
+                        <SlotHighlightCard
+                          label="Melhor"
+                          slotName={bestSlot.name}
+                          thumbnailUrl={bestSlot.thumbnail_url ?? undefined}
+                          payout={bestSlot.payout ?? 0}
+                          betValue={bestSlot.bet_size ?? bestSlot.buy_value}
+                          currency="€"
+                        />
+                      </div>
+                    )}
+                    {worstSlot && (!bestSlot || worstSlot.id !== bestSlot?.id) && (
+                      <div className="flex-1 min-w-0">
+                        <SlotHighlightCard
+                          label="Pior"
+                          slotName={worstSlot.name}
+                          thumbnailUrl={worstSlot.thumbnail_url ?? undefined}
+                          payout={worstSlot.payout ?? 0}
+                          betValue={worstSlot.bet_size ?? worstSlot.buy_value}
+                          currency="€"
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+                {/* Desktop: best/worst vertical column + bonus hunt */}
                 <div className="flex gap-4 items-start">
-                  {/* Best/Worst slot mini cards — vertical column on the left */}
                   {(bestSlot || worstSlot) && (
                     <div className="hidden lg:flex flex-col gap-3 shrink-0">
                       {bestSlot && (
@@ -478,8 +507,8 @@ export default function DailySessionContent() {
                       )}
                     </div>
                   )}
-                  {/* Bonus Hunt */}
-                  <div className="flex-1 min-w-0">
+                  {/* Bonus Hunt — flex-1 takes full width when no best/worst sibling */}
+                  <div className="flex-1 min-w-0 w-full">
                     <BonusHuntTracker compact />
                   </div>
                 </div>
