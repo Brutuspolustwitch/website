@@ -821,9 +821,50 @@ body {
 }
 
 @media (max-width: 768px) {
+  /* Drop the image aspect-ratio; switch to scrollable card strip */
+  .gladiator-schedule__poster {
+    aspect-ratio: unset;
+    background-image: none;
+    background: linear-gradient(160deg, #0d0a06 0%, #131008 50%, #0a0804 100%);
+    padding: 1.5rem 0.75rem 2rem;
+    min-height: unset;
+  }
+
+  .gladiator-schedule__poster::before {
+    display: none;
+  }
+
   .gladiator-schedule__overlay {
-    width: 94%;
-    margin-top: 18%;
+    width: 100%;
+    margin-top: 0;
+    padding: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(140, 72, 12, 0.4) transparent;
+  }
+
+  .gladiator-week {
+    width: max-content;
+    min-width: 100%;
+    padding-bottom: 0.5rem;
+  }
+
+  .forge-card {
+    min-width: 118px;
+    min-height: 170px;
+  }
+
+  .forge-card__num {
+    font-size: 1.4rem;
+  }
+
+  .forge-slot__time {
+    font-size: 0.65rem;
+  }
+
+  .forge-slot__title {
+    font-size: 0.58rem;
   }
 }
 

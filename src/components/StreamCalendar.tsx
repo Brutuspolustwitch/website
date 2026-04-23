@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Calendar, Clock, X,
   Tv, Target, Trophy, Gift, Gamepad2, Zap, Play,
@@ -66,6 +66,8 @@ export function StreamCalendar() {
   const [streams, setStreams] = useState<ScheduledStreamRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedStream, setSelectedStream] = useState<ScheduledStreamRow | null>(null);
+  const todayCardRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
 
   const fetchStreams = useCallback(async () => {
     try {
@@ -74,6 +76,17 @@ export function StreamCalendar() {
       if (d.streams) setStreams(d.streams);
     } catch { /* noop */ }
     setLoading(false);
+  }, []);
+
+  /* Scroll today card into view on mobile */
+  useEffect(() => {
+    const overlay = overlayRef.current;
+    const card = todayCardRef.current;
+    if (!overlay || !card) return;
+    const cardLeft = card.offsetLeft;
+    const cardWidth = card.offsetWidth;
+    const overlayWidth = overlay.offsetWidth;
+    overlay.scrollLeft = cardLeft - overlayWidth / 2 + cardWidth / 2;
   }, []);
 
   useEffect(() => {
@@ -103,7 +116,7 @@ export function StreamCalendar() {
   return (
     <div className="gladiator-schedule">
       <div className="gladiator-schedule__poster">
-        <div className="gladiator-schedule__overlay">
+        <div className="gladiator-schedule__overlay" ref={overlayRef}>
           <div className="gladiator-week">
             {dates.map((date) => {
               const dow = new Date(date + "T00:00:00").getDay();
@@ -114,7 +127,11 @@ export function StreamCalendar() {
               const month = formatMonth(date);
 
               return (
-                <div key={date} className={`forge-card ${active ? "forge-card--today" : ""} ${past ? "forge-card--past" : ""}`}>
+                <div
+                  key={date}
+                  ref={active ? todayCardRef : undefined}
+                  className={`forge-card ${active ? "forge-card--today" : ""} ${past ? "forge-card--past" : ""}`}
+                >
                   <div className="forge-card__header">
                     <span className="forge-card__day">{DAY_NAMES_PT[dow]}</span>
                     <div className="forge-card__date">
