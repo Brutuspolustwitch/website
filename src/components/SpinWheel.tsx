@@ -425,24 +425,23 @@ function WinHistory({ history }: { history: HistoryEntry[] }) {
               initial={i === 0 ? { opacity: 0, y: -8 } : false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="rounded px-2.5 py-1.5 border"
+              className="rounded px-2.5 py-2 border"
               style={{
                 background: "linear-gradient(135deg, #f9f0dc 0%, #f0e2c0 50%, #e8d4a8 100%)",
                 borderColor: "#c4a35a",
                 boxShadow: "0 1px 3px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.4)",
               }}
             >
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2 min-w-0">
                 {entry.avatar ? (
                   <img src={entry.avatar} alt={entry.player} className="w-6 h-6 rounded-full shrink-0 object-cover border border-[#c4a35a]/60" />
                 ) : (
                   <span className="text-base shrink-0 leading-none">{entry.icon}</span>
                 )}
-                <div className="flex-1 min-w-0">
-                  <p className="text-[11px] font-bold leading-tight truncate" style={{ color: "#3a1f08", fontFamily: "'Cinzel', serif" }}>{entry.player}</p>
-                  <p className="text-[10px] font-semibold leading-tight truncate" style={{ color: entry.tier === "loss" ? "#8b0000" : "#6b3a00" }}>{entry.reward}</p>
-                </div>
-                <span className="text-[9px] shrink-0 font-mono" style={{ color: "#8b6a3a" }}>{timeAgo(entry.time)}</span>
+                <span className="text-[11px] font-bold shrink-0 truncate max-w-[6rem]" style={{ color: "#3a1f08", fontFamily: "'Cinzel', serif" }}>{entry.player}</span>
+                <span className="text-[10px] shrink-0" style={{ color: "#b8860b" }}>·</span>
+                <span className="text-[11px] font-bold flex-1 min-w-0 truncate" style={{ color: entry.tier === "loss" ? "#9b1111" : "#5c3a00", fontFamily: "'Cinzel', serif", letterSpacing: "0.02em" }}>{entry.reward}</span>
+                <span className="text-[9px] shrink-0 font-mono ml-1" style={{ color: "#8b6a3a" }}>{timeAgo(entry.time)}</span>
               </div>
             </motion.div>
           ))
@@ -796,7 +795,7 @@ export function SpinWheel() {
 
       {/* ── HISTORY — papyrus card — below on mobile, floating top-left on desktop ── */}
       <div className="relative z-30 mx-4 mt-3 max-h-[28vh] flex flex-col overflow-hidden
-        lg:absolute lg:top-4 lg:left-4 lg:mx-0 lg:mt-0 lg:w-56 lg:max-h-[40vh]"
+        lg:absolute lg:top-4 lg:left-4 lg:mx-0 lg:mt-0 lg:w-72 lg:max-h-[40vh]"
         style={{
           background: "linear-gradient(160deg, #fdf3d8 0%, #f5e4b8 40%, #ecdaa0 100%)",
           border: "1.5px solid #c4a35a",
