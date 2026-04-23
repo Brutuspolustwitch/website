@@ -261,18 +261,6 @@ export default function MinesGame() {
     );
   }
 
-  const goldBtn = {
-    background: `linear-gradient(180deg, ${P.goldLight} 0%, ${P.gold} 50%, ${P.goldDark} 100%)`,
-    color: P.brown,
-    border: `2px solid ${P.goldDark}`,
-    boxShadow: `0 2px 8px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,220,0.4)`,
-    fontFamily: "var(--font-display)",
-    letterSpacing: "0.06em",
-    fontWeight: 700,
-    cursor: "pointer",
-    transition: "filter 0.15s",
-  } as React.CSSProperties;
-
   const panelStyle = {
     background: P.panel,
     border: `2px solid ${P.border}`,
@@ -308,7 +296,7 @@ export default function MinesGame() {
             )}
           </div>
           <div className="flex flex-col gap-2">
-            <button onClick={resumeGame} style={{ ...goldBtn, padding: "10px 0", borderRadius: 8, width: "100%" }}>
+            <button onClick={resumeGame} className="cta-button">
               ▶ Retomar Jogo
             </button>
             {stuckGame.revealedCells?.length > 0 && stuckGame.profit > 0 && (
@@ -373,8 +361,7 @@ export default function MinesGame() {
                 <label className="block text-sm uppercase tracking-wider font-semibold"
                   style={{ color: P.brownMid }}>Aposta</label>
                 <div className="flex gap-2">
-                  <button onClick={() => setBet(Math.max(10, Math.floor(bet / 2)))}
-                    style={{ ...goldBtn, padding: "8px 12px", borderRadius: 8, fontSize: 14 }}>½</button>
+                  <button onClick={() => setBet(Math.max(10, Math.floor(bet / 2)))} className="cta-button" style={{ width: "auto", padding: "0 14px", height: "2.5rem" }}>½</button>
                   <input
                     type="number"
                     value={bet}
@@ -382,14 +369,13 @@ export default function MinesGame() {
                     className="flex-1 text-center focus:outline-none"
                     style={{ background: P.parchment, border: `1px solid ${P.borderLight}`, borderRadius: 8, padding: "8px 12px", color: P.brown, fontWeight: 700 }}
                   />
-                  <button onClick={() => setBet(Math.min(1000, bet * 2))}
-                    style={{ ...goldBtn, padding: "8px 12px", borderRadius: 8, fontSize: 14 }}>2×</button>
+                  <button onClick={() => setBet(Math.min(1000, bet * 2))} className="cta-button" style={{ width: "auto", padding: "0 14px", height: "2.5rem" }}>2×</button>
                 </div>
                 <div className="flex gap-2">
                   {[25, 50, 100, 250].map((v) => (
                     <button key={v} onClick={() => setBet(v)}
-                      className="flex-1 py-1.5 text-xs font-medium rounded-lg transition-colors"
-                      style={{ background: P.parchmentDeep, border: `1px solid ${P.borderLight}`, color: P.brownMid }}>
+                      className={`cta-button-inactive flex-1`}
+                      style={{ height: "2.2rem", fontSize: "0.8rem" }}>
                       {v}
                     </button>
                   ))}
@@ -408,11 +394,8 @@ export default function MinesGame() {
                 <div className="grid grid-cols-6 gap-1.5">
                   {MINE_OPTIONS.map((n) => (
                     <button key={n} onClick={() => setMines(n)}
-                      className="py-2 text-sm font-bold rounded-lg transition-colors"
-                      style={mines === n
-                        ? { ...goldBtn, padding: "8px 4px" }
-                        : { background: P.parchmentDeep, border: `1px solid ${P.borderLight}`, color: P.brownMid, cursor: "pointer" }
-                      }>
+                      className={mines === n ? "cta-button" : "cta-button-inactive"}
+                      style={{ padding: "0 4px", height: "2.5rem", fontSize: "0.9rem" }}>
                       {n}
                     </button>
                   ))}
@@ -423,7 +406,8 @@ export default function MinesGame() {
               <button
                 onClick={startGame}
                 disabled={loading || (points !== null && bet > points)}
-                style={{ ...goldBtn, width: "100%", padding: "14px 0", borderRadius: 12, fontSize: 18, opacity: (loading || (points !== null && bet > points)) ? 0.5 : 1 }}
+                className="cta-button"
+                style={{ fontSize: "1.05rem", opacity: (loading || (points !== null && bet > points)) ? 0.5 : 1 }}
               >
                 {loading ? "A iniciar..." : `Iniciar Jogo (${bet} pts)`}
               </button>
@@ -501,8 +485,7 @@ export default function MinesGame() {
                   {gameStatus === "won" ? `+${profit - bet} pts lucro` : `-${bet} pts`}
                 </p>
               </div>
-              <button onClick={playAgain}
-                style={{ ...goldBtn, width: "100%", padding: "14px 0", borderRadius: 12, fontSize: 18 }}>
+              <button onClick={playAgain} className="cta-button" style={{ fontSize: "1.05rem" }}>
                 🎮 Jogar de Novo
               </button>
             </div>
