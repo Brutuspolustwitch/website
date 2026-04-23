@@ -212,17 +212,17 @@ export default function GiveawayArena() {
   const myChance = totalTickets > 0 && myTickets > 0 ? ((myTickets / totalTickets) * 100).toFixed(1) : null;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Tab switcher */}
-      <div className="flex gap-3">
+      <div className="flex gap-2">
         {(["active", "archive"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-4 py-2 rounded-lg text-sm font-[family-name:var(--font-display)] tracking-wider transition-all ${
+            className={`px-4 py-2 rounded text-sm font-[family-name:var(--font-display)] tracking-wider uppercase transition-all border ${
               tab === t
-                ? "bg-arena-gold/20 text-arena-gold border border-arena-gold/30"
-                : "bg-white/5 text-arena-smoke/60 border border-white/10 hover:bg-white/10"
+                ? "border-[var(--gold-dark)] text-[var(--ink-dark)] bg-[var(--parchment-light)]"
+                : "border-[var(--gold-dark)]/30 text-[var(--gold-dark)] bg-transparent hover:bg-[var(--parchment-light)]/10"
             }`}
           >
             {t === "active" ? "⚔ Arena Ativa" : "📜 Arquivo"}
@@ -232,76 +232,59 @@ export default function GiveawayArena() {
 
       {tab === "active" ? (
         giveaway ? (
-          <div className="space-y-6">
-            {/* Main Card */}
+          <div className="space-y-4">
+            {/* Main Card — papyrus scroll */}
             <motion.div
-              className={`relative rounded-2xl border-2 overflow-hidden transition-all ${
-                giveaway.is_active ? "border-arena-gold/40" : "border-white/10"
-              }`}
-              animate={entryPulse ? { boxShadow: ["0 0 0 0 rgba(212,168,67,0)", "0 0 30px 10px rgba(212,168,67,0.3)", "0 0 0 0 rgba(212,168,67,0)"] } : {}}
+              className="papyrus-scroll papyrus-scroll-top papyrus-scroll-bottom greek-key-border"
+              style={{ maxWidth: "100%" }}
+              animate={entryPulse ? { boxShadow: ["0 0 0 0 rgba(180,130,20,0)", "0 0 24px 8px rgba(180,130,20,0.35)", "0 0 0 0 rgba(180,130,20,0)"] } : {}}
               transition={{ duration: 0.6 }}
             >
-              {/* Background gradient */}
-              <div className="absolute inset-0 bg-gradient-to-br from-arena-charcoal via-arena-dark to-black" />
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(212,168,67,0.08),transparent_60%)]" />
-
-              <div className="relative p-6 sm:p-8">
+              <div className="relative p-5 sm:p-7">
                 {/* Status + Title */}
-                <div className="flex items-start justify-between mb-6">
-                  <div>
-                    <div className="flex items-center gap-3 mb-2">
-                      {giveaway.is_active && (
-                        <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-medium">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                          ATIVO
-                        </span>
-                      )}
-                      <span className="px-2.5 py-1 rounded-full bg-white/10 text-arena-smoke/60 text-xs">
-                        {giveaway.mode === "single" ? "Entrada Única" : "Sistema de Tickets"}
+                <div className="mb-5">
+                  <div className="flex items-center gap-3 mb-2 flex-wrap">
+                    {giveaway.is_active && (
+                      <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium border"
+                        style={{ background: "rgba(34,197,94,0.12)", borderColor: "rgba(34,197,94,0.3)", color: "#15803d" }}>
+                        <span className="w-1.5 h-1.5 rounded-full bg-green-600 animate-pulse" />
+                        ATIVO
                       </span>
-                    </div>
-                    <h2 className="text-2xl sm:text-3xl font-bold text-arena-gold font-[family-name:var(--font-display)] tracking-wide">
-                      {giveaway.title}
-                    </h2>
-                    {giveaway.description && (
-                      <p className="text-arena-smoke text-sm mt-2 max-w-xl">{giveaway.description}</p>
                     )}
+                    <span className="text-xs px-2 py-0.5 rounded border"
+                      style={{ borderColor: "var(--gold-dark)", color: "var(--ink-mid)", background: "rgba(180,130,20,0.08)" }}>
+                      {giveaway.mode === "single" ? "Entrada Única" : "Sistema de Tickets"}
+                    </span>
                   </div>
-
-                  {/* Prize */}
+                  <h2 className="text-2xl sm:text-3xl font-bold font-[family-name:var(--font-display)] tracking-wide"
+                    style={{ color: "var(--ink-dark)" }}>
+                    {giveaway.title}
+                  </h2>
+                  {giveaway.description && (
+                    <p className="text-sm mt-1" style={{ color: "var(--ink-mid)" }}>{giveaway.description}</p>
+                  )}
                   {giveaway.prize && (
-                    <div className="hidden sm:block text-right">
-                      <p className="text-xs text-arena-smoke/50 uppercase tracking-wider">Prémio</p>
-                      <p className="text-lg text-arena-gold-light font-[family-name:var(--font-display)]">{giveaway.prize}</p>
+                    <div className="mt-3 inline-block px-4 py-1.5 rounded"
+                      style={{ background: "rgba(180,130,20,0.12)", border: "1px solid var(--gold-dark)", color: "var(--ink-dark)" }}>
+                      <span className="text-xs uppercase tracking-wider font-[family-name:var(--font-display)]" style={{ color: "var(--ink-mid)" }}>Prémio — </span>
+                      <span className="font-bold font-[family-name:var(--font-display)]">{giveaway.prize}</span>
                     </div>
                   )}
                 </div>
 
-                {/* Prize mobile */}
-                {giveaway.prize && (
-                  <div className="sm:hidden mb-6 p-3 rounded-lg bg-arena-gold/10 border border-arena-gold/20 text-center">
-                    <p className="text-xs text-arena-smoke/50 uppercase tracking-wider">Prémio</p>
-                    <p className="text-lg text-arena-gold-light font-[family-name:var(--font-display)]">{giveaway.prize}</p>
-                  </div>
-                )}
+                {/* Divider */}
+                <div className="h-px my-4" style={{ background: "linear-gradient(90deg, transparent, var(--gold-dark), transparent)" }} />
 
                 {/* Timer */}
                 {giveaway.is_active && giveaway.end_time && (
-                  <div className="text-center mb-8">
-                    <p className="text-xs text-arena-smoke/50 uppercase tracking-wider mb-2 font-[family-name:var(--font-display)]">
-                      Tempo Restante
-                    </p>
+                  <div className="text-center mb-6">
+                    <p className="text-xs uppercase tracking-widest font-[family-name:var(--font-display)] mb-1"
+                      style={{ color: "var(--ink-mid)" }}>Tempo Restante</p>
                     <motion.p
-                      className={`text-6xl sm:text-7xl font-bold font-[family-name:var(--font-display)] tracking-[0.15em] ${
-                        remaining <= 30 ? "text-arena-red" : remaining <= 60 ? "text-arena-ember" : "text-arena-gold"
-                      }`}
+                      className="text-5xl sm:text-6xl font-bold font-[family-name:var(--font-display)] tracking-[0.15em]"
+                      style={{ color: remaining <= 30 ? "#8b1a1a" : "var(--gold-dark)" }}
                       animate={remaining <= 10 && remaining > 0 ? { scale: [1, 1.05, 1] } : {}}
                       transition={{ duration: 0.5, repeat: Infinity }}
-                      style={{
-                        textShadow: remaining <= 30
-                          ? "0 0 30px rgba(198,40,40,0.5)"
-                          : "0 0 20px rgba(212,168,67,0.3)",
-                      }}
                     >
                       {display}
                     </motion.p>
@@ -309,69 +292,59 @@ export default function GiveawayArena() {
                 )}
 
                 {/* Stats */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-                  <div className="rounded-lg bg-white/5 border border-white/5 p-3 text-center">
-                    <p className="text-xs text-arena-smoke/50 uppercase tracking-wider">Participantes</p>
-                    <p className="text-2xl font-bold text-arena-gold font-[family-name:var(--font-display)]">
-                      {participants.length}
-                    </p>
-                  </div>
-                  <div className="rounded-lg bg-white/5 border border-white/5 p-3 text-center">
-                    <p className="text-xs text-arena-smoke/50 uppercase tracking-wider">Total Tickets</p>
-                    <p className="text-2xl font-bold text-arena-gold font-[family-name:var(--font-display)]">
-                      {totalTickets}
-                    </p>
-                  </div>
-                  <div className="rounded-lg bg-white/5 border border-white/5 p-3 text-center">
-                    <p className="text-xs text-arena-smoke/50 uppercase tracking-wider">Os Teus Tickets</p>
-                    <p className="text-2xl font-bold text-arena-gold font-[family-name:var(--font-display)]">
-                      {myTickets}
-                    </p>
-                  </div>
-                  <div className="rounded-lg bg-white/5 border border-white/5 p-3 text-center">
-                    <p className="text-xs text-arena-smoke/50 uppercase tracking-wider">Hipótese</p>
-                    <p className="text-2xl font-bold text-arena-gold font-[family-name:var(--font-display)]">
-                      {myChance ? `${myChance}%` : "—"}
-                    </p>
-                  </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-5">
+                  {[
+                    { label: "Participantes", val: participants.length },
+                    { label: "Total Tickets", val: totalTickets },
+                    { label: "Os Teus Tickets", val: myTickets },
+                    { label: "Hipótese", val: myChance ? `${myChance}%` : "—" },
+                  ].map(({ label, val }) => (
+                    <div key={label} className="rounded p-3 text-center"
+                      style={{ background: "rgba(180,130,20,0.08)", border: "1px solid rgba(180,130,20,0.25)" }}>
+                      <p className="text-xs uppercase tracking-wider font-[family-name:var(--font-display)]"
+                        style={{ color: "var(--ink-mid)" }}>{label}</p>
+                      <p className="text-xl font-bold font-[family-name:var(--font-display)]"
+                        style={{ color: "var(--ink-dark)" }}>{val}</p>
+                    </div>
+                  ))}
                 </div>
 
                 {/* Entry section */}
                 {giveaway.is_active && (
-                  <div className="flex flex-col sm:flex-row items-center gap-4">
+                  <div className="flex flex-col sm:flex-row items-center gap-3">
                     {giveaway.mode === "tickets" && (
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => setTicketInput(Math.max(1, ticketInput - 1))}
-                          className="w-10 h-10 rounded-lg bg-white/10 text-arena-smoke hover:bg-white/20 transition-all text-xl font-bold"
-                        >
-                          −
-                        </button>
+                          className="w-9 h-9 rounded font-bold text-lg transition-all"
+                          style={{ background: "rgba(180,130,20,0.15)", color: "var(--ink-dark)", border: "1px solid var(--gold-dark)" }}
+                        >−</button>
                         <input
                           type="number"
                           min={1}
                           max={giveaway.max_entries_per_user ? giveaway.max_entries_per_user - myTickets : 100}
                           value={ticketInput}
                           onChange={(e) => setTicketInput(Math.max(1, parseInt(e.target.value) || 1))}
-                          className="w-16 h-10 rounded-lg bg-white/5 border border-white/10 text-center text-arena-gold font-bold text-lg focus:border-arena-gold/40 focus:outline-none"
+                          className="w-14 h-9 rounded text-center font-bold text-lg focus:outline-none"
+                          style={{ background: "rgba(180,130,20,0.08)", border: "1px solid var(--gold-dark)", color: "var(--ink-dark)" }}
                         />
                         <button
                           onClick={() => setTicketInput(ticketInput + 1)}
-                          className="w-10 h-10 rounded-lg bg-white/10 text-arena-smoke hover:bg-white/20 transition-all text-xl font-bold"
-                        >
-                          ＋
-                        </button>
+                          className="w-9 h-9 rounded font-bold text-lg transition-all"
+                          style={{ background: "rgba(180,130,20,0.15)", color: "var(--ink-dark)", border: "1px solid var(--gold-dark)" }}
+                        >＋</button>
                       </div>
                     )}
 
                     <button
                       onClick={handleEnter}
                       disabled={entering || (giveaway.mode === "single" && myTickets > 0)}
-                      className="flex-1 sm:flex-none px-8 py-3 rounded-xl bg-arena-gold text-black font-bold text-lg font-[family-name:var(--font-display)] tracking-wider hover:bg-arena-gold-light transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-arena-gold/20"
+                      className="flex-1 sm:flex-none px-8 py-3 rounded font-bold text-lg font-[family-name:var(--font-display)] tracking-wider transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                      style={{ background: "var(--ink-dark)", color: "var(--parchment-light)", border: "2px solid var(--gold-dark)" }}
                     >
                       {entering ? (
-                        <span className="flex items-center gap-2">
-                          <span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                        <span className="flex items-center gap-2 justify-center">
+                          <span className="w-4 h-4 border-2 border-parchment/30 border-t-parchment rounded-full animate-spin" />
                           A entrar...
                         </span>
                       ) : giveaway.mode === "single" && myTickets > 0 ? (
@@ -382,7 +355,7 @@ export default function GiveawayArena() {
                     </button>
 
                     {giveaway.ticket_cost > 0 && (
-                      <p className="text-xs text-arena-smoke/50">
+                      <p className="text-xs" style={{ color: "var(--ink-mid)" }}>
                         Custo: {giveaway.ticket_cost * (giveaway.mode === "tickets" ? ticketInput : 1)} SE Points
                       </p>
                     )}
@@ -392,20 +365,14 @@ export default function GiveawayArena() {
                 {/* Ended state with winner */}
                 {giveaway.is_ended && winners.length > 0 && (
                   <div className="text-center py-4">
-                    <p className="text-sm text-arena-smoke/50 uppercase tracking-wider mb-2">Vencedor</p>
-                    <p className="text-3xl font-bold text-arena-gold font-[family-name:var(--font-display)]" style={{ textShadow: "0 0 20px rgba(212,168,67,0.4)" }}>
+                    <p className="text-xs uppercase tracking-wider mb-2 font-[family-name:var(--font-display)]"
+                      style={{ color: "var(--ink-mid)" }}>Vencedor</p>
+                    <p className="text-3xl font-bold font-[family-name:var(--font-display)]"
+                      style={{ color: "var(--ink-dark)" }}>
                       🏆 {winners[0].twitch_username}
                     </p>
                   </div>
                 )}
-
-                {/* Chat command hint */}
-                <div className="mt-4 text-center">
-                  <p className="text-xs text-arena-smoke/40">
-                    Também podes participar pelo chat Twitch: <span className="text-arena-gold font-mono">{giveaway.chat_command}</span>
-                    {giveaway.mode === "tickets" && <> (ex: <span className="font-mono text-arena-gold">{giveaway.chat_command} 5</span>)</>}
-                  </p>
-                </div>
 
                 {/* Error */}
                 <AnimatePresence>
@@ -414,7 +381,8 @@ export default function GiveawayArena() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="mt-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center"
+                      className="mt-4 p-3 rounded border text-sm text-center"
+                      style={{ background: "rgba(139,26,26,0.08)", borderColor: "rgba(139,26,26,0.3)", color: "#8b1a1a" }}
                     >
                       {error}
                     </motion.div>
@@ -425,8 +393,9 @@ export default function GiveawayArena() {
 
             {/* Top Participants leaderboard */}
             {participants.length > 0 && (
-              <div className="rounded-xl border border-white/10 bg-white/[0.03] p-5">
-                <h3 className="text-sm font-bold text-arena-smoke/70 uppercase tracking-wider mb-4 font-[family-name:var(--font-display)]">
+              <div className="papyrus-scroll papyrus-scroll-top papyrus-scroll-bottom" style={{ maxWidth: "100%", padding: "1.25rem 1.5rem" }}>
+                <h3 className="text-sm font-bold uppercase tracking-wider mb-4 font-[family-name:var(--font-display)]"
+                  style={{ color: "var(--ink-mid)" }}>
                   ⚔ Gladiadores na Arena
                 </h3>
                 <div className="space-y-1">
@@ -439,21 +408,25 @@ export default function GiveawayArena() {
                       return (
                         <div
                           key={p.id}
-                          className={`flex items-center justify-between py-2 px-3 rounded-lg transition-colors ${
-                            isMe ? "bg-arena-gold/10 border border-arena-gold/20" : "hover:bg-white/5"
-                          }`}
+                          className="flex items-center justify-between py-2 px-3 rounded transition-colors"
+                          style={{
+                            background: isMe ? "rgba(180,130,20,0.12)" : undefined,
+                            border: isMe ? "1px solid rgba(180,130,20,0.3)" : "1px solid transparent",
+                          }}
                         >
                           <div className="flex items-center gap-3">
-                            <span className={`text-sm w-6 text-right ${i < 3 ? "text-arena-gold font-bold" : "text-arena-smoke/40"}`}>
+                            <span className="text-sm w-6 text-right font-bold"
+                              style={{ color: i < 3 ? "var(--gold-dark)" : "var(--stone-mid)" }}>
                               {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}.`}
                             </span>
-                            <span className={`text-sm ${isMe ? "text-arena-gold font-bold" : "text-arena-smoke"}`}>
+                            <span className="text-sm"
+                              style={{ color: isMe ? "var(--ink-dark)" : "var(--ink-mid)", fontWeight: isMe ? 700 : 400 }}>
                               {p.twitch_username} {isMe && "(tu)"}
                             </span>
                           </div>
                           <div className="flex items-center gap-4 text-xs">
-                            <span className="text-arena-smoke/60">{p.tickets} ticket{p.tickets > 1 ? "s" : ""}</span>
-                            <span className="text-arena-gold w-12 text-right">{chance}%</span>
+                            <span style={{ color: "var(--ink-mid)" }}>{p.tickets} ticket{p.tickets > 1 ? "s" : ""}</span>
+                            <span className="w-12 text-right font-bold" style={{ color: "var(--gold-dark)" }}>{chance}%</span>
                           </div>
                         </div>
                       );
@@ -464,21 +437,24 @@ export default function GiveawayArena() {
           </div>
         ) : (
           /* No active giveaway */
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="text-6xl mb-6">⚔️</div>
-            <h2 className="text-2xl font-bold text-arena-gold font-[family-name:var(--font-display)] tracking-wider mb-3">
-              A Arena Está em Repouso
-            </h2>
-            <p className="text-arena-smoke text-sm max-w-md">
-              Não há giveaways ativos de momento. Fica atento ao stream para o próximo confronto!
-            </p>
+          <div className="papyrus-scroll papyrus-scroll-top papyrus-scroll-bottom" style={{ maxWidth: "100%", padding: "4rem 2rem" }}>
+            <div className="flex flex-col items-center justify-center text-center">
+              <div className="text-5xl mb-5">⚔️</div>
+              <h2 className="text-2xl font-bold font-[family-name:var(--font-display)] tracking-wider mb-3"
+                style={{ color: "var(--ink-dark)" }}>
+                A Arena Está em Repouso
+              </h2>
+              <p className="text-sm max-w-md" style={{ color: "var(--ink-mid)" }}>
+                Não há giveaways ativos de momento. Fica atento ao stream para o próximo confronto!
+              </p>
+            </div>
           </div>
         )
       ) : (
         /* Archive tab */
         <div className="space-y-3">
           {pastGiveaways.length === 0 ? (
-            <p className="text-arena-smoke/50 text-sm text-center py-12">Nenhum giveaway passado.</p>
+            <p className="text-sm text-center py-12" style={{ color: "var(--ink-mid)" }}>Nenhum giveaway passado.</p>
           ) : (
             pastGiveaways.map((g) => (
               <PastGiveawayCard key={g.id} giveaway={g} />
@@ -516,28 +492,40 @@ function PastGiveawayCard({ giveaway }: { giveaway: Giveaway }) {
   return (
     <button
       onClick={() => setExpanded(!expanded)}
-      className="w-full text-left rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] p-4 transition-all"
+      className="w-full text-left rounded p-4 transition-all"
+      style={{
+        background: "rgba(245,230,200,0.06)",
+        border: "1px solid rgba(180,130,20,0.25)",
+      }}
+      onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(245,230,200,0.12)")}
+      onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(245,230,200,0.06)")}
     >
       <div className="flex items-center justify-between">
         <div>
-          <h4 className="font-bold text-arena-gold font-[family-name:var(--font-display)]">{giveaway.title}</h4>
-          <div className="flex gap-2 text-xs text-arena-smoke/50 mt-1">
+          <h4 className="font-bold font-[family-name:var(--font-display)]" style={{ color: "var(--gold-dark)" }}>
+            {giveaway.title}
+          </h4>
+          <div className="flex gap-2 text-xs mt-1" style={{ color: "var(--stone-mid)" }}>
             <span>{new Date(giveaway.created_at).toLocaleDateString("pt-PT")}</span>
             <span>·</span>
             <span>{giveaway.prize || "—"}</span>
           </div>
         </div>
-        <svg className={`w-4 h-4 text-arena-smoke/40 transition-transform ${expanded ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <svg className={`w-4 h-4 transition-transform ${expanded ? "rotate-180" : ""}`}
+          style={{ color: "var(--stone-mid)" }}
+          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
       </div>
       {expanded && winner && (
-        <div className="mt-3 pt-3 border-t border-white/5">
-          <p className="text-sm text-arena-smoke">
-            Vencedor: <span className="text-arena-gold font-bold">{winner}</span>
+        <div className="mt-3 pt-3" style={{ borderTop: "1px solid rgba(180,130,20,0.2)" }}>
+          <p className="text-sm" style={{ color: "var(--ink-mid)" }}>
+            Vencedor: <span className="font-bold" style={{ color: "var(--ink-dark)" }}>{winner}</span>
           </p>
         </div>
       )}
     </button>
   );
 }
+
+
