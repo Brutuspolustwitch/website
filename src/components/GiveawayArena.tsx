@@ -452,13 +452,15 @@ export default function GiveawayArena() {
         )
       ) : (
         /* Archive tab */
-        <div className="space-y-3">
+        <div className="papyrus-scroll papyrus-scroll-top papyrus-scroll-bottom" style={{ padding: "1.5rem" }}>
           {pastGiveaways.length === 0 ? (
             <p className="text-sm text-center py-12" style={{ color: "var(--ink-mid)" }}>Nenhum giveaway passado.</p>
           ) : (
-            pastGiveaways.map((g) => (
-              <PastGiveawayCard key={g.id} giveaway={g} />
-            ))
+            <div className="space-y-3">
+              {pastGiveaways.map((g) => (
+                <PastGiveawayCard key={g.id} giveaway={g} />
+              ))}
+            </div>
           )}
         </div>
       )}
@@ -494,21 +496,22 @@ function PastGiveawayCard({ giveaway }: { giveaway: Giveaway }) {
       onClick={() => setExpanded(!expanded)}
       className="w-full text-left rounded p-4 transition-all"
       style={{
-        background: "rgba(245,230,200,0.06)",
-        border: "1px solid rgba(180,130,20,0.25)",
+        background: "var(--parchment-light)",
+        border: "1px solid rgba(180,130,20,0.35)",
+        boxShadow: "0 2px 8px rgba(100,70,10,0.1)",
       }}
-      onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(245,230,200,0.12)")}
-      onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(245,230,200,0.06)")}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "var(--parchment-mid)"; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "var(--parchment-light)"; }}
     >
       <div className="flex items-center justify-between">
         <div>
-          <h4 className="font-bold font-[family-name:var(--font-display)]" style={{ color: "var(--gold-dark)" }}>
+          <h4 className="font-bold font-[family-name:var(--font-display)] tracking-wide" style={{ color: "var(--ink-dark)" }}>
             {giveaway.title}
           </h4>
           <div className="flex gap-2 text-xs mt-1" style={{ color: "var(--stone-mid)" }}>
             <span>{new Date(giveaway.created_at).toLocaleDateString("pt-PT")}</span>
             <span>·</span>
-            <span>{giveaway.prize || "—"}</span>
+            <span style={{ color: "var(--gold-dark)" }}>{giveaway.prize || "—"}</span>
           </div>
         </div>
         <svg className={`w-4 h-4 transition-transform ${expanded ? "rotate-180" : ""}`}
@@ -518,9 +521,9 @@ function PastGiveawayCard({ giveaway }: { giveaway: Giveaway }) {
         </svg>
       </div>
       {expanded && winner && (
-        <div className="mt-3 pt-3" style={{ borderTop: "1px solid rgba(180,130,20,0.2)" }}>
+        <div className="mt-3 pt-3" style={{ borderTop: "1px solid rgba(180,130,20,0.25)" }}>
           <p className="text-sm" style={{ color: "var(--ink-mid)" }}>
-            Vencedor: <span className="font-bold" style={{ color: "var(--ink-dark)" }}>{winner}</span>
+            Vencedor: <span className="font-bold" style={{ color: "var(--gold-dark)" }}>{winner}</span>
           </p>
         </div>
       )}
