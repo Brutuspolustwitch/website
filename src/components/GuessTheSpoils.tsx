@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { supabase, type BonusHuntSession, type BonusHuntSlot } from "@/lib/supabase";
+import { supabase, type BonusHuntSession, type BonusHuntSlot, type GuessSession, type GuessPrediction } from "@/lib/supabase";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { useAuth } from "@/lib/auth-context";
 
 /* ── Helpers ────────────────────────────────────────────────────────── */
 
@@ -39,11 +40,21 @@ type StatsTab = "war-stats" | "treasury" | "favor" | "records";
 /* ── Component ──────────────────────────────────────────────────────── */
 
 export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = {}) {
+  const { user } = useAuth();
   const [campaigns, setCampaigns] = useState<BonusHuntSession[]>([]);
   const [idx, setIdx] = useState(0);
   const [slots, setSlots] = useState<BonusHuntSlot[]>([]);
   const [tab, setTab] = useState<StatsTab>("war-stats");
   const [loading, setLoading] = useState(true);
+
+  /* Guess-the-result state */
+  const [guessSession, setGuessSession] = useState<GuessSession | null>(null);
+  const [myPrediction, setMyPrediction] = useState<GuessPrediction | null>(null);
+  const [predictions, setPredictions] = useState<GuessPrediction[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [predInput, setPredInput] = useState("");
+  const [predLoading, setPredLoading] = useState(false);
+  const [predMsg, setPredMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   /* Fetch all campaigns */
   useEffect(() => {
@@ -102,6 +113,49 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
   const opened = slots.filter((s) => s.opened).length;
   const total = slots.length;
   const totalWin = slots.reduce((s, r) => s + (r.result ?? 0), 0);
+
+  /* Fetch guess session data */
+  const fetchGuessData = useCallback(async (huntSessionId: string) => {
+    const res = await fetch(`/api/guess-predictions?huntSessionId=${huntSessionId}`);
+    if (!res.ok) return;
+    const data = await res.json();
+    setGuessSession(data.guessSession ?? null);
+    setMyPrediction(data.myPrediction ?? null);
+    setPredictions(data.predictions ?? []);
+    setTotalCount(data.totalCount ?? 0);
+  }, []);
+
+  useEffect(() => {
+    if (!campaign) return;
+    fetchGuessData(campaign.id);
+  }, [campaign, fetchGuessData]);
+
+  /* Submit prediction */
+  async function submitPrediction() {
+    if (!campaign || !predInput) return;
+    const amount = parseFloat(predInput.replace(",", "."));
+    if (isNaN(amount) || amount <= 0) {
+      setPredMsg({ ok: false, text: "Insere um valor válido" });
+      return;
+    }
+    setPredLoading(true);
+    setPredMsg(null);
+    const res = await fetch("/api/guess-predictions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ huntSessionId: campaign.id, predictedAmount: amount }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      setPredMsg({ ok: true, text: "Previsão guardada!" });
+      setMyPrediction(data.prediction);
+      setTotalCount((c) => c + 1);
+    } else {
+      setPredMsg({ ok: false, text: data.error ?? "Erro ao guardar previsão" });
+    }
+    setPredLoading(false);
+  }
+
   const totalBuy = slots.reduce((s, r) => s + r.buy_value, 0);
   const currentBE = totalBuy > 0 ? totalWin / totalBuy : 0;
   const progress = total > 0 ? (opened / total) * 100 : 0;
@@ -564,12 +618,229 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                     </div>
                   )}
 
-                  {/* FAVOR */}
+                  {/* FAVOR — Prediction */}
                   {tab === "favor" && (
-                    <div style={{ padding: "24px 0", textAlign: "center" }}>
-                      <p style={{ fontFamily: "var(--font-display)", fontSize: "0.8rem", color: "var(--ink-light)" }}>
-                        Votação em breve.
-                      </p>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+
+                      {/* Status badge */}
+                      {guessSession ? (
+                        <>
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 4px" }}>
+                            <span style={{ fontFamily: "var(--font-display)", fontSize: "0.55rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase" }}>
+                              Adivinha o Resultado
+                            </span>
+                            <span style={{
+                              fontFamily: "var(--font-display)",
+                              fontSize: "0.55rem",
+                              fontWeight: 700,
+                              letterSpacing: "0.1em",
+                              textTransform: "uppercase",
+                              padding: "3px 8px",
+                              borderRadius: "4px",
+                              background: guessSession.status === "resolved"
+                                ? "rgba(139,105,20,0.12)"
+                                : guessSession.betting_open
+                                ? "rgba(34,197,94,0.15)"
+                                : "rgba(139,26,26,0.12)",
+                              color: guessSession.status === "resolved"
+                                ? "var(--gold-dark)"
+                                : guessSession.betting_open
+                                ? "#22c55e"
+                                : "#8b1a1a",
+                              border: `1px solid ${guessSession.status === "resolved" ? "rgba(139,105,20,0.25)" : guessSession.betting_open ? "rgba(34,197,94,0.3)" : "rgba(139,26,26,0.25)"}`,
+                            }}>
+                              {guessSession.status === "resolved" ? "✅ Resolvido" : guessSession.betting_open ? "🟢 Apostas Abertas" : "🔒 Apostas Fechadas"}
+                            </span>
+                          </div>
+
+                          {/* Total participants */}
+                          <div style={{ textAlign: "center", padding: "4px 0", borderTop: "1px solid rgba(139,105,20,0.12)", borderBottom: "1px solid rgba(139,105,20,0.12)" }}>
+                            <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.1rem", fontWeight: 700, color: "var(--gold-dark)" }}>{totalCount}</span>
+                            <span style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.1em", marginLeft: "6px" }}>GLADIADORES A APOSTAR</span>
+                          </div>
+
+                          {/* Winner banner */}
+                          {guessSession.status === "resolved" && guessSession.winner_display_name && (
+                            <motion.div
+                              initial={{ opacity: 0, scale: 0.95 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              style={{
+                                background: "linear-gradient(135deg, rgba(139,105,20,0.18), rgba(184,146,48,0.1))",
+                                border: "1px solid rgba(139,105,20,0.35)",
+                                borderRadius: "8px",
+                                padding: "12px",
+                                textAlign: "center",
+                              }}
+                            >
+                              <div style={{ fontSize: "1.4rem", marginBottom: "4px" }}>🏆</div>
+                              <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "2px" }}>Vencedor</p>
+                              <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "var(--gold-dark)", marginBottom: "2px" }}>
+                                {guessSession.winner_display_name}
+                              </p>
+                              <p style={{ fontFamily: "var(--font-display)", fontSize: "0.55rem", color: "var(--ink-light)" }}>
+                                Previsão: <strong style={{ color: "var(--ink-dark)" }}>{(guessSession.winner_predicted_amount ?? 0).toFixed(2)}€</strong>
+                                {guessSession.winner_diff != null && guessSession.winner_diff < 0.01
+                                  ? " 🎯 Exacto!"
+                                  : ` (±${(guessSession.winner_diff ?? 0).toFixed(2)}€)`
+                                }
+                              </p>
+                              {guessSession.final_payout != null && (
+                                <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", marginTop: "4px" }}>
+                                  Total real: <strong style={{ color: "#2e7d32" }}>{guessSession.final_payout.toFixed(2)}€</strong>
+                                </p>
+                              )}
+                            </motion.div>
+                          )}
+
+                          {/* My prediction (if submitted) */}
+                          {myPrediction && guessSession.status !== "resolved" && (
+                            <div style={{
+                              background: "rgba(139,105,20,0.06)",
+                              border: "1px solid rgba(139,105,20,0.2)",
+                              borderRadius: "6px",
+                              padding: "10px",
+                              textAlign: "center",
+                            }}>
+                              <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.1em", marginBottom: "2px" }}>A TUA PREVISÃO</p>
+                              <p style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "var(--gold-dark)" }}>
+                                {myPrediction.predicted_amount.toFixed(2)}€
+                              </p>
+                              {guessSession.betting_open && (
+                                <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", marginTop: "2px" }}>
+                                  Podes alterar a previsão enquanto as apostas estiverem abertas
+                                </p>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Submit form */}
+                          {guessSession.betting_open && (
+                            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                              {user ? (
+                                <>
+                                  <div style={{ display: "flex", gap: "6px" }}>
+                                    <input
+                                      type="number"
+                                      step="0.01"
+                                      min="0.01"
+                                      placeholder="Ex: 1250.00"
+                                      value={predInput}
+                                      onChange={(e) => setPredInput(e.target.value)}
+                                      onKeyDown={(e) => e.key === "Enter" && submitPrediction()}
+                                      style={{
+                                        flex: 1,
+                                        padding: "8px 10px",
+                                        fontFamily: "var(--font-ui)",
+                                        fontSize: "0.85rem",
+                                        fontWeight: 600,
+                                        color: "var(--ink-dark)",
+                                        background: "rgba(139,105,20,0.05)",
+                                        border: "1px solid rgba(139,105,20,0.25)",
+                                        borderRadius: "6px",
+                                        outline: "none",
+                                      }}
+                                    />
+                                    <button
+                                      onClick={submitPrediction}
+                                      disabled={predLoading || !predInput}
+                                      style={{
+                                        padding: "8px 14px",
+                                        fontFamily: "var(--font-display)",
+                                        fontSize: "0.55rem",
+                                        fontWeight: 700,
+                                        letterSpacing: "0.1em",
+                                        textTransform: "uppercase",
+                                        color: "#fff",
+                                        background: predLoading ? "rgba(139,105,20,0.3)" : "linear-gradient(135deg, var(--gold-dark), #b89230)",
+                                        border: "none",
+                                        borderRadius: "6px",
+                                        cursor: predLoading ? "not-allowed" : "pointer",
+                                        whiteSpace: "nowrap",
+                                      }}
+                                    >
+                                      {predLoading ? "…" : myPrediction ? "Atualizar" : "Apostar"}
+                                    </button>
+                                  </div>
+                                  {predMsg && (
+                                    <p style={{
+                                      fontFamily: "var(--font-display)",
+                                      fontSize: "0.55rem",
+                                      color: predMsg.ok ? "#2e7d32" : "#8b1a1a",
+                                      letterSpacing: "0.08em",
+                                    }}>
+                                      {predMsg.ok ? "✓" : "✗"} {predMsg.text}
+                                    </p>
+                                  )}
+                                </>
+                              ) : (
+                                <p style={{ fontFamily: "var(--font-display)", fontSize: "0.6rem", color: "var(--ink-light)", textAlign: "center", padding: "8px 0" }}>
+                                  Faz login com Twitch para apostares
+                                </p>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Predictions leaderboard (resolved or admin) */}
+                          {predictions.length > 0 && (
+                            <div style={{ marginTop: "4px" }}>
+                              <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "6px" }}>
+                                Todas as Previsões
+                              </p>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "3px", maxHeight: "220px", overflowY: "auto" }}>
+                                {predictions.map((p, i) => {
+                                  const isWinner = guessSession.winner_user_id === p.user_id;
+                                  const diff = guessSession.final_payout != null
+                                    ? Math.abs(p.predicted_amount - guessSession.final_payout)
+                                    : null;
+                                  return (
+                                    <div
+                                      key={p.id}
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        padding: "5px 8px",
+                                        borderRadius: "4px",
+                                        background: isWinner
+                                          ? "rgba(139,105,20,0.12)"
+                                          : myPrediction?.id === p.id
+                                          ? "rgba(34,197,94,0.06)"
+                                          : "transparent",
+                                        border: isWinner ? "1px solid rgba(139,105,20,0.25)" : "1px solid transparent",
+                                      }}
+                                    >
+                                      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                                        <span style={{ fontFamily: "var(--font-display)", fontSize: "0.55rem", color: "var(--ink-light)", width: "16px", textAlign: "right" }}>
+                                          {isWinner ? "🏆" : `${i + 1}`}
+                                        </span>
+                                        <span style={{ fontFamily: "var(--font-ui)", fontSize: "0.75rem", fontWeight: 600, color: isWinner ? "var(--gold-dark)" : "var(--ink-dark)" }}>
+                                          {p.display_name}
+                                        </span>
+                                      </div>
+                                      <div style={{ textAlign: "right" }}>
+                                        <span style={{ fontFamily: "var(--font-ui)", fontSize: "0.75rem", fontWeight: 700, color: isWinner ? "var(--gold-dark)" : "var(--ink-dark)" }}>
+                                          {p.predicted_amount.toFixed(2)}€
+                                        </span>
+                                        {diff != null && (
+                                          <span style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", display: "block" }}>
+                                            ±{diff.toFixed(2)}€
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <div style={{ padding: "24px 0", textAlign: "center" }}>
+                          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.8rem", color: "var(--ink-light)" }}>
+                            Apostas não disponíveis para esta campanha.
+                          </p>
+                        </div>
+                      )}
                     </div>
                   )}
 

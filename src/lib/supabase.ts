@@ -241,3 +241,26 @@ export interface ScheduledStreamRowWithExtra extends ScheduledStreamRow {
   prize?: string;
   duration?: string;
 }
+
+export interface GuessSession {
+  id: string;
+  bonus_hunt_session_id: string;
+  betting_open: boolean;
+  final_payout: number | null;
+  status: "open" | "locked" | "resolved";
+  winner_user_id: string | null;
+  winner_display_name: string | null;
+  winner_predicted_amount: number | null;
+  winner_diff: number | null;
+  created_at: string;
+  resolved_at: string | null;
+}
+
+export interface GuessPrediction {
+  id: string;
+  guess_session_id: string;
+  user_id: string;
+  display_name: string;
+  predicted_amount: number;
+  created_at: string;
+}

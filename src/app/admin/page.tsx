@@ -59,6 +59,15 @@ const ADMIN_CATEGORIES = [
     borderColor: "border-gray-500/30",
     hoverColor: "hover:border-gray-500/50",
   },
+  {
+    href: "/admin/outros/adivinha",
+    title: "Adivinha o Resultado",
+    description: "Gestão de apostas e previsões dos jogadores nos Bonus Hunts",
+    icon: "🎯",
+    color: "from-orange-600/20 to-orange-500/10",
+    borderColor: "border-orange-500/30",
+    hoverColor: "hover:border-orange-500/50",
+  },
 ] as const;
 
 export default function AdminPage() {
