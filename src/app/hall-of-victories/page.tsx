@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function HallOfVictoriesPage() {
   return (
-    <main className="pt-20 pb-16 min-h-screen">
+    <main className="pt-6 pb-16 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <HallOfVictoriesContent />
       </div>
