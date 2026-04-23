@@ -368,10 +368,10 @@ export default function KenoGame() {
         </div>
 
         {/* ── Grid ───────────────────────────────────────────── */}
-        <div className="flex items-start justify-center rounded-xl p-5"
+        <div className="rounded-xl p-6"
           style={{ background: `linear-gradient(135deg, ${P.parchmentMid} 0%, ${P.parchment} 100%)`, border: `2px solid ${P.border}` }}>
-          <div style={{ width: "100%" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(8, minmax(0,1fr))", gap: 6 }}>
+          <div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(8, minmax(0,1fr))", gap: 10 }}>
               {Array.from({ length: GRID_SIZE }, (_, i) => {
                 const n     = i + 1;
                 const state = getCellState(n);
@@ -387,11 +387,11 @@ export default function KenoGame() {
                       aspectRatio:     "1",
                       background:      c.bg,
                       border:          `2px solid ${c.border}`,
-                      borderRadius:    8,
+                      borderRadius:    10,
                       display:         "flex",
                       alignItems:      "center",
                       justifyContent:  "center",
-                      fontSize:        "clamp(0.65rem, 1.8vw, 0.9rem)",
+                      fontSize:        "clamp(1rem, 1.5vw, 1.5rem)",
                       fontWeight:      700,
                       fontFamily:      "var(--font-display)",
                       letterSpacing:   "0.03em",
