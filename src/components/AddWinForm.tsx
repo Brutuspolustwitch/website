@@ -72,6 +72,13 @@ interface AddWinFormProps {
   onCancel: () => void;
 }
 
+interface SlotItem {
+  id: string;
+  name: string;
+  provider: string;
+  thumbnail_url: string | null;
+}
+
 export default function AddWinForm({ onSuccess, onCancel }: AddWinFormProps) {
   const [url, setUrl]             = useState("");
   const [payout, setPayout]       = useState("");
@@ -82,17 +89,49 @@ export default function AddWinForm({ onSuccess, onCancel }: AddWinFormProps) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError]           = useState<string | null>(null);
 
-  const comboboxRef = useRef<HTMLDivElement>(null);
+  /* Slot search */
+  const [slotSearch, setSlotSearch]               = useState("");
+  const [slotResults, setSlotResults]             = useState<SlotItem[]>([]);
+  const [selectedSlot, setSelectedSlot]           = useState<SlotItem | null>(null);
+  const [slotDropdownOpen, setSlotDropdownOpen]   = useState(false);
+  const [slotSearching, setSlotSearching]         = useState(false);
+
+  const comboboxRef     = useRef<HTMLDivElement>(null);
+  const slotComboboxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (comboboxRef.current && !comboboxRef.current.contains(e.target as Node)) {
         setDropdownOpen(false);
       }
+      if (slotComboboxRef.current && !slotComboboxRef.current.contains(e.target as Node)) {
+        setSlotDropdownOpen(false);
+      }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  /* Debounced slot search */
+  useEffect(() => {
+    if (!slotSearch.trim()) {
+      setSlotResults([]);
+      return;
+    }
+    setSlotSearching(true);
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/slots?q=${encodeURIComponent(slotSearch.trim())}`);
+        if (res.ok) {
+          const data = await res.json();
+          setSlotResults(data.slots ?? []);
+        }
+      } finally {
+        setSlotSearching(false);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [slotSearch]);
 
   const filteredProviders = SLOT_PROVIDERS.filter((p) =>
     p.toLowerCase().includes(providerSearch.toLowerCase())
@@ -108,6 +147,19 @@ export default function AddWinForm({ onSuccess, onCancel }: AddWinFormProps) {
     setProviderSearch(val);
     setProvider(val);
     setDropdownOpen(true);
+  };
+
+  const handleSlotInputChange = (val: string) => {
+    setSlotSearch(val);
+    setSelectedSlot(null);
+    setSlotDropdownOpen(true);
+  };
+
+  const handleSlotSelect = (slot: SlotItem) => {
+    setSelectedSlot(slot);
+    setSlotSearch(slot.name);
+    setSlotResults([]);
+    setSlotDropdownOpen(false);
   };
 
   /* Only allow numeric / decimal input */
@@ -131,9 +183,11 @@ export default function AddWinForm({ onSuccess, onCancel }: AddWinFormProps) {
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({
           url,
-          title:       payout ? `${payout}€` : "",
-          description: multiplier ? `${multiplier}x` : "",
+          title:              payout ? `${payout}€` : "",
+          description:        multiplier ? `${multiplier}x` : "",
           provider,
+          slot_name:          selectedSlot?.name ?? (slotSearch.trim() || null),
+          slot_thumbnail_url: selectedSlot?.thumbnail_url ?? null,
         }),
       });
       const data = await res.json();
@@ -187,7 +241,7 @@ export default function AddWinForm({ onSuccess, onCancel }: AddWinFormProps) {
               autoFocus
               autoComplete="off"
             />
-            <span className="add-win-form__hint">YouTube ou link directo (.mp4)</span>
+            <span className="add-win-form__hint">YouTube, Twitch clip/vídeo ou link directo (.mp4)</span>
           </div>
 
           {/* Payout + Multiplier side by side */}
@@ -223,6 +277,70 @@ export default function AddWinForm({ onSuccess, onCancel }: AddWinFormProps) {
                 />
                 <span className="add-win-form__number-suffix">x</span>
               </div>
+            </div>
+          </div>
+
+          {/* Slot name */}
+          <div className="add-win-form__field" ref={slotComboboxRef}>
+            <label className="add-win-form__label" htmlFor="win-slot-name">Nome do Slot</label>
+            <div className="add-win-form__combobox">
+              <input
+                id="win-slot-name"
+                type="text"
+                className="add-win-form__input add-win-form__input--combobox"
+                placeholder="Pesquisar slot..."
+                value={slotSearch}
+                onChange={(e) => handleSlotInputChange(e.target.value)}
+                onFocus={() => slotSearch.trim() && setSlotDropdownOpen(true)}
+                autoComplete="off"
+                role="combobox"
+                aria-expanded={slotDropdownOpen}
+                aria-haspopup="listbox"
+                aria-controls="slot-listbox"
+              />
+              {slotSearching ? (
+                <span className="add-win-form__combobox-icon" aria-hidden="true" style={{ fontSize: "0.7rem", opacity: 0.5 }}>⏳</span>
+              ) : (
+                <svg className="add-win-form__combobox-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+                  <circle cx="6.5" cy="6.5" r="4" />
+                  <path d="M10 10l3 3" />
+                </svg>
+              )}
+              <AnimatePresence>
+                {slotDropdownOpen && slotResults.length > 0 && (
+                  <motion.ul
+                    id="slot-listbox"
+                    role="listbox"
+                    className="add-win-form__provider-list"
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.14 }}
+                  >
+                    {slotResults.map((slot) => (
+                      <li
+                        key={slot.id}
+                        role="option"
+                        aria-selected={selectedSlot?.id === slot.id}
+                        className={`add-win-form__provider-item${selectedSlot?.id === slot.id ? " add-win-form__provider-item--selected" : ""}`}
+                        onMouseDown={(e) => { e.preventDefault(); handleSlotSelect(slot); }}
+                      >
+                        {slot.thumbnail_url && (
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img
+                            src={slot.thumbnail_url}
+                            alt=""
+                            aria-hidden="true"
+                            style={{ width: 24, height: 24, objectFit: "cover", borderRadius: 3, flexShrink: 0 }}
+                          />
+                        )}
+                        <span>{slot.name}</span>
+                        {slot.provider && <span style={{ opacity: 0.5, fontSize: "0.75em" }}>{slot.provider}</span>}
+                      </li>
+                    ))}
+                  </motion.ul>
+                )}
+              </AnimatePresence>
             </div>
           </div>
 

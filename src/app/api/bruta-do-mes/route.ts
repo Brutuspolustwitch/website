@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabase } from "@/lib/supabase";
-import { parseClipUrl, sanitizeText } from "@/lib/clipParser";
+import { parseClipUrl, sanitizeText, getVideoThumbnail } from "@/lib/clipParser";
 
 export const dynamic = "force-dynamic";
 
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Pedido inválido" }, { status: 400 });
   }
 
-  const { url, title, description, provider, month_label } = body as Record<string, unknown>;
+  const { url, title, description, provider, month_label, slot_name } = body as Record<string, unknown>;
 
   if (typeof url !== "string" || !url.trim()) {
     return NextResponse.json({ error: "URL obrigatório" }, { status: 422 });
@@ -71,15 +71,20 @@ export async function POST(request: Request) {
   /* Deactivate all previous featured wins */
   await supabase.from("bruta_do_mes").update({ is_active: false }).eq("is_active", true);
 
+  const safeSlotName   = typeof slot_name === "string" && slot_name.trim() ? sanitizeText(slot_name, 120) : null;
+  const autoThumb      = getVideoThumbnail(parsed.type, parsed.embedUrl);
+
   const { data, error } = await supabase.from("bruta_do_mes").insert({
-    month_label: sanitizeText(month_label as string, 60),
-    title:       sanitizeText(title as string, 120),
-    description: typeof description === "string" ? sanitizeText(description, 500) : null,
-    url:         url.trim(),
-    provider:    safeProvider,
-    embed_type:  parsed.type,
-    embed_url:   parsed.embedUrl,
-    is_active:   true,
+    month_label:   sanitizeText(month_label as string, 60),
+    title:         sanitizeText(title as string, 120),
+    description:   typeof description === "string" ? sanitizeText(description, 500) : null,
+    url:           url.trim(),
+    provider:      safeProvider,
+    embed_type:    parsed.type,
+    embed_url:     parsed.embedUrl,
+    is_active:     true,
+    slot_name:     safeSlotName,
+    thumbnail_url: autoThumb ?? null,
   }).select().single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

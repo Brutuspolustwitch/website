@@ -5,7 +5,7 @@
  * NEVER hardcodes casino providers — only generic detection rules.
  */
 
-export type EmbedType = "video" | "iframe" | "link";
+export type EmbedType = "video" | "iframe" | "link" | "twitch_clip" | "twitch_video";
 
 export interface EmbedResult {
   type: EmbedType;
@@ -22,6 +22,47 @@ const VIDEO_EXTENSIONS = [".mp4", ".webm", ".ogg", ".mov", ".m4v"];
 function isDirectVideo(url: URL): boolean {
   const path = url.pathname.toLowerCase().split("?")[0];
   return VIDEO_EXTENSIONS.some((ext) => path.endsWith(ext));
+}
+
+/**
+ * Parse Twitch clip and video URLs.
+ * Stores just the ID/slug as embedUrl; the full iframe URL is built
+ * client-side so it can include the correct `parent` hostname.
+ */
+function parseTwitch(url: URL): EmbedResult | null {
+  const { hostname, pathname } = url;
+  const isTwitch =
+    hostname === "clips.twitch.tv" ||
+    hostname === "www.clips.twitch.tv" ||
+    hostname === "twitch.tv" ||
+    hostname === "www.twitch.tv" ||
+    hostname === "m.twitch.tv";
+
+  if (!isTwitch) return null;
+
+  // clips.twitch.tv/CLIP_SLUG
+  if (hostname === "clips.twitch.tv" || hostname === "www.clips.twitch.tv") {
+    const slug = pathname.replace(/^\//, "").split("?")[0].split("/")[0];
+    if (slug && slug.length > 3 && /^[a-zA-Z0-9_-]+$/.test(slug)) {
+      return { type: "twitch_clip", embedUrl: slug };
+    }
+  }
+
+  // twitch.tv/videos/VIDEO_ID
+  if (pathname.startsWith("/videos/")) {
+    const videoId = pathname.split("/videos/")[1]?.split("?")[0]?.split("/")[0] ?? "";
+    if (/^\d+$/.test(videoId)) {
+      return { type: "twitch_video", embedUrl: videoId };
+    }
+  }
+
+  // twitch.tv/CHANNEL/clip/CLIP_SLUG  OR  twitch.tv/clip/CLIP_SLUG
+  const clipMatch = pathname.match(/\/clip\/([a-zA-Z0-9_-]+)/);
+  if (clipMatch?.[1] && clipMatch[1].length > 3) {
+    return { type: "twitch_clip", embedUrl: clipMatch[1] };
+  }
+
+  return null;
 }
 
 /**
@@ -103,7 +144,11 @@ export function parseClipUrl(raw: string): EmbedResult {
   const yt = parseYouTube(url);
   if (yt) return yt;
 
-  // 2. Direct video files
+  // 2. Twitch
+  const tw = parseTwitch(url);
+  if (tw) return tw;
+
+  // 3. Direct video files
   if (isDirectVideo(url)) {
     return { type: "video", embedUrl: url.href };
   }
@@ -119,4 +164,17 @@ export function parseClipUrl(raw: string): EmbedResult {
 export function sanitizeText(value: unknown, maxLen = 500): string {
   if (typeof value !== "string") return "";
   return value.trim().slice(0, maxLen);
+}
+
+/**
+ * Auto-extract a thumbnail URL from parsed embed info.
+ * Returns null when no thumbnail can be derived (Twitch, direct video, etc.).
+ * Caller should fall back to a slot thumbnail or placeholder.
+ */
+export function getVideoThumbnail(type: EmbedType, embedUrl: string): string | null {
+  if (type === "iframe") {
+    const m = embedUrl.match(/\/embed\/([a-zA-Z0-9_-]{8,15})/);
+    if (m) return `https://img.youtube.com/vi/${m[1]}/hqdefault.jpg`;
+  }
+  return null;
 }

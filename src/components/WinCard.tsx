@@ -19,6 +19,8 @@ export interface WinClip {
   embed_url: string;
   honors: number;
   created_at: string;
+  slot_name: string | null;
+  thumbnail_url: string | null;
 }
 
 interface WinCardProps {
@@ -90,7 +92,12 @@ export default function WinCard({ clip, currentUserId, onHonor, honored }: WinCa
         {clip.provider && (
           <span className="win-card__provider-badge">{clip.provider}</span>
         )}
-        <EmbedRenderer type={clip.embed_type} embedUrl={clip.embed_url} title={clip.title} />
+        <EmbedRenderer
+          type={clip.embed_type}
+          embedUrl={clip.embed_url}
+          title={clip.title}
+          thumbnailUrl={clip.thumbnail_url ?? undefined}
+        />
       </div>
 
       {/* ── Body ────────────────────────────────────── */}
@@ -134,6 +141,9 @@ export default function WinCard({ clip, currentUserId, onHonor, honored }: WinCa
             )}
           </div>
         )}
+
+        {/* Slot name */}
+        {clip.slot_name && <p className="win-card__slot-name">{clip.slot_name}</p>}
 
         {/* Fallback plain-text title/description for legacy entries */}
         {textTitle && <h3 className="win-card__title">{textTitle}</h3>}

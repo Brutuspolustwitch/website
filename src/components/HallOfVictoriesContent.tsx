@@ -22,6 +22,8 @@ interface BrutaDoMes {
   embed_type: EmbedType;
   embed_url: string;
   created_at: string;
+  slot_name: string | null;
+  thumbnail_url: string | null;
 }
 
 const SORT_OPTIONS: { value: SortMode; label: string }[] = [
@@ -91,7 +93,13 @@ function FeaturedWin({ win, loading }: { win: BrutaDoMes | null; loading: boolea
 
         {/* Video embed */}
         <div className="relative aspect-video bg-black/40">
-          <EmbedRenderer type={win.embed_type} embedUrl={win.embed_url} title={win.title} />
+          <EmbedRenderer
+            type={win.embed_type}
+            embedUrl={win.embed_url}
+            title={win.title}
+            thumbnailUrl={win.thumbnail_url ?? undefined}
+            featured={true}
+          />
         </div>
 
         {/* Content */}

@@ -16,6 +16,8 @@ interface BrutaDoMes {
   embed_url: string;
   is_active: boolean;
   created_at: string;
+  slot_name: string | null;
+  thumbnail_url: string | null;
 }
 
 const SLOT_PROVIDERS = [
@@ -76,6 +78,7 @@ export default function AdminBrutaDoMesConfig() {
   /* ── Form state ─────────────────────────────────────────── */
   const [url, setUrl]           = useState("");
   const [gameTitle, setGameTitle] = useState("");
+  const [slotName, setSlotName]  = useState("");
   const [description, setDescription] = useState("");
   const [provider, setProvider] = useState("");
   const [providerSearch, setProviderSearch] = useState("");
@@ -142,6 +145,7 @@ export default function AdminBrutaDoMesConfig() {
         body:    JSON.stringify({
           url,
           title:       gameTitle,
+          slot_name:   slotName.trim() || null,
           description: description || null,
           provider:    provider || null,
           month_label: monthLabel,
@@ -150,7 +154,7 @@ export default function AdminBrutaDoMesConfig() {
       const data = await res.json();
       if (!res.ok) { setError(data.error ?? "Erro ao guardar"); return; }
       setCurrent(data.win);
-      setUrl(""); setGameTitle(""); setDescription(""); setProvider(""); setProviderSearch("");
+      setUrl(""); setGameTitle(""); setSlotName(""); setDescription(""); setProvider(""); setProviderSearch("");
       setToast({ message: "Bruta do Mês definida com sucesso!", type: "success" });
     } catch {
       setError("Erro de rede. Tenta novamente.");
@@ -279,6 +283,20 @@ export default function AdminBrutaDoMesConfig() {
                 placeholder="ex: Gates of Olympus"
                 maxLength={120}
               />
+            </div>
+
+            {/* Slot name (for thumbnail lookup) */}
+            <div className="bdm-admin-form__field">
+              <label className="bdm-admin-form__label">Nome do Slot (para thumbnail)</label>
+              <input
+                className="bdm-admin-form__input"
+                type="text"
+                value={slotName}
+                onChange={(e) => setSlotName(e.target.value)}
+                placeholder="ex: Gates of Olympus (corresponde à biblioteca de slots)"
+                maxLength={120}
+              />
+              <span className="bdm-admin-form__hint">Deve corresponder ao nome exato da biblioteca de slots.</span>
             </div>
 
             {/* Provider combobox */}

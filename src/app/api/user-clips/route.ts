@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabase } from "@/lib/supabase";
-import { parseClipUrl, sanitizeText } from "@/lib/clipParser";
+import { parseClipUrl, sanitizeText, getVideoThumbnail } from "@/lib/clipParser";
 
 export const dynamic = "force-dynamic";
 
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Pedido inválido" }, { status: 400 });
   }
 
-  const { url, title, description, provider } = body as Record<string, unknown>;
+  const { url, title, description, provider, slot_name, slot_thumbnail_url } = body as Record<string, unknown>;
 
   /* Validate URL */
   if (typeof url !== "string" || url.trim() === "") {
@@ -77,20 +77,30 @@ export async function POST(request: Request) {
   /* Sanitize text fields */
   const safeTitle       = sanitizeText(title, 120)       || "Vitória";
   const safeDescription = sanitizeText(description, 500) || "";
+  const safeSlotName    = sanitizeText(slot_name, 120)   || null;
+
+  /* Derive thumbnail: auto-extract from YouTube, fallback to slot thumbnail */
+  const autoThumb     = getVideoThumbnail(embedType, embedUrl);
+  const thumbnailUrl  = autoThumb
+    ?? (typeof slot_thumbnail_url === "string" && slot_thumbnail_url.startsWith("https://")
+      ? slot_thumbnail_url.slice(0, 2048)
+      : null);
 
   /* Insert */
   const { data, error } = await supabase
     .from("user_clips")
     .insert({
-      twitch_id:    session.id,
-      username:     session.login,
-      avatar_url:   session.profile_image_url,
-      title:        safeTitle,
-      description:  safeDescription,
-      url:          url.trim().slice(0, 2048),
-      provider:     safeProvider,
-      embed_type:   embedType,
-      embed_url:    embedUrl,
+      twitch_id:     session.id,
+      username:      session.login,
+      avatar_url:    session.profile_image_url,
+      title:         safeTitle,
+      description:   safeDescription,
+      url:           url.trim().slice(0, 2048),
+      provider:      safeProvider,
+      embed_type:    embedType,
+      embed_url:     embedUrl,
+      slot_name:     safeSlotName,
+      thumbnail_url: thumbnailUrl,
     })
     .select()
     .single();
