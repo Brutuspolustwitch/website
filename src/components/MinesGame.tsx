@@ -407,7 +407,7 @@ export default function MinesGame() {
                 onClick={startGame}
                 disabled={loading || (points !== null && bet > points)}
                 className="cta-button"
-                style={{ fontSize: "1.05rem", opacity: (loading || (points !== null && bet > points)) ? 0.5 : 1 }}
+                style={{ fontSize: "0.85rem", whiteSpace: "nowrap", opacity: (loading || (points !== null && bet > points)) ? 0.5 : 1 }}
               >
                 {loading ? "A iniciar..." : `Iniciar Jogo (${bet} pts)`}
               </button>
