@@ -282,10 +282,10 @@ export default function GiveawayAdmin() {
           </div>
           <button
             onClick={() => setShowCreate(!showCreate)}
-            className="px-4 py-2 rounded text-sm font-[family-name:var(--font-display)] tracking-wider transition-all"
-            style={{ background: "rgba(180,130,20,0.12)", color: "var(--ink-dark)", border: "1px solid var(--gold-dark)" }}
+            className={showCreate ? "cta-button-inactive" : "cta-button"}
+            style={{ width: "auto", padding: "0 1.25em" }}
           >
-            {showCreate ? "✕ Cancelar" : "＋ Novo Giveaway"}
+            {showCreate ? "✕ Cancelar" : "+ Novo Giveaway"}
           </button>
         </div>
 
@@ -310,14 +310,12 @@ export default function GiveawayAdmin() {
                   <div className="space-y-1">
                     <label className="text-xs uppercase tracking-wider font-medium" style={{ color: "var(--stone-mid)" }}>Modo</label>
                     <div className="flex gap-2">
-                      {(["single", "tickets"] as const).map((m) => (
+                      {([ "single", "tickets"] as const).map((m) => (
                         <button
                           key={m}
                           onClick={() => setForm({ ...form, mode: m })}
-                          className="flex-1 px-3 py-2 rounded text-sm transition-all font-[family-name:var(--font-display)]"
-                          style={form.mode === m
-                            ? { background: "var(--ink-dark)", color: "var(--parchment-light)", border: "1px solid var(--gold-dark)" }
-                            : { background: "rgba(180,130,20,0.06)", color: "var(--stone-mid)", border: "1px solid rgba(180,130,20,0.2)" }}
+                          className={form.mode === m ? "cta-button" : "cta-button-inactive"}
+                          style={{ width: "auto", padding: "0 1em", flex: 1 }}
                         >
                           {m === "single" ? "Entrada Única" : "Tickets"}
                         </button>
@@ -368,8 +366,8 @@ export default function GiveawayAdmin() {
                 <button
                   onClick={createGiveaway}
                   disabled={saving || !form.title}
-                  className="px-6 py-3 rounded font-bold font-[family-name:var(--font-display)] tracking-wider transition-all disabled:opacity-40"
-                  style={{ background: "var(--ink-dark)", color: "var(--parchment-light)", border: "2px solid var(--gold-dark)" }}
+                  className="cta-button disabled:opacity-40"
+                  style={{ width: "auto", padding: "0 2em" }}
                 >
                   {saving ? "A criar..." : "⚔ Criar Giveaway"}
                 </button>
@@ -644,29 +642,24 @@ function ActionButton({
   color: string;
   primary?: boolean;
 }) {
-  const colorMap: Record<string, string> = {
-    gold: primary
-      ? "background:var(--ink-dark);color:var(--parchment-light);border:2px solid var(--gold-dark)"
-      : "background:rgba(180,130,20,0.12);color:var(--ink-dark);border:1px solid var(--gold-dark)",
-    red: "background:rgba(139,26,26,0.12);color:#8b1a1a;border:1px solid rgba(139,26,26,0.4)",
-    amber: "background:rgba(180,100,0,0.12);color:var(--gold-dark);border:1px solid rgba(180,100,0,0.4)",
-    steel: "background:rgba(180,130,20,0.06);color:var(--stone-mid);border:1px solid rgba(180,130,20,0.2)",
-  };
-
-  const styleStr = colorMap[color] || colorMap.steel;
-  const styleObj = Object.fromEntries(
-    styleStr.split(";").filter(Boolean).map((s) => {
-      const [k, ...v] = s.split(":");
-      return [k.trim().replace(/-([a-z])/g, (_: string, c: string) => c.toUpperCase()), v.join(":").trim()];
-    })
-  );
-
+  if (color === "red") {
+    return (
+      <button
+        onClick={onClick}
+        disabled={disabled}
+        className="px-4 py-2 rounded text-sm font-medium transition-all disabled:opacity-40 font-[family-name:var(--font-display)] tracking-wider"
+        style={{ background: "rgba(139,26,26,0.12)", color: "#8b1a1a", border: "1px solid rgba(139,26,26,0.4)" }}
+      >
+        {label}
+      </button>
+    );
+  }
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      style={styleObj}
-      className="px-4 py-2 rounded text-sm font-medium transition-all disabled:opacity-40 font-[family-name:var(--font-display)] tracking-wider"
+      className="cta-button disabled:opacity-40"
+      style={{ width: "auto", padding: "0 1.25em" }}
     >
       {label}
     </button>

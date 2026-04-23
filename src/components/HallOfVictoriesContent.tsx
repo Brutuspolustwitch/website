@@ -239,10 +239,8 @@ export default function HallOfVictoriesContent() {
                   <button
                     key={opt.value}
                     onClick={() => handleSortChange(opt.value)}
-                    className="px-4 py-2 rounded font-medium text-sm transition-all font-[family-name:var(--font-display)] tracking-wider"
-                    style={sort === opt.value
-                      ? { background: "var(--ink-dark)", color: "var(--parchment-light)", border: "1px solid var(--gold-dark)" }
-                      : { background: "transparent", color: "var(--stone-mid)", border: "1px solid rgba(180,130,20,0.2)" }}
+                    className={sort === opt.value ? "cta-button" : "cta-button-inactive"}
+                    style={{ width: "auto", padding: "0 1.25em" }}
                   >
                     {opt.label}
                   </button>
@@ -252,13 +250,10 @@ export default function HallOfVictoriesContent() {
               {user ? (
                 <button
                   onClick={() => setShowForm(true)}
-                  className="px-5 py-2 rounded font-medium flex items-center gap-2 font-[family-name:var(--font-display)] tracking-wider text-sm transition-all"
-                  style={{ background: "rgba(180,130,20,0.12)", color: "var(--ink-dark)", border: "1px solid var(--gold-dark)" }}
+                  className="cta-button"
+                  style={{ width: "auto", padding: "0 1.25em" }}
                 >
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                    <path d="M12 5v14M5 12h14" />
-                  </svg>
-                  Registar Vitória
+                  + Registar Vitória
                 </button>
               ) : (
                 <p className="text-sm italic" style={{ color: "var(--stone-mid)" }}>

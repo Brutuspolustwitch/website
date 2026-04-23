@@ -336,18 +336,18 @@ export default function GiveawayArena() {
                     <button
                       onClick={handleEnter}
                       disabled={entering || (giveaway.mode === "single" && myTickets > 0)}
-                      className="flex-1 sm:flex-none px-8 py-3 rounded font-bold text-lg font-[family-name:var(--font-display)] tracking-wider transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                      style={{ background: "var(--ink-dark)", color: "var(--parchment-light)", border: "2px solid var(--gold-dark)" }}
+                      className={`cta-button flex-1 sm:flex-none disabled:opacity-40 disabled:cursor-not-allowed`}
+                      style={{ width: "auto", padding: "0 2em" }}
                     >
                       {entering ? (
                         <span className="flex items-center gap-2 justify-center">
-                          <span className="w-4 h-4 border-2 border-parchment/30 border-t-parchment rounded-full animate-spin" />
+                          <span className="w-4 h-4 border-2 rounded-full animate-spin" style={{ borderColor: "rgba(120,50,5,0.3)", borderTopColor: "rgb(120,50,5)" }} />
                           A entrar...
                         </span>
                       ) : giveaway.mode === "single" && myTickets > 0 ? (
                         "✓ Já Inscrito"
                       ) : (
-                        <>⚔ {!user ? "Iniciar Sessão" : "Entrar na Arena"}</>
+                        <>⚔ {!user ? "Iniciar Sessão" : "Participar"}</>
                       )}
                     </button>
 
