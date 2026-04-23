@@ -208,22 +208,41 @@ export default function MinesGame() {
   };
 
   const getRisk = (n: number) => {
-    if (n <= 5)  return { label: "Baixo",   color: "#22c55e" };
-    if (n <= 10) return { label: "Médio",   color: "#eab308" };
-    if (n <= 15) return { label: "Alto",    color: "#f97316" };
-    return           { label: "Extremo",  color: "#ef4444" };
+    if (n <= 5)  return { label: "Baixo",   color: "#5a8a3c" };
+    if (n <= 10) return { label: "Médio",   color: "#b8860b" };
+    if (n <= 15) return { label: "Alto",    color: "#c0522a" };
+    return           { label: "Extremo",  color: "#8b1a1a" };
   };
   const risk = getRisk(mines);
+
+  // Papyrus palette
+  const P = {
+    parchment:    "#f5e6c8",
+    parchmentMid: "#e8d4a8",
+    parchmentDeep:"#d4be8a",
+    parchmentDark:"#c4a86a",
+    brown:        "#2c1b0e",
+    brownMid:     "#5c3a1e",
+    brownLight:   "#8b5e3c",
+    gold:         "#c9a227",
+    goldLight:    "#e8c547",
+    goldDark:     "#9a7a1a",
+    panel:        "#ede0c0",
+    border:       "#b8952a",
+    borderLight:  "#d4b45a",
+  };
 
   /* ── Not logged in ────────────────────────────────────────── */
   if (!user) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4"
+        style={{ background: P.parchment, borderRadius: 16, padding: 32 }}>
         <div className="text-5xl">💣</div>
-        <h2 className="text-2xl font-bold font-[family-name:var(--font-display)] text-arena-gold">
+        <h2 className="text-2xl font-bold font-[family-name:var(--font-display)]"
+          style={{ color: P.brown }}>
           Mines
         </h2>
-        <p className="text-arena-ash">Inicia sessão para jogar</p>
+        <p style={{ color: P.brownLight }}>Inicia sessão para jogar</p>
       </div>
     );
   }
@@ -231,35 +250,65 @@ export default function MinesGame() {
   /* ── Checking for active game ─────────────────────────────── */
   if (checkingGame) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex items-center justify-center min-h-[400px]"
+        style={{ background: P.parchment, borderRadius: 16 }}>
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-arena-gold/40 border-t-arena-gold rounded-full animate-spin" />
-          <p className="text-arena-ash text-sm">A verificar jogos ativos...</p>
+          <div className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin"
+            style={{ borderColor: P.gold, borderTopColor: "transparent" }} />
+          <p style={{ color: P.brownLight }} className="text-sm">A verificar jogos ativos...</p>
         </div>
       </div>
     );
   }
 
+  const goldBtn = {
+    background: `linear-gradient(180deg, ${P.goldLight} 0%, ${P.gold} 50%, ${P.goldDark} 100%)`,
+    color: P.brown,
+    border: `2px solid ${P.goldDark}`,
+    boxShadow: `0 2px 8px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,220,0.4)`,
+    fontFamily: "var(--font-display)",
+    letterSpacing: "0.06em",
+    fontWeight: 700,
+    cursor: "pointer",
+    transition: "filter 0.15s",
+  } as React.CSSProperties;
+
+  const panelStyle = {
+    background: P.panel,
+    border: `2px solid ${P.border}`,
+    borderRadius: 12,
+  } as React.CSSProperties;
+
   /* ── Stuck game recovery ──────────────────────────────────── */
   if (stuckGame) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="bg-arena-charcoal border border-arena-gold/30 rounded-xl p-8 max-w-sm w-full text-center space-y-4">
+        <div style={{ ...panelStyle, maxWidth: 360, width: "100%", padding: 32, textAlign: "center" }} className="space-y-4">
           <div className="text-4xl">⚠️</div>
-          <h2 className="text-xl font-bold font-[family-name:var(--font-display)] text-arena-gold">
-            Jogo Ativo Encontrado
-          </h2>
-          <p className="text-arena-ash text-sm">Tens um jogo inacabado.</p>
-          <div className="bg-black/30 rounded-lg p-4 space-y-2 text-sm text-left">
-            <div className="flex justify-between"><span className="text-arena-ash">Aposta</span><strong className="text-arena-white">{stuckGame.bet} pts</strong></div>
-            <div className="flex justify-between"><span className="text-arena-ash">Minas</span><strong className="text-arena-white">{stuckGame.mineCount} 💣</strong></div>
-            <div className="flex justify-between"><span className="text-arena-ash">Células</span><strong className="text-arena-white">{stuckGame.revealedCells?.length ?? 0} 💎</strong></div>
+          <h2 className="text-xl font-bold font-[family-name:var(--font-display)]"
+            style={{ color: P.brown }}>Jogo Ativo Encontrado</h2>
+          <p style={{ color: P.brownLight }} className="text-sm">Tens um jogo inacabado.</p>
+          <div className="space-y-2 text-sm text-left rounded-lg p-4"
+            style={{ background: P.parchmentDeep, border: `1px solid ${P.borderLight}` }}>
+            {[
+              ["Aposta", `${stuckGame.bet} pts`],
+              ["Minas",  `${stuckGame.mineCount} 💣`],
+              ["Células",`${stuckGame.revealedCells?.length ?? 0} 💎`],
+            ].map(([k, v]) => (
+              <div key={k} className="flex justify-between">
+                <span style={{ color: P.brownLight }}>{k}</span>
+                <strong style={{ color: P.brown }}>{v}</strong>
+              </div>
+            ))}
             {stuckGame.profit > 0 && (
-              <div className="flex justify-between"><span className="text-arena-ash">Valor atual</span><strong className="text-arena-gold">{stuckGame.profit} pts ({stuckGame.multiplier?.toFixed(2)}×)</strong></div>
+              <div className="flex justify-between">
+                <span style={{ color: P.brownLight }}>Valor atual</span>
+                <strong style={{ color: P.goldDark }}>{stuckGame.profit} pts ({stuckGame.multiplier?.toFixed(2)}×)</strong>
+              </div>
             )}
           </div>
           <div className="flex flex-col gap-2">
-            <button onClick={resumeGame} className="w-full py-2.5 rounded-lg bg-arena-gold text-arena-black font-bold hover:bg-arena-gold/90 transition-colors">
+            <button onClick={resumeGame} style={{ ...goldBtn, padding: "10px 0", borderRadius: 8, width: "100%" }}>
               ▶ Retomar Jogo
             </button>
             {stuckGame.revealedCells?.length > 0 && stuckGame.profit > 0 && (
@@ -273,16 +322,17 @@ export default function MinesGame() {
                   finally { setLoading(false); }
                 }}
                 disabled={loading}
-                className="w-full py-2.5 rounded-lg bg-green-700 text-white font-bold hover:bg-green-600 transition-colors disabled:opacity-50"
+                style={{ padding: "10px 0", borderRadius: 8, width: "100%", background: "#3a6b2a", color: "#e8f5e0", border: "1px solid #2a5020", fontWeight: 700, cursor: "pointer", opacity: loading ? 0.5 : 1 }}
               >
                 💵 Sacar ({stuckGame.profit} pts)
               </button>
             )}
-            <button onClick={forfeitGame} disabled={loading} className="w-full py-2.5 rounded-lg bg-red-900/50 border border-red-500/30 text-red-300 font-bold hover:bg-red-900/80 transition-colors disabled:opacity-50">
+            <button onClick={forfeitGame} disabled={loading}
+              style={{ padding: "10px 0", borderRadius: 8, width: "100%", background: "#6b2a2a", color: "#f5dada", border: "1px solid #501a1a", fontWeight: 700, cursor: "pointer", opacity: loading ? 0.5 : 1 }}>
               ✕ Desistir (perder {stuckGame.bet} pts)
             </button>
           </div>
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+          {error && <p className="text-sm" style={{ color: "#8b1a1a" }}>{error}</p>}
         </div>
       </div>
     );
@@ -291,55 +341,55 @@ export default function MinesGame() {
   return (
     <div className="flex flex-col gap-6">
       {/* Header */}
-      <div className="flex items-center justify-between bg-arena-charcoal border border-arena-gold/20 rounded-xl px-6 py-4">
-        <h1 className="text-3xl font-bold font-[family-name:var(--font-display)] text-arena-gold tracking-wider">
+      <div className="flex items-center justify-between px-6 py-4 rounded-xl"
+        style={{ background: `linear-gradient(135deg, ${P.parchmentDeep} 0%, ${P.parchmentMid} 100%)`, border: `2px solid ${P.border}`, boxShadow: "0 4px 16px rgba(0,0,0,0.25)" }}>
+        <h1 className="text-3xl font-bold font-[family-name:var(--font-display)] tracking-wider"
+          style={{ color: P.brown, textShadow: `0 1px 0 rgba(255,255,200,0.5)` }}>
           💣 Mines
         </h1>
         <div className="text-right">
-          <p className="text-arena-ash text-xs uppercase tracking-widest">Saldo</p>
-          <p className="text-arena-gold font-bold text-xl">
+          <p className="text-xs uppercase tracking-widest" style={{ color: P.brownLight }}>Saldo</p>
+          <p className="font-bold text-xl" style={{ color: P.goldDark }}>
             {points !== null ? points.toLocaleString("pt-PT") : "—"} pts
           </p>
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-900/30 border border-red-500/40 rounded-lg px-4 py-3 text-red-300 text-sm">
+        <div className="px-4 py-3 text-sm rounded-lg"
+          style={{ background: "#6b2a2a33", border: "1px solid #8b1a1a66", color: "#6b1a1a" }}>
           ⚠️ {error}
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-6">
         {/* Controls */}
-        <div className="bg-arena-charcoal border border-arena-gold/20 rounded-xl p-6 h-fit space-y-5">
+        <div style={{ ...panelStyle, padding: 24 }} className="h-fit space-y-5">
 
           {/* Idle setup */}
           {gameStatus === "idle" && (
             <>
               <div className="space-y-2">
-                <label className="text-arena-gold font-semibold text-sm uppercase tracking-wider">
-                  Aposta
-                </label>
+                <label className="block text-sm uppercase tracking-wider font-semibold"
+                  style={{ color: P.brownMid }}>Aposta</label>
                 <div className="flex gap-2">
                   <button onClick={() => setBet(Math.max(10, Math.floor(bet / 2)))}
-                    className="px-3 py-2 rounded-lg bg-arena-gold/10 border border-arena-gold/30 text-arena-gold font-bold hover:bg-arena-gold/20 transition-colors text-sm">
-                    ½
-                  </button>
+                    style={{ ...goldBtn, padding: "8px 12px", borderRadius: 8, fontSize: 14 }}>½</button>
                   <input
                     type="number"
                     value={bet}
                     onChange={(e) => setBet(Math.min(1000, Math.max(10, parseInt(e.target.value) || 10)))}
-                    className="flex-1 bg-black/40 border border-arena-steel/30 rounded-lg px-3 py-2 text-arena-white text-center focus:outline-none focus:border-arena-gold/50"
+                    className="flex-1 text-center focus:outline-none"
+                    style={{ background: P.parchment, border: `1px solid ${P.borderLight}`, borderRadius: 8, padding: "8px 12px", color: P.brown, fontWeight: 700 }}
                   />
                   <button onClick={() => setBet(Math.min(1000, bet * 2))}
-                    className="px-3 py-2 rounded-lg bg-arena-gold/10 border border-arena-gold/30 text-arena-gold font-bold hover:bg-arena-gold/20 transition-colors text-sm">
-                    2×
-                  </button>
+                    style={{ ...goldBtn, padding: "8px 12px", borderRadius: 8, fontSize: 14 }}>2×</button>
                 </div>
                 <div className="flex gap-2">
                   {[25, 50, 100, 250].map((v) => (
                     <button key={v} onClick={() => setBet(v)}
-                      className="flex-1 py-1.5 rounded-lg bg-arena-gold/5 border border-arena-gold/20 text-arena-ash hover:text-arena-gold hover:border-arena-gold/40 transition-colors text-xs font-medium">
+                      className="flex-1 py-1.5 text-xs font-medium rounded-lg transition-colors"
+                      style={{ background: P.parchmentDeep, border: `1px solid ${P.borderLight}`, color: P.brownMid }}>
                       {v}
                     </button>
                   ))}
@@ -347,36 +397,38 @@ export default function MinesGame() {
               </div>
 
               <div className="space-y-2">
-                <label className="flex items-center justify-between text-arena-gold font-semibold text-sm uppercase tracking-wider">
+                <label className="flex items-center justify-between text-sm uppercase tracking-wider font-semibold"
+                  style={{ color: P.brownMid }}>
                   <span>Minas: {mines}</span>
-                  <span className="text-xs px-2 py-0.5 rounded-full font-bold" style={{ backgroundColor: risk.color + "33", color: risk.color, border: `1px solid ${risk.color}66` }}>
+                  <span className="text-xs px-2 py-0.5 rounded-full font-bold"
+                    style={{ backgroundColor: risk.color + "22", color: risk.color, border: `1px solid ${risk.color}88` }}>
                     {risk.label}
                   </span>
                 </label>
                 <div className="grid grid-cols-6 gap-1.5">
                   {MINE_OPTIONS.map((n) => (
                     <button key={n} onClick={() => setMines(n)}
-                      className={`py-2 rounded-lg text-sm font-bold transition-colors border ${
-                        mines === n
-                          ? "bg-arena-gold text-arena-black border-arena-gold"
-                          : "bg-black/30 text-arena-ash border-arena-steel/30 hover:border-arena-gold/40 hover:text-arena-gold"
-                      }`}>
+                      className="py-2 text-sm font-bold rounded-lg transition-colors"
+                      style={mines === n
+                        ? { ...goldBtn, padding: "8px 4px" }
+                        : { background: P.parchmentDeep, border: `1px solid ${P.borderLight}`, color: P.brownMid, cursor: "pointer" }
+                      }>
                       {n}
                     </button>
                   ))}
                 </div>
-                <p className="text-arena-ash text-xs">Células seguras: {GRID_SIZE - mines}</p>
+                <p className="text-xs" style={{ color: P.brownLight }}>Células seguras: {GRID_SIZE - mines}</p>
               </div>
 
               <button
                 onClick={startGame}
                 disabled={loading || (points !== null && bet > points)}
-                className="w-full py-3 rounded-xl bg-arena-gold text-arena-black font-bold text-lg font-[family-name:var(--font-display)] tracking-wider hover:bg-arena-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ ...goldBtn, width: "100%", padding: "14px 0", borderRadius: 12, fontSize: 18, opacity: (loading || (points !== null && bet > points)) ? 0.5 : 1 }}
               >
                 {loading ? "A iniciar..." : `Iniciar Jogo (${bet} pts)`}
               </button>
 
-              <p className="text-arena-ash/60 text-xs text-center">🎲 3% house edge</p>
+              <p className="text-xs text-center" style={{ color: P.brownLight }}>🎲 3% house edge</p>
             </>
           )}
 
@@ -384,73 +436,73 @@ export default function MinesGame() {
           {gameStatus === "active" && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-black/30 rounded-lg p-3 text-center">
-                  <p className="text-arena-ash text-xs uppercase">Aposta</p>
-                  <p className="text-arena-white font-bold">{bet} pts</p>
-                </div>
-                <div className="bg-black/30 rounded-lg p-3 text-center">
-                  <p className="text-arena-ash text-xs uppercase">Minas</p>
-                  <p className="text-red-400 font-bold">{mines} 💣</p>
-                </div>
-                <div className="bg-black/30 rounded-lg p-3 text-center">
-                  <p className="text-arena-ash text-xs uppercase">Encontradas</p>
-                  <p className="text-green-400 font-bold">{revealed.length} 💎</p>
-                </div>
-                <div className="bg-black/30 rounded-lg p-3 text-center">
-                  <p className="text-arena-ash text-xs uppercase">Restantes</p>
-                  <p className="text-arena-white font-bold">{safeCellsRemaining}</p>
-                </div>
+                {[
+                  ["Aposta",     `${bet} pts`,           P.brown],
+                  ["Minas",      `${mines} 💣`,           "#8b1a1a"],
+                  ["Encontradas",`${revealed.length} 💎`, "#3a6b2a"],
+                  ["Restantes",  `${safeCellsRemaining}`, P.brownMid],
+                ].map(([label, val, col]) => (
+                  <div key={label as string} className="rounded-lg p-3 text-center"
+                    style={{ background: P.parchmentDeep, border: `1px solid ${P.borderLight}` }}>
+                    <p className="text-xs uppercase mb-0.5" style={{ color: P.brownLight }}>{label}</p>
+                    <p className="font-bold" style={{ color: col as string }}>{val}</p>
+                  </div>
+                ))}
               </div>
 
-              <div className="bg-black/40 border border-arena-gold/20 rounded-xl p-4 text-center space-y-1">
-                <p className="text-arena-ash text-xs uppercase tracking-widest">Multiplicador Atual</p>
-                <p className="text-arena-gold font-bold text-4xl font-[family-name:var(--font-display)]">
-                  {multiplier.toFixed(2)}×
-                </p>
+              <div className="rounded-xl p-4 text-center space-y-1"
+                style={{ background: P.parchmentMid, border: `2px solid ${P.border}` }}>
+                <p className="text-xs uppercase tracking-widest" style={{ color: P.brownLight }}>Multiplicador Atual</p>
+                <p className="font-bold text-4xl font-[family-name:var(--font-display)]"
+                  style={{ color: P.goldDark }}>{multiplier.toFixed(2)}×</p>
                 {nextMultiplier && (
-                  <p className="text-arena-ash text-xs">Próximo: <span className="text-arena-gold">{nextMultiplier.toFixed(2)}×</span></p>
+                  <p className="text-xs" style={{ color: P.brownLight }}>
+                    Próximo: <span style={{ color: P.goldDark }}>{nextMultiplier.toFixed(2)}×</span>
+                  </p>
                 )}
-                <p className="text-green-400 font-semibold text-lg">💰 {profit} pts</p>
+                <p className="font-semibold text-lg" style={{ color: "#3a6b2a" }}>💰 {profit} pts</p>
               </div>
 
               <button
                 onClick={cashout}
                 disabled={revealed.length === 0 || loading}
-                className="w-full py-3 rounded-xl bg-green-700 text-white font-bold text-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ width: "100%", padding: "12px 0", borderRadius: 12, background: "#3a6b2a", color: "#e8f5e0", border: "2px solid #2a5020", fontWeight: 700, fontSize: 17, cursor: "pointer", opacity: (revealed.length === 0 || loading) ? 0.5 : 1, boxShadow: "0 2px 8px rgba(0,0,0,0.3)", transition: "filter 0.15s" }}
               >
                 {loading ? "A processar..." : `💵 Sacar (${profit} pts)`}
               </button>
 
-              <p className="text-red-400/70 text-xs text-center">⚠️ {mines} minas escondidas</p>
+              <p className="text-xs text-center" style={{ color: "#8b1a1a99" }}>⚠️ {mines} minas escondidas</p>
             </div>
           )}
 
           {/* Result */}
           {(gameStatus === "won" || gameStatus === "lost") && (
             <div className="space-y-4">
-              <div className={`rounded-xl p-6 text-center border ${
-                gameStatus === "won"
+              <div className="rounded-xl p-6 text-center"
+                style={gameStatus === "won"
                   ? jackpot
-                    ? "bg-yellow-900/30 border-yellow-500/50"
-                    : "bg-green-900/30 border-green-500/40"
-                  : "bg-red-900/30 border-red-500/40"
-              }`}>
+                    ? { background: "#6b5000aa", border: "2px solid #c9a227" }
+                    : { background: "#2a4a1a88", border: "2px solid #4a8a2a" }
+                  : { background: "#4a1a1a88", border: "2px solid #8b2a2a" }
+                }>
                 <div className="text-5xl mb-2">
                   {jackpot ? "🏆" : gameStatus === "won" ? "🎉" : "💥"}
                 </div>
-                <p className={`text-2xl font-bold font-[family-name:var(--font-display)] ${
-                  jackpot ? "text-yellow-400" : gameStatus === "won" ? "text-green-400" : "text-red-400"
-                }`}>
+                <p className="text-2xl font-bold font-[family-name:var(--font-display)]"
+                  style={{ color: jackpot ? P.gold : gameStatus === "won" ? "#6abf4b" : "#d45050" }}>
                   {jackpot ? "JACKPOT!" : gameStatus === "won" ? "Ganhaste!" : "Mina!"}
                 </p>
-                <p className="text-4xl font-bold font-[family-name:var(--font-display)] text-arena-gold mt-1">
+                <p className="text-4xl font-bold font-[family-name:var(--font-display)] mt-1"
+                  style={{ color: P.gold }}>
                   {gameStatus === "won" ? `${multiplier.toFixed(2)}×` : "0×"}
                 </p>
-                <p className={`text-lg font-semibold mt-1 ${gameStatus === "won" ? "text-green-400" : "text-red-400"}`}>
+                <p className="text-lg font-semibold mt-1"
+                  style={{ color: gameStatus === "won" ? "#6abf4b" : "#d45050" }}>
                   {gameStatus === "won" ? `+${profit - bet} pts lucro` : `-${bet} pts`}
                 </p>
               </div>
-              <button onClick={playAgain} className="w-full py-3 rounded-xl bg-arena-gold text-arena-black font-bold text-lg font-[family-name:var(--font-display)] tracking-wider hover:bg-arena-gold/90 transition-colors">
+              <button onClick={playAgain}
+                style={{ ...goldBtn, width: "100%", padding: "14px 0", borderRadius: 12, fontSize: 18 }}>
                 🎮 Jogar de Novo
               </button>
             </div>
@@ -458,7 +510,8 @@ export default function MinesGame() {
         </div>
 
         {/* Grid */}
-        <div className="bg-arena-charcoal border border-arena-gold/20 rounded-xl p-6 flex items-start justify-center">
+        <div className="flex items-start justify-center rounded-xl p-6"
+          style={{ background: `linear-gradient(135deg, ${P.parchmentMid} 0%, ${P.parchment} 100%)`, border: `2px solid ${P.border}` }}>
           <div
             style={{
               display: "grid",
@@ -469,20 +522,26 @@ export default function MinesGame() {
             }}
           >
             {Array.from({ length: GRID_SIZE }, (_, i) => {
-              const isRevealed  = revealed.includes(i);
-              const isMine      = mineLocations.includes(i);
-              const showMine    = isMine && (gameStatus === "won" || gameStatus === "lost");
-              const isSafe      = isRevealed && !isMine;
-              const canClick    = gameStatus === "active" && !isRevealed && !loading;
+              const isRevealed = revealed.includes(i);
+              const isMine     = mineLocations.includes(i);
+              const showMine   = isMine && (gameStatus === "won" || gameStatus === "lost");
+              const isSafe     = isRevealed && !isMine;
+              const canClick   = gameStatus === "active" && !isRevealed && !loading;
 
-              let bg     = "rgba(30,35,50,0.95)";
-              let border = "rgba(212,175,55,0.35)";
+              let bg     = `linear-gradient(135deg, ${P.parchmentDeep} 0%, ${P.parchmentDark} 100%)`;
+              let border = P.border;
+              let shadow = "0 2px 4px rgba(0,0,0,0.2)";
               let cursor = "default";
 
-              if (gameStatus === "idle") { bg = "rgba(20,25,40,0.7)"; border = "rgba(212,175,55,0.15)"; }
-              else if (isSafe)       { bg = "linear-gradient(135deg,rgba(16,185,129,.4),rgba(52,211,153,.3))"; border = "rgba(16,185,129,.6)"; }
-              else if (showMine)     { bg = "linear-gradient(135deg,rgba(239,68,68,.5),rgba(220,38,38,.4))"; border = "rgba(239,68,68,.7)"; }
-              else if (canClick)     { cursor = "pointer"; border = "rgba(212,175,55,.5)"; }
+              if (gameStatus === "idle") {
+                bg = P.parchmentDeep; border = P.borderLight; shadow = "none";
+              } else if (isSafe) {
+                bg = "linear-gradient(135deg,#4a8a2a,#6abf4b)"; border = "#3a7a1a"; shadow = "0 0 8px rgba(100,200,60,0.4)";
+              } else if (showMine) {
+                bg = "linear-gradient(135deg,#8b2a2a,#c04040)"; border = "#6a1a1a"; shadow = "0 0 8px rgba(200,40,40,0.4)";
+              } else if (canClick) {
+                cursor = "pointer"; border = P.goldDark;
+              }
 
               return (
                 <button
@@ -493,13 +552,14 @@ export default function MinesGame() {
                     aspectRatio: "1",
                     background: bg,
                     border: `2px solid ${border}`,
-                    borderRadius: "10px",
+                    borderRadius: 10,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     fontSize: "clamp(1.2rem, 3vw, 1.8rem)",
                     cursor,
                     transition: "all 0.15s",
+                    boxShadow: shadow,
                   }}
                 >
                   {(gameStatus === "idle" || (gameStatus === "active" && !isRevealed)) && "❓"}
