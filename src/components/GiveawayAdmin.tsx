@@ -266,8 +266,8 @@ export default function GiveawayAdmin() {
   };
 
   /* ── Auth gate ──────────────────────────────────────────── */
-  if (authLoading) return <div className="pt-24 pb-16 min-h-screen flex items-center justify-center"><div className="text-arena-smoke animate-pulse">A carregar...</div></div>;
-  if (!user || !hasRole(user.role, "moderador")) return <div className="pt-24 pb-16 min-h-screen flex items-center justify-center"><div className="text-red-400">Acesso negado</div></div>;
+  if (authLoading) return <div className="pt-24 pb-16 min-h-screen flex items-center justify-center"><div className="animate-pulse font-[family-name:var(--font-display)]" style={{ color: "var(--ink-mid)" }}>A carregar...</div></div>;
+  if (!user || !hasRole(user.role, "moderador")) return <div className="pt-24 pb-16 min-h-screen flex items-center justify-center"><div style={{ color: "#8b1a1a" }}>Acesso negado</div></div>;
 
   return (
     <div className="pt-24 pb-16 min-h-screen">
@@ -275,14 +275,15 @@ export default function GiveawayAdmin() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-arena-gold font-[family-name:var(--font-display)]">
+            <h1 className="text-3xl font-bold font-[family-name:var(--font-display)]" style={{ color: "var(--ink-dark)" }}>
               ⚔ Sala de Controlo — Giveaways
             </h1>
-            <p className="text-arena-smoke text-sm mt-1">Cria, gere e sorteia vencedores na arena.</p>
+            <p className="text-sm mt-1" style={{ color: "var(--ink-mid)" }}>Cria, gere e sorteia vencedores na arena.</p>
           </div>
           <button
             onClick={() => setShowCreate(!showCreate)}
-            className="px-4 py-2 rounded-lg bg-arena-gold/20 text-arena-gold border border-arena-gold/30 hover:bg-arena-gold/30 transition-all font-[family-name:var(--font-display)] tracking-wider text-sm"
+            className="px-4 py-2 rounded text-sm font-[family-name:var(--font-display)] tracking-wider transition-all"
+            style={{ background: "rgba(180,130,20,0.12)", color: "var(--ink-dark)", border: "1px solid var(--gold-dark)" }}
           >
             {showCreate ? "✕ Cancelar" : "＋ Novo Giveaway"}
           </button>
@@ -297,8 +298,8 @@ export default function GiveawayAdmin() {
               exit={{ opacity: 0, height: 0 }}
               className="mb-8 overflow-hidden"
             >
-              <div className="rounded-xl border border-arena-gold/20 bg-white/[0.03] p-6 space-y-4">
-                <h3 className="text-lg font-bold text-arena-gold font-[family-name:var(--font-display)]">Criar Giveaway</h3>
+              <div className="papyrus-scroll papyrus-scroll-top papyrus-scroll-bottom" style={{ maxWidth: "100%", padding: "1.5rem" }}>
+                <h3 className="text-lg font-bold font-[family-name:var(--font-display)] mb-4" style={{ color: "var(--ink-dark)" }}>Criar Giveaway</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField label="Título" value={form.title} onChange={(v) => setForm({ ...form, title: v })} />
                   <FormField label="Prémio" value={form.prize} onChange={(v) => setForm({ ...form, prize: v })} />
@@ -307,17 +308,16 @@ export default function GiveawayAdmin() {
                   <FormField label="Imagem do Prémio (URL)" value={form.prize_image} onChange={(v) => setForm({ ...form, prize_image: v })} placeholder="https://..." />
 
                   <div className="space-y-1">
-                    <label className="text-xs text-arena-smoke/70 uppercase tracking-wider font-medium">Modo</label>
+                    <label className="text-xs uppercase tracking-wider font-medium" style={{ color: "var(--stone-mid)" }}>Modo</label>
                     <div className="flex gap-2">
                       {(["single", "tickets"] as const).map((m) => (
                         <button
                           key={m}
                           onClick={() => setForm({ ...form, mode: m })}
-                          className={`flex-1 px-3 py-2 rounded-lg text-sm transition-all ${
-                            form.mode === m
-                              ? "bg-arena-gold/20 text-arena-gold border border-arena-gold/30"
-                              : "bg-white/5 text-arena-smoke border border-white/10 hover:bg-white/10"
-                          }`}
+                          className="flex-1 px-3 py-2 rounded text-sm transition-all font-[family-name:var(--font-display)]"
+                          style={form.mode === m
+                            ? { background: "var(--ink-dark)", color: "var(--parchment-light)", border: "1px solid var(--gold-dark)" }
+                            : { background: "rgba(180,130,20,0.06)", color: "var(--stone-mid)", border: "1px solid rgba(180,130,20,0.2)" }}
                         >
                           {m === "single" ? "Entrada Única" : "Tickets"}
                         </button>
@@ -347,17 +347,20 @@ export default function GiveawayAdmin() {
                       type="datetime-local"
                       value={form.scheduled_end}
                       onChange={(e) => setForm({ ...form, scheduled_end: e.target.value })}
-                      className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-arena-smoke text-sm focus:border-arena-gold/40 focus:outline-none transition-colors [color-scheme:dark]"
+                      className="w-full px-3 py-2 rounded text-sm focus:outline-none transition-colors"
+                    style={{ background: "rgba(245,230,200,0.6)", border: "1px solid var(--gold-dark)", color: "var(--ink-dark)", colorScheme: "light" }}
                     />
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <label className="text-xs text-arena-smoke/70 uppercase tracking-wider font-medium">Requer Stream Live</label>
+                    <label className="text-xs uppercase tracking-wider font-medium" style={{ color: "var(--stone-mid)" }}>Requer Stream Live</label>
                     <button
                       onClick={() => setForm({ ...form, require_live: !form.require_live })}
-                      className={`w-10 h-6 rounded-full transition-all relative ${form.require_live ? "bg-arena-gold" : "bg-white/20"}`}
+                      className="w-10 h-6 rounded-full transition-all relative"
+                      style={{ background: form.require_live ? "var(--gold-dark)" : "rgba(180,130,20,0.2)" }}
                     >
-                      <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${form.require_live ? "left-[18px]" : "left-0.5"}`} />
+                      <div className={`absolute top-0.5 w-5 h-5 rounded-full shadow transition-all ${form.require_live ? "left-[18px]" : "left-0.5"}`}
+                        style={{ background: form.require_live ? "var(--parchment-light)" : "rgba(245,230,200,0.7)" }} />
                     </button>
                   </div>
                 </div>
@@ -365,7 +368,8 @@ export default function GiveawayAdmin() {
                 <button
                   onClick={createGiveaway}
                   disabled={saving || !form.title}
-                  className="px-6 py-3 rounded-lg bg-arena-gold text-black font-bold font-[family-name:var(--font-display)] tracking-wider hover:bg-arena-gold-light transition-all disabled:opacity-40"
+                  className="px-6 py-3 rounded font-bold font-[family-name:var(--font-display)] tracking-wider transition-all disabled:opacity-40"
+                  style={{ background: "var(--ink-dark)", color: "var(--parchment-light)", border: "2px solid var(--gold-dark)" }}
                 >
                   {saving ? "A criar..." : "⚔ Criar Giveaway"}
                 </button>
@@ -378,11 +382,11 @@ export default function GiveawayAdmin() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left: Giveaway List */}
           <div className="lg:col-span-1 space-y-3">
-            <h3 className="text-sm font-bold text-arena-smoke/70 uppercase tracking-wider mb-2">Giveaways</h3>
+            <h3 className="text-sm font-bold uppercase tracking-wider mb-2 font-[family-name:var(--font-display)]" style={{ color: "var(--stone-mid)" }}>Giveaways</h3>
             {loading ? (
-              <div className="text-arena-smoke animate-pulse">A carregar...</div>
+              <div className="animate-pulse" style={{ color: "var(--ink-mid)" }}>A carregar...</div>
             ) : giveaways.length === 0 ? (
-              <div className="text-arena-smoke/50 text-sm">Nenhum giveaway criado.</div>
+              <div className="text-sm" style={{ color: "var(--stone-mid)" }}>Nenhum giveaway criado.</div>
             ) : (
               giveaways.map((g) => (
                 <button
@@ -423,8 +427,9 @@ export default function GiveawayAdmin() {
                 onDelete={() => deleteGiveaway(selected.id)}
               />
             ) : (
-              <div className="flex items-center justify-center h-64 rounded-xl border border-white/5 bg-white/[0.01]">
-                <p className="text-arena-smoke/40 text-sm font-[family-name:var(--font-display)] tracking-wider">
+              <div className="flex items-center justify-center h-64 rounded"
+                style={{ border: "1px solid rgba(180,130,20,0.15)", background: "rgba(245,230,200,0.03)" }}>
+                <p className="text-sm font-[family-name:var(--font-display)] tracking-wider" style={{ color: "var(--stone-mid)" }}>
                   Seleciona um giveaway para gerir
                 </p>
               </div>
@@ -434,7 +439,8 @@ export default function GiveawayAdmin() {
 
         {/* Toast */}
         {toast && (
-          <div className="fixed bottom-6 right-6 z-50 px-4 py-2 rounded-lg bg-arena-gold/90 text-black font-medium text-sm shadow-lg animate-[fadeIn_0.2s_ease-out]">
+          <div className="fixed bottom-6 right-6 z-50 px-4 py-2 rounded font-medium text-sm shadow-lg animate-[fadeIn_0.2s_ease-out] font-[family-name:var(--font-display)] tracking-wider"
+            style={{ background: "var(--parchment-light)", color: "var(--ink-dark)", border: "1px solid var(--gold-dark)", boxShadow: "0 4px 20px rgba(180,130,20,0.3)" }}>
             {toast}
           </div>
         )}
@@ -682,13 +688,14 @@ function FormField({
 }) {
   return (
     <div className="space-y-1">
-      <label className="text-xs text-arena-smoke/70 uppercase tracking-wider font-medium">{label}</label>
+      <label className="text-xs uppercase tracking-wider font-medium" style={{ color: "var(--stone-mid)" }}>{label}</label>
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-arena-smoke text-sm focus:border-arena-gold/40 focus:outline-none transition-colors placeholder:text-arena-smoke/30"
+        className="w-full px-3 py-2 rounded text-sm focus:outline-none transition-colors"
+        style={{ background: "rgba(245,230,200,0.6)", border: "1px solid rgba(180,130,20,0.35)", color: "var(--ink-dark)" }}
       />
     </div>
   );

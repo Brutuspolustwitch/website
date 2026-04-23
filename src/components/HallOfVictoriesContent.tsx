@@ -35,7 +35,7 @@ const PAGE_SIZE_DISPLAY = 20;
 function FeaturedWin({ win, loading }: { win: BrutaDoMes | null; loading: boolean }) {
   if (loading) {
     return (
-      <div className="animate-pulse rounded-2xl bg-gradient-to-br from-arena-gold/10 to-arena-gold/5 border border-arena-gold/20 p-8 h-[600px]" />
+      <div className="animate-pulse rounded papyrus-scroll papyrus-scroll-top papyrus-scroll-bottom" style={{ minHeight: 320 }} />
     );
   }
   if (!win) {
@@ -43,22 +43,16 @@ function FeaturedWin({ win, loading }: { win: BrutaDoMes | null; loading: boolea
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-arena-charcoal/80 via-arena-charcoal/60 to-arena-charcoal/40 border border-arena-steel/20 p-12 text-center"
+        className="papyrus-scroll papyrus-scroll-top papyrus-scroll-bottom greek-key-border"
+        style={{ padding: "4rem 2rem", textAlign: "center" }}
       >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(212,168,67,0.05),transparent_70%)]" />
-        <div className="relative">
-          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-arena-gold/10 flex items-center justify-center">
-            <svg className="w-10 h-10 text-arena-gold/40" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2L2 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
-            </svg>
-          </div>
-          <h3 className="font-[family-name:var(--font-display)] text-2xl text-arena-gold mb-3 tracking-wide">
-            Aguardando Julgamento
-          </h3>
-          <p className="text-arena-smoke/60 text-sm max-w-md mx-auto">
-            O admin ainda não escolheu a vitória mais épica deste mês. Em breve, a glória será revelada.
-          </p>
-        </div>
+        <div className="text-5xl mb-5">⚔️</div>
+        <h3 className="font-[family-name:var(--font-display)] text-2xl mb-3 tracking-wide" style={{ color: "var(--ink-dark)" }}>
+          Aguardando Julgamento
+        </h3>
+        <p className="text-sm max-w-md mx-auto" style={{ color: "var(--ink-mid)" }}>
+          O admin ainda não escolheu a vitória mais épica deste mês. Em breve, a glória será revelada.
+        </p>
       </motion.div>
     );
   }
@@ -68,37 +62,28 @@ function FeaturedWin({ win, loading }: { win: BrutaDoMes | null; loading: boolea
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      className="relative group"
     >
-      {/* Glow effect */}
-      <div className="absolute -inset-1 bg-gradient-to-r from-arena-gold via-yellow-500 to-arena-gold opacity-20 blur-xl group-hover:opacity-30 transition-opacity duration-500 rounded-2xl" />
-      
-      {/* Card */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-arena-charcoal/90 via-arena-charcoal/80 to-arena-charcoal/70 border border-arena-gold/30 backdrop-blur-sm">
-        {/* Header with month badge */}
-        <div className="relative px-8 pt-8 pb-6 bg-gradient-to-br from-arena-gold/15 via-arena-gold/5 to-transparent border-b border-arena-gold/10">
+      <div className="papyrus-scroll papyrus-scroll-top papyrus-scroll-bottom greek-key-border" style={{ maxWidth: "100%", overflow: "hidden" }}>
+        {/* Header */}
+        <div className="px-6 pt-6 pb-4" style={{ borderBottom: "1px solid rgba(180,130,20,0.25)" }}>
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-3">
-              <div className="relative">
-                <div className="absolute inset-0 bg-arena-gold/20 blur-md rounded-full" />
-                <div className="relative w-12 h-12 rounded-full bg-gradient-to-br from-arena-gold to-yellow-600 flex items-center justify-center shadow-lg">
-                  <svg className="w-6 h-6 text-arena-dark" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                  </svg>
-                </div>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center"
+                style={{ background: "var(--gold-dark)", border: "2px solid var(--parchment-edge)" }}>
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" style={{ color: "var(--parchment-light)" }}>
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
               </div>
               <div>
-                <div className="text-xs font-medium text-arena-gold/60 uppercase tracking-wider mb-0.5">
-                  Vitória Oficial
-                </div>
-                <h2 className="font-[family-name:var(--font-display)] text-xl text-arena-gold tracking-wide">
+                <div className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--stone-mid)" }}>Vitória Oficial</div>
+                <h2 className="font-[family-name:var(--font-display)] text-xl tracking-wide" style={{ color: "var(--ink-dark)" }}>
                   {win.month_label}
                 </h2>
               </div>
             </div>
             {win.provider && (
-              <div className="px-4 py-1.5 rounded-full bg-arena-steel/10 border border-arena-steel/20">
-                <span className="text-sm text-arena-smoke/70 font-medium">{win.provider}</span>
+              <div className="px-3 py-1 rounded" style={{ background: "rgba(180,130,20,0.1)", border: "1px solid rgba(180,130,20,0.3)" }}>
+                <span className="text-sm" style={{ color: "var(--ink-mid)" }}>{win.provider}</span>
               </div>
             )}
           </div>
@@ -110,28 +95,19 @@ function FeaturedWin({ win, loading }: { win: BrutaDoMes | null; loading: boolea
         </div>
 
         {/* Content */}
-        <div className="p-8">
-          <div className="flex items-start gap-3 mb-4">
-            <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-arena-gold/20 to-arena-gold/10 border border-arena-gold/20 flex items-center justify-center">
-              <svg className="w-5 h-5 text-arena-gold" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-              </svg>
-            </div>
-            <div className="flex-1">
-              <h3 className="font-[family-name:var(--font-display)] text-2xl text-arena-smoke tracking-wide mb-2">
-                {win.title}
-              </h3>
-              {win.description && (
-                <p className="text-arena-smoke/70 leading-relaxed">
-                  {win.description}
-                </p>
-              )}
-            </div>
-          </div>
+        <div className="p-6">
+          <h3 className="font-[family-name:var(--font-display)] text-2xl tracking-wide mb-2" style={{ color: "var(--ink-dark)" }}>
+            {win.title}
+          </h3>
+          {win.description && (
+            <p className="leading-relaxed" style={{ color: "var(--ink-mid)" }}>
+              {win.description}
+            </p>
+          )}
         </div>
 
-        {/* Bottom accent */}
-        <div className="h-1 bg-gradient-to-r from-transparent via-arena-gold to-transparent" />
+        {/* Bottom divider */}
+        <div className="h-px" style={{ background: "linear-gradient(90deg,transparent,var(--gold-dark),transparent)" }} />
       </div>
     </motion.article>
   );
@@ -223,79 +199,40 @@ export default function HallOfVictoriesContent() {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center space-y-4 pb-8 border-b border-arena-steel/10"
+        className="text-center space-y-3 pb-8"
+        style={{ borderBottom: "1px solid rgba(180,130,20,0.2)" }}
       >
-        <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-gradient-to-r from-arena-gold/10 via-arena-gold/5 to-arena-gold/10 border border-arena-gold/20">
-          <svg className="w-5 h-5 text-arena-gold" viewBox="0 0 24 24" fill="currentColor">
+        <div className="inline-flex items-center gap-2 px-5 py-1.5 rounded"
+          style={{ background: "rgba(180,130,20,0.1)", border: "1px solid rgba(180,130,20,0.3)" }}>
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" style={{ color: "var(--gold-dark)" }}>
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
           </svg>
-          <span className="text-sm font-medium text-arena-gold uppercase tracking-wider">Hall da Glória</span>
+          <span className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--gold-dark)" }}>Hall da Glória</span>
         </div>
-        <h1 className="font-[family-name:var(--font-display)] text-4xl sm:text-5xl text-arena-smoke tracking-wide">
+        <h1 className="font-[family-name:var(--font-display)] text-4xl sm:text-5xl tracking-wide" style={{ color: "var(--ink-dark)" }}>
           Salão das Vitórias
         </h1>
-        <p className="text-arena-smoke/60 max-w-2xl mx-auto leading-relaxed">
+        <p className="max-w-2xl mx-auto leading-relaxed" style={{ color: "var(--ink-mid)" }}>
           Celebre as conquistas mais épicas da comunidade Brutuspolus. Das vitórias oficiais do mês às glórias individuais dos guerreiros.
         </p>
       </motion.div>
 
       {/* Tab Navigation */}
-      <div className="flex items-center justify-center gap-3" role="tablist">
-        <button
-          role="tab"
-          aria-selected={tab === "featured"}
-          onClick={() => handleTabChange("featured")}
-          className={`
-            group relative px-6 py-3 rounded-xl font-medium transition-all duration-300
-            ${tab === "featured" 
-              ? "text-arena-dark" 
-              : "text-arena-smoke/70 hover:text-arena-smoke"
-            }
-          `}
-        >
-          {tab === "featured" && (
-            <motion.div
-              layoutId="activeTab"
-              className="absolute inset-0 bg-gradient-to-r from-arena-gold to-yellow-500 rounded-xl shadow-lg"
-              transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-            />
-          )}
-          <span className="relative flex items-center gap-2">
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
-            Bruta do Mês
-          </span>
-        </button>
-
-        <button
-          role="tab"
-          aria-selected={tab === "community"}
-          onClick={() => handleTabChange("community")}
-          className={`
-            group relative px-6 py-3 rounded-xl font-medium transition-all duration-300
-            ${tab === "community" 
-              ? "text-arena-dark" 
-              : "text-arena-smoke/70 hover:text-arena-smoke"
-            }
-          `}
-        >
-          {tab === "community" && (
-            <motion.div
-              layoutId="activeTab"
-              className="absolute inset-0 bg-gradient-to-r from-arena-gold to-yellow-500 rounded-xl shadow-lg"
-              transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-            />
-          )}
-          <span className="relative flex items-center gap-2">
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-            Vitórias da Comunidade
-          </span>
-        </button>
+      <div className="flex items-center justify-center gap-2" role="tablist">
+        {(["featured", "community"] as const).map((t) => (
+          <button
+            key={t}
+            role="tab"
+            aria-selected={tab === t}
+            onClick={() => handleTabChange(t)}
+            className="px-5 py-2 rounded font-medium text-sm font-[family-name:var(--font-display)] tracking-wider uppercase transition-all"
+            style={tab === t
+              ? { background: "var(--ink-dark)", color: "var(--parchment-light)", border: "2px solid var(--gold-dark)" }
+              : { background: "rgba(180,130,20,0.08)", color: "var(--ink-mid)", border: "1px solid rgba(180,130,20,0.3)" }}
+          >
+            {t === "featured" ? "⭐ Bruta do Mês" : "⚔ Comunidade"}
+          </button>
+        ))}
       </div>
 
       {/* Tab Content */}
@@ -326,13 +263,10 @@ export default function HallOfVictoriesContent() {
                   <button
                     key={opt.value}
                     onClick={() => handleSortChange(opt.value)}
-                    className={`
-                      px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200
-                      ${sort === opt.value
-                        ? "bg-arena-steel/20 text-arena-smoke border border-arena-steel/30 shadow-sm"
-                        : "text-arena-smoke/60 hover:text-arena-smoke hover:bg-arena-steel/10"
-                      }
-                    `}
+                    className="px-4 py-2 rounded font-medium text-sm transition-all font-[family-name:var(--font-display)] tracking-wider"
+                    style={sort === opt.value
+                      ? { background: "var(--ink-dark)", color: "var(--parchment-light)", border: "1px solid var(--gold-dark)" }
+                      : { background: "transparent", color: "var(--stone-mid)", border: "1px solid rgba(180,130,20,0.2)" }}
                   >
                     {opt.label}
                   </button>
@@ -342,15 +276,16 @@ export default function HallOfVictoriesContent() {
               {user ? (
                 <button
                   onClick={() => setShowForm(true)}
-                  className="group px-5 py-2.5 rounded-lg bg-gradient-to-r from-arena-gold/90 to-yellow-600/90 hover:from-arena-gold hover:to-yellow-600 text-arena-dark font-medium transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-2"
+                  className="px-5 py-2 rounded font-medium flex items-center gap-2 font-[family-name:var(--font-display)] tracking-wider text-sm transition-all"
+                  style={{ background: "rgba(180,130,20,0.12)", color: "var(--ink-dark)", border: "1px solid var(--gold-dark)" }}
                 >
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                     <path d="M12 5v14M5 12h14" />
                   </svg>
                   Registar Vitória
                 </button>
               ) : (
-                <p className="text-sm text-arena-smoke/50 italic">
+                <p className="text-sm italic" style={{ color: "var(--stone-mid)" }}>
                   Faz login para partilhar as tuas vitórias
                 </p>
               )}
@@ -362,7 +297,8 @@ export default function HallOfVictoriesContent() {
                 {Array.from({ length: 6 }).map((_, i) => (
                   <div
                     key={i}
-                    className="animate-pulse rounded-xl bg-arena-charcoal/40 border border-arena-steel/10 h-80"
+                    className="animate-pulse rounded h-80"
+                    style={{ background: "rgba(245,230,200,0.08)", border: "1px solid rgba(180,130,20,0.15)" }}
                   />
                 ))}
               </div>
@@ -370,17 +306,14 @@ export default function HallOfVictoriesContent() {
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="text-center py-20 rounded-2xl bg-gradient-to-br from-arena-charcoal/40 to-arena-charcoal/20 border border-arena-steel/10"
+                className="papyrus-scroll papyrus-scroll-top papyrus-scroll-bottom text-center"
+                style={{ padding: "5rem 2rem" }}
               >
-                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-arena-steel/10 flex items-center justify-center">
-                  <svg className="w-10 h-10 text-arena-smoke/30" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                  </svg>
-                </div>
-                <h3 className="font-[family-name:var(--font-display)] text-xl text-arena-smoke/70 mb-2">
+                <div className="text-5xl mb-5">⭐</div>
+                <h3 className="font-[family-name:var(--font-display)] text-xl mb-2" style={{ color: "var(--ink-dark)" }}>
                   Nenhuma vitória registada
                 </h3>
-                <p className="text-arena-smoke/50 text-sm">
+                <p className="text-sm" style={{ color: "var(--ink-mid)" }}>
                   Sê o primeiro guerreiro a reclamar glória!
                 </p>
               </motion.div>
@@ -405,7 +338,8 @@ export default function HallOfVictoriesContent() {
               <div className="text-center pt-4">
                 <button
                   onClick={handleLoadMore}
-                  className="px-8 py-3 rounded-xl bg-arena-charcoal/60 hover:bg-arena-charcoal/80 border border-arena-steel/20 hover:border-arena-steel/30 text-arena-smoke font-medium transition-all duration-200 hover:scale-105"
+                  className="px-8 py-3 rounded font-medium transition-all font-[family-name:var(--font-display)] tracking-wider text-sm"
+                  style={{ background: "rgba(180,130,20,0.08)", color: "var(--ink-mid)", border: "1px solid rgba(180,130,20,0.3)" }}
                 >
                   Carregar Mais Vitórias
                 </button>
@@ -414,7 +348,8 @@ export default function HallOfVictoriesContent() {
 
             {loading && clips.length > 0 && (
               <div className="flex justify-center py-8">
-                <div className="w-8 h-8 border-2 border-arena-gold/30 border-t-arena-gold rounded-full animate-spin" />
+                <div className="w-8 h-8 border-2 rounded-full animate-spin"
+                  style={{ borderColor: "rgba(180,130,20,0.2)", borderTopColor: "var(--gold-dark)" }} />
               </div>
             )}
           </motion.div>
