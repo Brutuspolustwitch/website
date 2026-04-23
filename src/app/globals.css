@@ -4372,3 +4372,114 @@ body {
     padding-right: 1rem !important;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   SOBRE / ABOUT PAGE
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── Hero — cinematic stone arena atmosphere ──────────────────────── */
+.sobre-hero {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Diagonal stone-crosshatch texture overlay */
+.sobre-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 72px,
+      rgba(255, 255, 255, 0.007) 72px,
+      rgba(255, 255, 255, 0.007) 73px
+    ),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 72px,
+      rgba(255, 255, 255, 0.005) 72px,
+      rgba(255, 255, 255, 0.005) 73px
+    );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Stone panel — engraved metal plate ──────────────────────────── */
+.stone-panel {
+  position: relative;
+  background:
+    radial-gradient(ellipse 90% 50% at 50% 0%, rgba(212, 168, 67, 0.04) 0%, transparent 60%),
+    linear-gradient(170deg, rgba(28, 26, 22, 0.98) 0%, rgba(18, 16, 12, 0.99) 100%);
+  border: 1px solid rgba(212, 168, 67, 0.12);
+  transition:
+    border-color 0.35s ease,
+    transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    box-shadow 0.35s ease;
+}
+
+/* Subtle diagonal grain inside panels */
+.stone-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 48px,
+    rgba(255, 255, 255, 0.008) 48px,
+    rgba(255, 255, 255, 0.008) 49px
+  );
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* Crimson-toned variant for "Quedas" and "Campanhas" */
+.stone-panel--crimson {
+  background:
+    radial-gradient(ellipse 90% 50% at 50% 0%, rgba(139, 0, 0, 0.07) 0%, transparent 60%),
+    linear-gradient(170deg, rgba(24, 18, 18, 0.98) 0%, rgba(14, 10, 10, 0.99) 100%);
+  border-color: rgba(139, 0, 0, 0.18);
+}
+
+.stone-panel--crimson:hover {
+  border-color: rgba(198, 40, 40, 0.38);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.65), 0 0 32px rgba(139, 0, 0, 0.08);
+}
+
+/* ── Arena Code — rule list item ─────────────────────────────────── */
+.arena-code-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.1rem 1.5rem;
+  border: 1px solid rgba(212, 168, 67, 0.08);
+  background: transparent;
+  transition:
+    border-color 0.3s ease,
+    background 0.3s ease,
+    transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.arena-code-item:hover {
+  border-color: rgba(212, 168, 67, 0.3);
+  background: rgba(212, 168, 67, 0.03);
+  transform: translateX(6px);
+}
+
+/* ── About section — stat box ────────────────────────────────────── */
+.sobre-stat-box {
+  padding: 0.75rem 0.5rem;
+  text-align: center;
+  border: 1px solid rgba(212, 168, 67, 0.08);
+  background: rgba(212, 168, 67, 0.02);
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.sobre-stat-box:hover {
+  border-color: rgba(212, 168, 67, 0.2);
+  background: rgba(212, 168, 67, 0.05);
+}
