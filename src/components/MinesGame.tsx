@@ -462,28 +462,49 @@ export default function MinesGame() {
           {/* Result */}
           {(gameStatus === "won" || gameStatus === "lost") && (
             <div className="space-y-4">
-              <div className="rounded-xl p-6 text-center"
-                style={gameStatus === "won"
-                  ? jackpot
-                    ? { background: "#6b5000aa", border: "2px solid #c9a227" }
-                    : { background: "#2a4a1a88", border: "2px solid #4a8a2a" }
-                  : { background: "#4a1a1a88", border: "2px solid #8b2a2a" }
-                }>
-                <div className="text-5xl mb-2">
-                  {jackpot ? "🏆" : gameStatus === "won" ? "🎉" : "💥"}
+              <div className="rounded-xl overflow-hidden"
+                style={{ border: `2px solid ${P.border}`, background: P.parchmentMid }}>
+                {/* Colour band at top */}
+                <div style={{
+                  background: jackpot
+                    ? `linear-gradient(135deg, ${P.goldDark}, ${P.gold})`
+                    : gameStatus === "won"
+                    ? "linear-gradient(135deg, #3a6b2a, #5a9a3a)"
+                    : "linear-gradient(135deg, #6b2a14, #9a3a20)",
+                  padding: "12px 16px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {gameStatus === "lost" && (
+                    <img src="/images/mines/orange-mine.png" alt="mina" style={{ width: 32, height: 32, objectFit: "contain", filter: "brightness(0) invert(1) opacity(0.85)" }} />
+                  )}
+                  {gameStatus === "won" && (
+                    <img src="/images/mines/diamond.png" alt="diamante" style={{ width: 32, height: 32, objectFit: "contain", filter: "brightness(0) invert(1) opacity(0.85)" }} />
+                  )}
+                  <span className="font-bold text-lg font-[family-name:var(--font-display)] tracking-wider"
+                    style={{ color: "#fff", textShadow: "0 1px 3px rgba(0,0,0,0.4)" }}>
+                    {jackpot ? "JACKPOT!" : gameStatus === "won" ? "Ganhaste!" : "MINA!"}
+                  </span>
                 </div>
-                <p className="text-2xl font-bold font-[family-name:var(--font-display)]"
-                  style={{ color: jackpot ? P.gold : gameStatus === "won" ? "#6abf4b" : "#d45050" }}>
-                  {jackpot ? "JACKPOT!" : gameStatus === "won" ? "Ganhaste!" : "Mina!"}
-                </p>
-                <p className="text-4xl font-bold font-[family-name:var(--font-display)] mt-1"
-                  style={{ color: P.gold }}>
-                  {gameStatus === "won" ? `${multiplier.toFixed(2)}×` : "0×"}
-                </p>
-                <p className="text-lg font-semibold mt-1"
-                  style={{ color: gameStatus === "won" ? "#6abf4b" : "#d45050" }}>
-                  {gameStatus === "won" ? `+${profit - bet} pts lucro` : `-${bet} pts`}
-                </p>
+                {/* Stats body */}
+                <div className="p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs uppercase tracking-wider font-semibold" style={{ color: P.brownLight }}>Multiplicador</span>
+                    <span className="text-3xl font-bold font-[family-name:var(--font-display)]" style={{ color: P.goldDark }}>
+                      {gameStatus === "won" ? `${multiplier.toFixed(2)}×` : "0×"}
+                    </span>
+                  </div>
+                  <div style={{ height: 1, background: P.borderLight }} />
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs uppercase tracking-wider font-semibold" style={{ color: P.brownLight }}>Resultado</span>
+                    <span className="text-xl font-bold font-[family-name:var(--font-display)]"
+                      style={{ color: gameStatus === "won" ? "#4a8a2a" : "#8b2a1a" }}>
+                      {gameStatus === "won" ? `+${profit - bet} pts` : `-${bet} pts`}
+                    </span>
+                  </div>
+                </div>
               </div>
               <button onClick={playAgain} className="cta-button" style={{ fontSize: "1.05rem" }}>
                 🎮 Jogar de Novo
@@ -556,7 +577,7 @@ export default function MinesGame() {
                   )}
                   {showMine && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src="/images/mines/bomb.jpg" alt="💣" style={{ width: "140%", height: "140%", objectFit: "cover", mixBlendMode: "multiply" }} />
+                    <img src="/images/mines/orange-mine.png" alt="💣" style={{ width: "108%", height: "108%", objectFit: "contain" }} />
                   )}
                 </button>
               );
