@@ -120,19 +120,22 @@ export async function PUT(request: Request) {
     const absAmount = Math.abs(amount);
     const method = amount < 0 ? "DELETE" : "PUT";
 
-    // SE API: PUT adds points, DELETE removes points
+    // SE API: PUT adds points, DELETE removes points — amount in path, no body needed
     const res = await fetch(
       `${SE_API}/points/${channelId}/${encodeURIComponent(username)}/${absAmount}`,
-      {
-        method,
-        headers: { ...headers, "Content-Type": "application/json" },
-      }
+      { method, headers }
     );
 
-    if (!res.ok) throw new Error(`SE API ${res.status}`);
+    if (!res.ok) {
+      let detail = "";
+      try { detail = await res.text(); } catch { /* ignore */ }
+      console.error(`SE API ${method} failed: ${res.status} ${res.statusText}`, detail);
+      return NextResponse.json({ error: `SE API error ${res.status}`, detail }, { status: 502 });
+    }
     const data = await res.json();
     return NextResponse.json(data);
-  } catch {
-    return NextResponse.json({ error: "Failed to update points" }, { status: 502 });
+  } catch (err) {
+    console.error("updatePoints exception:", err);
+    return NextResponse.json({ error: "Failed to update points", detail: String(err) }, { status: 502 });
   }
 }
