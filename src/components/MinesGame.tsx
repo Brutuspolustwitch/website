@@ -511,13 +511,13 @@ export default function MinesGame() {
               const isSafe     = isRevealed && !isMine;
               const canClick   = gameStatus === "active" && !isRevealed && !loading;
 
-              let bg     = `linear-gradient(135deg, ${P.parchmentDeep} 0%, ${P.parchmentDark} 100%)`;
+              let bg     = `linear-gradient(135deg, #b8a070 0%, #a08050 100%)`;
               let border = P.border;
               let shadow = "0 2px 4px rgba(0,0,0,0.2)";
               let cursor = "default";
 
               if (gameStatus === "idle") {
-                bg = P.parchmentDeep; border = P.borderLight; shadow = "none";
+                bg = "#a08050"; border = P.borderLight; shadow = "none";
               } else if (isSafe) {
                 bg = "linear-gradient(135deg,#4a8a2a,#6abf4b)"; border = "#3a7a1a"; shadow = "0 0 8px rgba(100,200,60,0.4)";
               } else if (showMine) {
@@ -542,20 +542,21 @@ export default function MinesGame() {
                     cursor,
                     transition: "all 0.15s",
                     boxShadow: shadow,
-                    padding: "10%",
+                    padding: 0,
+                    overflow: "hidden",
                   }}
                 >
                   {(gameStatus === "idle" || (gameStatus === "active" && !isRevealed)) && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src="/images/mines/questionmark2.png" alt="?" style={{ width: "70%", height: "70%", objectFit: "contain" }} />
+                    <img src="/images/mines/questionmark2.png" alt="?" style={{ width: "88%", height: "88%", objectFit: "contain" }} />
                   )}
                   {isSafe && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src="/images/mines/diamond.png" alt="💎" style={{ width: "70%", height: "70%", objectFit: "contain" }} />
+                    <img src="/images/mines/diamond.png" alt="💎" style={{ width: "175%", height: "175%", objectFit: "contain" }} />
                   )}
                   {showMine && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src="/images/mines/bomb.jpg" alt="💣" style={{ width: "70%", height: "70%", objectFit: "contain", mixBlendMode: "multiply" }} />
+                    <img src="/images/mines/bomb.jpg" alt="💣" style={{ width: "140%", height: "140%", objectFit: "cover", mixBlendMode: "multiply" }} />
                   )}
                 </button>
               );
