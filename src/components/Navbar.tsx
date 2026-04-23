@@ -33,7 +33,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
     "/giveaways": "Giveaways",
     "/ofertas": "Ofertas",
     "/destaques": "Destaques",
-    "/loja": "Loja",
+    "/loja": "Loja dos Brutus",
     "/roda-diaria": "Arrebanha Diária",
     "/bonus-hunt": "Bonus Hunt",
     "/liga-dos-brutus": "Liga dos Brutus",
