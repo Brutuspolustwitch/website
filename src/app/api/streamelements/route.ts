@@ -117,11 +117,14 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "username and amount required" }, { status: 400 });
     }
 
-    // Use the SE API to set points (PUT adjusts points by amount)
+    const absAmount = Math.abs(amount);
+    const method = amount < 0 ? "DELETE" : "PUT";
+
+    // SE API: PUT adds points, DELETE removes points
     const res = await fetch(
-      `${SE_API}/points/${channelId}/${encodeURIComponent(username)}/${Math.abs(amount)}`,
+      `${SE_API}/points/${channelId}/${encodeURIComponent(username)}/${absAmount}`,
       {
-        method: "PUT",
+        method,
         headers: { ...headers, "Content-Type": "application/json" },
       }
     );
