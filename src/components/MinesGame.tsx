@@ -556,15 +556,24 @@ export default function MinesGame() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: "clamp(1.2rem, 3vw, 1.8rem)",
                     cursor,
                     transition: "all 0.15s",
                     boxShadow: shadow,
+                    padding: "10%",
                   }}
                 >
-                  {(gameStatus === "idle" || (gameStatus === "active" && !isRevealed)) && "❓"}
-                  {isSafe && "💎"}
-                  {showMine && "💣"}
+                  {(gameStatus === "idle" || (gameStatus === "active" && !isRevealed)) && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src="/images/mines/questionmark2.png" alt="?" style={{ width: "70%", height: "70%", objectFit: "contain" }} />
+                  )}
+                  {isSafe && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src="/images/mines/diamond.png" alt="💎" style={{ width: "70%", height: "70%", objectFit: "contain" }} />
+                  )}
+                  {showMine && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src="/images/mines/bomb.jpg" alt="💣" style={{ width: "70%", height: "70%", objectFit: "contain", mixBlendMode: "multiply" }} />
+                  )}
                 </button>
               );
             })}
