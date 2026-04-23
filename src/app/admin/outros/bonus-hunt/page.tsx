@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/lib/auth-context";
-import { supabase } from "@/lib/supabase";
+import { supabase, type GuessSession, type GuessPrediction } from "@/lib/supabase";
 
 interface ImportResult {
   success: boolean;
@@ -57,6 +57,15 @@ export default function AdminBonusHuntPage() {
   const [deleting, setDeleting] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
+  /* Guess-the-result state */
+  const [guessHuntId, setGuessHuntId] = useState<string | null>(null);
+  const [guessSession, setGuessSession] = useState<GuessSession | null>(null);
+  const [guessTotal, setGuessTotal] = useState(0);
+  const [guessPredictions, setGuessPredictions] = useState<GuessPrediction[]>([]);
+  const [guessPayoutInput, setGuessPayoutInput] = useState("");
+  const [guessMsg, setGuessMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [guessActionLoading, setGuessActionLoading] = useState(false);
+
   const isAdmin = user?.role === "admin" || user?.role === "configurador" || user?.role === "moderador";
 
   const fetchHistory = useCallback(async () => {
@@ -72,6 +81,46 @@ export default function AdminBonusHuntPage() {
   useEffect(() => {
     if (isAdmin) fetchHistory();
   }, [isAdmin, fetchHistory]);
+
+  /* Guess management helpers */
+  const loadGuessData = useCallback(async (huntId: string) => {
+    const res = await fetch(`/api/guess-predictions?huntSessionId=${huntId}`);
+    if (!res.ok) return;
+    const data = await res.json();
+    setGuessSession(data.guessSession ?? null);
+    setGuessTotal(data.totalCount ?? 0);
+    setGuessPredictions(data.predictions ?? []);
+  }, []);
+
+  async function toggleGuessPanel(huntId: string) {
+    if (guessHuntId === huntId) {
+      setGuessHuntId(null);
+      return;
+    }
+    setGuessHuntId(huntId);
+    setGuessMsg(null);
+    setGuessPayoutInput("");
+    await loadGuessData(huntId);
+  }
+
+  async function guessAction(body: Record<string, unknown>) {
+    setGuessActionLoading(true);
+    setGuessMsg(null);
+    const res = await fetch("/api/guess-predictions", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    setGuessActionLoading(false);
+    if (res.ok) {
+      setGuessSession(data.guessSession ?? null);
+      if (guessHuntId) await loadGuessData(guessHuntId);
+      setGuessMsg({ ok: true, text: "Feito!" });
+    } else {
+      setGuessMsg({ ok: false, text: data.error ?? "Erro" });
+    }
+  }
 
   async function handleDelete(id: string) {
     setDeleting(id);
@@ -445,7 +494,8 @@ export default function AdminBonusHuntPage() {
                     </thead>
                     <tbody>
                       {history.map((s) => (
-                        <tr key={s.id} className="border-b border-arena-steel/5 hover:bg-white/[0.02]">
+                        <React.Fragment key={s.id}>
+                        <tr className="border-b border-arena-steel/5 hover:bg-white/[0.02]">
                           <td className="px-4 py-3 text-arena-smoke font-medium max-w-[180px] truncate">{s.title}</td>
                           <td className="px-4 py-3 text-arena-smoke/60">
                             {s.hunt_date
@@ -473,8 +523,22 @@ export default function AdminBonusHuntPage() {
                           <td className="px-4 py-3 text-arena-gold">{s.best_multi.toFixed(1)}x</td>
                           <td className="px-4 py-3 text-arena-smoke/60 max-w-[120px] truncate">{s.best_slot_name || "—"}</td>
                           <td className="px-4 py-3 text-right">
-                            {deleteConfirm === s.id ? (
-                              <div className="flex items-center justify-end gap-2">
+                            <div className="flex items-center justify-end gap-2">
+                              {/* Guess panel toggle */}
+                              <button
+                                onClick={() => toggleGuessPanel(s.id)}
+                                className={`px-3 py-1.5 text-xs rounded border transition-all cursor-pointer ${
+                                  guessHuntId === s.id
+                                    ? "border-amber-400/60 bg-amber-400/10 text-amber-400"
+                                    : "border-amber-400/20 text-amber-400/60 hover:border-amber-400/40 hover:text-amber-400"
+                                }`}
+                                title="Gerir apostas de Adivinha o Resultado"
+                              >
+                                🎯 Apostas
+                              </button>
+
+                              {deleteConfirm === s.id ? (
+                              <div className="flex items-center gap-2">
                                 <button
                                   onClick={() => handleDelete(s.id)}
                                   disabled={deleting === s.id}
@@ -498,8 +562,140 @@ export default function AdminBonusHuntPage() {
                                 Eliminar
                               </button>
                             )}
+                            </div>
                           </td>
                         </tr>
+
+                        {/* ── Guess panel (expandable) ── */}
+                        {guessHuntId === s.id && (
+                          <tr>
+                            <td colSpan={11} className="px-4 py-4 bg-amber-950/10 border-t border-amber-400/10">
+                              <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                  <span className="font-[family-name:var(--font-display)] text-amber-400 text-xs tracking-widest uppercase">
+                                    🎯 Adivinha o Resultado — {s.title}
+                                  </span>
+                                  {guessSession && (
+                                    <span className="text-xs font-[family-name:var(--font-display)] tracking-wider" style={{
+                                      color: guessSession.status === "resolved" ? "#d4a843" : guessSession.betting_open ? "#22c55e" : "#8b1a1a",
+                                    }}>
+                                      {guessSession.status === "resolved" ? "✅ Resolvido" : guessSession.betting_open ? "🟢 Aberto" : guessSession.status === "locked" ? "🔐 Bloqueado" : "🔒 Fechado"}
+                                      {" · "}{guessTotal} previsões
+                                    </span>
+                                  )}
+                                </div>
+
+                                {!guessSession ? (
+                                  <button
+                                    onClick={() => guessAction({ action: "create", huntSessionId: s.id })}
+                                    disabled={guessActionLoading}
+                                    className="px-4 py-1.5 text-xs rounded border border-amber-400/30 text-amber-400/80 hover:bg-amber-400/10 hover:text-amber-400 transition-all disabled:opacity-50 cursor-pointer font-[family-name:var(--font-display)] tracking-widest uppercase"
+                                  >
+                                    + Criar Sessão de Apostas
+                                  </button>
+                                ) : (
+                                  <div className="flex flex-wrap gap-2 items-center">
+                                    {/* Toggle open/close */}
+                                    {guessSession.status === "open" && (
+                                      <button
+                                        onClick={() => guessAction({ action: "toggle_betting", guessSessionId: guessSession.id })}
+                                        disabled={guessActionLoading}
+                                        className="px-3 py-1.5 text-xs rounded border transition-all disabled:opacity-50 cursor-pointer font-[family-name:var(--font-display)] tracking-widest uppercase"
+                                        style={{
+                                          borderColor: guessSession.betting_open ? "rgba(139,26,26,0.4)" : "rgba(34,197,94,0.4)",
+                                          color: guessSession.betting_open ? "#8b1a1a" : "#22c55e",
+                                          background: guessSession.betting_open ? "rgba(139,26,26,0.1)" : "rgba(34,197,94,0.08)",
+                                        }}
+                                      >
+                                        {guessSession.betting_open ? "🔒 Fechar Apostas" : "🟢 Abrir Apostas"}
+                                      </button>
+                                    )}
+
+                                    {/* Lock permanently */}
+                                    {guessSession.status === "open" && !guessSession.betting_open && (
+                                      <button
+                                        onClick={() => guessAction({ action: "lock", guessSessionId: guessSession.id })}
+                                        disabled={guessActionLoading}
+                                        className="px-3 py-1.5 text-xs rounded border border-amber-400/30 text-amber-400/70 hover:bg-amber-400/10 transition-all disabled:opacity-50 cursor-pointer font-[family-name:var(--font-display)] tracking-widest uppercase"
+                                      >
+                                        🔐 Bloquear
+                                      </button>
+                                    )}
+
+                                    {/* Resolve form */}
+                                    {guessSession.status !== "resolved" && (
+                                      <div className="flex items-center gap-2 flex-1 min-w-[240px]">
+                                        <input
+                                          type="number"
+                                          step="0.01"
+                                          min="0"
+                                          placeholder="Payout total (ex: 1842.50)"
+                                          value={guessPayoutInput}
+                                          onChange={(e) => setGuessPayoutInput(e.target.value)}
+                                          className="flex-1 bg-arena-charcoal border border-arena-gold/20 rounded px-2 py-1 text-arena-smoke text-xs font-[family-name:var(--font-ui)] focus:outline-none focus:border-amber-400/50"
+                                        />
+                                        <button
+                                          onClick={() => guessAction({ action: "resolve", guessSessionId: guessSession.id, finalPayout: parseFloat(guessPayoutInput.replace(",", ".")) })}
+                                          disabled={guessActionLoading || !guessPayoutInput}
+                                          className="px-3 py-1.5 text-xs rounded text-white font-[family-name:var(--font-display)] tracking-widest uppercase disabled:opacity-50 cursor-pointer"
+                                          style={{ background: "linear-gradient(135deg, #8b6914, #b89230)" }}
+                                        >
+                                          ⚔ Resolver
+                                        </button>
+                                      </div>
+                                    )}
+
+                                    {/* Winner display */}
+                                    {guessSession.status === "resolved" && guessSession.winner_display_name && (
+                                      <div className="flex items-center gap-3 px-3 py-1.5 rounded border border-arena-gold/25 bg-arena-gold/5">
+                                        <span className="text-sm">🏆</span>
+                                        <div>
+                                          <span className="font-[family-name:var(--font-ui)] text-xs font-bold text-arena-gold">{guessSession.winner_display_name}</span>
+                                          <span className="text-arena-smoke/60 text-xs ml-2">
+                                            apostou {guessSession.winner_predicted_amount?.toFixed(2)}€
+                                            {guessSession.winner_diff != null && ` (±${guessSession.winner_diff.toFixed(2)}€)`}
+                                          </span>
+                                          <span className="text-green-400 text-xs ml-2">
+                                            real: {guessSession.final_payout?.toFixed(2)}€
+                                          </span>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+
+                                {/* Predictions mini list */}
+                                {guessPredictions.length > 0 && (
+                                  <div className="mt-1 max-h-40 overflow-y-auto rounded border border-arena-steel/20 divide-y divide-arena-steel/10">
+                                    {guessPredictions.map((p, i) => {
+                                      const isWinner = guessSession?.winner_user_id === p.user_id;
+                                      const diff = guessSession?.final_payout != null ? Math.abs(p.predicted_amount - guessSession.final_payout) : null;
+                                      return (
+                                        <div key={p.id} className="flex items-center justify-between px-3 py-1.5 text-xs" style={{ background: isWinner ? "rgba(139,105,20,0.1)" : "transparent" }}>
+                                          <div className="flex items-center gap-2">
+                                            <span className="text-arena-smoke/40 w-5 text-right">{isWinner ? "🏆" : `${i + 1}`}</span>
+                                            <span className={`font-[family-name:var(--font-ui)] ${isWinner ? "text-arena-gold font-bold" : "text-arena-smoke"}`}>{p.display_name}</span>
+                                          </div>
+                                          <div className="text-right">
+                                            <span className={`font-bold ${isWinner ? "text-arena-gold" : "text-arena-smoke"}`}>{p.predicted_amount.toFixed(2)}€</span>
+                                            {diff != null && <span className="text-arena-smoke/50 ml-2">±{diff.toFixed(2)}€</span>}
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+
+                                {guessMsg && (
+                                  <p className="text-xs font-[family-name:var(--font-display)] tracking-wide" style={{ color: guessMsg.ok ? "#22c55e" : "#8b1a1a" }}>
+                                    {guessMsg.ok ? "✓" : "✗"} {guessMsg.text}
+                                  </p>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                        </React.Fragment>
                       ))}
                     </tbody>
                   </table>
