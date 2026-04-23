@@ -179,25 +179,14 @@ export default function AdminBrutaDoMesConfig() {
   };
 
   return (
-    <div className="pt-24 pb-16 min-h-screen bg-arena-black px-3 sm:px-4 lg:px-5">
+    <div className="flex flex-col gap-4">
       <AnimatePresence>
         {toast && (
           <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
         )}
       </AnimatePresence>
 
-      <div className="max-w-7xl mx-auto h-full flex flex-col gap-3">
-        {/* Page header */}
-        <div className="shrink-0">
-          <h1 className="text-xl sm:text-2xl font-bold font-[family-name:var(--font-display)] text-arena-gold">
-            Bruta do Mês
-          </h1>
-          <p className="text-xs text-arena-smoke">
-            Define a melhor vitória do mês — será mostrada em destaque antes das vitórias da comunidade.
-          </p>
-        </div>
-
-        {/* Current win preview */}
+      {/* Current win preview */}
         <div className="bg-arena-dark/80 rounded-lg border border-arena-gold/15 overflow-hidden">
         {loading ? (
           <div className="p-6 animate-pulse text-arena-smoke/50 text-sm">A carregar...</div>
@@ -380,7 +369,6 @@ export default function AdminBrutaDoMesConfig() {
             </div>
           </form>
         </div>
-      </div>
     </div>
   );
 }

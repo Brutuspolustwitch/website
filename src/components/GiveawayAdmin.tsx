@@ -270,24 +270,17 @@ export default function GiveawayAdmin() {
   if (!user || !hasRole(user.role, "moderador")) return <div className="min-h-screen bg-arena-black flex items-center justify-center"><div className="text-red-400">Acesso negado</div></div>;
 
   return (
-    <div className="pt-24 pb-16 min-h-screen bg-arena-black px-3 sm:px-4 lg:px-5">
-      <div className="max-w-7xl mx-auto h-full flex flex-col gap-3">
-        {/* Header */}
-        <div className="flex items-center justify-between shrink-0">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold font-[family-name:var(--font-display)] text-arena-gold">
-              Giveaways
-            </h1>
-            <p className="text-xs text-arena-smoke">Cria, gere e sorteia vencedores na arena.</p>
-          </div>
-          <button
-            onClick={() => setShowCreate(!showCreate)}
-            className={showCreate ? "cta-button-inactive" : "cta-button"}
-            style={{ width: "auto", padding: "0 1.25em" }}
-          >
-            {showCreate ? "✕ Cancelar" : "+ Novo Giveaway"}
-          </button>
-        </div>
+    <div className="flex flex-col gap-4">
+      {/* Top action bar */}
+      <div className="flex justify-end shrink-0">
+        <button
+          onClick={() => setShowCreate(!showCreate)}
+          className={showCreate ? "cta-button-inactive" : "cta-button"}
+          style={{ width: "auto", padding: "0 1.25em" }}
+        >
+          {showCreate ? "✕ Cancelar" : "+ Novo Giveaway"}
+        </button>
+      </div>
 
         {/* Create Form */}
         <AnimatePresence>
@@ -430,13 +423,12 @@ export default function GiveawayAdmin() {
           </div>
         </div>
 
-        {/* Toast */}
-        {toast && (
-          <div className="fixed bottom-6 right-6 z-50 px-4 py-2 rounded font-medium text-sm font-[family-name:var(--font-display)] tracking-wider bg-arena-dark border border-arena-gold/30 text-arena-gold/90" style={{ boxShadow: "0 4px 20px rgba(180,130,20,0.3)" }}>
-            {toast}
-          </div>
-        )}
-      </div>
+      {/* Toast */}
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-50 px-4 py-2 rounded font-medium text-sm font-[family-name:var(--font-display)] tracking-wider bg-arena-dark border border-arena-gold/30 text-arena-gold/90" style={{ boxShadow: "0 4px 20px rgba(180,130,20,0.3)" }}>
+          {toast}
+        </div>
+      )}
     </div>
   );
 }
