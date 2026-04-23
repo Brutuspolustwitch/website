@@ -59,6 +59,15 @@ const CATEGORIES = [
     hoverColor: "hover:border-red-500/50",
   },
   {
+    href: "/comunidade/keno",
+    title: "Keno",
+    description: "Escolhe até 10 números, aguarda o sorteio e multiplica os teus pontos",
+    icon: "🎱",
+    color: "from-indigo-600/20 to-indigo-500/10",
+    borderColor: "border-indigo-500/30",
+    hoverColor: "hover:border-indigo-500/50",
+  },
+  {
     href: "/adivinha-o-resultado",
     title: "Adivinha o Resultado",
     description: "Prevê os resultados dos bonus hunts e ganha pontos",

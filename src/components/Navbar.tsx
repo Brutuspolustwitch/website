@@ -66,6 +66,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
     "/leaderboard": "Leaderboard",
     "/hall-of-victories": "Bruta do Mês",
     "/comunidade/mines": "Mines",
+    "/comunidade/keno": "Keno",
   };
 
   const pageTitle = PAGE_TITLES[pathname] ?? null;
