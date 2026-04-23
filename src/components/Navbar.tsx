@@ -65,6 +65,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
     "/admin/outros/liga": "Liga dos Brutus",
     "/leaderboard": "Leaderboard",
     "/hall-of-victories": "Bruta do Mês",
+    "/comunidade/mines": "Mines",
   };
 
   const pageTitle = PAGE_TITLES[pathname] ?? null;

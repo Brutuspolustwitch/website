@@ -50,6 +50,15 @@ const CATEGORIES = [
     hoverColor: "hover:border-red-500/50",
   },
   {
+    href: "/comunidade/mines",
+    title: "Mines",
+    description: "Evita as minas, revela diamantes e multiplica os teus pontos",
+    icon: "💣",
+    color: "from-red-600/20 to-red-500/10",
+    borderColor: "border-red-500/30",
+    hoverColor: "hover:border-red-500/50",
+  },
+  {
     href: "/adivinha-o-resultado",
     title: "Adivinha o Resultado",
     description: "Prevê os resultados dos bonus hunts e ganha pontos",
