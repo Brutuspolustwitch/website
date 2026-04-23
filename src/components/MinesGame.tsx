@@ -50,7 +50,11 @@ export default function MinesGame() {
       .catch(() => {});
   }, [user]);
 
-  useEffect(() => { refreshPoints(); }, [refreshPoints]);
+  useEffect(() => {
+    refreshPoints();
+    const interval = setInterval(refreshPoints, 15000);
+    return () => clearInterval(interval);
+  }, [refreshPoints]);
 
   /* ── Check for active game on mount ──────────────────────── */
   useEffect(() => {
