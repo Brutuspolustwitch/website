@@ -123,10 +123,10 @@ export default function LojaPage() {
                 <div className="mb-14">
                   <div className="flex items-center gap-4 mb-6">
                     <div className="h-px flex-1 bg-gradient-to-r from-transparent to-arena-crimson/20" />
-                    <h3 className="font-[family-name:var(--font-display)] text-xs text-arena-crimson/70 tracking-[0.25em] uppercase flex items-center gap-3">
-                      <span className="text-base">🔥</span>
+                    <h3 className="font-[family-name:var(--font-display)] text-sm text-arena-gold tracking-[0.25em] uppercase flex items-center gap-3">
+                      <span className="text-lg">🔥</span>
                       Tempo Limitado
-                      <span className="text-base">🔥</span>
+                      <span className="text-lg">🔥</span>
                     </h3>
                     <div className="h-px flex-1 bg-gradient-to-l from-transparent to-arena-crimson/20" />
                   </div>
@@ -158,10 +158,10 @@ export default function LojaPage() {
                   {legendaryRewards.length > 0 && (
                     <div className="flex items-center gap-4 mb-6">
                       <div className="h-px flex-1 bg-gradient-to-r from-transparent to-arena-gold/15" />
-                      <h3 className="font-[family-name:var(--font-display)] text-xs text-arena-gold/50 tracking-[0.25em] uppercase flex items-center gap-3">
-                        <span className="text-base">⚔️</span>
+                      <h3 className="font-[family-name:var(--font-display)] text-sm text-white tracking-[0.25em] uppercase flex items-center gap-3">
+                        <span className="text-lg">⚔️</span>
                         Loja dos Brutus
-                        <span className="text-base">⚔️</span>
+                        <span className="text-lg">⚔️</span>
                       </h3>
                       <div className="h-px flex-1 bg-gradient-to-l from-transparent to-arena-gold/15" />
                     </div>
