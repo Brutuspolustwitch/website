@@ -218,7 +218,7 @@ export default function KenoGame() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr_220px] gap-6">
 
         {/* ── Left panel ─────────────────────────────────────── */}
         <div style={{ ...panelStyle, padding: 20 }} className="h-fit space-y-4">
@@ -274,40 +274,6 @@ export default function KenoGame() {
                 style={{ height: "2.4rem", fontSize: "0.8rem" }}>
                 ✕ Limpar
               </button>
-            </div>
-          )}
-
-          {/* Payout table */}
-          {currentPayouts && (
-            <div className="space-y-1">
-              <p className="text-xs uppercase tracking-wider font-semibold" style={{ color: P.brownMid }}>
-                Pagamentos ({picks.length} escolha{picks.length !== 1 ? "s" : ""})
-              </p>
-              <div className="rounded-lg overflow-hidden" style={{ border: `1px solid ${P.borderLight}` }}>
-                <div className="grid grid-cols-2 text-xs font-bold px-3 py-1.5"
-                  style={{ background: P.parchmentDeep, color: P.brownMid }}>
-                  <span>Acertos</span><span className="text-right">Ganho</span>
-                </div>
-                {Object.entries(currentPayouts)
-                  .sort(([a], [b]) => Number(a) - Number(b))
-                  .map(([hits, mult]) => {
-                    const isCurrentMatch = phase === "done" && matchedPicks.length === Number(hits);
-                    return (
-                      <div key={hits} className="grid grid-cols-2 text-xs px-3 py-1.5"
-                        style={{
-                          background: isCurrentMatch
-                            ? "rgba(74,138,42,0.2)"
-                            : "transparent",
-                          color:       isCurrentMatch ? "#4a8a2a" : P.brown,
-                          fontWeight:  isCurrentMatch ? 700 : 400,
-                          borderTop:   `1px solid ${P.borderLight}`,
-                        }}>
-                        <span>{hits} 🎯</span>
-                        <span className="text-right font-bold" style={{ color: isCurrentMatch ? "#4a8a2a" : P.goldDark }}>{mult}×</span>
-                      </div>
-                    );
-                  })}
-              </div>
             </div>
           )}
 
@@ -425,6 +391,43 @@ export default function KenoGame() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* ── Right: payout table ──────────────────────────── */}
+        <div style={{ ...panelStyle, padding: 16 }} className="h-fit space-y-1">
+          <p className="text-xs uppercase tracking-wider font-semibold pb-1" style={{ color: P.brownMid }}>
+            Pagamentos{picks.length > 0 ? ` (${picks.length} escolha${picks.length !== 1 ? "s" : ""})` : ""}
+          </p>
+          {picks.length === 0 ? (
+            <p className="text-xs text-center py-4" style={{ color: P.brownLight }}>
+              Seleciona números para ver os pagamentos
+            </p>
+          ) : (
+            <div className="rounded-lg overflow-hidden" style={{ border: `1px solid ${P.borderLight}` }}>
+              <div className="grid grid-cols-2 text-xs font-bold px-3 py-2"
+                style={{ background: P.parchmentDeep, color: P.brownMid }}>
+                <span>Acertos</span><span className="text-right">Ganho</span>
+              </div>
+              {Object.entries(currentPayouts ?? {})
+                .sort(([a], [b]) => Number(a) - Number(b))
+                .map(([hits, mult]) => {
+                  const isCurrentMatch = phase === "done" && matchedPicks.length === Number(hits);
+                  return (
+                    <div key={hits} className="grid grid-cols-2 px-3 py-2"
+                      style={{
+                        fontSize:    "0.82rem",
+                        background:  isCurrentMatch ? "rgba(74,138,42,0.2)" : "transparent",
+                        color:       isCurrentMatch ? "#4a8a2a" : P.brown,
+                        fontWeight:  isCurrentMatch ? 700 : 400,
+                        borderTop:   `1px solid ${P.borderLight}`,
+                      }}>
+                      <span>{hits} 🎯</span>
+                      <span className="text-right font-bold" style={{ color: isCurrentMatch ? "#4a8a2a" : P.goldDark }}>{mult}×</span>
+                    </div>
+                  );
+                })}
+            </div>
+          )}
         </div>
       </div>
     </div>
