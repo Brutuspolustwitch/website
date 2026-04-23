@@ -179,32 +179,28 @@ export default function AdminBrutaDoMesConfig() {
   };
 
   return (
-    <div className="bdm-admin-page">
+    <div className="min-h-screen bg-arena-black p-3 sm:p-4 lg:p-5">
       <AnimatePresence>
         {toast && (
           <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
         )}
       </AnimatePresence>
 
-      <div className="bdm-admin-page__inner">
+      <div className="max-w-7xl mx-auto h-full flex flex-col gap-3">
         {/* Page header */}
-        <div className="bdm-admin-page__header">
-          <div className="bdm-admin-page__header-ornament" aria-hidden="true">
-            <svg viewBox="0 0 80 12" fill="none" stroke="currentColor" strokeWidth={0.8}>
-              <line x1="0" y1="6" x2="28" y2="6" />
-              <path d="M30 6 C34 2, 46 2, 50 6 C46 10, 34 10, 30 6Z" />
-              <line x1="52" y1="6" x2="80" y2="6" />
-            </svg>
-          </div>
-          <h1 className="bdm-admin-page__title">Bruta do Mês</h1>
-          <p className="bdm-admin-page__desc">
+        <div className="shrink-0">
+          <h1 className="text-xl sm:text-2xl font-bold font-[family-name:var(--font-display)] text-arena-gold">
+            Bruta do Mês
+          </h1>
+          <p className="text-xs text-arena-smoke">
             Define a melhor vitória do mês — será mostrada em destaque antes das vitórias da comunidade.
           </p>
         </div>
 
         {/* Current win preview */}
+        <div className="bg-arena-dark/80 rounded-lg border border-arena-gold/15 overflow-hidden">
         {loading ? (
-          <div className="bdm-admin-skeleton" aria-hidden="true" />
+          <div className="p-6 animate-pulse text-arena-smoke/50 text-sm">A carregar...</div>
         ) : current ? (
           <div className="bdm-admin-current">
             <div className="bdm-admin-current__header">
@@ -238,12 +234,13 @@ export default function AdminBrutaDoMesConfig() {
             <span>Nenhuma Bruta do Mês definida.</span>
           </div>
         )}
+        </div>
 
         {/* Set new win form */}
-        <div className="bdm-admin-form-wrap">
-          <h3 className="bdm-admin-form-wrap__heading">
+        <div className="bg-arena-dark/80 rounded-lg border border-arena-gold/15 p-4 space-y-4">
+          <h2 className="text-xs font-bold text-arena-gold uppercase tracking-wider font-[family-name:var(--font-display)]">
             {current ? "Substituir Bruta do Mês" : "Definir Bruta do Mês"}
-          </h3>
+          </h2>
 
           <form onSubmit={handleSubmit} className="bdm-admin-form" noValidate>
             {/* Month */}

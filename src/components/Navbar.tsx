@@ -55,7 +55,15 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
     "/admin/utilizadores": "Utilizadores",
     "/admin/parcerias": "Parcerias",
     "/admin/analitics": "Analytics",
+    "/admin/analitics/utilizadores": "Analytics — Utilizadores",
+    "/admin/analitics/ofertas": "Analytics — Ofertas",
+    "/admin/analitics/tempo-real": "Analytics — Tempo Real",
+    "/admin/analitics/trafego": "Analytics — Tráfego",
+    "/admin/analitics/geo": "Analytics — Geo",
+    "/admin/analitics/fraude": "Analytics — Fraude",
     "/admin/outros/bruta-do-mes": "Bruta do Mês",
+    "/admin/outros/liga": "Liga dos Brutus",
+    "/leaderboard": "Leaderboard",
     "/hall-of-victories": "Bruta do Mês",
   };
 

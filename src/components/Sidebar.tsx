@@ -56,7 +56,7 @@ const MAIN_LINKS: NavItem[] = [
 const SECONDARY_LINKS: NavItem[] = [
   {
     href: "/admin",
-    label: "Admin Area",
+    label: "Admin",
     minRole: "configurador",
     children: [
       {
@@ -88,7 +88,7 @@ const SECONDARY_LINKS: NavItem[] = [
   },
   {
     href: "/moderador",
-    label: "Moderador Area",
+    label: "Moderador",
     minRole: "moderador",
     children: [
       { href: "/admin/outros/daily-session", label: "Sessão do Dia" },

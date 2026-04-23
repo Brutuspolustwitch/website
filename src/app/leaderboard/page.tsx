@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArenaCard } from "@/components/ui/ArenaCard";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { STAGGER_CONTAINER, STAGGER_ITEM } from "@/lib/animations";
 
@@ -58,11 +57,6 @@ export default function LeaderboardPage() {
     return (
       <div className="pt-24 pb-16 min-h-screen">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl text-arena-gold tracking-wide mb-4">
-              Leaderboard
-            </h1>
-          </div>
           <div className="space-y-3">
             {Array.from({ length: 10 }).map((_, i) => (
               <div key={i} className="animate-pulse">
@@ -81,14 +75,9 @@ export default function LeaderboardPage() {
     return (
       <div className="pt-24 pb-16 min-h-screen">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl text-arena-gold tracking-wide mb-4">
-              Leaderboard
-            </h1>
-            <ArenaCard className="p-8 text-center">
-              <p className="text-arena-smoke/70">{error}</p>
-            </ArenaCard>
-          </div>
+          <ArenaCard className="p-8 text-center">
+            <p className="text-arena-smoke/70">{error}</p>
+          </ArenaCard>
         </div>
       </div>
     );
@@ -97,28 +86,6 @@ export default function LeaderboardPage() {
   return (
     <div className="pt-24 pb-16 min-h-screen">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <ScrollReveal>
-          <SectionHeading
-            title="Leaderboard"
-            subtitle="Top membros da comunidade por pontos StreamElements"
-          />
-        </ScrollReveal>
-
-        {/* Info Card */}
-        <ScrollReveal delay={0.1}>
-          <ArenaCard className="p-4 mb-8 bg-arena-charcoal/40 border-arena-gold/20">
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">🏆</span>
-              <div className="flex-1">
-                <p className="text-arena-smoke/70 text-sm leading-relaxed">
-                  <span className="text-arena-gold font-medium">Como ganhar pontos:</span> Assiste às streams, participa no chat, completa desafios e contribui para a comunidade!
-                </p>
-              </div>
-            </div>
-          </ArenaCard>
-        </ScrollReveal>
-
         {/* Leaderboard table */}
         {entries.length === 0 ? (
           <ScrollReveal delay={0.2}>

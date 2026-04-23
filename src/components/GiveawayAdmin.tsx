@@ -266,19 +266,19 @@ export default function GiveawayAdmin() {
   };
 
   /* ── Auth gate ──────────────────────────────────────────── */
-  if (authLoading) return <div className="pt-24 pb-16 min-h-screen flex items-center justify-center"><div className="animate-pulse font-[family-name:var(--font-display)]" style={{ color: "var(--ink-mid)" }}>A carregar...</div></div>;
-  if (!user || !hasRole(user.role, "moderador")) return <div className="pt-24 pb-16 min-h-screen flex items-center justify-center"><div style={{ color: "#8b1a1a" }}>Acesso negado</div></div>;
+  if (authLoading) return <div className="min-h-screen bg-arena-black flex items-center justify-center"><div className="animate-pulse font-[family-name:var(--font-display)] text-arena-smoke">A carregar...</div></div>;
+  if (!user || !hasRole(user.role, "moderador")) return <div className="min-h-screen bg-arena-black flex items-center justify-center"><div className="text-red-400">Acesso negado</div></div>;
 
   return (
-    <div className="pt-24 pb-16 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-arena-black p-3 sm:p-4 lg:p-5">
+      <div className="max-w-7xl mx-auto h-full flex flex-col gap-3">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between shrink-0">
           <div>
-            <h1 className="text-3xl font-bold font-[family-name:var(--font-display)]" style={{ color: "var(--ink-dark)" }}>
-              ⚔ Sala de Controlo — Giveaways
+            <h1 className="text-xl sm:text-2xl font-bold font-[family-name:var(--font-display)] text-arena-gold">
+              Giveaways
             </h1>
-            <p className="text-sm mt-1" style={{ color: "var(--ink-mid)" }}>Cria, gere e sorteia vencedores na arena.</p>
+            <p className="text-xs text-arena-smoke">Cria, gere e sorteia vencedores na arena.</p>
           </div>
           <button
             onClick={() => setShowCreate(!showCreate)}
@@ -298,8 +298,8 @@ export default function GiveawayAdmin() {
               exit={{ opacity: 0, height: 0 }}
               className="mb-8 overflow-hidden"
             >
-              <div className="papyrus-scroll papyrus-scroll-top papyrus-scroll-bottom" style={{ maxWidth: "100%", padding: "1.5rem" }}>
-                <h3 className="text-lg font-bold font-[family-name:var(--font-display)] mb-4" style={{ color: "var(--ink-dark)" }}>Criar Giveaway</h3>
+              <div className="bg-arena-dark/80 rounded-lg border border-arena-gold/15 p-4">
+                <h3 className="text-xs font-bold text-arena-gold uppercase tracking-wider font-[family-name:var(--font-display)] mb-4">Criar Giveaway</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField label="Título" value={form.title} onChange={(v) => setForm({ ...form, title: v })} />
                   <FormField label="Prémio" value={form.prize} onChange={(v) => setForm({ ...form, prize: v })} />
@@ -308,7 +308,7 @@ export default function GiveawayAdmin() {
                   <FormField label="Imagem do Prémio (URL)" value={form.prize_image} onChange={(v) => setForm({ ...form, prize_image: v })} placeholder="https://..." />
 
                   <div className="space-y-1">
-                    <label className="text-xs uppercase tracking-wider font-medium" style={{ color: "var(--stone-mid)" }}>Modo</label>
+                    <label className="text-xs uppercase tracking-wider font-medium text-arena-smoke/70">Modo</label>
                     <div className="flex gap-2">
                       {([ "single", "tickets"] as const).map((m) => (
                         <button
@@ -345,20 +345,20 @@ export default function GiveawayAdmin() {
                       type="datetime-local"
                       value={form.scheduled_end}
                       onChange={(e) => setForm({ ...form, scheduled_end: e.target.value })}
-                      className="w-full px-3 py-2 rounded text-sm focus:outline-none transition-colors"
-                    style={{ background: "rgba(245,230,200,0.6)", border: "1px solid var(--gold-dark)", color: "var(--ink-dark)", colorScheme: "light" }}
+                      className="w-full px-3 py-2 rounded text-sm focus:outline-none transition-colors bg-arena-black/60 border border-arena-gold/20 text-arena-smoke/90"
+                    style={{ colorScheme: "dark" }}
                     />
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <label className="text-xs uppercase tracking-wider font-medium" style={{ color: "var(--stone-mid)" }}>Requer Stream Live</label>
+                    <label className="text-xs uppercase tracking-wider font-medium text-arena-smoke/70">Requer Stream Live</label>
                     <button
                       onClick={() => setForm({ ...form, require_live: !form.require_live })}
                       className="w-10 h-6 rounded-full transition-all relative"
-                      style={{ background: form.require_live ? "var(--gold-dark)" : "rgba(180,130,20,0.2)" }}
+                      style={{ background: form.require_live ? "var(--gold-bright)" : "rgba(80,80,80,0.5)" }}
                     >
                       <div className={`absolute top-0.5 w-5 h-5 rounded-full shadow transition-all ${form.require_live ? "left-[18px]" : "left-0.5"}`}
-                        style={{ background: form.require_live ? "var(--parchment-light)" : "rgba(245,230,200,0.7)" }} />
+                        style={{ background: "#ffffff" }} />
                     </button>
                   </div>
                 </div>
@@ -380,27 +380,23 @@ export default function GiveawayAdmin() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left: Giveaway List */}
           <div className="lg:col-span-1 space-y-3">
-            <h3 className="text-sm font-bold uppercase tracking-wider mb-2 font-[family-name:var(--font-display)]" style={{ color: "var(--stone-mid)" }}>Giveaways</h3>
+            <h3 className="text-xs font-bold uppercase tracking-wider mb-2 font-[family-name:var(--font-display)] text-arena-gold">Giveaways</h3>
             {loading ? (
-              <div className="animate-pulse" style={{ color: "var(--ink-mid)" }}>A carregar...</div>
+              <div className="animate-pulse text-arena-smoke/70">A carregar...</div>
             ) : giveaways.length === 0 ? (
-              <div className="text-sm" style={{ color: "var(--stone-mid)" }}>Nenhum giveaway criado.</div>
+              <div className="text-sm text-arena-smoke/50">Nenhum giveaway criado.</div>
             ) : (
               giveaways.map((g) => (
                 <button
                   key={g.id}
                   onClick={() => setSelectedId(g.id)}
-                  className="w-full text-left rounded p-3 transition-all"
-                  style={{
-                    border: selectedId === g.id ? "1px solid var(--gold-dark)" : "1px solid rgba(180,130,20,0.2)",
-                    background: selectedId === g.id ? "rgba(180,130,20,0.1)" : "rgba(245,230,200,0.03)",
-                  }}
+                  className={`w-full text-left rounded p-3 transition-all border ${selectedId === g.id ? "border-arena-gold/60 bg-arena-gold/10" : "border-arena-gold/15 bg-white/[0.02]"}`}
                 >
                   <div className="flex items-center justify-between">
-                    <h4 className="font-bold font-[family-name:var(--font-display)] truncate" style={{ color: "var(--ink-dark)" }}>{g.title}</h4>
+                    <h4 className="font-bold font-[family-name:var(--font-display)] truncate text-arena-gold">{g.title}</h4>
                     <StatusBadge isActive={g.is_active} isEnded={g.is_ended} />
                   </div>
-                  <div className="flex gap-3 mt-1 text-xs" style={{ color: "var(--stone-mid)" }}>
+                  <div className="flex gap-3 mt-1 text-xs text-arena-smoke/50">
                     <span>{g.mode === "single" ? "Entrada Única" : "Tickets"}</span>
                     <span>·</span>
                     <span>{g.participant_count ?? 0} participantes</span>
@@ -425,9 +421,8 @@ export default function GiveawayAdmin() {
                 onDelete={() => deleteGiveaway(selected.id)}
               />
             ) : (
-              <div className="flex items-center justify-center h-64 rounded"
-                style={{ border: "1px solid rgba(180,130,20,0.15)", background: "rgba(245,230,200,0.03)" }}>
-                <p className="text-sm font-[family-name:var(--font-display)] tracking-wider" style={{ color: "var(--stone-mid)" }}>
+              <div className="flex items-center justify-center h-64 rounded bg-white/[0.02] border border-arena-gold/15">
+                <p className="text-sm font-[family-name:var(--font-display)] tracking-wider text-arena-smoke/50">
                   Seleciona um giveaway para gerir
                 </p>
               </div>
@@ -437,8 +432,7 @@ export default function GiveawayAdmin() {
 
         {/* Toast */}
         {toast && (
-          <div className="fixed bottom-6 right-6 z-50 px-4 py-2 rounded font-medium text-sm shadow-lg animate-[fadeIn_0.2s_ease-out] font-[family-name:var(--font-display)] tracking-wider"
-            style={{ background: "var(--parchment-light)", color: "var(--ink-dark)", border: "1px solid var(--gold-dark)", boxShadow: "0 4px 20px rgba(180,130,20,0.3)" }}>
+          <div className="fixed bottom-6 right-6 z-50 px-4 py-2 rounded font-medium text-sm font-[family-name:var(--font-display)] tracking-wider bg-arena-dark border border-arena-gold/30 text-arena-gold/90" style={{ boxShadow: "0 4px 20px rgba(180,130,20,0.3)" }}>
             {toast}
           </div>
         )}
@@ -474,12 +468,12 @@ function GiveawayDetail({
 
   return (
     <div className="space-y-4">
-      {/* Header — papyrus card */}
-      <div className="papyrus-scroll papyrus-scroll-top papyrus-scroll-bottom greek-key-border" style={{ maxWidth: "100%", padding: "1.5rem" }}>
+      {/* Header card */}
+      <div className="bg-arena-dark/80 rounded-lg border border-arena-gold/15 p-4">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-2xl font-bold font-[family-name:var(--font-display)]" style={{ color: "var(--ink-dark)" }}>{giveaway.title}</h2>
-            {giveaway.description && <p className="text-sm mt-1" style={{ color: "var(--ink-mid)" }}>{giveaway.description}</p>}
+            <h2 className="text-xl font-bold font-[family-name:var(--font-display)] text-arena-gold">{giveaway.title}</h2>
+            {giveaway.description && <p className="text-sm mt-1 text-arena-smoke/70">{giveaway.description}</p>}
           </div>
           <StatusBadge isActive={giveaway.is_active} isEnded={giveaway.is_ended} large />
         </div>
@@ -495,10 +489,9 @@ function GiveawayDetail({
         {/* Timer */}
         {giveaway.is_active && giveaway.end_time && (
           <div className="text-center mb-5">
-            <p className="text-xs uppercase tracking-wider mb-1 font-[family-name:var(--font-display)]"
-              style={{ color: "var(--ink-mid)" }}>Tempo Restante</p>
-            <p className="text-5xl font-bold font-[family-name:var(--font-display)] tracking-wider"
-              style={{ color: remaining <= 30 ? "#8b1a1a" : "var(--gold-dark)" }}>
+            <p className="text-xs uppercase tracking-wider mb-1 font-[family-name:var(--font-display)] text-arena-smoke/70">Tempo Restante</p>
+            <p className="text-5xl font-bold font-[family-name:var(--font-display)] tracking-wider text-arena-gold"
+              style={{ color: remaining <= 30 ? "#ef4444" : undefined }}>
               {display}
             </p>
           </div>
@@ -526,23 +519,22 @@ function GiveawayDetail({
       </div>
 
       {/* Chat Status */}
-      <div className="rounded border p-4" style={{ background: "rgba(245,230,200,0.04)", borderColor: "rgba(180,130,20,0.2)" }}>
+      <div className="bg-arena-dark/80 rounded-lg border border-arena-gold/15 p-4">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-bold uppercase tracking-wider font-[family-name:var(--font-display)]"
-            style={{ color: "var(--stone-mid)" }}>
+          <h3 className="text-xs font-bold uppercase tracking-wider font-[family-name:var(--font-display)] text-arena-gold">
             Twitch Chat Listener
           </h3>
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-full ${
               chatStatus === "connected" ? "bg-emerald-400 animate-pulse" : chatStatus === "connecting" ? "bg-yellow-400 animate-pulse" : "bg-red-400"
             }`} />
-            <span className="text-xs capitalize" style={{ color: "var(--stone-mid)" }}>{chatStatus}</span>
+            <span className="text-xs capitalize text-arena-smoke/70">{chatStatus}</span>
           </div>
         </div>
-        <p className="text-xs" style={{ color: "var(--stone-mid)" }}>
-          Comando: <span className="font-mono" style={{ color: "var(--gold-dark)" }}>{giveaway.chat_command}</span>
+        <p className="text-xs text-arena-smoke/70">
+          Comando: <span className="font-mono text-arena-gold">{giveaway.chat_command}</span>
           {giveaway.mode === "tickets" && (
-            <> · Ex: <span className="font-mono" style={{ color: "var(--gold-dark)" }}>{giveaway.chat_command} 5</span> para 5 tickets</>
+            <> · Ex: <span className="font-mono text-arena-gold">{giveaway.chat_command} 5</span> para 5 tickets</>
           )}
         </p>
 
@@ -550,9 +542,9 @@ function GiveawayDetail({
           <div className="mt-3 max-h-32 overflow-y-auto space-y-1">
             {recentEntries.slice(0, 10).map((entry, i) => (
               <div key={`${entry.twitch_id}-${entry.timestamp}-${i}`} className="flex items-center gap-2 text-xs">
-                <span style={{ color: "var(--gold-dark)" }}>⚔</span>
-                <span style={{ color: "var(--ink-mid)" }}>{entry.twitch_username}</span>
-                {entry.tickets > 1 && <span style={{ color: "var(--stone-mid)" }}>×{entry.tickets}</span>}
+                <span className="text-arena-gold">⚔</span>
+                <span className="text-arena-smoke/80">{entry.twitch_username}</span>
+                {entry.tickets > 1 && <span className="text-arena-smoke/50">×{entry.tickets}</span>}
               </div>
             ))}
           </div>
@@ -561,16 +553,14 @@ function GiveawayDetail({
 
       {/* Winners */}
       {winners.length > 0 && (
-        <div className="papyrus-scroll papyrus-scroll-top papyrus-scroll-bottom" style={{ maxWidth: "100%", padding: "1rem 1.5rem" }}>
-          <h3 className="text-sm font-bold uppercase tracking-wider mb-3 font-[family-name:var(--font-display)]"
-            style={{ color: "var(--ink-dark)" }}>🏆 Vencedores</h3>
+        <div className="bg-arena-dark/80 rounded-lg border border-arena-gold/15 p-4">
+          <h3 className="text-xs font-bold uppercase tracking-wider mb-3 font-[family-name:var(--font-display)] text-arena-gold">🏆 Vencedores</h3>
           {winners.map((w) => (
-            <div key={w.id} className="flex items-center gap-3 py-2 last:pb-0"
-              style={{ borderBottom: "1px solid rgba(180,130,20,0.2)" }}>
+            <div key={w.id} className="flex items-center gap-3 py-2 last:pb-0 border-b border-arena-gold/10 last:border-0">
               <span className="text-2xl">⚔️</span>
               <div>
-                <p className="font-bold font-[family-name:var(--font-display)]" style={{ color: "var(--ink-dark)" }}>{w.twitch_username}</p>
-                <p className="text-xs" style={{ color: "var(--ink-mid)" }}>{new Date(w.selected_at).toLocaleString("pt-PT")}</p>
+                <p className="font-bold font-[family-name:var(--font-display)] text-arena-gold">{w.twitch_username}</p>
+                <p className="text-xs text-arena-smoke/70">{new Date(w.selected_at).toLocaleString("pt-PT")}</p>
               </div>
             </div>
           ))}
@@ -578,13 +568,12 @@ function GiveawayDetail({
       )}
 
       {/* Participants */}
-      <div className="rounded border p-4" style={{ background: "rgba(245,230,200,0.04)", borderColor: "rgba(180,130,20,0.2)" }}>
-        <h3 className="text-sm font-bold uppercase tracking-wider mb-3 font-[family-name:var(--font-display)]"
-          style={{ color: "var(--stone-mid)" }}>
+      <div className="bg-arena-dark/80 rounded-lg border border-arena-gold/15 p-4">
+        <h3 className="text-xs font-bold uppercase tracking-wider mb-3 font-[family-name:var(--font-display)] text-arena-gold">
           Participantes ({participants.length})
         </h3>
         {participants.length === 0 ? (
-          <p className="text-sm" style={{ color: "var(--stone-mid)" }}>Nenhum participante ainda.</p>
+          <p className="text-sm text-arena-smoke/50">Nenhum participante ainda.</p>
         ) : (
           <div className="max-h-64 overflow-y-auto space-y-1">
             {participants.map((p, i) => {
@@ -592,12 +581,12 @@ function GiveawayDetail({
               return (
                 <div key={p.id} className="flex items-center justify-between py-1.5 px-2 rounded transition-colors hover:bg-[rgba(180,130,20,0.06)]">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs w-6" style={{ color: "var(--stone-mid)" }}>{i + 1}.</span>
-                    <span className="text-sm" style={{ color: "var(--ink-mid)" }}>{p.twitch_username}</span>
+                    <span className="text-xs w-6 text-arena-smoke/50">{i + 1}.</span>
+                    <span className="text-sm text-arena-smoke/90">{p.twitch_username}</span>
                   </div>
-                  <div className="flex items-center gap-3 text-xs" style={{ color: "var(--stone-mid)" }}>
+                  <div className="flex items-center gap-3 text-xs text-arena-smoke/50">
                     <span>{p.tickets} ticket{p.tickets > 1 ? "s" : ""}</span>
-                    <span style={{ color: "var(--gold-dark)" }}>{chance}%</span>
+                    <span className="text-arena-gold">{chance}%</span>
                   </div>
                 </div>
               );
@@ -619,12 +608,9 @@ function StatusBadge({ isActive, isEnded, large }: { isActive: boolean; isEnded:
 
 function StatBox({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded p-3 text-center"
-      style={{ background: "rgba(180,130,20,0.08)", border: "1px solid rgba(180,130,20,0.25)" }}>
-      <p className="text-xs uppercase tracking-wider font-[family-name:var(--font-display)]"
-        style={{ color: "var(--ink-mid)" }}>{label}</p>
-      <p className="text-lg font-bold font-[family-name:var(--font-display)]"
-        style={{ color: "var(--ink-dark)" }}>{value}</p>
+    <div className="rounded p-3 text-center bg-arena-gold/5 border border-arena-gold/20">
+      <p className="text-xs uppercase tracking-wider font-[family-name:var(--font-display)] text-arena-smoke/70">{label}</p>
+      <p className="text-lg font-bold font-[family-name:var(--font-display)] text-arena-gold">{value}</p>
     </div>
   );
 }
@@ -681,14 +667,13 @@ function FormField({
 }) {
   return (
     <div className="space-y-1">
-      <label className="text-xs uppercase tracking-wider font-medium" style={{ color: "var(--stone-mid)" }}>{label}</label>
+      <label className="text-xs uppercase tracking-wider font-medium text-arena-smoke/70">{label}</label>
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full px-3 py-2 rounded text-sm focus:outline-none transition-colors"
-        style={{ background: "rgba(245,230,200,0.6)", border: "1px solid rgba(180,130,20,0.35)", color: "var(--ink-dark)" }}
+        className="w-full px-3 py-2 rounded text-sm focus:outline-none transition-colors bg-arena-black/60 border border-arena-gold/20 text-arena-smoke/90 placeholder:text-arena-smoke/30"
       />
     </div>
   );
