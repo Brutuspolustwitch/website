@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 import { supabase } from "@/lib/supabase";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -183,7 +182,6 @@ export default function AnalyticsOverview() {
     return (
       <div className="pt-24 pb-16 min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeading title="Analitics" subtitle="A carregar dados..." />
           <div className="flex justify-center mt-20">
             <div className="animate-spin w-10 h-10 border-2 border-arena-gold border-t-transparent rounded-full" />
           </div>
@@ -195,8 +193,6 @@ export default function AnalyticsOverview() {
   return (
     <div className="pt-24 pb-16 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionHeading title="Analitics" subtitle="Visão geral de estatísticas" />
-
         {/* Period selector */}
         <div className="flex justify-center gap-2 mb-8">
           {(["7d", "30d", "90d"] as const).map((p) => (

@@ -270,7 +270,7 @@ export default function GiveawayAdmin() {
   if (!user || !hasRole(user.role, "moderador")) return <div className="min-h-screen bg-arena-black flex items-center justify-center"><div className="text-red-400">Acesso negado</div></div>;
 
   return (
-    <div className="min-h-screen bg-arena-black p-3 sm:p-4 lg:p-5">
+    <div className="pt-24 pb-16 min-h-screen bg-arena-black px-3 sm:px-4 lg:px-5">
       <div className="max-w-7xl mx-auto h-full flex flex-col gap-3">
         {/* Header */}
         <div className="flex items-center justify-between shrink-0">

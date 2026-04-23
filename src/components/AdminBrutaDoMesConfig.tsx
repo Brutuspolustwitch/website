@@ -179,7 +179,7 @@ export default function AdminBrutaDoMesConfig() {
   };
 
   return (
-    <div className="min-h-screen bg-arena-black p-3 sm:p-4 lg:p-5">
+    <div className="pt-24 pb-16 min-h-screen bg-arena-black px-3 sm:px-4 lg:px-5">
       <AnimatePresence>
         {toast && (
           <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />

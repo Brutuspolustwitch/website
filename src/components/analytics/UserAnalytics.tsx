@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 import { supabase } from "@/lib/supabase";
 
 interface SessionRow {
@@ -73,8 +72,6 @@ export default function UserAnalytics() {
   return (
     <div className="pt-24 pb-16 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionHeading title="Utilizadores" subtitle="Análise de sessões e utilizadores" />
-
         {/* Search */}
         <div className="mb-6 max-w-md mx-auto">
           <input

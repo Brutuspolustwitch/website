@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 import { supabase } from "@/lib/supabase";
 
 interface LiveEvent {
@@ -112,8 +111,6 @@ export default function RealTimeActivity() {
   return (
     <div className="pt-24 pb-16 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionHeading title="Tempo Real" subtitle="Atividade ao vivo na plataforma" />
-
         {/* Live stats bar */}
         <div className="grid grid-cols-3 gap-4 mb-8">
           <div className="arena-card p-4 rounded-xl border border-arena-gold/10 text-center">
