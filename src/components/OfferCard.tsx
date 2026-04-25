@@ -130,52 +130,39 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
               </div>
             )}
 
-            <div className="p-4 flex flex-col gap-2 flex-1 min-h-0">
-              {/* Name + logo + rating */}
-              <div className="flex items-center gap-3">
-                {offer.logo_url && (
-                  <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0" style={{ background: offer.logo_bg || "#1a1a1a", border: "1px solid var(--gold-dark)" }}>
-                    <img src={offer.logo_url} alt={offer.name} className="w-full h-full object-contain" />
-                  </div>
+            <div className="px-4 pb-4 flex flex-col flex-1 min-h-0">
+              {/* Promo Section — full-width centered, matches image1 style */}
+              <div className="promo-section">
+                {offer.is_exclusive !== false && (
+                  <p className="promo-label">✦ OFERTA EXCLUSIVA ✦</p>
                 )}
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-lg leading-tight truncate" style={{ color: "var(--ink-dark)", fontFamily: "'Cinzel', serif" }}>{offer.name}</h3>
-                  {offer.is_exclusive !== false && (
-                    <p className="text-[10px] uppercase tracking-widest font-bold" style={{ color: "var(--gold-mid)" }}>✦ Oferta Exclusiva</p>
-                  )}
-                </div>
-                <StarRating rating={offer.rating ?? 4.5} />
-              </div>
-
-              {/* Bonus highlight */}
-              <div className="rounded-lg px-3 py-2" style={{ background: "rgba(139,105,20,0.08)", border: "1px solid var(--parchment-edge)" }}>
-                <p className="text-sm" style={{ color: "var(--ink-mid)" }}>{offer.headline}</p>
-                <p className="text-base font-bold mt-0.5" style={{ color: "var(--gold-bright)", fontFamily: "'Cinzel', serif" }}>{offer.bonus_value}</p>
+                <p className="promo-bonus">
+                  {offer.headline}
+                  <span className="promo-bonus-accent">{offer.bonus_value}</span>
+                </p>
                 {((offer.free_spins && offer.free_spins !== "—" && offer.free_spins.trim() !== "") || (offer.cashback && offer.cashback.trim() !== "")) && (
-                  <p className="text-xs mt-0.5" style={{ color: "var(--ink-light)" }}>
+                  <p className="promo-detail">
                     {offer.free_spins && offer.free_spins !== "—" && offer.free_spins.trim() !== "" ? `+ ${offer.free_spins} Free Spins` : ""}
                     {offer.cashback && offer.cashback.trim() !== "" ? ` · ${offer.cashback} Cashback` : ""}
                   </p>
                 )}
+                {offer.code && offer.code !== "—" ? (
+                  <div className="promo-code-wrapper" onClick={handleCopyCode} role="button" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && handleCopyCode(e)}>
+                    <span className="promo-code-label">Código:</span>
+                    <span className="promo-code-value">{offer.code}</span>
+                  </div>
+                ) : (
+                  <div className="promo-code-wrapper" style={{ visibility: "hidden" }}>
+                    <span className="promo-code-label">Código:</span>
+                    <span className="promo-code-value">&nbsp;</span>
+                  </div>
+                )}
               </div>
 
-              {/* Promo code */}
-              {offer.code && offer.code !== "—" && (
-                <button
-                  className="flex items-center gap-2 rounded-lg px-3 py-2 w-full text-left transition-colors"
-                  style={{ border: "1px solid var(--gold-mid)", background: "rgba(212,160,23,0.1)" }}
-                  onClick={handleCopyCode}
-                >
-                  <span className="text-[10px] uppercase tracking-widest font-bold" style={{ color: "var(--ink-light)" }}>Código</span>
-                  <span className="font-mono font-bold text-sm flex-1" style={{ color: "var(--gold-dark)" }}>{offer.code}</span>
-                  <span className="text-[10px]" style={{ color: "var(--ink-light)" }}>{copied ? "✓ Copiado" : "Copiar"}</span>
-                </button>
-              )}
-
               {/* CTA */}
-              <div className="mt-auto">
+              <div className="cta-section">
                 {ctaButton}
-                <p className="text-[10px] text-center mt-1" style={{ color: "var(--ink-light)" }}>18+ · T&Cs Aplicáveis · Joga com responsabilidade</p>
+                <p className="cta-subtext">18+ · T&Cs Aplicáveis · Joga com responsabilidade</p>
               </div>
 
               {/* Flip hint */}
