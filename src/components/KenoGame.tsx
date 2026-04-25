@@ -3,11 +3,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/lib/auth-context";
 
-const GRID_SIZE  = 60;
-const MAX_PICKS  = 5;
+const GRID_SIZE  = 40;
+const MAX_PICKS  = 10;
 
 const PAYOUTS: Record<number, Record<number, number>> = {
-  5:  { 3: 2.0, 4: 12.0, 5: 80.0 },
+  10: { 5: 1.5, 6: 4.0, 7: 15.0, 8: 50.0, 9: 150.0, 10: 500.0 },
 };
 
 type Phase = "idle" | "drawing" | "done";
@@ -276,9 +276,9 @@ export default function KenoGame() {
                 className="cta-button"
                 style={{ fontSize: "1rem", opacity: (loading || picks.length !== MAX_PICKS || (points !== null && bet > points)) ? 0.5 : 1 }}
               >
-                {loading ? "A sortear..." : picks.length === 0 ? "Escolhe 5 números" : picks.length < MAX_PICKS ? `Escolhe mais ${MAX_PICKS - picks.length}` : `Jogar (${bet} pts)`}
+                {loading ? "A sortear..." : picks.length === 0 ? "Escolhe 10 números" : picks.length < MAX_PICKS ? `Escolhe mais ${MAX_PICKS - picks.length}` : `Jogar (${bet} pts)`}
               </button>
-              <p className="text-xs text-center" style={{ color: P.brownLight }}>10 bolas sorteadas de 60 · Escolhe exactamente 5</p>
+              <p className="text-xs text-center" style={{ color: P.brownLight }}>10 bolas sorteadas de 40 · Escolhe exactamente 10</p>
             </>
           )}
 
@@ -327,7 +327,7 @@ export default function KenoGame() {
         <div className="rounded-xl p-6"
           style={{ background: `linear-gradient(135deg, ${P.parchmentMid} 0%, ${P.parchment} 100%)`, border: `2px solid ${P.border}` }}>
           <div className="overflow-x-auto">
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(10, 62px)", gap: 14, width: "fit-content" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(8, 62px)", gap: 14, width: "fit-content" }}>
               {Array.from({ length: GRID_SIZE }, (_, i) => {
                 const n     = i + 1;
                 const state = getCellState(n);

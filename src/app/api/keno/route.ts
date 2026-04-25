@@ -2,13 +2,13 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabase } from "@/lib/supabase";
 
-const GRID_SIZE  = 60;
+const GRID_SIZE  = 40;
 const DRAW_COUNT = 10;
 const SE_API     = "https://api.streamelements.com/kappa/v2";
 
 /* ── Payout table: PAYOUTS[picks][matches] = multiplier ──────── */
 const PAYOUTS: Record<number, Record<number, number>> = {
-  5:  { 3: 2.0, 4: 12.0, 5: 80.0 },
+  10: { 5: 1.5, 6: 4.0, 7: 15.0, 8: 50.0, 9: 150.0, 10: 500.0 },
 };
 
 /* ── Auth helper ──────────────────────────────────────────────── */
@@ -78,8 +78,8 @@ async function handlePlay(
   if (!bet || bet < 10 || bet > 1000) {
     return NextResponse.json({ error: "Aposta inválida (10–1000)" }, { status: 400 });
   }
-  if (!Array.isArray(picks) || picks.length !== 5) {
-    return NextResponse.json({ error: "Seleciona exactamente 5 números" }, { status: 400 });
+  if (!Array.isArray(picks) || picks.length !== 10) {
+    return NextResponse.json({ error: "Seleciona exactamente 10 números" }, { status: 400 });
   }
   if (picks.some((n) => !Number.isInteger(n) || n < 1 || n > GRID_SIZE)) {
     return NextResponse.json({ error: "Números inválidos" }, { status: 400 });
