@@ -165,7 +165,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
               <div style={{
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "flex-end",
+                justifyContent: "flex-start",
                 marginBottom: "12px",
                 gap: "8px",
               }}>
@@ -403,7 +403,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
                   <div style={{
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center",
+                    justifyContent: "flex-start",
                     gap: "8px",
                     padding: "12px 0 4px",
                     borderTop: "1px solid rgba(139,105,20,0.15)",
