@@ -9,22 +9,6 @@ import { useAuth } from "@/lib/auth-context";
 
 /* ── Helpers ────────────────────────────────────────────────────────── */
 
-function toRoman(n: number): string {
-  const lookup: [number, string][] = [
-    [1000, "M"], [900, "CM"], [500, "D"], [400, "CD"],
-    [100, "C"], [90, "XC"], [50, "L"], [40, "XL"],
-    [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"],
-  ];
-  let result = "";
-  let remaining = n;
-  for (const [value, symbol] of lookup) {
-    while (remaining >= value) {
-      result += symbol;
-      remaining -= value;
-    }
-  }
-  return result;
-}
 
 function CornerOrnament({ className }: { className: string }) {
   return (
@@ -212,6 +196,75 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
         <ScrollReveal delay={0.1}>
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-6">
 
+            {/* External top bar — pagination + status, sits above the papyrus card */}
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "12px",
+              padding: "0 4px 10px",
+              flexWrap: "wrap",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                {campaigns.length > 1 && (
+                  <>
+                    <button
+                      onClick={() => setIdx((p) => Math.max(0, p - 1))}
+                      disabled={idx === 0}
+                      className="bh-nav-btn"
+                      aria-label="Campanha anterior"
+                    >‹</button>
+                    <button
+                      onClick={() => setIdx((p) => Math.min(campaigns.length - 1, p + 1))}
+                      disabled={idx === campaigns.length - 1}
+                      className="bh-nav-btn"
+                      aria-label="Próxima campanha"
+                    >›</button>
+                    <span style={{
+                      fontFamily: "var(--font-ui)",
+                      fontSize: "0.7rem",
+                      color: "var(--ink-light)",
+                      letterSpacing: "0.08em",
+                    }}>
+                      {idx + 1} / {campaigns.length}
+                    </span>
+                  </>
+                )}
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <span style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: "0.6rem",
+                  fontWeight: 600,
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  padding: "4px 10px",
+                  borderRadius: "4px",
+                  background: campaign.phase === "completed"
+                    ? "rgba(139,105,20,0.12)"
+                    : campaign.phase === "opening"
+                    ? "rgba(212,168,67,0.15)"
+                    : "rgba(34,197,94,0.15)",
+                  color: campaign.phase === "completed"
+                    ? "var(--gold-dark)"
+                    : campaign.phase === "opening"
+                    ? "#d4a843"
+                    : "#22c55e",
+                  border: `1px solid ${campaign.phase === "completed" ? "rgba(139,105,20,0.2)" : campaign.phase === "opening" ? "rgba(212,168,67,0.3)" : "rgba(34,197,94,0.3)"}`,
+                }}>
+                  {phaseLabel}
+                </span>
+                <span style={{
+                  fontFamily: "var(--font-ui)",
+                  fontSize: "0.75rem",
+                  color: "var(--ink-light)",
+                }}>
+                  {opened} / {total} Bónus
+                </span>
+              </div>
+            </div>
+
             {/* ▸ LEFT — Campaign Table (Papyrus) ──────────────────── */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -224,72 +277,8 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                 <CornerOrnament className="absolute bottom-2 left-2 w-5 h-5 -scale-y-100" />
                 <CornerOrnament className="absolute bottom-2 right-2 w-5 h-5 -scale-x-100 -scale-y-100" />
 
-                {/* Campaign header bar */}
+                {/* Column headers */}
                 <div className="scroll-content" style={{ padding: "10px 20px 0" }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "6px", marginBottom: "6px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                      <span style={{ fontSize: "1.3rem" }}>🛡️</span>
-                      <span style={{
-                        fontFamily: "var(--font-display)",
-                        fontSize: "1.1rem",
-                        fontWeight: 700,
-                        color: "var(--ink-dark)",
-                        letterSpacing: "0.08em",
-                      }}>
-                        Campaign {toRoman(idx + 1)}
-                      </span>
-                    </div>
-
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      {campaigns.length > 1 && (
-                        <>
-                          <button
-                            onClick={() => setIdx((p) => Math.max(0, p - 1))}
-                            disabled={idx === 0}
-                            className="bh-nav-btn"
-                            aria-label="Campanha anterior"
-                          >‹</button>
-                          <button
-                            onClick={() => setIdx((p) => Math.min(campaigns.length - 1, p + 1))}
-                            disabled={idx === campaigns.length - 1}
-                            className="bh-nav-btn"
-                            aria-label="Próxima campanha"
-                          >›</button>
-                        </>
-                      )}
-                      <span style={{
-                        fontFamily: "var(--font-display)",
-                        fontSize: "0.6rem",
-                        fontWeight: 600,
-                        letterSpacing: "0.12em",
-                        textTransform: "uppercase",
-                        padding: "4px 10px",
-                        borderRadius: "4px",
-                        background: campaign.phase === "completed"
-                          ? "rgba(139,105,20,0.12)"
-                          : campaign.phase === "opening"
-                          ? "rgba(212,168,67,0.15)"
-                          : "rgba(34,197,94,0.15)",
-                        color: campaign.phase === "completed"
-                          ? "var(--gold-dark)"
-                          : campaign.phase === "opening"
-                          ? "#d4a843"
-                          : "#22c55e",
-                        border: `1px solid ${campaign.phase === "completed" ? "rgba(139,105,20,0.2)" : campaign.phase === "opening" ? "rgba(212,168,67,0.3)" : "rgba(34,197,94,0.3)"}`,
-                      }}>
-                        {phaseLabel}
-                      </span>
-                      <span style={{
-                        fontFamily: "var(--font-ui)",
-                        fontSize: "0.75rem",
-                        color: "var(--ink-light)",
-                      }}>
-                        {opened} / {total} Bónus
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Column headers */}
                   <div className="bh-table-header">
                     <span className="bh-col-num">#</span>
                     <span className="bh-col-slot">SLOT</span>
