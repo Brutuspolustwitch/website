@@ -229,7 +229,7 @@ export default function LigaDosBrutusContent() {
                 {/* Footer */}
                 <div className="liga-scroll-footer">
                   <Image
-                    src="/images/buttons/brutuswax.jpg"
+                    src="/images/buttons/brutuswax.png"
                     alt="Brutus Wax"
                     width={80}
                     height={40}
