@@ -14,23 +14,18 @@ const GRID_SIZE  = 40;   // total numbers in the pool
 const DRAW_COUNT = 10;   // numbers drawn per round
 const SE_API     = "https://api.streamelements.com/kappa/v2";
 
-/* ── Payout table: PAYOUTS[spots][hits] = multiplier ──────────────
-   N=40, K=10 hypergeometric distribution.
-   Calibrated RTPs: ~75% (S=1) to ~94% (S=4–9).
-   S=10 is jackpot-tier (~36% RTP) — chasing 50,000,000× is the appeal.
-   P(0/10) ≈ 3.5% → 2× consolation bonus maintained.
-   ─────────────────────────────────────────────────────────────────── */
+/* ── Payout table: PAYOUTS[spots][hits] = multiplier ─────────────── */
 const PAYOUTS: Record<number, Record<number, number>> = {
   1:  { 1: 3 },
-  2:  { 2: 10,     1: 1 },
-  3:  { 3: 50,     2: 2 },
-  4:  { 4: 200,    3: 6,     2: 1 },
-  5:  { 5: 1600,   4: 14,    3: 2 },
-  6:  { 6: 11000,  5: 45,    4: 4,    3: 1 },
-  7:  { 7: 85000,  6: 500,   5: 20,   4: 2 },
-  8:  { 8: 900000, 7: 2500,  6: 100,  5: 8,    4: 1 },
-  9:  { 9: 7000000, 8: 70000, 7: 900, 6: 25,   5: 3 },
-  10: { 10: 100, 9: 80, 8: 50, 7: 30, 6: 10, 5: 5, 4: 2 },
+  2:  { 2: 8,    1: 1 },
+  3:  { 3: 20,   2: 2 },
+  4:  { 4: 30,   3: 5,   2: 1 },
+  5:  { 5: 50,   4: 10,  3: 2 },
+  6:  { 6: 60,   5: 20,  4: 4,   3: 1 },
+  7:  { 7: 70,   6: 25,  5: 8,   4: 2 },
+  8:  { 8: 80,   7: 40,  6: 15,  5: 4,   4: 1 },
+  9:  { 9: 90,   8: 50,  7: 20,  6: 6,   5: 2 },
+  10: { 10: 100, 9: 80,  8: 50,  7: 30,  6: 10, 5: 5, 4: 2 },
 };
 
 /* ═══════════════════════════════════════════════════════════════
