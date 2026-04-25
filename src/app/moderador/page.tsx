@@ -33,15 +33,6 @@ const MODERADOR_CATEGORIES = [
     hoverColor: "hover:border-green-500/50",
   },
   {
-    href: "/admin/outros/bruta-do-mes",
-    title: "Bruta do Mês",
-    description: "Configuração de clips e Hall of Victories",
-    icon: "🏆",
-    color: "from-yellow-600/20 to-yellow-500/10",
-    borderColor: "border-arena-gold/30",
-    hoverColor: "hover:border-arena-gold/50",
-  },
-  {
     href: "/admin/outros/giveaways",
     title: "Giveaways",
     description: "Gestão de sorteios e prémios da arena",

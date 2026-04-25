@@ -61,10 +61,8 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
     "/admin/analitics/trafego": "Tráfego",
     "/admin/analitics/geo": "Geo",
     "/admin/analitics/fraude": "Fraude",
-    "/admin/outros/bruta-do-mes": "Bruta do Mês",
     "/admin/outros/liga": "Liga dos Brutus",
     "/leaderboard": "Leaderboard",
-    "/hall-of-victories": "Bruta do Mês",
     "/comunidade/mines": "Mines",
     "/comunidade/keno": "Keno",
   };

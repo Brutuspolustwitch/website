@@ -96,7 +96,6 @@ const SECONDARY_LINKS: NavItem[] = [
       { href: "/admin/outros/daily-session", label: "Sessão do Dia" },
       { href: "/admin/outros/bonus-hunt", label: "Bonus Hunt" },
       { href: "/admin/outros/calendario", label: "Calendário" },
-      { href: "/admin/outros/bruta-do-mes", label: "Bruta do Mês" },
       { href: "/admin/outros/giveaways", label: "Giveaways" },
       { href: "/admin/outros/liga", label: "Liga dos Brutus" },
     ],

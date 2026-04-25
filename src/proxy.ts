@@ -18,7 +18,6 @@ const PROTECTED: { prefix: string; role: Role }[] = [
   { prefix: "/admin/outros/daily-session", role: "moderador" },
   { prefix: "/admin/outros/bonus-hunt", role: "moderador" },
   { prefix: "/admin/outros/calendario", role: "moderador" },
-  { prefix: "/admin/outros/bruta-do-mes", role: "moderador" },
   { prefix: "/admin/outros/giveaways", role: "moderador" },
   { prefix: "/admin/outros/liga", role: "moderador" },
   // General admin area
