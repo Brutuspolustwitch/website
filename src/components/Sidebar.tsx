@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/lib/auth-context";
 import { hasRole } from "@/lib/roles";
 import type { UserRole } from "@/lib/supabase";
+import { useScrollLock } from "@/hooks/useScrollLock";
 
 /* ── Types ──────────────────────────────────────────────────────── */
 interface NavChild {
@@ -169,6 +170,8 @@ interface SidebarProps {
 }
 
 export function Sidebar({ open, onClose }: SidebarProps) {
+  useScrollLock(open);
+
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useAuth();

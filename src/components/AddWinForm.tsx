@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useScrollLock } from "@/hooks/useScrollLock";
 
 const SLOT_PROVIDERS = [
   "1x2 Gaming",
@@ -80,6 +81,8 @@ interface SlotItem {
 }
 
 export default function AddWinForm({ onSuccess, onCancel }: AddWinFormProps) {
+  useScrollLock(true); // Lock body scroll while modal is open
+
   const [url, setUrl]             = useState("");
   const [payout, setPayout]       = useState("");
   const [multiplier, setMultiplier] = useState("");

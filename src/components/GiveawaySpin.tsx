@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useScrollLock } from "@/hooks/useScrollLock";
 
 interface SpinParticipant {
   twitch_id: string;
@@ -113,6 +114,8 @@ const MIN_ITEMS = 40;       // minimum items in the strip for good spin
 
 /* ── Main Component ──────────────────────────────────────── */
 export default function GiveawaySpin({ winner, participants, prize, onDismiss }: GiveawaySpinProps) {
+  useScrollLock(true); // This component only mounts when the giveaway overlay is visible
+
   const [phase, setPhase] = useState<"idle" | "spinning" | "landed" | "celebration">("idle");
   const stripRef = useRef<HTMLDivElement>(null);
   const animFrameRef = useRef<number>(0);
@@ -230,7 +233,7 @@ export default function GiveawaySpin({ winner, participants, prize, onDismiss }:
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.4 }}
-        className="fixed inset-0 z-[55] flex flex-col items-center justify-center overflow-y-auto"
+        className="fixed inset-0 z-[55] flex flex-col items-center justify-center overflow-y-auto overscroll-contain"
         onClick={phase === "celebration" ? handleDismiss : undefined}
       >
         {/* Backdrop */}

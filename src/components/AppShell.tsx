@@ -24,7 +24,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {/* Push content below navbar + right of sidebar */}
         <main className="relative z-10 flex-1 pt-16 lg:pl-56 flex flex-col">{children}</main>
 
-        <div className="relative z-10 lg:pl-56">
+        <div className="lg:pl-56">
           <Footer />
         </div>
 

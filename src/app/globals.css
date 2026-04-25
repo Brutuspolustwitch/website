@@ -3488,7 +3488,10 @@ body {
   align-items: center;
   justify-content: center;
   padding: 20px;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
   backdrop-filter: blur(6px);
+  overscroll-behavior: contain;
+  overflow-y: auto;
 }
 
 .add-win-form {
@@ -3497,8 +3500,9 @@ body {
   border-radius: 16px;
   width: 100%;
   max-width: 500px;
-  max-height: 90vh;
+  max-height: calc(90dvh - env(safe-area-inset-bottom, 0px));
   overflow-y: auto;
+  overscroll-behavior: contain;
   box-shadow: 0 24px 80px rgba(60, 40, 5, 0.5);
 }
 

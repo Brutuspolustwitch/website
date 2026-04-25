@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
+import { useScrollLock } from "@/hooks/useScrollLock";
 
 interface SessionRow {
   id: string;
@@ -30,6 +31,7 @@ export default function UserAnalytics() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedSession, setSelectedSession] = useState<string | null>(null);
+  useScrollLock(!!selectedSession);
   const [timeline, setTimeline] = useState<EventRow[]>([]);
   const [timelineLoading, setTimelineLoading] = useState(false);
   const [page, setPage] = useState(0);
@@ -193,8 +195,8 @@ export default function UserAnalytics() {
 
         {/* Timeline modal */}
         {selectedSession && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-            <div className="arena-card bg-arena-black rounded-2xl border border-arena-gold/20 max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overscroll-contain overflow-y-auto">
+            <div className="arena-card bg-arena-black rounded-2xl border border-arena-gold/20 max-w-2xl w-full max-h-[80dvh] overflow-y-auto overscroll-contain p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-arena-gold text-lg font-[family-name:var(--font-ui)]">
                   Timeline da Sessão
