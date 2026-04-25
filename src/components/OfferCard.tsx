@@ -118,17 +118,19 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
 
             {/* Banner */}
             {offer.banner_url && (
-              <div className="aspect-video w-full overflow-hidden relative shrink-0" style={{ borderBottom: "1px solid var(--gold-dark)" }}>
-                <img src={offer.banner_url} alt={offer.name} className="h-full w-full object-cover" loading="lazy" />
+              <div className="w-full h-36 shrink-0 overflow-hidden relative">
+                <img src={offer.banner_url} alt={offer.name} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+                {/* Bottom fade into card */}
+                <div className="absolute inset-x-0 bottom-0 h-16 pointer-events-none" style={{ background: "linear-gradient(to bottom, transparent, var(--parchment-light))" }} />
                 {offer.badge && (
-                  <div className="absolute top-2 right-2">
+                  <div className="absolute top-2 right-2 z-10">
                     <WaxSealBadge text={offer.badge} variant={offer.badge === "TOP" ? "gold" : "red"} rotation={8} size={48} />
                   </div>
                 )}
               </div>
             )}
 
-            <div className="p-5 flex flex-col gap-3 flex-1">
+            <div className="p-4 flex flex-col gap-2 flex-1 min-h-0">
               {/* Name + logo + rating */}
               <div className="flex items-center gap-3">
                 {offer.logo_url && (
@@ -146,7 +148,7 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
               </div>
 
               {/* Bonus highlight */}
-              <div className="rounded-lg px-3 py-2.5" style={{ background: "rgba(139,105,20,0.08)", border: "1px solid var(--parchment-edge)" }}>
+              <div className="rounded-lg px-3 py-2" style={{ background: "rgba(139,105,20,0.08)", border: "1px solid var(--parchment-edge)" }}>
                 <p className="text-sm" style={{ color: "var(--ink-mid)" }}>{offer.headline}</p>
                 <p className="text-base font-bold mt-0.5" style={{ color: "var(--gold-bright)", fontFamily: "'Cinzel', serif" }}>{offer.bonus_value}</p>
                 {((offer.free_spins && offer.free_spins !== "—" && offer.free_spins.trim() !== "") || (offer.cashback && offer.cashback.trim() !== "")) && (
@@ -171,9 +173,9 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
               )}
 
               {/* CTA */}
-              <div className="mt-auto pt-1">
+              <div className="mt-auto">
                 {ctaButton}
-                <p className="text-[10px] text-center mt-1.5" style={{ color: "var(--ink-light)" }}>18+ · T&Cs Aplicáveis · Joga com responsabilidade</p>
+                <p className="text-[10px] text-center mt-1" style={{ color: "var(--ink-light)" }}>18+ · T&Cs Aplicáveis · Joga com responsabilidade</p>
               </div>
 
               {/* Flip hint */}
@@ -185,7 +187,7 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
         {/* ═══ BACK ═══ */}
         <div className="papyrus-flip-face papyrus-flip-back">
           <div className="rounded-2xl overflow-hidden flex flex-col h-full" style={cardStyle}>
-            <div className="p-5 flex flex-col gap-3 flex-1">
+            <div className="p-4 flex flex-col gap-2 flex-1 min-h-0">
 
               {/* Casino name header on back */}
               <h3 className="font-semibold text-base text-center" style={{ color: "var(--ink-dark)", fontFamily: "'Cinzel', serif", borderBottom: "1px solid var(--parchment-edge)", paddingBottom: "8px" }}>{offer.name}</h3>
@@ -229,7 +231,7 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
               )}
 
               {/* CTA */}
-              <div className="mt-auto pt-1">{ctaButton}</div>
+              <div className="mt-auto">{ctaButton}</div>
 
               {/* Flip hint */}
               <p className="flip-hint" onClick={(e) => { e.stopPropagation(); setFlipped(false); }}>Toca para voltar ↻</p>
