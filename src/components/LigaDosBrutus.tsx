@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
 /* ── Types ─────────────────────────────────────────────── */
@@ -227,8 +228,13 @@ export default function LigaDosBrutusContent() {
 
                 {/* Footer */}
                 <div className="liga-scroll-footer">
-                  <div className="liga-wax-seal" />
-                  <p className="liga-footer-text">Arena Gladiator · BRUTUSPOLUS</p>
+                  <Image
+                    src="/images/buttons/brutuswax.jpg"
+                    alt="Brutus Wax"
+                    width={80}
+                    height={40}
+                    style={{ objectFit: "contain" }}
+                  />
                 </div>
               </div>
             </motion.div>
