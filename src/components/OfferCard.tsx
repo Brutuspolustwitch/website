@@ -121,7 +121,7 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
               <div className="w-full h-36 shrink-0 overflow-hidden relative">
                 <img src={offer.banner_url} alt={offer.name} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
                 {/* Bottom fade into card */}
-                <div className="absolute inset-x-0 bottom-0 h-16 pointer-events-none" style={{ background: "linear-gradient(to bottom, transparent, var(--parchment-light))" }} />
+                <div className="absolute inset-x-0 bottom-0 h-6 pointer-events-none" style={{ background: "linear-gradient(to bottom, transparent, var(--parchment-light))" }} />
                 {offer.badge && (
                   <div className="absolute top-2 right-2 z-10">
                     <WaxSealBadge text={offer.badge} variant={offer.badge === "TOP" ? "gold" : "red"} rotation={8} size={48} />
