@@ -72,9 +72,14 @@ export async function PATCH(request: Request, ctx: { params: Promise<{ id: strin
       approved_at: new Date().toISOString(),
       approved_by: modUserId,
     };
-    const editable = ["slot_name", "provider", "bet_amount", "win_amount", "caption", "image_url", "suspicious"] as const;
+    const editable = ["slot_name", "provider", "bet_amount", "win_amount", "caption", "image_url", "url", "suspicious"] as const;
     for (const k of editable) {
       if (body[k] !== undefined) patch[k] = body[k];
+    }
+    // Image required at approval time
+    const finalImage = (patch.image_url ?? existing.image_url) as string | null;
+    if (!finalImage || typeof finalImage !== "string" || !/^https?:\/\//i.test(finalImage)) {
+      return NextResponse.json({ error: "Adiciona uma imagem antes de aprovar" }, { status: 400 });
     }
     if (typeof patch.bet_amount === "number" && typeof patch.win_amount === "number" && patch.bet_amount > 0) {
       patch.multiplier = Math.round((patch.win_amount / patch.bet_amount) * 100) / 100;
@@ -108,7 +113,7 @@ export async function PATCH(request: Request, ctx: { params: Promise<{ id: strin
   if (existing.status !== "pending") {
     return NextResponse.json({ error: "Apenas vitórias pendentes podem ser editadas" }, { status: 409 });
   }
-  const editable = ["slot_name", "provider", "bet_amount", "win_amount", "caption", "image_url", "suspicious"] as const;
+  const editable = ["slot_name", "provider", "bet_amount", "win_amount", "caption", "image_url", "url", "suspicious"] as const;
   const patch: Record<string, unknown> = {};
   for (const k of editable) if (body[k] !== undefined) patch[k] = body[k];
   if (typeof patch.bet_amount === "number" && typeof patch.win_amount === "number" && patch.bet_amount > 0) {

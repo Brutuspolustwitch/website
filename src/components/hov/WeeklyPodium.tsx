@@ -92,14 +92,18 @@ function PodiumCard({ v, rank }: { v: Victory; rank: 0 | 1 | 2 }) {
 
         {/* Slot image */}
         <div className="relative aspect-[5/4] bg-black/60">
-          <Image
-            src={v.image_url}
-            alt={v.slot_name}
-            fill
-            sizes="(max-width:768px) 100vw, 340px"
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
-            unoptimized
-          />
+          {v.image_url ? (
+            <Image
+              src={v.image_url}
+              alt={v.slot_name}
+              fill
+              sizes="(max-width:768px) 100vw, 340px"
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
+              unoptimized
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-6xl opacity-30">🏛️</div>
+          )}
           {/* Vignette */}
           <div className="absolute inset-0" style={{
             background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.75) 100%)"

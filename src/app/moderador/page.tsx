@@ -50,6 +50,15 @@ const MODERADOR_CATEGORIES = [
     borderColor: "border-red-500/30",
     hoverColor: "hover:border-red-500/50",
   },
+  {
+    href: "/moderador/hall-of-victors",
+    title: "Bruta do Mês",
+    description: "Aprova ou rejeita as vitórias submetidas pela comunidade",
+    icon: "👑",
+    color: "from-yellow-600/20 to-yellow-500/10",
+    borderColor: "border-arena-gold/40",
+    hoverColor: "hover:border-arena-gold/60",
+  },
 ] as const;
 
 export default function ModeradorPage() {

@@ -18,7 +18,7 @@ async function getSession() {
   const c = await cookies();
   const raw = c.get("twitch_session")?.value;
   if (!raw) return null;
-  try { return JSON.parse(raw) as { id: string; login: string }; } catch { return null; }
+  try { return JSON.parse(raw) as { id: string; login: string; role?: string }; } catch { return null; }
 }
 
 export async function POST(request: Request) {

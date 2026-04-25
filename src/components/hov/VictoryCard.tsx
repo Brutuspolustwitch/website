@@ -26,14 +26,18 @@ export default function VictoryCard({ v }: { v: Victory }) {
     >
       {/* Image */}
       <div className="relative aspect-[16/10] bg-black/50">
-        <Image
-          src={v.image_url}
-          alt={v.slot_name}
-          fill
-          sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-          unoptimized
-        />
+        {v.image_url ? (
+          <Image
+            src={v.image_url}
+            alt={v.slot_name}
+            fill
+            sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            unoptimized
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-5xl opacity-30">🏛️</div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
 
         {/* Multiplier badge */}

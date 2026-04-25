@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PROVIDERS } from "./types";
 
@@ -15,12 +15,10 @@ export default function SubmissionModal({ open, onClose, onSubmitted }: Props) {
   const [provider, setProvider] = useState<string>(PROVIDERS[0]);
   const [bet, setBet] = useState("");
   const [win, setWin] = useState("");
+  const [url, setUrl] = useState("");
   const [caption, setCaption] = useState("");
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
 
   const betN = parseFloat(bet.replace(",", "."));
   const winN = parseFloat(win.replace(",", "."));
@@ -28,23 +26,7 @@ export default function SubmissionModal({ open, onClose, onSubmitted }: Props) {
 
   function reset() {
     setSlotName(""); setProvider(PROVIDERS[0]); setBet(""); setWin("");
-    setCaption(""); setImageUrl(null); setError(null);
-  }
-
-  async function handleUpload(file: File) {
-    setUploading(true); setError(null);
-    try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await fetch("/api/hall-of-victors/upload", { method: "POST", body: fd });
-      const j = await res.json();
-      if (!res.ok) throw new Error(j.error || "Falha no upload");
-      setImageUrl(j.url);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Erro no upload");
-    } finally {
-      setUploading(false);
-    }
+    setUrl(""); setCaption(""); setError(null);
   }
 
   async function submit() {
@@ -52,7 +34,9 @@ export default function SubmissionModal({ open, onClose, onSubmitted }: Props) {
     if (!slotName.trim()) return setError("Nome da slot obrigatório");
     if (!(betN > 0)) return setError("Aposta inválida");
     if (!(winN >= 0)) return setError("Ganho inválido");
-    if (!imageUrl) return setError("Imagem obrigatória");
+    if (!url.trim() || !/^https?:\/\//i.test(url.trim())) {
+      return setError("Link da vitória obrigatório (https://…)");
+    }
 
     setSubmitting(true);
     try {
@@ -62,7 +46,7 @@ export default function SubmissionModal({ open, onClose, onSubmitted }: Props) {
         body: JSON.stringify({
           slot_name: slotName.trim(),
           provider, bet_amount: betN, win_amount: winN,
-          image_url: imageUrl,
+          url: url.trim(),
           caption: caption.trim() || undefined,
         }),
       });
@@ -147,27 +131,15 @@ export default function SubmissionModal({ open, onClose, onSubmitted }: Props) {
                 </div>
               )}
 
-              <Field label="Imagem (obrigatório)">
-                <div
-                  onClick={() => fileRef.current?.click()}
-                  className="cursor-pointer rounded border border-dashed flex items-center justify-center text-sm"
-                  style={{
-                    borderColor: "rgba(240,215,140,0.4)",
-                    background: imageUrl ? `url(${imageUrl}) center/cover` : "rgba(0,0,0,0.4)",
-                    minHeight: 140,
-                  }}
-                >
-                  {!imageUrl && (
-                    <span className="text-arena-smoke">
-                      {uploading ? "A carregar…" : "Clica para escolher (máx. 5MB)"}
-                    </span>
-                  )}
-                </div>
+              <Field label="Link da Vitória (obrigatório)">
                 <input
-                  ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif"
-                  className="hidden"
-                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handleUpload(f); }}
+                  value={url} onChange={(e) => setUrl(e.target.value)}
+                  className={inputCls} placeholder="https://kick.com/clip/… ou https://twitch.tv/…"
+                  inputMode="url" maxLength={2048}
                 />
+                <div className="text-[11px] text-arena-smoke mt-1">
+                  Cola o link do clip / replay. A imagem será adicionada por um moderador.
+                </div>
               </Field>
 
               <Field label="Legenda (opcional)">
@@ -186,7 +158,7 @@ export default function SubmissionModal({ open, onClose, onSubmitted }: Props) {
 
               <button
                 onClick={submit}
-                disabled={submitting || uploading}
+                disabled={submitting}
                 className="w-full py-3 rounded font-[family-name:var(--font-display)] uppercase tracking-widest font-bold disabled:opacity-50"
                 style={{
                   background: "linear-gradient(180deg, #c0392b, #7d1f15)",

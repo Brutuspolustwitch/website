@@ -10,7 +10,8 @@ export interface Victory {
   bet_amount: number;
   win_amount: number;
   multiplier: number;
-  image_url: string;
+  url?: string | null;
+  image_url?: string | null;
   caption?: string | null;
   status: VictoryStatus;
   suspicious: boolean;

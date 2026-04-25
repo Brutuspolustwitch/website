@@ -129,6 +129,7 @@ export async function POST(request: Request) {
   const provider = clampStr(body.provider, 60);
   const bet_amount = num(body.bet_amount);
   const win_amount = num(body.win_amount);
+  const url = clampStr(body.url, 2048);
   const image_url = clampStr(body.image_url, 2048);
   const caption = clampStr(body.caption, 500);
 
@@ -136,8 +137,8 @@ export async function POST(request: Request) {
   if (!provider) return NextResponse.json({ error: "Provedor obrigatório" }, { status: 400 });
   if (bet_amount === null || bet_amount <= 0) return NextResponse.json({ error: "Aposta inválida" }, { status: 400 });
   if (win_amount === null || win_amount < 0) return NextResponse.json({ error: "Ganho inválido" }, { status: 400 });
-  if (!image_url || !/^https?:\/\//i.test(image_url)) {
-    return NextResponse.json({ error: "Imagem obrigatória" }, { status: 400 });
+  if (!url || !/^https?:\/\//i.test(url)) {
+    return NextResponse.json({ error: "Link da vitória obrigatório" }, { status: 400 });
   }
 
   const multiplier = Math.round((win_amount / bet_amount) * 100) / 100;
@@ -154,7 +155,8 @@ export async function POST(request: Request) {
       bet_amount,
       win_amount,
       multiplier,
-      image_url,
+      url,
+      image_url: image_url || null,
       caption: caption || null,
       suspicious,
       status: "pending",
