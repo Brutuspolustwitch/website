@@ -2,22 +2,13 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabase } from "@/lib/supabase";
 
-const GRID_SIZE  = 40;
+const GRID_SIZE  = 60;
 const DRAW_COUNT = 20;
 const SE_API     = "https://api.streamelements.com/kappa/v2";
 
 /* ── Payout table: PAYOUTS[picks][matches] = multiplier ──────── */
 const PAYOUTS: Record<number, Record<number, number>> = {
-  1:  { 1: 3.5 },
-  2:  { 1: 1.0, 2: 7.0 },
-  3:  { 2: 2.0, 3: 15.0 },
-  4:  { 2: 1.5, 3: 5.0,  4: 30.0 },
   5:  { 3: 2.0, 4: 12.0, 5: 80.0 },
-  6:  { 3: 1.5, 4: 6.0,  5: 35.0,  6: 200.0 },
-  7:  { 4: 2.0, 5: 10.0, 6: 60.0,  7: 500.0 },
-  8:  { 4: 1.5, 5: 6.0,  6: 30.0,  7: 150.0,  8: 1000.0 },
-  9:  { 4: 1.0, 5: 4.0,  6: 20.0,  7: 80.0,   8: 400.0,  9: 2000.0 },
-  10: { 5: 2.0, 6: 10.0, 7: 50.0,  8: 200.0,  9: 1000.0, 10: 5000.0 },
 };
 
 /* ── Auth helper ──────────────────────────────────────────────── */
@@ -87,8 +78,8 @@ async function handlePlay(
   if (!bet || bet < 10 || bet > 1000) {
     return NextResponse.json({ error: "Aposta inválida (10–1000)" }, { status: 400 });
   }
-  if (!Array.isArray(picks) || picks.length < 1 || picks.length > 10) {
-    return NextResponse.json({ error: "Seleciona entre 1 e 10 números" }, { status: 400 });
+  if (!Array.isArray(picks) || picks.length !== 5) {
+    return NextResponse.json({ error: "Seleciona exactamente 5 números" }, { status: 400 });
   }
   if (picks.some((n) => !Number.isInteger(n) || n < 1 || n > GRID_SIZE)) {
     return NextResponse.json({ error: "Números inválidos" }, { status: 400 });

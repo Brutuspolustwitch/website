@@ -3,20 +3,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/lib/auth-context";
 
-const GRID_SIZE  = 40;
-const MAX_PICKS  = 10;
+const GRID_SIZE  = 60;
+const MAX_PICKS  = 5;
 
 const PAYOUTS: Record<number, Record<number, number>> = {
-  1:  { 1: 3.5 },
-  2:  { 1: 1.0, 2: 7.0 },
-  3:  { 2: 2.0, 3: 15.0 },
-  4:  { 2: 1.5, 3: 5.0,  4: 30.0 },
   5:  { 3: 2.0, 4: 12.0, 5: 80.0 },
-  6:  { 3: 1.5, 4: 6.0,  5: 35.0,  6: 200.0 },
-  7:  { 4: 2.0, 5: 10.0, 6: 60.0,  7: 500.0 },
-  8:  { 4: 1.5, 5: 6.0,  6: 30.0,  7: 150.0,  8: 1000.0 },
-  9:  { 4: 1.0, 5: 4.0,  6: 20.0,  7: 80.0,   8: 400.0,  9: 2000.0 },
-  10: { 5: 2.0, 6: 10.0, 7: 50.0,  8: 200.0,  9: 1000.0, 10: 5000.0 },
 };
 
 type Phase = "idle" | "drawing" | "done";
@@ -82,13 +73,12 @@ export default function KenoGame() {
   const clearPicks = () => setPicks([]);
 
   const randomPicks = () => {
-    const count = picks.length || 5;
     const pool  = Array.from({ length: GRID_SIZE }, (_, i) => i + 1);
     for (let i = pool.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [pool[i], pool[j]] = [pool[j], pool[i]];
     }
-    setPicks(pool.slice(0, count));
+    setPicks(pool.slice(0, MAX_PICKS));
   };
 
   /* ── Play ─────────────────────────────────────────────────── */
@@ -282,13 +272,13 @@ export default function KenoGame() {
             <>
               <button
                 onClick={play}
-                disabled={loading || picks.length === 0 || (points !== null && bet > points)}
+                disabled={loading || picks.length !== MAX_PICKS || (points !== null && bet > points)}
                 className="cta-button"
-                style={{ fontSize: "1rem", opacity: (loading || picks.length === 0 || (points !== null && bet > points)) ? 0.5 : 1 }}
+                style={{ fontSize: "1rem", opacity: (loading || picks.length !== MAX_PICKS || (points !== null && bet > points)) ? 0.5 : 1 }}
               >
-                {loading ? "A sortear..." : picks.length === 0 ? "Escolhe números" : `Jogar (${bet} pts)`}
+                {loading ? "A sortear..." : picks.length === 0 ? "Escolhe 5 números" : picks.length < MAX_PICKS ? `Escolhe mais ${MAX_PICKS - picks.length}` : `Jogar (${bet} pts)`}
               </button>
-              <p className="text-xs text-center" style={{ color: P.brownLight }}>20 bolas sorteadas de 40</p>
+              <p className="text-xs text-center" style={{ color: P.brownLight }}>20 bolas sorteadas de 60 · Escolhe exactamente 5</p>
             </>
           )}
 
@@ -337,7 +327,7 @@ export default function KenoGame() {
         <div className="rounded-xl p-6"
           style={{ background: `linear-gradient(135deg, ${P.parchmentMid} 0%, ${P.parchment} 100%)`, border: `2px solid ${P.border}` }}>
           <div className="overflow-x-auto">
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(8, 62px)", gap: 14, width: "fit-content" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(10, 62px)", gap: 14, width: "fit-content" }}>
               {Array.from({ length: GRID_SIZE }, (_, i) => {
                 const n     = i + 1;
                 const state = getCellState(n);
