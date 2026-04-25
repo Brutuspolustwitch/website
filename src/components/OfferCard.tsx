@@ -96,11 +96,16 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
   const externalUrl = offer.affiliate_url.startsWith("http") ? offer.affiliate_url : `https://${offer.affiliate_url}`;
 
   return (
-    <div className="group relative rounded-2xl border border-white/[0.08] bg-white/[0.02] overflow-hidden hover:border-arena-gold/30 transition-all duration-300 flex flex-col">
+    <div className="group relative rounded-2xl overflow-hidden flex flex-col transition-all duration-300"
+      style={{
+        background: "linear-gradient(160deg, var(--parchment-light) 0%, var(--parchment-mid) 40%, var(--parchment-dark) 100%)",
+        border: "2px solid var(--gold-dark)",
+        boxShadow: "0 4px 20px rgba(139,105,20,0.18), inset 0 1px 0 rgba(255,255,255,0.4)",
+      }}>
 
       {/* Banner */}
       {offer.banner_url && (
-        <div className="aspect-video w-full overflow-hidden bg-white/[0.03] relative shrink-0">
+        <div className="aspect-video w-full overflow-hidden relative shrink-0" style={{ borderBottom: "1px solid var(--gold-dark)" }}>
           <img
             src={offer.banner_url}
             alt={offer.name}
@@ -120,25 +125,25 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
         {/* Name + logo + rating */}
         <div className="flex items-center gap-3">
           {offer.logo_url && (
-            <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0" style={{ background: offer.logo_bg || "#1a1a1a" }}>
+            <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0" style={{ background: offer.logo_bg || "#1a1a1a", border: "1px solid var(--gold-dark)" }}>
               <img src={offer.logo_url} alt={offer.name} className="w-full h-full object-contain" />
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-white text-lg leading-tight truncate">{offer.name}</h3>
+            <h3 className="font-semibold text-lg leading-tight truncate" style={{ color: "var(--ink-dark)", fontFamily: "'Cinzel', serif" }}>{offer.name}</h3>
             {offer.is_exclusive !== false && (
-              <p className="text-[10px] text-arena-gold/70 uppercase tracking-widest font-bold">✦ Oferta Exclusiva</p>
+              <p className="text-[10px] uppercase tracking-widest font-bold" style={{ color: "var(--gold-mid)" }}>✦ Oferta Exclusiva</p>
             )}
           </div>
           <StarRating rating={offer.rating ?? 4.5} />
         </div>
 
         {/* Bonus highlight */}
-        <div className="rounded-lg bg-white/[0.04] border border-white/[0.06] px-3 py-2.5">
-          <p className="text-sm text-white/60">{offer.headline}</p>
-          <p className="text-base font-bold text-arena-gold mt-0.5">{offer.bonus_value}</p>
+        <div className="rounded-lg px-3 py-2.5" style={{ background: "rgba(139,105,20,0.08)", border: "1px solid var(--parchment-edge)" }}>
+          <p className="text-sm" style={{ color: "var(--ink-mid)" }}>{offer.headline}</p>
+          <p className="text-base font-bold mt-0.5" style={{ color: "var(--gold-bright)", fontFamily: "'Cinzel', serif" }}>{offer.bonus_value}</p>
           {((offer.free_spins && offer.free_spins !== "—" && offer.free_spins.trim() !== "") || (offer.cashback && offer.cashback.trim() !== "")) && (
-            <p className="text-xs text-white/40 mt-0.5">
+            <p className="text-xs mt-0.5" style={{ color: "var(--ink-light)" }}>
               {offer.free_spins && offer.free_spins !== "—" && offer.free_spins.trim() !== "" ? `+ ${offer.free_spins} Free Spins` : ""}
               {offer.cashback && offer.cashback.trim() !== "" ? ` · ${offer.cashback} Cashback` : ""}
             </p>
@@ -152,9 +157,9 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
             { label: "Levantamento", value: offer.withdraw_time },
             { label: "Licença", value: offer.license },
           ].map(({ label, value }) => (
-            <div key={label} className="rounded-lg bg-white/[0.03] border border-white/[0.05] px-2 py-1.5">
-              <p className="text-[9px] uppercase tracking-wider text-white/30 font-semibold leading-none">{label}</p>
-              <p className="text-xs text-white/70 font-medium mt-1 truncate">{value}</p>
+            <div key={label} className="rounded-lg px-2 py-1.5" style={{ background: "rgba(139,105,20,0.06)", border: "1px solid var(--parchment-edge)" }}>
+              <p className="text-[9px] uppercase tracking-wider font-semibold leading-none" style={{ color: "var(--ink-light)" }}>{label}</p>
+              <p className="text-xs font-medium mt-1 truncate" style={{ color: "var(--ink-dark)" }}>{value}</p>
             </div>
           ))}
         </div>
@@ -162,19 +167,20 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
         {/* Perks/tags */}
         <div className="flex flex-wrap gap-1.5">
           {perks.map((perk) => (
-            <span key={perk} className="text-[11px] rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-0.5 text-white/50">{perk}</span>
+            <span key={perk} className="text-[11px] rounded-full px-2.5 py-0.5" style={{ border: "1px solid var(--parchment-edge)", background: "rgba(212,184,122,0.2)", color: "var(--ink-mid)" }}>{perk}</span>
           ))}
         </div>
 
         {/* Promo code */}
         {offer.code && offer.code !== "—" && (
           <button
-            className="flex items-center gap-2 rounded-lg border border-arena-gold/20 bg-arena-gold/[0.06] px-3 py-2 w-full text-left hover:bg-arena-gold/[0.1] transition-colors"
+            className="flex items-center gap-2 rounded-lg px-3 py-2 w-full text-left transition-colors"
+            style={{ border: "1px solid var(--gold-mid)", background: "rgba(212,160,23,0.1)" }}
             onClick={handleCopyCode}
           >
-            <span className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Código</span>
-            <span className="font-mono font-bold text-arena-gold text-sm flex-1">{offer.code}</span>
-            <span className="text-[10px] text-white/30">{copied ? "✓ Copiado" : "Copiar"}</span>
+            <span className="text-[10px] uppercase tracking-widest font-bold" style={{ color: "var(--ink-light)" }}>Código</span>
+            <span className="font-mono font-bold text-sm flex-1" style={{ color: "var(--gold-dark)" }}>{offer.code}</span>
+            <span className="text-[10px]" style={{ color: "var(--ink-light)" }}>{copied ? "✓ Copiado" : "Copiar"}</span>
           </button>
         )}
 
@@ -182,7 +188,7 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
         {offer.notes && offer.notes.length > 0 && (
           <div className="space-y-0.5">
             {offer.notes.map((note, idx) => (
-              <p key={idx} className="text-[10px] uppercase tracking-wide text-white/25 font-semibold">{note}</p>
+              <p key={idx} className="text-[10px] uppercase tracking-wide font-semibold" style={{ color: "var(--ink-light)" }}>{note}</p>
             ))}
           </div>
         )}
@@ -192,7 +198,7 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
           <a href={externalUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => { e.stopPropagation(); trackOfferClick(offer.id, offer.name); }}>
             <button className="cta-button w-full">⚔ Resgatar Bónus ⚔</button>
           </a>
-          <p className="text-[10px] text-white/25 text-center mt-1.5">18+ · T&Cs Aplicáveis · Joga com responsabilidade</p>
+          <p className="text-[10px] text-center mt-1.5" style={{ color: "var(--ink-light)" }}>18+ · T&Cs Aplicáveis · Joga com responsabilidade</p>
         </div>
 
       </div>
@@ -200,7 +206,7 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
       {/* Copy toast */}
       {copied && (
         <div className="absolute inset-x-0 bottom-4 flex justify-center pointer-events-none">
-          <span className="rounded-full bg-arena-gold/20 border border-arena-gold/30 px-4 py-1.5 text-xs font-semibold text-arena-gold">✦ Código copiado ✦</span>
+          <span className="rounded-full px-4 py-1.5 text-xs font-semibold" style={{ background: "rgba(212,160,23,0.15)", border: "1px solid var(--gold-mid)", color: "var(--gold-dark)" }}>✦ Código copiado ✦</span>
         </div>
       )}
     </div>
