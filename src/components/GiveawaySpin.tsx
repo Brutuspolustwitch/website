@@ -230,7 +230,7 @@ export default function GiveawaySpin({ winner, participants, prize, onDismiss }:
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.4 }}
-        className="fixed inset-0 z-[55] flex flex-col items-center justify-center"
+        className="fixed inset-0 z-[55] flex flex-col items-center justify-center overflow-y-auto"
         onClick={phase === "celebration" ? handleDismiss : undefined}
       >
         {/* Backdrop */}
@@ -240,7 +240,7 @@ export default function GiveawaySpin({ winner, participants, prize, onDismiss }:
         {phase === "celebration" && <Confetti />}
 
         {/* Content */}
-        <div className="relative z-10 w-full max-w-3xl px-4">
+          <div className="relative z-10 w-full max-w-3xl px-4 py-6 my-auto">
           {/* Title */}
           <motion.h2
             initial={{ opacity: 0, y: -20 }}

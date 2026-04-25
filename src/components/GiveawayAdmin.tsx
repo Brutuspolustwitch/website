@@ -425,7 +425,7 @@ export default function GiveawayAdmin() {
 
       {/* Toast */}
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 px-4 py-2 rounded font-medium text-sm font-[family-name:var(--font-display)] tracking-wider bg-arena-dark border border-arena-gold/30 text-arena-gold/90" style={{ boxShadow: "0 4px 20px rgba(180,130,20,0.3)" }}>
+        <div className="fixed right-6 z-50 px-4 py-2 rounded font-medium text-sm font-[family-name:var(--font-display)] tracking-wider bg-arena-dark border border-arena-gold/30 text-arena-gold/90" style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom, 0px))", boxShadow: "0 4px 20px rgba(180,130,20,0.3)" }}>
           {toast}
         </div>
       )}

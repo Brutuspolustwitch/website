@@ -188,12 +188,12 @@ export function StreamCalendar() {
       {/* ── Premium Stream Event Modal ─────────────────────── */}
       {selectedStream && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6"
+          className="fixed inset-0 z-50 flex items-start justify-center px-4 py-6 overflow-y-auto"
           style={{ background: "rgba(0,0,0,0.78)", backdropFilter: "blur(8px)" }}
           onClick={() => setSelectedStream(null)}
         >
           <div
-            className="schedule-modal-panel"
+            className="schedule-modal-panel my-auto w-full"
             onClick={(e) => e.stopPropagation()}
           >
             {/* ── Close ─────────────────────────────────────── */}

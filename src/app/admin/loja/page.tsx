@@ -392,7 +392,8 @@ export default function AdminRewardsPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 30 }}
-              className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-xl border border-arena-gold/20 bg-arena-dark/90 backdrop-blur-lg gladiator-label text-sm text-arena-gold"
+              className="fixed left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-xl border border-arena-gold/20 bg-arena-dark/90 backdrop-blur-lg gladiator-label text-sm text-arena-gold"
+              style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom, 0px))" }}
             >
               {toast}
             </motion.div>

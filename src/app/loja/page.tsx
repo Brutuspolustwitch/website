@@ -198,11 +198,12 @@ export default function LojaPage() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 40 }}
-          className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-xl border backdrop-blur-lg font-[family-name:var(--font-display)] text-xs tracking-[0.15em] uppercase
+          className={`fixed left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-xl border backdrop-blur-lg font-[family-name:var(--font-display)] text-xs tracking-[0.15em] uppercase
             ${toast.type === "success"
               ? "bg-green-900/60 border-green-500/30 text-green-300"
               : "bg-red-900/60 border-red-500/30 text-red-300"
             }`}
+          style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom, 0px))" }}
         >
           {toast.msg}
         </motion.div>

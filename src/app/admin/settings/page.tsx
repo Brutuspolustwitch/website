@@ -884,7 +884,7 @@ export default function AdminSettingsPage() {
 
         {/* Toast */}
         {toast && (
-          <div className="fixed bottom-6 right-6 z-50 px-4 py-2 rounded-lg bg-arena-gold/90 text-black font-medium text-sm shadow-lg animate-[fadeIn_0.2s_ease-out]">
+          <div className="fixed right-6 z-50 px-4 py-2 rounded-lg bg-arena-gold/90 text-black font-medium text-sm shadow-lg animate-[fadeIn_0.2s_ease-out]" style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom, 0px))" }}>
             {toast}
           </div>
         )}

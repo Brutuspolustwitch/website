@@ -2516,7 +2516,9 @@ body {
   max-width: 760px;
   width: 100%;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: calc(100dvh - 3rem);
   animation: schedule-modal-in 0.26s cubic-bezier(0.22,1,0.36,1) both,
              schedule-glow-pulse 5s ease-in-out 0.8s infinite;
 }

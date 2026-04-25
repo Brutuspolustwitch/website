@@ -63,11 +63,12 @@ function Toast({ message, type, onDone }: { message: string; type: "success" | "
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 30 }}
-      className={`fixed bottom-6 right-6 z-50 px-5 py-3 rounded-xl shadow-2xl border backdrop-blur-md text-sm font-medium ${
+      className={`fixed right-6 z-50 px-5 py-3 rounded-xl shadow-2xl border backdrop-blur-md text-sm font-medium ${
         type === "success"
           ? "bg-green-900/80 border-green-500/40 text-green-200"
           : "bg-red-900/80 border-red-500/40 text-red-200"
       }`}
+      style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom, 0px))" }}
     >{message}</motion.div>
   );
 }

@@ -398,7 +398,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       </nav>
 
       {/* Social icons */}
-      <div className="px-4 py-3">
+      <div className="px-4 pt-3" style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom, 0px))" }}>
         <div className="flex items-center justify-center gap-4">
           <a
             href="https://www.instagram.com/BRUTUSPOLUS"

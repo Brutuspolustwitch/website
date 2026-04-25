@@ -57,9 +57,10 @@ export function CookieConsent() {
 
   return (
     <div
-      className={`fixed bottom-4 left-4 right-4 lg:left-auto lg:right-6 lg:bottom-6 lg:max-w-md z-[9990] transition-all duration-400 ${
+      className={`fixed left-4 right-4 lg:left-auto lg:right-6 lg:max-w-md z-[9990] transition-all duration-400 ${
         exiting ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
       }`}
+      style={{ bottom: "calc(1rem + env(safe-area-inset-bottom, 0px))" }}
     >
       <div className="bg-arena-dark/95 backdrop-blur-sm border border-white/10 rounded-2xl p-5 shadow-2xl shadow-black/60">
         {!configuring ? (
