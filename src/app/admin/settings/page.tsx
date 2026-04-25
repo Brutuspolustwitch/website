@@ -222,6 +222,150 @@ function DragPreview({
   );
 }
 
+/* ── Mobile Drag Preview (9:16 portrait) ──────────────────── */
+function MobileDragPreview({
+  bgImage,
+  bgPosX,
+  bgPosY,
+  bgZoom,
+  bgColor,
+  bgBrightness,
+  bgSaturation,
+  bgContrast,
+  overlayOpacity,
+  onPositionChange,
+  onPositionCommit,
+  onZoomChange,
+  onZoomCommit,
+}: {
+  bgImage: string | null;
+  bgPosX: number;
+  bgPosY: number;
+  bgZoom: number;
+  bgColor: string;
+  bgBrightness: number;
+  bgSaturation: number;
+  bgContrast: number;
+  overlayOpacity: number;
+  onPositionChange: (x: number, y: number) => void;
+  onPositionCommit: (x: number, y: number) => void;
+  onZoomChange: (zoom: number) => void;
+  onZoomCommit: (zoom: number) => void;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const startPos = useRef({ x: 0, y: 0 });
+  const startBgPos = useRef({ x: bgPosX, y: bgPosY });
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (!containerRef.current) return;
+    isDragging.current = true;
+    startPos.current = { x: e.clientX, y: e.clientY };
+    startBgPos.current = { x: bgPosX, y: bgPosY };
+    containerRef.current.setPointerCapture(e.pointerId);
+    containerRef.current.style.cursor = "grabbing";
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDragging.current || !containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const dx = e.clientX - startPos.current.x;
+    const dy = e.clientY - startPos.current.y;
+    const pctX = (dx / rect.width) * -100;
+    const pctY = (dy / rect.height) * -100;
+    const newX = Math.min(100, Math.max(0, startBgPos.current.x + pctX));
+    const newY = Math.min(100, Math.max(0, startBgPos.current.y + pctY));
+    onPositionChange(Math.round(newX), Math.round(newY));
+  };
+
+  const handlePointerUp = () => {
+    if (!isDragging.current) return;
+    isDragging.current = false;
+    if (containerRef.current) containerRef.current.style.cursor = "grab";
+    onPositionCommit(bgPosX, bgPosY);
+  };
+
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -5 : 5;
+    const newZoom = Math.min(200, Math.max(50, bgZoom + delta));
+    onZoomChange(newZoom);
+    onZoomCommit(newZoom);
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <label className="text-[11px] font-medium text-arena-smoke/70 uppercase tracking-wider">
+          Pré-visualização Mobile (arrasta para posicionar, scroll para zoom)
+        </label>
+        <span className="text-[10px] text-arena-smoke/40 tabular-nums">
+          X:{bgPosX}% Y:{bgPosY}% Z:{bgZoom}%
+        </span>
+      </div>
+      {/* Centred portrait phone mockup */}
+      <div className="flex justify-center">
+        <div
+          ref={containerRef}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+          onWheel={handleWheel}
+          className="relative rounded-[18px] overflow-hidden border-2 border-blue-400/30 select-none touch-none shadow-lg"
+          style={{ width: 140, height: 248, cursor: "grab" }}
+        >
+          <div className="absolute inset-0" style={{ backgroundColor: bgColor }} />
+          {bgImage && (
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage: `url('${bgImage}')`,
+                backgroundSize: `${bgZoom}%`,
+                backgroundPosition: `${bgPosX}% ${bgPosY}%`,
+                backgroundRepeat: "no-repeat",
+                filter: `brightness(${bgBrightness}) saturate(${bgSaturation}) contrast(${bgContrast})`,
+              }}
+            />
+          )}
+          <div className="absolute inset-0" style={{ backgroundColor: `rgba(0,0,0,${overlayOpacity})` }} />
+          {/* Phone UI wireframe */}
+          <div className="absolute inset-0 pointer-events-none">
+            {/* Status bar */}
+            <div className="absolute top-0 left-0 right-0 h-[8%] bg-black/50 flex items-center justify-center">
+              <div className="w-10 h-1 rounded-full bg-black/80 mt-1" />
+            </div>
+            {/* Navbar */}
+            <div className="absolute top-[8%] left-0 right-0 h-[10%] bg-black/60 border-b border-arena-gold/20 flex items-center px-2">
+              <div className="w-2 h-2 rounded-full bg-arena-gold/40 mr-1" />
+              <div className="w-8 h-1 rounded-full bg-white/20" />
+              <div className="ml-auto w-3 h-3 rounded bg-white/10" />
+            </div>
+            {/* Content */}
+            <div className="absolute top-[22%] left-[8%] right-[8%] flex flex-col gap-1.5">
+              <div className="w-3/4 h-1.5 rounded-full bg-white/20" />
+              <div className="w-1/2 h-1 rounded-full bg-white/10" />
+              <div className="mt-1 grid grid-cols-2 gap-1">
+                <div className="aspect-square rounded bg-white/[0.06] border border-white/5" />
+                <div className="aspect-square rounded bg-white/[0.06] border border-white/5" />
+              </div>
+            </div>
+            {/* Bottom bar */}
+            <div className="absolute bottom-0 left-0 right-0 h-[8%] bg-black/50 flex items-center justify-center">
+              <div className="w-16 h-1 rounded-full bg-white/20" />
+            </div>
+          </div>
+          {!bgImage && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-arena-smoke/30 text-[10px]">Sem imagem</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── Per-page settings card ───────────────────────────────── */
 function PageSettingsCard({
   page,
@@ -240,7 +384,7 @@ function PageSettingsCard({
   saving: string | null;
   setSettings: React.Dispatch<React.SetStateAction<PageSetting[]>>;
   saveField: (id: string, updates: Partial<PageSetting>) => Promise<void>;
-  triggerUpload: (id: string, slug: string, field: "background_image" | "hero_image") => void;
+  triggerUpload: (id: string, slug: string, field: "background_image" | "hero_image" | "mobile_background_image") => void;
 }) {
   const [activeTab, setActiveTab] = useState<Tab>("image");
 
@@ -494,6 +638,56 @@ function PageSettingsCard({
               onChange={(v) => updateLocal("bg_zoom", v)}
               onCommit={(v) => saveField(page.id, { bg_zoom: v } as Partial<PageSetting>)}
             />
+
+            {/* ── Mobile image section ───────────────────── */}
+            <div className="mt-2 rounded-xl border border-blue-400/20 bg-blue-500/[0.04] overflow-hidden">
+              <div className="flex items-center gap-2 px-4 py-2.5 border-b border-blue-400/10">
+                <span className="text-lg">📱</span>
+                <div>
+                  <h4 className="text-xs font-semibold text-blue-300 uppercase tracking-wider">Imagem Mobile</h4>
+                  <p className="text-[11px] text-arena-smoke/50 mt-0.5">Substitui a imagem de fundo em ecrãs pequenos (&lt;768px). Deixa vazio para usar a imagem de desktop.</p>
+                </div>
+              </div>
+              <div className="p-4 space-y-4">
+                <ImageField
+                  label="Imagem Mobile"
+                  value={page.mobile_background_image ?? null}
+                  isUploading={isPageUploading && uploadTarget?.field === "mobile_background_image"}
+                  onUpload={() => triggerUpload(page.id, page.page_slug, "mobile_background_image")}
+                  onClear={() => saveField(page.id, { mobile_background_image: "" } as Partial<PageSetting>)}
+                  onSelectPreset={(url) => saveField(page.id, { mobile_background_image: url } as Partial<PageSetting>)}
+                />
+
+                {page.mobile_background_image && (
+                  <>
+                    {/* Mobile portrait drag preview */}
+                    <MobileDragPreview
+                      bgImage={page.mobile_background_image}
+                      bgPosX={page.mobile_bg_position_x ?? 50}
+                      bgPosY={page.mobile_bg_position_y ?? 50}
+                      bgZoom={page.mobile_bg_zoom ?? 100}
+                      bgColor={page.bg_color ?? "#000000"}
+                      bgBrightness={page.bg_brightness ?? 0.35}
+                      bgSaturation={page.bg_saturation ?? 0.7}
+                      bgContrast={page.bg_contrast ?? 0.95}
+                      overlayOpacity={page.overlay_opacity ?? 0.6}
+                      onPositionChange={(x, y) => { updateLocal("mobile_bg_position_x", x); updateLocal("mobile_bg_position_y", y); }}
+                      onPositionCommit={(x, y) => saveField(page.id, { mobile_bg_position_x: x, mobile_bg_position_y: y } as Partial<PageSetting>)}
+                      onZoomChange={(z) => updateLocal("mobile_bg_zoom", z)}
+                      onZoomCommit={(z) => saveField(page.id, { mobile_bg_zoom: z } as Partial<PageSetting>)}
+                    />
+                    <Slider
+                      label="Zoom Mobile"
+                      value={page.mobile_bg_zoom ?? 100}
+                      min={50} max={200} step={5}
+                      format={(v) => `${v}%`}
+                      onChange={(v) => updateLocal("mobile_bg_zoom", v)}
+                      onCommit={(v) => saveField(page.id, { mobile_bg_zoom: v } as Partial<PageSetting>)}
+                    />
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         )}
 
@@ -666,7 +860,7 @@ export default function AdminSettingsPage() {
   const [uploadTarget, setUploadTarget] = useState<{
     id: string;
     slug: string;
-    field: "background_image" | "hero_image";
+    field: "background_image" | "hero_image" | "mobile_background_image";
   } | null>(null);
 
   const showToast = useCallback((msg: string) => {
@@ -762,7 +956,7 @@ export default function AdminSettingsPage() {
     [uploadTarget, saveField, showToast]
   );
 
-  const triggerUpload = (id: string, slug: string, field: "background_image" | "hero_image") => {
+  const triggerUpload = (id: string, slug: string, field: "background_image" | "hero_image" | "mobile_background_image") => {
     setUploadTarget({ id, slug, field });
     setTimeout(() => fileInputRef.current?.click(), 50);
   };

@@ -58,6 +58,7 @@ function DynamicPageBackgroundInner() {
 
   // Only use admin-configured settings
   const bgImage = settings?.background_image || null;
+  const mobileBgImage = settings?.mobile_background_image || null;
   const overlayOpacity = settings?.overlay_opacity ?? 0.6;
   const bgBrightness = settings?.bg_brightness ?? 0.35;
   const bgSaturation = settings?.bg_saturation ?? 0.7;
@@ -66,20 +67,28 @@ function DynamicPageBackgroundInner() {
   const bgPosY = settings?.bg_position_y ?? 50;
   const bgZoom = settings?.bg_zoom ?? 100;
   const bgColor = settings?.bg_color ?? "#000000";
+  const mobileBgPosX = settings?.mobile_bg_position_x ?? 50;
+  const mobileBgPosY = settings?.mobile_bg_position_y ?? 50;
+  const mobileBgZoom = settings?.mobile_bg_zoom ?? 100;
   const effect = settings?.effect ?? "none";
   const effectIntensity = settings?.effect_intensity ?? 1;
 
   // Home page: hero section handles its own image, but we still render effects
   const isHome = slug === "home";
   const hasBg = !isHome && !!bgImage;
+  const hasMobileBg = !isHome && !!mobileBgImage;
   const hasEffect = effect !== "none";
-  if (!hasBg && !hasEffect) return null;
+  if (!hasBg && !hasMobileBg && !hasEffect) return null;
+
+  // When a mobile-specific image exists, desktop image hides on mobile and vice-versa
+  const desktopBgClass = hasMobileBg ? "hidden md:block" : "";
+  const mobileBgClass  = "md:hidden";
 
   return (
     <>
       {/* Fixed background image */}
       {hasBg && (
-        <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className={`fixed inset-0 z-0 pointer-events-none ${desktopBgClass}`}>
           <div className="absolute inset-0" style={{ backgroundColor: bgColor }} />
           <div
             className="absolute inset-0"
@@ -87,6 +96,27 @@ function DynamicPageBackgroundInner() {
               backgroundImage: `url('${bgImage}')`,
               backgroundSize: `${bgZoom}%`,
               backgroundPosition: `${bgPosX}% ${bgPosY}%`,
+              backgroundRepeat: "no-repeat",
+              filter: `brightness(${bgBrightness}) saturate(${bgSaturation}) contrast(${bgContrast})`,
+            }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{ backgroundColor: `rgba(0,0,0,${overlayOpacity})` }}
+          />
+        </div>
+      )}
+
+      {/* Mobile-specific background image */}
+      {hasMobileBg && (
+        <div className={`fixed inset-0 z-0 pointer-events-none ${mobileBgClass}`}>
+          <div className="absolute inset-0" style={{ backgroundColor: bgColor }} />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `url('${mobileBgImage}')`,
+              backgroundSize: `${mobileBgZoom}%`,
+              backgroundPosition: `${mobileBgPosX}% ${mobileBgPosY}%`,
               backgroundRepeat: "no-repeat",
               filter: `brightness(${bgBrightness}) saturate(${bgSaturation}) contrast(${bgContrast})`,
             }}

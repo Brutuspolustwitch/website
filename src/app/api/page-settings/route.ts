@@ -86,7 +86,7 @@ export async function PUT(request: Request) {
   if (!admin) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   const body = await request.json();
-  const { id, background_image, hero_image, hero_title, hero_description, hero_title_size, hero_description_size, hero_text_align, hero_position_x, hero_position_y, hero_max_width, effect, effect_intensity, overlay_opacity, bg_brightness, bg_saturation, bg_contrast, bg_position_x, bg_position_y, bg_zoom, bg_color } = body;
+  const { id, background_image, hero_image, hero_title, hero_description, hero_title_size, hero_description_size, hero_text_align, hero_position_x, hero_position_y, hero_max_width, effect, effect_intensity, overlay_opacity, bg_brightness, bg_saturation, bg_contrast, bg_position_x, bg_position_y, bg_zoom, bg_color, mobile_background_image, mobile_bg_position_x, mobile_bg_position_y, mobile_bg_zoom } = body;
 
   if (!id) {
     return NextResponse.json({ error: "ID is required" }, { status: 400 });
@@ -118,6 +118,10 @@ export async function PUT(request: Request) {
   if (bg_position_y !== undefined) updates.bg_position_y = Math.min(100, Math.max(0, Math.round(Number(bg_position_y))));
   if (bg_zoom !== undefined) updates.bg_zoom = Math.min(200, Math.max(50, Number(bg_zoom)));
   if (bg_color !== undefined) updates.bg_color = typeof bg_color === "string" ? bg_color.slice(0, 7) : "#000000";
+  if (mobile_background_image !== undefined) updates.mobile_background_image = mobile_background_image || null;
+  if (mobile_bg_position_x !== undefined) updates.mobile_bg_position_x = Math.min(100, Math.max(0, Math.round(Number(mobile_bg_position_x))));
+  if (mobile_bg_position_y !== undefined) updates.mobile_bg_position_y = Math.min(100, Math.max(0, Math.round(Number(mobile_bg_position_y))));
+  if (mobile_bg_zoom !== undefined) updates.mobile_bg_zoom = Math.min(200, Math.max(50, Number(mobile_bg_zoom)));
 
   const { data, error } = await supabase
     .from("page_settings")
