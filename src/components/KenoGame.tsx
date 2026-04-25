@@ -7,7 +7,7 @@ const GRID_SIZE  = 40;
 const MAX_PICKS  = 10;
 
 const PAYOUTS: Record<number, Record<number, number>> = {
-  10: { 5: 1.5, 6: 4.0, 7: 15.0, 8: 50.0, 9: 150.0, 10: 500.0 },
+  10: { 5: 1.5, 6: 3.0, 7: 8.0, 8: 20.0, 9: 50.0, 10: 100.0 },
 };
 
 type Phase = "idle" | "drawing" | "done";
