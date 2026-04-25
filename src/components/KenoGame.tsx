@@ -351,7 +351,7 @@ export default function KenoGame() {
                 onClick={play}
                 disabled={loading || picks.length === 0 || (points !== null && bet > points)}
                 className="cta-button"
-                style={{ fontSize: "1rem", opacity: (loading || picks.length === 0 || (points !== null && bet > points)) ? 0.5 : 1 }}
+                style={{ opacity: (loading || picks.length === 0 || (points !== null && bet > points)) ? 0.5 : 1 }}
               >
                 {loading ? "A sortear..." : picks.length === 0 ? "Escolhe 1 a 10 números" : `Jogar ${picks.length} número${picks.length !== 1 ? "s" : ""} (${bet} pts)`}
               </button>
