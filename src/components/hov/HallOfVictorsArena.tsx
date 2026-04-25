@@ -53,7 +53,7 @@ export default function HallOfVictorsArena() {
   useEffect(() => { void loadVictories(); }, [loadVictories]);
 
   return (
-    <div className="relative min-h-screen pt-20 pb-24 overflow-hidden"
+    <div className="relative flex-1 pt-20 pb-24 overflow-hidden"
       style={{
         background: "radial-gradient(ellipse at top, #2a1a0a 0%, #0a0604 65%, #000 100%)",
       }}
