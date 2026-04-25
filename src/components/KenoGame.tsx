@@ -278,7 +278,7 @@ export default function KenoGame() {
               >
                 {loading ? "A sortear..." : picks.length === 0 ? "Escolhe 5 números" : picks.length < MAX_PICKS ? `Escolhe mais ${MAX_PICKS - picks.length}` : `Jogar (${bet} pts)`}
               </button>
-              <p className="text-xs text-center" style={{ color: P.brownLight }}>20 bolas sorteadas de 60 · Escolhe exactamente 5</p>
+              <p className="text-xs text-center" style={{ color: P.brownLight }}>10 bolas sorteadas de 60 · Escolhe exactamente 5</p>
             </>
           )}
 

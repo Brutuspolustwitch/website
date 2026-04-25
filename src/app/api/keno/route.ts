@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { supabase } from "@/lib/supabase";
 
 const GRID_SIZE  = 60;
-const DRAW_COUNT = 20;
+const DRAW_COUNT = 10;
 const SE_API     = "https://api.streamelements.com/kappa/v2";
 
 /* ── Payout table: PAYOUTS[picks][matches] = multiplier ──────── */
