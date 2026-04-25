@@ -75,6 +75,53 @@ export default function AdminBrutaDoMesConfig() {
   const [removing, setRemoving] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
+  /* ── Moderation queue state ─────────────────────────────── */
+  interface PendingClip {
+    id: string;
+    username: string;
+    avatar_url: string | null;
+    title: string;
+    slot_name: string | null;
+    multiplier: number | null;
+    payout_value: number | null;
+    thumbnail_url: string | null;
+    url: string;
+    created_at: string;
+  }
+  const [pendingClips,  setPendingClips]  = useState<PendingClip[]>([]);
+  const [loadingPending, setLoadingPending] = useState(true);
+  const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    fetch("/api/user-clips?pending=1")
+      .then((r) => r.json())
+      .then((d) => setPendingClips(d.clips ?? []))
+      .catch(() => {})
+      .finally(() => setLoadingPending(false));
+  }, []);
+
+  const handleMod = async (id: string, status: "approved" | "rejected") => {
+    setProcessingIds((prev) => new Set(prev).add(id));
+    try {
+      const res = await fetch("/api/user-clips", {
+        method:  "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ id, status }),
+      });
+      if (res.ok) {
+        setPendingClips((prev) => prev.filter((c) => c.id !== id));
+        setToast({ message: status === "approved" ? "✓ Vitória aprovada!" : "✗ Vitória rejeitada.", type: status === "approved" ? "success" : "error" });
+      } else {
+        const d = await res.json();
+        setToast({ message: d.error ?? "Erro", type: "error" });
+      }
+    } catch {
+      setToast({ message: "Erro de rede.", type: "error" });
+    } finally {
+      setProcessingIds((prev) => { const n = new Set(prev); n.delete(id); return n; });
+    }
+  };
+
   /* ── Form state ─────────────────────────────────────────── */
   const [url, setUrl]           = useState("");
   const [gameTitle, setGameTitle] = useState("");
@@ -186,7 +233,93 @@ export default function AdminBrutaDoMesConfig() {
         )}
       </AnimatePresence>
 
-      {/* Current win preview */}
+      {/* ── Moderation queue ───────────────────────────────── */}
+      <div className="bg-arena-dark/80 rounded-lg border border-arena-gold/15 overflow-hidden">
+        <div className="px-5 py-3 border-b border-arena-gold/15">
+          <h3 className="font-[family-name:var(--font-display)] text-base" style={{ color: "var(--ink-dark)" }}>
+            ⚔ Fila de Moderação
+          </h3>
+        </div>
+
+        {loadingPending ? (
+          <div className="p-6 animate-pulse text-sm" style={{ color: "var(--stone-mid)" }}>
+            A carregar submissões…
+          </div>
+        ) : pendingClips.length === 0 ? (
+          <div className="p-6 text-sm text-center" style={{ color: "var(--stone-mid)" }}>
+            Nenhuma vitória pendente.
+          </div>
+        ) : (
+          <div className="divide-y divide-arena-gold/10">
+            {pendingClips.map((clip) => {
+              const busy = processingIds.has(clip.id);
+              return (
+                <div key={clip.id} className="flex items-start gap-3 p-4">
+                  {/* Thumbnail */}
+                  <div className="flex-shrink-0 w-20 h-12 rounded overflow-hidden bg-black/30">
+                    {clip.thumbnail_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={clip.thumbnail_url} alt="" className="w-full h-full object-cover opacity-80" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-xl opacity-30">🎰</div>
+                    )}
+                  </div>
+
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate" style={{ color: "var(--ink-dark)" }}>
+                      {clip.username}
+                      {clip.slot_name && (
+                        <span className="font-normal ml-1" style={{ color: "var(--stone-mid)" }}>
+                          · {clip.slot_name}
+                        </span>
+                      )}
+                    </p>
+                    <div className="flex items-center gap-3 mt-0.5 text-xs" style={{ color: "var(--stone-mid)" }}>
+                      {clip.multiplier !== null && (
+                        <span className="font-bold" style={{ color: "var(--gold-dark)" }}>
+                          {clip.multiplier}x
+                        </span>
+                      )}
+                      {clip.payout_value !== null && (
+                        <span>{clip.payout_value.toLocaleString("pt-PT")}€</span>
+                      )}
+                      <a href={clip.url} target="_blank" rel="noopener noreferrer"
+                        className="underline opacity-60 hover:opacity-100 truncate max-w-[8rem]">
+                        clip
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-2 flex-shrink-0">
+                    <button
+                      onClick={() => handleMod(clip.id, "approved")}
+                      disabled={busy}
+                      className="px-3 py-1.5 rounded text-xs font-bold transition-all"
+                      style={{ background: "rgba(60,140,60,0.18)", border: "1px solid rgba(60,140,60,0.4)", color: "#5dba5d" }}
+                      title="Aprovar"
+                    >
+                      {busy ? "…" : "✓"}
+                    </button>
+                    <button
+                      onClick={() => handleMod(clip.id, "rejected")}
+                      disabled={busy}
+                      className="px-3 py-1.5 rounded text-xs font-bold transition-all"
+                      style={{ background: "rgba(180,50,50,0.18)", border: "1px solid rgba(180,50,50,0.4)", color: "#d87070" }}
+                      title="Rejeitar"
+                    >
+                      {busy ? "…" : "✗"}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* ── Current win preview ─────────────────────────────── */}
         <div className="bg-arena-dark/80 rounded-lg border border-arena-gold/15 overflow-hidden">
         {loading ? (
           <div className="p-6 animate-pulse text-arena-smoke/50 text-sm">A carregar...</div>

@@ -90,6 +90,7 @@ export default function AddWinForm({ onSuccess, onCancel }: AddWinFormProps) {
   const [providerSearch, setProviderSearch] = useState("");
   const [dropdownOpen, setDropdownOpen]     = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [submitted,  setSubmitted]  = useState(false);
   const [error, setError]           = useState<string | null>(null);
 
   /* Slot search */
@@ -188,6 +189,8 @@ export default function AddWinForm({ onSuccess, onCancel }: AddWinFormProps) {
           url,
           title:              payout ? `${payout}€` : "",
           description:        multiplier ? `${multiplier}x` : "",
+          multiplier_value:   multiplier ? parseFloat(multiplier) : null,
+          payout_value:       payout ? parseFloat(payout) : null,
           provider,
           slot_name:          selectedSlot?.name ?? (slotSearch.trim() || null),
           slot_thumbnail_url: selectedSlot?.thumbnail_url ?? null,
@@ -195,13 +198,52 @@ export default function AddWinForm({ onSuccess, onCancel }: AddWinFormProps) {
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error ?? "Erro ao submeter"); return; }
-      onSuccess();
+      setSubmitted(true);
     } catch {
       setError("Erro de rede. Tenta novamente.");
     } finally {
       setSubmitting(false);
     }
   };
+
+  /* ── Pending success state ───────────────────────────────── */
+  if (submitted) {
+    return (
+      <motion.div
+        className="add-win-form__overlay"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
+        <motion.div
+          className="add-win-form"
+          initial={{ opacity: 0, scale: 0.96, y: -20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.96, y: -20 }}
+          transition={{ type: "spring", stiffness: 300, damping: 28 }}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="add-win-form__header">
+            <h2 className="add-win-form__title">Vitória Submetida!</h2>
+            <button className="add-win-form__close" onClick={onCancel} aria-label="Fechar">✕</button>
+          </div>
+          <div style={{ padding: "2.5rem 2rem", textAlign: "center" }}>
+            <div className="text-5xl mb-4">⏳</div>
+            <h3 className="font-[family-name:var(--font-display)] text-xl mb-3" style={{ color: "var(--ink-dark)" }}>
+              Aguarda Aprovação
+            </h3>
+            <p className="text-sm mb-6" style={{ color: "var(--ink-mid)" }}>
+              A tua vitória foi submetida com sucesso e está a aguardar aprovação de um moderador. Em breve aparecerá na página!
+            </p>
+            <button onClick={onCancel} className="cta-button" style={{ width: "auto", padding: "0 2em" }}>
+              Fechar
+            </button>
+          </div>
+        </motion.div>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div

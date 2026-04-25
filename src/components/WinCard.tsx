@@ -21,6 +21,9 @@ export interface WinClip {
   created_at: string;
   slot_name: string | null;
   thumbnail_url: string | null;
+  multiplier: number | null;
+  payout_value: number | null;
+  status: string;
 }
 
 interface WinCardProps {
