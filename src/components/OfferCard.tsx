@@ -118,7 +118,7 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
 
             {/* Banner */}
             {offer.banner_url && (
-              <div className="w-full h-36 shrink-0 overflow-hidden relative">
+              <div className="w-full h-44 shrink-0 overflow-hidden relative">
                 <img src={offer.banner_url} alt={offer.name} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
                 {/* Bottom fade into card */}
                 <div className="absolute inset-x-0 bottom-0 h-6 pointer-events-none" style={{ background: "linear-gradient(to bottom, transparent, var(--parchment-light))" }} />
