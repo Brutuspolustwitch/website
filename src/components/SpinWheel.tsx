@@ -370,15 +370,14 @@ function Pointer() {
     <div className="absolute -right-4 md:-right-5 top-1/2 z-20" style={{ transform: "translateY(-50%)" }}>
       <svg width="28" height="40" viewBox="0 0 28 40" fill="none">
         <defs>
-          <linearGradient id="triGrad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#d4a843" />
-            <stop offset="100%" stopColor="#b8860b" />
+          <linearGradient id="triGrad" x1="1" y1="0" x2="0" y2="0">
+            <stop offset="0%" stopColor="#7a6030" />
+            <stop offset="100%" stopColor="#5a4520" />
           </linearGradient>
         </defs>
-        {/* Triangle pointing right */}
-        <polygon points="26,20 2,4 2,36" fill="url(#triGrad)" stroke="#8b6914" strokeWidth="1.5" strokeLinejoin="round" />
-        {/* Highlight edge */}
-        <line x1="2" y1="4" x2="26" y2="20" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+        {/* Triangle tip pointing left (into wheel) */}
+        <polygon points="2,20 26,4 26,36" fill="url(#triGrad)" stroke="#3a2e18" strokeWidth="1.2" strokeLinejoin="round" />
+        <line x1="26" y1="4" x2="2" y2="20" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
       </svg>
     </div>
   );
