@@ -367,8 +367,8 @@ function WheelSVG({ rewards }: { rewards: Reward[] }) {
 
 function Pointer() {
   return (
-    <div className="absolute -right-4 md:-right-[38px] top-1/2 z-20" style={{ transform: "translateY(-50%) rotate(90deg)" }}>
-      <svg width="48" height="84" viewBox="0 0 36 64" fill="none">
+    <div className="absolute -right-3 md:-right-[30px] top-1/2 z-20" style={{ transform: "translateY(-50%) rotate(90deg)" }}>
+      <svg width="37" height="65" viewBox="0 0 36 64" fill="none">
         {/* Cross-guard */}
         <rect x="6" y="14" width="24" height="5" rx="1.5" fill="#b8860b" stroke="#8b6914" strokeWidth="0.8" />
         <rect x="10" y="14.5" width="16" height="4" rx="1" fill="url(#guardShine)" opacity="0.3" />
