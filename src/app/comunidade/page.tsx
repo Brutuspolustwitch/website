@@ -61,7 +61,7 @@ const CATEGORIES = [
   {
     href: "/comunidade/keno",
     title: "Keno",
-    description: "Escolhe até 10 números, aguarda o sorteio e multiplica os teus pontos",
+    description: "Escolhe até 10 números e multiplica os teus pontos",
     icon: "🎱",
     color: "from-indigo-600/20 to-indigo-500/10",
     borderColor: "border-indigo-500/30",
