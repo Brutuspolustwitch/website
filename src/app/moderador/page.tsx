@@ -59,6 +59,15 @@ const MODERADOR_CATEGORIES = [
     borderColor: "border-arena-gold/40",
     hoverColor: "hover:border-arena-gold/60",
   },
+  {
+    href: "/moderador/bonus-hunt",
+    title: "Bonus Hunt — Payouts",
+    description: "Edita payouts dos slots e abre/fecha as apostas do Adivinha-o-Resultado",
+    icon: "💰",
+    color: "from-amber-600/20 to-amber-500/10",
+    borderColor: "border-amber-500/30",
+    hoverColor: "hover:border-amber-500/50",
+  },
 ] as const;
 
 export default function ModeradorPage() {

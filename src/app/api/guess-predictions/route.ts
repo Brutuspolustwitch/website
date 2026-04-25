@@ -151,12 +151,18 @@ export async function PATCH(request: Request) {
     .eq("twitch_id", session.id)
     .single();
 
-  if (!admin || !["admin", "configurador"].includes(admin.role)) {
+  if (!admin || !["admin", "configurador", "moderador"].includes(admin.role)) {
     return NextResponse.json({ error: "Sem permissão" }, { status: 403 });
   }
 
   const body = await request.json();
   const { action, huntSessionId, guessSessionId, finalPayout } = body;
+
+  // moderador may only create or toggle betting; lock/resolve are admin/configurador only
+  const isPrivileged = ["admin", "configurador"].includes(admin.role);
+  if (!isPrivileged && !["create", "toggle_betting"].includes(action)) {
+    return NextResponse.json({ error: "Sem permissão para esta acção" }, { status: 403 });
+  }
 
   if (action === "create") {
     const { data, error } = await supabase

@@ -99,6 +99,7 @@ const SECONDARY_LINKS: NavItem[] = [
       { href: "/admin/outros/giveaways", label: "Giveaways" },
       { href: "/admin/outros/liga", label: "Liga dos Brutus" },
       { href: "/moderador/hall-of-victors", label: "Bruta do Mês" },
+      { href: "/moderador/bonus-hunt", label: "Bonus Hunt — Payouts" },
     ],
   },
 ];
