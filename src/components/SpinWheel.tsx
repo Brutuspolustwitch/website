@@ -367,34 +367,18 @@ function WheelSVG({ rewards }: { rewards: Reward[] }) {
 
 function Pointer() {
   return (
-    <div className="absolute -right-3 md:-right-[30px] top-1/2 z-20" style={{ transform: "translateY(-50%) rotate(90deg)" }}>
-      <svg width="37" height="65" viewBox="0 0 36 64" fill="none">
-        {/* Cross-guard */}
-        <rect x="6" y="14" width="24" height="5" rx="1.5" fill="#b8860b" stroke="#8b6914" strokeWidth="0.8" />
-        <rect x="10" y="14.5" width="16" height="4" rx="1" fill="url(#guardShine)" opacity="0.3" />
-        {/* Grip / handle */}
-        <rect x="14" y="2" width="8" height="14" rx="2" fill="#3a2a1a" stroke="#5a4a2a" strokeWidth="0.6" />
-        {/* Grip wrap lines */}
-        <line x1="14.5" y1="5" x2="21.5" y2="5" stroke="#6b5a3a" strokeWidth="0.5" />
-        <line x1="14.5" y1="8" x2="21.5" y2="8" stroke="#6b5a3a" strokeWidth="0.5" />
-        <line x1="14.5" y1="11" x2="21.5" y2="11" stroke="#6b5a3a" strokeWidth="0.5" />
-        {/* Pommel */}
-        <circle cx="18" cy="3" r="3" fill="#b8860b" stroke="#8b6914" strokeWidth="0.6" />
-        <circle cx="18" cy="3" r="1.2" fill="#c62828" />
-        {/* Blade */}
-        <polygon points="18,19 12,21 18,62 24,21" fill="#c0c0c0" stroke="#888" strokeWidth="0.5" />
-        {/* Blade center ridge */}
-        <line x1="18" y1="21" x2="18" y2="58" stroke="#e8e8e8" strokeWidth="1" opacity="0.5" />
-        {/* Blade edge highlights */}
-        <polygon points="18,19 13,21 18,58" fill="rgba(255,255,255,0.12)" />
-        {/* Blade tip glow */}
-        <ellipse cx="18" cy="62" rx="2" ry="1.5" fill="#d4a843" opacity="0.4" />
+    <div className="absolute -right-4 md:-right-5 top-1/2 z-20" style={{ transform: "translateY(-50%)" }}>
+      <svg width="28" height="40" viewBox="0 0 28 40" fill="none">
         <defs>
-          <linearGradient id="guardShine" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#fff" />
-            <stop offset="100%" stopColor="transparent" />
+          <linearGradient id="triGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#d4a843" />
+            <stop offset="100%" stopColor="#b8860b" />
           </linearGradient>
         </defs>
+        {/* Triangle pointing right */}
+        <polygon points="26,20 2,4 2,36" fill="url(#triGrad)" stroke="#8b6914" strokeWidth="1.5" strokeLinejoin="round" />
+        {/* Highlight edge */}
+        <line x1="2" y1="4" x2="26" y2="20" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
       </svg>
     </div>
   );
