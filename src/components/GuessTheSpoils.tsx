@@ -194,76 +194,76 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
 
         /* ── Main Grid ─────────────────────────────────────────────── */
         <ScrollReveal delay={0.1}>
-          <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-6">
-
-            {/* External top bar — pagination + status, sits above the papyrus card */}
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: "12px",
-              padding: "0 4px 10px",
-              flexWrap: "wrap",
-            }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                {campaigns.length > 1 && (
-                  <>
-                    <button
-                      onClick={() => setIdx((p) => Math.max(0, p - 1))}
-                      disabled={idx === 0}
-                      className="bh-nav-btn"
-                      aria-label="Campanha anterior"
-                    >‹</button>
-                    <button
-                      onClick={() => setIdx((p) => Math.min(campaigns.length - 1, p + 1))}
-                      disabled={idx === campaigns.length - 1}
-                      className="bh-nav-btn"
-                      aria-label="Próxima campanha"
-                    >›</button>
-                    <span style={{
-                      fontFamily: "var(--font-ui)",
-                      fontSize: "0.7rem",
-                      color: "var(--ink-light)",
-                      letterSpacing: "0.08em",
-                    }}>
-                      {idx + 1} / {campaigns.length}
-                    </span>
-                  </>
-                )}
-              </div>
-
-              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <span style={{
-                  fontFamily: "var(--font-display)",
-                  fontSize: "0.6rem",
-                  fontWeight: 600,
-                  letterSpacing: "0.12em",
-                  textTransform: "uppercase",
-                  padding: "4px 10px",
-                  borderRadius: "4px",
-                  background: campaign.phase === "completed"
-                    ? "rgba(139,105,20,0.12)"
-                    : campaign.phase === "opening"
-                    ? "rgba(212,168,67,0.15)"
-                    : "rgba(34,197,94,0.15)",
-                  color: campaign.phase === "completed"
-                    ? "var(--gold-dark)"
-                    : campaign.phase === "opening"
-                    ? "#d4a843"
-                    : "#22c55e",
-                  border: `1px solid ${campaign.phase === "completed" ? "rgba(139,105,20,0.2)" : campaign.phase === "opening" ? "rgba(212,168,67,0.3)" : "rgba(34,197,94,0.3)"}`,
-                }}>
-                  {phaseLabel}
-                </span>
-                <span style={{
-                  fontFamily: "var(--font-ui)",
-                  fontSize: "0.75rem",
-                  color: "var(--ink-light)",
-                }}>
-                  {opened} / {total} Bónus
-                </span>
-              </div>
+          {/* External top bar — pagination + status, sits above the papyrus card */}
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "12px",
+            padding: "0 4px 10px",
+            flexWrap: "wrap",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              {campaigns.length > 1 && (
+                <>
+                  <button
+                    onClick={() => setIdx((p) => Math.max(0, p - 1))}
+                    disabled={idx === 0}
+                    className="bh-nav-btn"
+                    aria-label="Campanha anterior"
+                  >‹</button>
+                  <button
+                    onClick={() => setIdx((p) => Math.min(campaigns.length - 1, p + 1))}
+                    disabled={idx === campaigns.length - 1}
+                    className="bh-nav-btn"
+                    aria-label="Próxima campanha"
+                  >›</button>
+                  <span style={{
+                    fontFamily: "var(--font-ui)",
+                    fontSize: "0.7rem",
+                    color: "var(--ink-light)",
+                    letterSpacing: "0.08em",
+                  }}>
+                    {idx + 1} / {campaigns.length}
+                  </span>
+                </>
+              )}
             </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <span style={{
+                fontFamily: "var(--font-display)",
+                fontSize: "0.6rem",
+                fontWeight: 600,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                padding: "4px 10px",
+                borderRadius: "4px",
+                background: campaign.phase === "completed"
+                  ? "rgba(139,105,20,0.12)"
+                  : campaign.phase === "opening"
+                  ? "rgba(212,168,67,0.15)"
+                  : "rgba(34,197,94,0.15)",
+                color: campaign.phase === "completed"
+                  ? "var(--gold-dark)"
+                  : campaign.phase === "opening"
+                  ? "#d4a843"
+                  : "#22c55e",
+                border: `1px solid ${campaign.phase === "completed" ? "rgba(139,105,20,0.2)" : campaign.phase === "opening" ? "rgba(212,168,67,0.3)" : "rgba(34,197,94,0.3)"}`,
+              }}>
+                {phaseLabel}
+              </span>
+              <span style={{
+                fontFamily: "var(--font-ui)",
+                fontSize: "0.75rem",
+                color: "var(--ink-light)",
+              }}>
+                {opened} / {total} Bónus
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-6">
 
             {/* ▸ LEFT — Campaign Table (Papyrus) ──────────────────── */}
             <motion.div
