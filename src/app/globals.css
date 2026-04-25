@@ -2632,16 +2632,21 @@ body {
   align-items: center;
 }
 .schedule-modal-meta-chip {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
   font-size: 1.15rem;
+  line-height: 1;
   color: rgba(210,172,105,0.9);
   background: rgba(0,0,0,0.3);
   border: 1px solid rgba(150,82,12,0.45);
   border-radius: 4px;
-  padding: 4px 11px;
+  padding: 6px 11px;
   letter-spacing: 0.04em;
+}
+.schedule-modal-meta-chip svg {
+  flex-shrink: 0;
+  display: block;
 }
 
 /* ── Lava-crack divider ───────────────────────────────────── */
