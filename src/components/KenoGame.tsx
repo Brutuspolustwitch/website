@@ -281,11 +281,11 @@ export default function KenoGame() {
             <>
               <button
                 onClick={play}
-                disabled={loading || picks.length !== MAX_PICKS || (points !== null && bet > points)}
+                disabled={loading || picks.length === 0 || (points !== null && bet > points)}
                 className="cta-button"
-                style={{ fontSize: "1rem", opacity: (loading || picks.length !== MAX_PICKS || (points !== null && bet > points)) ? 0.5 : 1 }}
+                style={{ fontSize: "1rem", opacity: (loading || picks.length === 0 || (points !== null && bet > points)) ? 0.5 : 1 }}
               >
-                {loading ? "A sortear..." : picks.length === 0 ? "Escolhe 10 números" : picks.length < MAX_PICKS ? `Escolhe mais ${MAX_PICKS - picks.length}` : `Jogar (${bet} pts)`}
+                {loading ? "A sortear..." : picks.length === 0 ? "Escolhe 1 a 10 números" : `Jogar ${picks.length} número${picks.length !== 1 ? "s" : ""} (${bet} pts)`}
               </button>
               <p className="text-xs text-center" style={{ color: P.brownLight }}>10 bolas sorteadas de 40 · Escolhe 1 a 10 números</p>
             </>
