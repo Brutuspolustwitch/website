@@ -75,17 +75,14 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 /* ── Corner Ornament SVG ────────────────────────────────── */
-function CornerOrnament({ className }: { className: string }) {
-  return <div className={`card-corner ${className}`} />;
-}
+// (kept for potential reuse)
 
 /* ═══════════════════════════════════════════════════════════════════
-   PAPYRUS SCROLL CARD COMPONENT
+   STORE-STYLE OFFER CARD
    ═══════════════════════════════════════════════════════════════════ */
 
 export function OfferCard({ offer }: { offer: CasinoOffer }) {
   const [copied, setCopied] = useState(false);
-  const [flipped, setFlipped] = useState(false);
 
   const handleCopyCode = useCallback((e: React.MouseEvent | React.KeyboardEvent) => {
     e.stopPropagation();
@@ -95,188 +92,117 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
     });
   }, [offer.code]);
 
-  // Build perks from tags
   const perks = offer.tags.length > 0 ? offer.tags : ["🎰 Slots", "⚡ Instant Play", "🛡 SSL"];
-
   const externalUrl = offer.affiliate_url.startsWith("http") ? offer.affiliate_url : `https://${offer.affiliate_url}`;
 
-  const handleOfferClick = useCallback(() => {
-    trackOfferClick(offer.id, offer.name);
-    window.open(externalUrl, '_blank', 'noopener,noreferrer');
-  }, [offer.id, offer.name, externalUrl]);
-
   return (
-    <div className="papyrus-flip-container" onClick={handleOfferClick}>
-      <div className={`papyrus-flip-inner ${flipped ? "papyrus-flipped" : ""}`}>
+    <div className="group relative rounded-2xl border border-white/[0.08] bg-white/[0.02] overflow-hidden hover:border-arena-gold/30 transition-all duration-300 flex flex-col">
 
-        {/* ═══ FRONT ═══ */}
-        <div className="papyrus-flip-face papyrus-flip-front relative">
-          <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom">
-            <CornerOrnament className="top-left" />
-            <CornerOrnament className="top-right" />
-            <CornerOrnament className="bottom-left" />
-            <CornerOrnament className="bottom-right" />
-            
-            {/* Wax Seal Badge - Top Right of Card */}
-            {offer.badge && (
-              <div style={{
-                position: "absolute",
-                top: "4px",
-                right: "4px",
-                zIndex: 10,
-              }}>
-                <WaxSealBadge
-                  text={offer.badge}
-                  variant={offer.badge === "TOP" ? "gold" : "red"}
-                  rotation={8}
-                  size={56}
-                />
-              </div>
+      {/* Banner */}
+      {offer.banner_url && (
+        <div className="aspect-video w-full overflow-hidden bg-white/[0.03] relative shrink-0">
+          <img
+            src={offer.banner_url}
+            alt={offer.name}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            loading="lazy"
+          />
+          {offer.badge && (
+            <div className="absolute top-2 right-2">
+              <WaxSealBadge text={offer.badge} variant={offer.badge === "TOP" ? "gold" : "red"} rotation={8} size={48} />
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="p-5 flex flex-col gap-3 flex-1">
+
+        {/* Name + logo + rating */}
+        <div className="flex items-center gap-3">
+          {offer.logo_url && (
+            <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0" style={{ background: offer.logo_bg || "#1a1a1a" }}>
+              <img src={offer.logo_url} alt={offer.name} className="w-full h-full object-contain" />
+            </div>
+          )}
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-white text-lg leading-tight truncate">{offer.name}</h3>
+            {offer.is_exclusive !== false && (
+              <p className="text-[10px] text-arena-gold/70 uppercase tracking-widest font-bold">✦ Oferta Exclusiva</p>
             )}
-            
-            <div className="scroll-content">
-
-              {/* Banner */}
-              <div className="casino-banner">
-                <div className="casino-banner-inner">
-                  {offer.banner_url ? (
-                    <img
-                      src={offer.banner_url}
-                      alt={offer.name}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
-                    />
-                  ) : null}
-                </div>
-              </div>
-
-              {/* Promo Section */}
-              <div className="promo-section">
-                {offer.is_exclusive !== false && (
-                  <p className="promo-label">✦ OFERTA EXCLUSIVA ✦</p>
-                )}
-                <p className="promo-bonus">
-                  {offer.headline}
-                  <span className="promo-bonus-accent">{offer.bonus_value}</span>
-                </p>
-                {(offer.free_spins && offer.free_spins !== "—" && offer.free_spins.trim() !== "" || 
-                  offer.cashback && offer.cashback.trim() !== "") && (
-                  <p className="promo-detail">
-                    {offer.free_spins && offer.free_spins !== "—" && offer.free_spins.trim() !== "" 
-                      ? `+ ${offer.free_spins} Free Spins` 
-                      : ""}
-                    {offer.cashback && offer.cashback.trim() !== "" 
-                      ? ` · ${offer.cashback} Cashback` 
-                      : ""}
-                  </p>
-                )}
-
-                {offer.code && offer.code !== "—" ? (
-                  <div className="promo-code-wrapper" onClick={handleCopyCode} role="button" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && handleCopyCode(e)}>
-                    <span className="promo-code-label">Código:</span>
-                    <span className="promo-code-value">{offer.code}</span>
-                  </div>
-                ) : (
-                  <div className="promo-code-wrapper" style={{ visibility: 'hidden' }}>
-                    <span className="promo-code-label">Código:</span>
-                    <span className="promo-code-value">&nbsp;</span>
-                  </div>
-                )}
-              </div>
-
-              {/* CTA */}
-              <div className="cta-section">
-                <a href={externalUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => { e.stopPropagation(); trackOfferClick(offer.id, offer.name); }}>
-                  <button className="cta-button">⚔ Resgatar Bónus ⚔</button>
-                </a>
-                <p className="cta-subtext">18+ · T&Cs Aplicáveis · Joga com responsabilidade</p>
-              </div>
-
-              {/* Flip hint */}
-              <p className="flip-hint" onClick={(e) => { e.stopPropagation(); setFlipped(true); }}>Toca para ver detalhes ↻</p>
-            </div>
           </div>
+          <StarRating rating={offer.rating ?? 4.5} />
         </div>
 
-        {/* ═══ BACK ═══ */}
-        <div className="papyrus-flip-face papyrus-flip-back">
-          <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom">
-            <CornerOrnament className="top-left" />
-            <CornerOrnament className="top-right" />
-            <CornerOrnament className="bottom-left" />
-            <CornerOrnament className="bottom-right" />
-            <div className="scroll-content">
-              {/* Rating */}
-              <StarRating rating={offer.rating ?? 4.5} />
+        {/* Bonus highlight */}
+        <div className="rounded-lg bg-white/[0.04] border border-white/[0.06] px-3 py-2.5">
+          <p className="text-sm text-white/60">{offer.headline}</p>
+          <p className="text-base font-bold text-arena-gold mt-0.5">{offer.bonus_value}</p>
+          {((offer.free_spins && offer.free_spins !== "—" && offer.free_spins.trim() !== "") || (offer.cashback && offer.cashback.trim() !== "")) && (
+            <p className="text-xs text-white/40 mt-0.5">
+              {offer.free_spins && offer.free_spins !== "—" && offer.free_spins.trim() !== "" ? `+ ${offer.free_spins} Free Spins` : ""}
+              {offer.cashback && offer.cashback.trim() !== "" ? ` · ${offer.cashback} Cashback` : ""}
+            </p>
+          )}
+        </div>
 
-              {/* Stat Rows — stacked label/value */}
-              <div className="stat-rows">
-                <div className="stat-row-stacked">
-                  <span className="stat-label">Licença</span>
-                  <span className="stat-value">{offer.license}</span>
-                </div>
-                <div className="stat-row-stacked">
-                  <span className="stat-label">Levantamento</span>
-                  <span className="stat-value">{offer.withdraw_time}</span>
-                </div>
-                <div className="stat-row-stacked">
-                  <span className="stat-label">Depósito Mín.</span>
-                  <span className="stat-value">{offer.min_deposit}</span>
-                </div>
-              </div>
-
-              {/* Engraved Divider */}
-              <div className="engraved-divider" />
-
-              {/* Perks */}
-              <div className="perks-list">
-                {perks.map((perk) => (
-                  <span key={perk} className="perk-tag">{perk}</span>
-                ))}
-              </div>
-
-              {/* Notes */}
-              {offer.notes && offer.notes.length > 0 && (
-                <div className="notes-scroll" style={{ 
-                  marginTop: "6px", 
-                  textAlign: "center",
-                  maxHeight: "140px",
-                  overflowY: "auto",
-                  padding: "0 4px"
-                }}>
-                  {offer.notes.map((note, idx) => (
-                    <p key={idx} style={{ 
-                      fontSize: "0.7rem", 
-                      color: "var(--ink-mid)", 
-                      marginBottom: "4px",
-                      textTransform: "uppercase",
-                      fontWeight: 600,
-                      letterSpacing: "0.5px"
-                    }}>
-                      {note}
-                    </p>
-                  ))}
-                </div>
-              )}
-
-              {/* CTA */}
-              <div className="cta-section">
-                <a href={externalUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => { e.stopPropagation(); trackOfferClick(offer.id, offer.name); }}>
-                  <button className="cta-button">⚔ Resgatar Bónus ⚔</button>
-                </a>
-              </div>
-
-              {/* Flip hint */}
-              <p className="flip-hint" onClick={(e) => { e.stopPropagation(); setFlipped(false); }}>Toca para voltar ↻</p>
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-2 text-center">
+          {[
+            { label: "Depósito Mín.", value: offer.min_deposit },
+            { label: "Levantamento", value: offer.withdraw_time },
+            { label: "Licença", value: offer.license },
+          ].map(({ label, value }) => (
+            <div key={label} className="rounded-lg bg-white/[0.03] border border-white/[0.05] px-2 py-1.5">
+              <p className="text-[9px] uppercase tracking-wider text-white/30 font-semibold leading-none">{label}</p>
+              <p className="text-xs text-white/70 font-medium mt-1 truncate">{value}</p>
             </div>
+          ))}
+        </div>
+
+        {/* Perks/tags */}
+        <div className="flex flex-wrap gap-1.5">
+          {perks.map((perk) => (
+            <span key={perk} className="text-[11px] rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-0.5 text-white/50">{perk}</span>
+          ))}
+        </div>
+
+        {/* Promo code */}
+        {offer.code && offer.code !== "—" && (
+          <button
+            className="flex items-center gap-2 rounded-lg border border-arena-gold/20 bg-arena-gold/[0.06] px-3 py-2 w-full text-left hover:bg-arena-gold/[0.1] transition-colors"
+            onClick={handleCopyCode}
+          >
+            <span className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Código</span>
+            <span className="font-mono font-bold text-arena-gold text-sm flex-1">{offer.code}</span>
+            <span className="text-[10px] text-white/30">{copied ? "✓ Copiado" : "Copiar"}</span>
+          </button>
+        )}
+
+        {/* Notes */}
+        {offer.notes && offer.notes.length > 0 && (
+          <div className="space-y-0.5">
+            {offer.notes.map((note, idx) => (
+              <p key={idx} className="text-[10px] uppercase tracking-wide text-white/25 font-semibold">{note}</p>
+            ))}
           </div>
+        )}
+
+        {/* CTA — kept as-is */}
+        <div className="mt-auto pt-1">
+          <a href={externalUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => { e.stopPropagation(); trackOfferClick(offer.id, offer.name); }}>
+            <button className="cta-button w-full">⚔ Resgatar Bónus ⚔</button>
+          </a>
+          <p className="text-[10px] text-white/25 text-center mt-1.5">18+ · T&Cs Aplicáveis · Joga com responsabilidade</p>
         </div>
 
       </div>
 
-      {/* Copy Toast */}
-      <div className={`copy-toast ${copied ? "visible" : ""}`}>
-        ✦ Código promocional copiado ✦
-      </div>
+      {/* Copy toast */}
+      {copied && (
+        <div className="absolute inset-x-0 bottom-4 flex justify-center pointer-events-none">
+          <span className="rounded-full bg-arena-gold/20 border border-arena-gold/30 px-4 py-1.5 text-xs font-semibold text-arena-gold">✦ Código copiado ✦</span>
+        </div>
+      )}
     </div>
   );
 }
