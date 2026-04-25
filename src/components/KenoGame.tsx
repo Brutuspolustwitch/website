@@ -7,7 +7,16 @@ const GRID_SIZE  = 40;
 const MAX_PICKS  = 10;
 
 const PAYOUTS: Record<number, Record<number, number>> = {
-  10: { 5: 1.5, 6: 3.0, 7: 8.0, 8: 20.0, 9: 50.0, 10: 100.0 },
+  1:  { 1: 3.0 },
+  2:  { 2: 12.0, 1: 1.5 },
+  3:  { 3: 40.0, 2: 3.0 },
+  4:  { 4: 70.0, 3: 5.0, 2: 1.5 },
+  5:  { 5: 100.0, 4: 12.0, 3: 2.0 },
+  6:  { 6: 100.0, 5: 25.0, 4: 5.0, 3: 2.0 },
+  7:  { 7: 100.0, 6: 50.0, 5: 10.0, 4: 2.5 },
+  8:  { 8: 100.0, 7: 80.0, 6: 20.0, 5: 4.0, 4: 1.5 },
+  9:  { 9: 100.0, 8: 80.0, 7: 30.0, 6: 7.0, 5: 2.5 },
+  10: { 10: 100.0, 9: 80.0, 8: 30.0, 7: 8.0, 6: 3.0, 5: 1.5 },
 };
 
 type Phase = "idle" | "drawing" | "done";
@@ -278,7 +287,7 @@ export default function KenoGame() {
               >
                 {loading ? "A sortear..." : picks.length === 0 ? "Escolhe 10 números" : picks.length < MAX_PICKS ? `Escolhe mais ${MAX_PICKS - picks.length}` : `Jogar (${bet} pts)`}
               </button>
-              <p className="text-xs text-center" style={{ color: P.brownLight }}>10 bolas sorteadas de 40 · Escolhe exactamente 10</p>
+              <p className="text-xs text-center" style={{ color: P.brownLight }}>10 bolas sorteadas de 40 · Escolhe 1 a 10 números</p>
             </>
           )}
 
@@ -287,7 +296,7 @@ export default function KenoGame() {
               <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin mx-auto mb-2"
                 style={{ borderColor: P.gold, borderTopColor: "transparent" }} />
               <p className="font-bold text-sm" style={{ color: P.brownMid }}>
-                A sortear... {visibleDrawn.length} / 20
+                A sortear... {visibleDrawn.length} / 10
               </p>
             </div>
           )}

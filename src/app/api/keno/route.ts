@@ -8,7 +8,16 @@ const SE_API     = "https://api.streamelements.com/kappa/v2";
 
 /* ── Payout table: PAYOUTS[picks][matches] = multiplier ──────── */
 const PAYOUTS: Record<number, Record<number, number>> = {
-  10: { 5: 1.5, 6: 3.0, 7: 8.0, 8: 20.0, 9: 50.0, 10: 100.0 },
+  1:  { 1: 3.0 },
+  2:  { 2: 12.0, 1: 1.5 },
+  3:  { 3: 40.0, 2: 3.0 },
+  4:  { 4: 70.0, 3: 5.0, 2: 1.5 },
+  5:  { 5: 100.0, 4: 12.0, 3: 2.0 },
+  6:  { 6: 100.0, 5: 25.0, 4: 5.0, 3: 2.0 },
+  7:  { 7: 100.0, 6: 50.0, 5: 10.0, 4: 2.5 },
+  8:  { 8: 100.0, 7: 80.0, 6: 20.0, 5: 4.0, 4: 1.5 },
+  9:  { 9: 100.0, 8: 80.0, 7: 30.0, 6: 7.0, 5: 2.5 },
+  10: { 10: 100.0, 9: 80.0, 8: 30.0, 7: 8.0, 6: 3.0, 5: 1.5 },
 };
 
 /* ── Auth helper ──────────────────────────────────────────────── */
@@ -78,8 +87,8 @@ async function handlePlay(
   if (!bet || bet < 10 || bet > 1000) {
     return NextResponse.json({ error: "Aposta inválida (10–1000)" }, { status: 400 });
   }
-  if (!Array.isArray(picks) || picks.length !== 10) {
-    return NextResponse.json({ error: "Seleciona exactamente 10 números" }, { status: 400 });
+  if (!Array.isArray(picks) || picks.length < 1 || picks.length > 10) {
+    return NextResponse.json({ error: "Seleciona entre 1 e 10 números" }, { status: 400 });
   }
   if (picks.some((n) => !Number.isInteger(n) || n < 1 || n > GRID_SIZE)) {
     return NextResponse.json({ error: "Números inválidos" }, { status: 400 });
