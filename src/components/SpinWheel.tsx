@@ -713,7 +713,7 @@ export function SpinWheel() {
 
         <div className="relative z-10 flex flex-col items-center">
           {/* Wheel */}
-          <div className={`relative w-[min(90vw,600px)] lg:w-[min(75vh,700px)] aspect-square transition-transform duration-500 ${zoom ? "scale-[1.04]" : "scale-100"}`}>
+          <div className={`relative w-[min(80vw,460px)] lg:w-[min(60vh,520px)] aspect-square transition-transform duration-500 ${zoom ? "scale-[1.04]" : "scale-100"}`}>
             <Pointer />
 
             <div className="absolute inset-0 rounded-full transition-shadow duration-500"
