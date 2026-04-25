@@ -1087,103 +1087,7 @@ export default function AdminSettingsPage() {
   );
 }
 
-/* ── Preset images from /public/images/pages/ ──────────────── */
-const PRESET_IMAGES = [
-  { name: "Imagem 1", file: "/images/pages/1.jpg" },
-  { name: "Imagem 2", file: "/images/pages/2.jpg" },
-  { name: "Imagem 3", file: "/images/pages/3.jpg" },
-  { name: "Imagem 4", file: "/images/pages/4.webp" },
-  { name: "Imagem 5", file: "/images/pages/5.jpg" },
-  { name: "Imagem 6", file: "/images/pages/6.jpg" },
-  { name: "Imagem 7", file: "/images/pages/7.jpg" },
-  { name: "Imagem 8", file: "/images/pages/8.jpg" },
-  { name: "Imagem 9", file: "/images/pages/9.jpg" },
-  { name: "Liga dos Brutus", file: "/images/pages/10.png" },
-  { name: "Imagem 11", file: "/images/pages/11.jpg" },
-  { name: "Imagem 12", file: "/images/pages/12.jpg" },
-  { name: "Imagem 13", file: "/images/pages/13.jpg" },
-  { name: "Imagem 14", file: "/images/pages/14.jpg" },
-  { name: "Duelo Coliseu", file: "/images/pages/15.avif" },
-  { name: "Imagem 16", file: "/images/pages/16.jpg" },
-  { name: "Retrato Gladiador", file: "/images/pages/17.jpg" },
-  { name: "Imagem 18", file: "/images/pages/18.jpg" },
-  { name: "Imagem 19", file: "/images/pages/19.jpg" },
-  { name: "Imagem 20", file: "/images/pages/20.jpg" },
-  { name: "Imagem 21", file: "/images/pages/21.jpg" },
-  { name: "Imagem 22", file: "/images/pages/22.jpg" },
-  { name: "Imagem 23", file: "/images/pages/23.jpg" },
-  { name: "Soldado Pngtree", file: "/images/pages/24.png" },
-  { name: "Imagem 25", file: "/images/pages/25.jpg" },
-  { name: "Imagem 26", file: "/images/pages/26.jpg" },
-  { name: "Imagem 27", file: "/images/pages/27.jpg" },
-  { name: "Imagem 28", file: "/images/pages/28.jpg" },
-  { name: "Imagem 29", file: "/images/pages/29.jpg" },
-  { name: "Imagem 30", file: "/images/pages/30.jpg" },
-  { name: "Imagem 31", file: "/images/pages/31.jpg" },
-  { name: "Imagem 32", file: "/images/pages/32.jpg" },
-  { name: "Imagem 33", file: "/images/pages/33.jpg" },
-  { name: "Imagem 34", file: "/images/pages/34.jpg" },
-  { name: "Imagem 35", file: "/images/pages/35.jpg" },
-  { name: "Imagem 36", file: "/images/pages/36.jpg" },
-  { name: "Imagem 37", file: "/images/pages/37.jpg" },
-  { name: "Imagem 38", file: "/images/pages/38.jpg" },
-  { name: "Imagem 39", file: "/images/pages/39.jpg" },
-  { name: "Imagem 40", file: "/images/pages/40.jpeg" },
-  { name: "Imagem 41", file: "/images/pages/41.jpg" },
-  { name: "Imagem 42", file: "/images/pages/42.jpg" },
-  { name: "Imagem 43", file: "/images/pages/43.jpg" },
-  { name: "Imagem 44", file: "/images/pages/44.png" },
-  { name: "Imagem 45", file: "/images/pages/45.jpg" },
-  { name: "Imagem 46", file: "/images/pages/46.jpg" },
-  { name: "Imagem 47", file: "/images/pages/47.jpg" },
-  { name: "Imagem 48", file: "/images/pages/48.jpg" },
-  { name: "Imagem 49", file: "/images/pages/49.jpg" },
-  { name: "Imagem 50", file: "/images/pages/50.png" },
-  { name: "Imagem 51", file: "/images/pages/51.jpg" },
-  { name: "Imagem 52", file: "/images/pages/52.jpg" },
-  { name: "Imagem 53", file: "/images/pages/53.jpg" },
-  { name: "Imagem 54", file: "/images/pages/54.jpg" },
-  { name: "Imagem 55", file: "/images/pages/55.jpg" },
-  { name: "Imagem 56", file: "/images/pages/56.jpg" },
-  { name: "Imagem 57", file: "/images/pages/57.jpg" },
-  { name: "Imagem 58", file: "/images/pages/58.jpg" },
-  { name: "Imagem 59", file: "/images/pages/59.jpg" },
-  { name: "Imagem 60", file: "/images/pages/60.jpg" },
-  { name: "Imagem 61", file: "/images/pages/61.jpg" },
-  { name: "Imagem 62", file: "/images/pages/62.png" },
-  { name: "Imagem 63", file: "/images/pages/63.png" },
-  { name: "Imagem 64", file: "/images/pages/64.webp" },
-  { name: "Imagem 65", file: "/images/pages/65.png" },
-  { name: "Imagem 66", file: "/images/pages/66.png" },
-  { name: "Imagem 67", file: "/images/pages/67.png" },
-  { name: "Imagem 68", file: "/images/pages/68.jpg" },
-  { name: "Imagem 69", file: "/images/pages/69.png" },
-  { name: "Imagem 70", file: "/images/pages/70.webp" },
-  { name: "Imagem 71", file: "/images/pages/71.png" },
-  { name: "Imagem 72", file: "/images/pages/72.jpg" },
-  { name: "Imagem 73", file: "/images/pages/73.jpg" },
-  { name: "Imagem 74", file: "/images/pages/74.jpg" },
-  { name: "Imagem 75", file: "/images/pages/75.jpg" },
-  { name: "Imagem 76", file: "/images/pages/76.webp" },
-  { name: "Imagem 77", file: "/images/pages/77.png" },
-  { name: "Imagem 78", file: "/images/pages/78.jpg" },
-  { name: "Imagem 79", file: "/images/pages/79.png" },
-  { name: "Imagem 80", file: "/images/pages/80.jpg" },
-  { name: "Imagem 81", file: "/images/pages/81.jpg" },
-  { name: "Imagem 82", file: "/images/pages/82.png" },
-  { name: "Imagem 83", file: "/images/pages/83.jpg" },
-  { name: "Ofertas", file: "/images/pages/84.jpg" },
-  { name: "Imagem 85", file: "/images/pages/85.jpg" },
-  { name: "Imagem 86", file: "/images/pages/86.png" },
-  { name: "Imagem 87", file: "/images/pages/87.jpg" },
-  { name: "Imagem 88", file: "/images/pages/88.jpeg" },
-  { name: "Sessão", file: "/images/pages/89.jpg" },
-  { name: "Loja", file: "/images/pages/90.jpg" },
-  { name: "Stream", file: "/images/pages/91.jpg" },
-  { name: "Imagem 92", file: "/images/pages/92.jpg" },
-  { name: "Imagem 93", file: "/images/pages/93.jpg" },
-  { name: "Roda", file: "/images/pages/94.jpg" },
-];
+/* ── Preset images now loaded dynamically from /api/preset-images ─ */
 
 /* ── Image field with preset gallery + upload ──────────────── */
 function ImageField({
@@ -1202,6 +1106,18 @@ function ImageField({
   onSelectPreset: (url: string) => void;
 }) {
   const [showGallery, setShowGallery] = useState(false);
+  const [presets, setPresets] = useState<{ file: string; name: string }[]>([]);
+  const [presetsLoading, setPresetsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!showGallery || presets.length > 0) return;
+    setPresetsLoading(true);
+    fetch("/api/preset-images", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((j) => { if (Array.isArray(j.images)) setPresets(j.images); })
+      .catch(() => {})
+      .finally(() => setPresetsLoading(false));
+  }, [showGallery, presets.length]);
 
   return (
     <div className="space-y-2">
@@ -1276,8 +1192,13 @@ function ImageField({
             </div>
 
             <div className="overflow-y-auto max-h-[55vh] p-4">
+              {presetsLoading && presets.length === 0 ? (
+                <div className="text-center text-arena-smoke/60 text-sm py-8">A carregar imagens…</div>
+              ) : presets.length === 0 ? (
+                <div className="text-center text-arena-smoke/60 text-sm py-8">Nenhuma imagem encontrada.</div>
+              ) : (
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
-                {PRESET_IMAGES.map((img) => {
+                {presets.map((img) => {
                   const isSelected = value === img.file;
                   return (
                     <button
@@ -1289,7 +1210,17 @@ function ImageField({
                           : "border-white/10 hover:border-arena-gold/50"
                       }`}
                     >
-                      <img src={img.file} alt={img.name} className="w-full h-full object-cover" loading="lazy" />
+                      <img
+                        src={img.file}
+                        alt={img.name}
+                        className="w-full h-full object-cover bg-black/30"
+                        loading="lazy"
+                        onError={(e) => {
+                          const el = e.currentTarget as HTMLImageElement;
+                          el.style.opacity = "0.2";
+                          el.alt = "(falhou)";
+                        }}
+                      />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                       <span className="absolute bottom-0 left-0 right-0 text-[10px] text-white font-medium px-1.5 py-1 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity truncate text-center">
                         {img.name}
@@ -1303,6 +1234,7 @@ function ImageField({
                   );
                 })}
               </div>
+              )}
             </div>
 
             <div className="px-5 py-4 border-t border-white/10 flex items-center justify-between">
