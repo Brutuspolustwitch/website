@@ -3,27 +3,36 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/lib/auth-context";
 
-const GRID_SIZE  = 40;
+const GRID_SIZE  = 80;
+const DRAW_COUNT = 20;
 const MAX_PICKS  = 10;
 
 const PAYOUTS: Record<number, Record<number, number>> = {
-  1:  { 1: 3.0 },
-  2:  { 2: 12.0, 1: 1.5 },
-  3:  { 3: 40.0, 2: 3.0 },
-  4:  { 4: 70.0, 3: 5.0, 2: 1.5 },
-  5:  { 5: 100.0, 4: 12.0, 3: 2.0 },
-  6:  { 6: 100.0, 5: 25.0, 4: 5.0, 3: 2.0 },
-  7:  { 7: 100.0, 6: 50.0, 5: 10.0, 4: 2.5 },
-  8:  { 8: 100.0, 7: 80.0, 6: 20.0, 5: 4.0, 4: 1.5 },
-  9:  { 9: 100.0, 8: 80.0, 7: 30.0, 6: 7.0, 5: 2.5 },
-  10: { 10: 100.0, 9: 80.0, 8: 30.0, 7: 8.0, 6: 3.0, 5: 1.5 },
+  1:  { 1: 3 },
+  2:  { 2: 10,    1: 1 },
+  3:  { 3: 30,    2: 2 },
+  4:  { 4: 80,    3: 4,    2: 1 },
+  5:  { 5: 200,   4: 15,   3: 2 },
+  6:  { 6: 500,   5: 35,   4: 5,    3: 1 },
+  7:  { 7: 1000,  6: 75,   5: 12,   4: 2 },
+  8:  { 8: 2000,  7: 150,  6: 20,   5: 4,    4: 1 },
+  9:  { 9: 5000,  8: 300,  7: 40,   6: 6,    5: 2 },
+  10: { 10: 10000, 9: 1000, 8: 100, 7: 15,   6: 4,  5: 1, 0: 2 },
 };
 
 type Phase = "idle" | "drawing" | "done";
 
+interface SeedInfo {
+  seedId:         string;
+  serverSeedHash: string;
+  clientSeed:     string;
+  nonce:          number;
+}
+
 export default function KenoGame() {
   const { user } = useAuth();
 
+  // Game state
   const [points,       setPoints]       = useState<number | null>(null);
   const [bet,          setBet]          = useState(50);
   const [picks,        setPicks]        = useState<number[]>([]);
@@ -32,10 +41,16 @@ export default function KenoGame() {
   const [visibleDrawn, setVisibleDrawn] = useState<number[]>([]);
   const [matchedPicks, setMatchedPicks] = useState<number[]>([]);
   const [multiplier,   setMultiplier]   = useState(0);
-  const [profit,       setProfit]       = useState(0);
   const [net,          setNet]          = useState(0);
   const [loading,      setLoading]      = useState(false);
   const [error,        setError]        = useState<string | null>(null);
+
+  // Provably fair state
+  const [seedInfo,        setSeedInfo]        = useState<SeedInfo | null>(null);
+  const [showFair,        setShowFair]        = useState(false);
+  const [clientSeedInput, setClientSeedInput] = useState("default");
+  const [revealedSeed,    setRevealedSeed]    = useState<string | null>(null);
+  const [seedLoading,     setSeedLoading]     = useState(false);
 
   /* ── Fetch SE points ──────────────────────────────────────── */
   const refreshPoints = useCallback(() => {
@@ -52,6 +67,22 @@ export default function KenoGame() {
     return () => clearInterval(interval);
   }, [refreshPoints]);
 
+  /* ── Fetch active seed ────────────────────────────────────── */
+  const refreshSeed = useCallback(() => {
+    if (!user) return;
+    fetch("/api/keno?action=active-seed")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.seedId) {
+          setSeedInfo(d);
+          setClientSeedInput(d.clientSeed);
+        }
+      })
+      .catch(() => {});
+  }, [user]);
+
+  useEffect(() => { refreshSeed(); }, [refreshSeed]);
+
   /* ── Draw animation ───────────────────────────────────────── */
   useEffect(() => {
     if (phase !== "drawing" || drawnNumbers.length === 0) return;
@@ -65,7 +96,7 @@ export default function KenoGame() {
         setPhase("done");
         refreshPoints();
       }
-    }, 100);
+    }, 80);
     return () => clearInterval(interval);
   }, [phase, drawnNumbers, refreshPoints]);
 
@@ -107,9 +138,12 @@ export default function KenoGame() {
       setDrawnNumbers(data.drawnNumbers);
       setMatchedPicks(data.matchedPicks);
       setMultiplier(data.multiplier);
-      setProfit(data.profit);
       setNet(data.net);
       setPhase("drawing");
+      // Advance nonce display
+      if (data.nonce !== undefined) {
+        setSeedInfo((prev) => prev ? { ...prev, nonce: data.nonce } : prev);
+      }
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -124,9 +158,43 @@ export default function KenoGame() {
     setVisibleDrawn([]);
     setMatchedPicks([]);
     setMultiplier(0);
-    setProfit(0);
     setNet(0);
     setError(null);
+  };
+
+  /* ── Provably fair helpers ─────────────────────────────────── */
+  const applyClientSeed = async () => {
+    setSeedLoading(true);
+    try {
+      const res  = await fetch("/api/keno", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ action: "set-client-seed", clientSeed: clientSeedInput }),
+      });
+      const data = await res.json();
+      if (data.serverSeedHash) {
+        setSeedInfo((prev) => prev ? { ...prev, clientSeed: clientSeedInput, serverSeedHash: data.serverSeedHash } : prev);
+      }
+    } catch { /* ignore */ }
+    setSeedLoading(false);
+  };
+
+  const rotateSeed = async () => {
+    setSeedLoading(true);
+    setRevealedSeed(null);
+    try {
+      const res  = await fetch("/api/keno", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ action: "rotate-seed" }),
+      });
+      const data = await res.json();
+      if (data.oldServerSeed) setRevealedSeed(data.oldServerSeed);
+      if (data.serverSeedHash) {
+        setSeedInfo((prev) => prev ? { ...prev, serverSeedHash: data.serverSeedHash, nonce: 0 } : prev);
+      }
+    } catch { /* ignore */ }
+    setSeedLoading(false);
   };
 
   /* ── Papyrus palette ──────────────────────────────────────── */
@@ -203,7 +271,7 @@ export default function KenoGame() {
           🎱 Keno
         </h1>
         <div className="text-right">
-          <p className="text-xs uppercase tracking-widest" style={{ color: P.brownLight }}>Saldo</p>
+          <p className="text-xs uppercase tracking-widest" style={{ color: P.brownLight }}>80 números · 20 sorteados · 1–10 escolhas</p>
           <p className="font-bold text-xl" style={{ color: P.goldDark }}>
             {points !== null ? points.toLocaleString("pt-PT") : "—"} pts
           </p>
@@ -287,7 +355,7 @@ export default function KenoGame() {
               >
                 {loading ? "A sortear..." : picks.length === 0 ? "Escolhe 1 a 10 números" : `Jogar ${picks.length} número${picks.length !== 1 ? "s" : ""} (${bet} pts)`}
               </button>
-              <p className="text-xs text-center" style={{ color: P.brownLight }}>10 bolas sorteadas de 40 · Escolhe 1 a 10 números</p>
+              <p className="text-xs text-center" style={{ color: P.brownLight }}>20 bolas sorteadas de 80 · Escolhe 1 a 10 números</p>
             </>
           )}
 
@@ -336,7 +404,7 @@ export default function KenoGame() {
         <div className="rounded-xl p-6"
           style={{ background: `linear-gradient(135deg, ${P.parchmentMid} 0%, ${P.parchment} 100%)`, border: `2px solid ${P.border}` }}>
           <div className="overflow-x-auto">
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(8, 62px)", gap: 14, width: "fit-content" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(8, 52px)", gap: 10, width: "fit-content" }}>
               {Array.from({ length: GRID_SIZE }, (_, i) => {
                 const n     = i + 1;
                 const state = getCellState(n);
@@ -349,16 +417,16 @@ export default function KenoGame() {
                     type="button"
                     onClick={() => canClick && togglePick(n)}
                     style={{
-                      width:           62,
-                      height:          62,
+                      width:           52,
+                      height:          52,
                       flexShrink:      0,
                       background:      c.bg,
                       border:          `2px solid ${c.border}`,
-                      borderRadius:    10,
+                      borderRadius:    8,
                       display:         "flex",
                       alignItems:      "center",
                       justifyContent:  "center",
-                      fontSize:        "1.5rem",
+                      fontSize:        "1.1rem",
                       fontWeight:      700,
                       fontFamily:      "var(--font-display)",
                       letterSpacing:   "0.03em",
@@ -410,7 +478,13 @@ export default function KenoGame() {
                 <span>Acertos</span><span className="text-right">Ganho</span>
               </div>
               {Object.entries(currentPayouts ?? {})
-                .sort(([a], [b]) => Number(a) - Number(b))
+                .sort(([a], [b]) => {
+                  const na = Number(a), nb = Number(b);
+                  // 0 hits at the end
+                  if (na === 0) return 1;
+                  if (nb === 0) return -1;
+                  return nb - na;
+                })
                 .map(([hits, mult]) => {
                   const isCurrentMatch = phase === "done" && matchedPicks.length === Number(hits);
                   return (
@@ -422,7 +496,7 @@ export default function KenoGame() {
                         fontWeight:  isCurrentMatch ? 700 : 400,
                         borderTop:   `1px solid ${P.borderLight}`,
                       }}>
-                      <span>{hits} 🎯</span>
+                      <span>{hits}/{picks.length} 🎯</span>
                       <span className="text-right font-bold" style={{ color: isCurrentMatch ? "#4a8a2a" : P.goldDark }}>{mult}×</span>
                     </div>
                   );
@@ -430,6 +504,103 @@ export default function KenoGame() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* ── Provably Fair section ──────────────────────────────── */}
+      <div className="mt-4 rounded-xl overflow-hidden" style={{ border: `2px solid ${P.border}` }}>
+        <button
+          type="button"
+          onClick={() => setShowFair((v) => !v)}
+          className="w-full flex items-center justify-between px-5 py-3 text-sm font-semibold"
+          style={{ background: P.parchmentMid, color: P.brown }}
+        >
+          <span>🔒 Provably Fair</span>
+          <span style={{ color: P.brownLight }}>{showFair ? "▲" : "▼"}</span>
+        </button>
+
+        {showFair && (
+          <div className="px-5 py-4 space-y-4 text-sm" style={{ background: P.parchment, color: P.brown }}>
+            {/* Server seed hash */}
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: P.brownMid }}>
+                Hash da Server Seed
+              </label>
+              <input
+                type="text"
+                readOnly
+                value={seedInfo?.serverSeedHash ?? "—"}
+                className="w-full rounded px-3 py-2 text-xs font-mono select-all"
+                style={{ background: P.parchmentDeep, border: `1px solid ${P.borderLight}`, color: P.brown }}
+              />
+            </div>
+
+            {/* Client seed */}
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: P.brownMid }}>
+                  Client Seed
+                </label>
+                <input
+                  type="text"
+                  value={clientSeedInput}
+                  onChange={(e) => setClientSeedInput(e.target.value)}
+                  maxLength={64}
+                  className="w-full rounded px-3 py-2 text-xs font-mono"
+                  style={{ background: P.parchmentDeep, border: `1px solid ${P.borderLight}`, color: P.brown }}
+                />
+              </div>
+              <div className="self-end">
+                <button
+                  type="button"
+                  onClick={applyClientSeed}
+                  disabled={seedLoading}
+                  className="px-4 py-2 rounded text-sm font-bold"
+                  style={{ background: P.gold, color: P.brown, border: `1px solid ${P.goldDark}` }}
+                >
+                  ✓
+                </button>
+              </div>
+            </div>
+
+            {/* Nonce */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: P.brownMid }}>Nonce</span>
+              <span className="font-mono font-bold text-sm" style={{ color: P.brown }}>{seedInfo?.nonce ?? 0}</span>
+            </div>
+
+            {/* Rotate seed */}
+            <div className="pt-1 border-t" style={{ borderColor: P.borderLight }}>
+              <button
+                type="button"
+                onClick={rotateSeed}
+                disabled={seedLoading}
+                className="w-full py-2 rounded text-sm font-bold"
+                style={{ background: P.brownMid, color: P.parchment, border: `1px solid ${P.brown}` }}
+              >
+                🔄 Rodar Seed
+              </button>
+              <p className="text-xs mt-1 text-center" style={{ color: P.brownLight }}>
+                Revela a server seed actual e gera uma nova
+              </p>
+            </div>
+
+            {/* Revealed old seed */}
+            {revealedSeed && (
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: P.brownMid }}>
+                  Server Seed Revelada
+                </label>
+                <input
+                  type="text"
+                  readOnly
+                  value={revealedSeed}
+                  className="w-full rounded px-3 py-2 text-xs font-mono select-all"
+                  style={{ background: "#f0fff0", border: `1px solid #4a8a2a`, color: P.brown }}
+                />
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
