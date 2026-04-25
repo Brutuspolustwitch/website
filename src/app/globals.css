@@ -378,6 +378,7 @@ body {
 /* ── Hover State — Lift + Paper Movement ────────────────── */
 .papyrus-flip-container {
   perspective: 1000px;
+  -webkit-perspective: 1000px;
   width: 100%;
   max-width: 400px;
   height: 480px;
@@ -468,6 +469,8 @@ body {
   width: 80px;
   height: 100px;
   transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  will-change: transform;
 }
 .slot-highlight-face {
   position: absolute;
@@ -479,9 +482,12 @@ body {
 }
 .slot-highlight-front {
   /* default — faces the viewer */
+  transform: rotateY(0deg) translateZ(1px);
+  visibility: visible;
 }
 .slot-highlight-back {
-  transform: rotateY(180deg);
+  transform: rotateY(180deg) translateZ(1px);
+  visibility: hidden;
 }
 .slot-highlight-name {
   font-family: var(--font-display), 'Cinzel', serif;
@@ -1151,6 +1157,8 @@ body {
   height: 100%;
   transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
   transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  will-change: transform;
 }
 .papyrus-flip-inner.papyrus-flipped {
   transform: rotateY(180deg);
@@ -1163,9 +1171,15 @@ body {
 }
 .papyrus-flip-front {
   position: relative;
+  /* Force GPU compositing layer — critical for iOS backface-visibility */
+  transform: rotateY(0deg) translateZ(1px);
+  visibility: visible;
 }
 .papyrus-flipped .papyrus-flip-front {
   pointer-events: none;
+  /* iOS safety: hide front face when card is flipped (backface-visibility fallback) */
+  visibility: hidden;
+  transition: visibility 0s 0.2s;
 }
 .papyrus-flip-front .papyrus-scroll {
   height: 100%;
@@ -1181,10 +1195,18 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  transform: rotateY(180deg);
+  /* Force GPU compositing layer — critical for iOS backface-visibility */
+  transform: rotateY(180deg) translateZ(1px);
+  /* iOS safety: hidden by default, shown only when flipped */
+  visibility: hidden;
 }
 .papyrus-flip-inner:not(.papyrus-flipped) .papyrus-flip-back {
   pointer-events: none;
+}
+/* Show back face when flipped — works with both backface-visibility and iOS fallback */
+.papyrus-flipped .papyrus-flip-back {
+  visibility: visible;
+  transition: visibility 0s 0.2s;
 }
 .papyrus-flip-back .papyrus-scroll {
   height: 100%;
