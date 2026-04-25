@@ -1,6 +1,26 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
 const SE_API = "https://api.streamelements.com/kappa/v2";
+
+const STAFF_ROLES = ["admin", "configurador", "moderador"] as const;
+
+function getStaffSupabase() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) return null;
+  return createClient(url, key);
+}
+
+async function getStaffLogins(): Promise<Set<string>> {
+  const sb = getStaffSupabase();
+  if (!sb) return new Set();
+  const { data } = await sb
+    .from("users")
+    .select("login")
+    .in("role", STAFF_ROLES as unknown as string[]);
+  return new Set((data ?? []).map((u: { login: string }) => u.login.toLowerCase()));
+}
 
 function getHeaders() {
   const token = process.env.STREAMELEMENTS_JWT_TOKEN;
@@ -32,13 +52,24 @@ export async function GET(request: Request) {
   try {
     switch (endpoint) {
       case "leaderboard": {
+        // Pull a larger pool so we still have enough after filtering staff out.
         const res = await fetch(
-          `${SE_API}/points/${channelId}/top?limit=50`,
+          `${SE_API}/points/${channelId}/top?limit=200`,
           { headers, next: { revalidate: 60 } }
         );
         if (!res.ok) throw new Error(`SE API ${res.status}`);
         const data = await res.json();
-        return NextResponse.json(data);
+
+        const staff = await getStaffLogins();
+        const rawUsers: Array<{ username: string; points: number; rank?: number }> =
+          Array.isArray(data?.users) ? data.users : [];
+
+        const filtered = rawUsers
+          .filter((u) => u.username && !staff.has(u.username.toLowerCase()))
+          .slice(0, 50)
+          .map((u, i) => ({ ...u, rank: i + 1 }));
+
+        return NextResponse.json({ ...data, users: filtered });
       }
 
       case "tips": {
