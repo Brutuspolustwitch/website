@@ -38,21 +38,25 @@ export default function VictoryCard({ v }: { v: Victory }) {
         ) : (
           <div className="w-full h-full flex items-center justify-center text-5xl opacity-30">🏛️</div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
 
-        {/* Multiplier badge */}
+        {/* Multiplier — bottom centered */}
         <motion.div
-          whileHover={{ scale: 1.06 }}
-          className="absolute top-2 right-2 px-3 py-1 rounded-md font-[family-name:var(--font-display)] font-black"
-          style={{
-            background: "linear-gradient(180deg, rgba(60,40,10,0.95), rgba(20,12,4,0.95))",
-            border: "1px solid rgba(240,215,140,0.7)",
-            color: "#f0d78c",
-            textShadow: "0 0 12px rgba(255,180,71,0.7)",
-            boxShadow: "0 0 14px rgba(255,180,71,0.35)",
-          }}
+          className="absolute inset-x-0 bottom-1.5 flex justify-center pointer-events-none"
+          animate={{ filter: ["brightness(1)", "brightness(1.2)", "brightness(1)"] }}
+          transition={{ duration: 2.8, repeat: Infinity }}
         >
-          ×{fmt(v.multiplier)}
+          <div
+            className="font-[family-name:var(--font-display)] font-black tracking-tight"
+            style={{
+              fontSize: "2.4rem",
+              lineHeight: 1,
+              color: "#f0d78c",
+              textShadow: "0 0 18px rgba(255,180,71,0.7), 0 3px 0 rgba(0,0,0,0.85)",
+            }}
+          >
+            ×{fmt(v.multiplier)}
+          </div>
         </motion.div>
 
         {v.suspicious && (
@@ -80,7 +84,23 @@ export default function VictoryCard({ v }: { v: Victory }) {
             <span className="mx-1.5 opacity-60">→</span>
             <span className="text-amber-300">{fmt(v.win_amount)}€</span>
           </span>
-          <span className="text-arena-smoke truncate ml-2 max-w-[40%]">@{v.username}</span>
+          <span className="flex items-center gap-1.5 text-arena-smoke truncate ml-2 max-w-[45%]">
+            {v.avatar_url ? (
+              <Image
+                src={v.avatar_url}
+                alt={v.username}
+                width={18}
+                height={18}
+                className="rounded-full border border-arena-gold/40 shrink-0"
+                unoptimized
+              />
+            ) : (
+              <span className="w-[18px] h-[18px] rounded-full border border-arena-gold/40 bg-black/50 flex items-center justify-center text-[9px] font-bold text-arena-gold-light shrink-0">
+                {v.username.slice(0,1).toUpperCase()}
+              </span>
+            )}
+            <span className="truncate">@{v.username}</span>
+          </span>
         </div>
       </div>
     </motion.article>

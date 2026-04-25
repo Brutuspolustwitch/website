@@ -106,20 +106,20 @@ function PodiumCard({ v, rank }: { v: Victory; rank: 0 | 1 | 2 }) {
           )}
           {/* Vignette */}
           <div className="absolute inset-0" style={{
-            background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.75) 100%)"
+            background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.15) 45%, transparent 70%)"
           }} />
-          {/* Multiplier */}
+          {/* Multiplier — anchored to bottom of image, centered */}
           <motion.div
-            className="absolute inset-0 flex items-center justify-center"
+            className="absolute inset-x-0 bottom-2 flex items-end justify-center pointer-events-none"
             animate={{ filter: ["brightness(1)", "brightness(1.25)", "brightness(1)"] }}
             transition={{ duration: 2.8, repeat: Infinity }}
           >
             <div
-              className="font-[family-name:var(--font-display)] font-black tracking-tight"
+              className="font-[family-name:var(--font-display)] font-black tracking-tight text-center"
               style={{
-                fontSize: rank === 0 ? "4.5rem" : "3.2rem",
+                fontSize: rank === 0 ? "3.6rem" : "2.6rem",
                 color: t.text,
-                textShadow: `0 0 24px ${t.accent}, 0 4px 0 rgba(0,0,0,0.7)`,
+                textShadow: `0 0 24px ${t.accent}, 0 4px 0 rgba(0,0,0,0.8)`,
                 lineHeight: 1,
               }}
             >
@@ -131,8 +131,28 @@ function PodiumCard({ v, rank }: { v: Victory; rank: 0 | 1 | 2 }) {
         {/* Footer */}
         <div className="px-4 py-3 text-center" style={{ background: "rgba(0,0,0,0.55)" }}>
           <div className="text-sm font-semibold text-arena-white truncate">{v.slot_name}</div>
-          <div className="text-xs uppercase tracking-widest mt-1" style={{ color: t.accent }}>
-            {v.username}
+          <div className="mt-1 flex items-center justify-center gap-2">
+            {v.avatar_url ? (
+              <Image
+                src={v.avatar_url}
+                alt={v.username}
+                width={20}
+                height={20}
+                className="rounded-full border"
+                style={{ borderColor: t.border }}
+                unoptimized
+              />
+            ) : (
+              <div
+                className="w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-bold"
+                style={{ borderColor: t.border, background: "rgba(0,0,0,0.4)", color: t.accent }}
+              >
+                {v.username.slice(0, 1).toUpperCase()}
+              </div>
+            )}
+            <span className="text-xs uppercase tracking-widest" style={{ color: t.accent }}>
+              {v.username}
+            </span>
           </div>
         </div>
       </div>

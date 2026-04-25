@@ -12,5 +12,6 @@ export const NAV_LINKS = [
   { href: "/destaques", label: "Destaques" },
   { href: "/stream", label: "Stream" },
   { href: "/liga-dos-brutus", label: "Liga dos Brutus" },
+  { href: "/hall-of-victories", label: "Bruta do Mês" },
   { href: "/loja", label: "Loja" },
 ] as const;

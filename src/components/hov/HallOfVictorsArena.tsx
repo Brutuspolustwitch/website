@@ -77,26 +77,9 @@ export default function HallOfVictorsArena() {
       </div>
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
-        {/* Title */}
-        <header className="text-center mb-10">
-          <motion.h1
-            initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-            className="font-[family-name:var(--font-display)] text-5xl sm:text-6xl uppercase tracking-[0.2em] font-black"
-            style={{
-              color: "#f0d78c",
-              textShadow: "0 0 30px rgba(255,180,71,0.45), 0 4px 0 rgba(0,0,0,0.8)",
-            }}
-          >
-            Hall of Victors
-          </motion.h1>
-          <div className="mt-2 text-arena-smoke uppercase tracking-[0.4em] text-xs">
-            Champions of the Arena
-          </div>
-        </header>
-
         {/* Section A: Podium */}
         <section className="mb-16">
-          <SectionTitle>Champions of the Arena</SectionTitle>
+          <SectionTitle>Brutas da Semana</SectionTitle>
           <div className="text-center text-arena-smoke text-sm mb-6">{winnersLabel}</div>
           <WeeklyPodium winners={winners} />
         </section>
