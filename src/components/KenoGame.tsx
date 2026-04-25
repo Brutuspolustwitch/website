@@ -3,21 +3,21 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/lib/auth-context";
 
-const GRID_SIZE  = 80;
-const DRAW_COUNT = 20;
+const GRID_SIZE  = 40;
+const DRAW_COUNT = 10;
 const MAX_PICKS  = 10;
 
 const PAYOUTS: Record<number, Record<number, number>> = {
   1:  { 1: 3 },
-  2:  { 2: 10,    1: 1 },
-  3:  { 3: 30,    2: 2 },
-  4:  { 4: 80,    3: 4,    2: 1 },
-  5:  { 5: 200,   4: 15,   3: 2 },
-  6:  { 6: 500,   5: 35,   4: 5,    3: 1 },
-  7:  { 7: 1000,  6: 75,   5: 12,   4: 2 },
-  8:  { 8: 2000,  7: 150,  6: 20,   5: 4,    4: 1 },
-  9:  { 9: 5000,  8: 300,  7: 40,   6: 6,    5: 2 },
-  10: { 10: 10000, 9: 1000, 8: 100, 7: 15,   6: 4,  5: 1, 0: 2 },
+  2:  { 2: 10,     1: 1 },
+  3:  { 3: 50,     2: 2 },
+  4:  { 4: 200,    3: 6,     2: 1 },
+  5:  { 5: 1600,   4: 14,    3: 2 },
+  6:  { 6: 11000,  5: 45,    4: 4,    3: 1 },
+  7:  { 7: 85000,  6: 500,   5: 20,   4: 2 },
+  8:  { 8: 900000, 7: 2500,  6: 100,  5: 8,    4: 1 },
+  9:  { 9: 7000000, 8: 70000, 7: 900, 6: 25,   5: 3 },
+  10: { 10: 50000000, 9: 50000, 8: 800, 7: 50, 6: 10,  5: 2,  0: 2 },
 };
 
 type Phase = "idle" | "drawing" | "done";
@@ -96,7 +96,7 @@ export default function KenoGame() {
         setPhase("done");
         refreshPoints();
       }
-    }, 80);
+    }, 150);
     return () => clearInterval(interval);
   }, [phase, drawnNumbers, refreshPoints]);
 
@@ -271,7 +271,7 @@ export default function KenoGame() {
           🎱 Keno
         </h1>
         <div className="text-right">
-          <p className="text-xs uppercase tracking-widest" style={{ color: P.brownLight }}>80 números · 20 sorteados · 1–10 escolhas</p>
+          <p className="text-xs uppercase tracking-widest" style={{ color: P.brownLight }}>40 números · 10 sorteados · 1–10 escolhas</p>
           <p className="font-bold text-xl" style={{ color: P.goldDark }}>
             {points !== null ? points.toLocaleString("pt-PT") : "—"} pts
           </p>
@@ -355,7 +355,7 @@ export default function KenoGame() {
               >
                 {loading ? "A sortear..." : picks.length === 0 ? "Escolhe 1 a 10 números" : `Jogar ${picks.length} número${picks.length !== 1 ? "s" : ""} (${bet} pts)`}
               </button>
-              <p className="text-xs text-center" style={{ color: P.brownLight }}>20 bolas sorteadas de 80 · Escolhe 1 a 10 números</p>
+              <p className="text-xs text-center" style={{ color: P.brownLight }}>10 bolas sorteadas de 40 · Escolhe 1 a 10 números</p>
             </>
           )}
 

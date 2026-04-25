@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS keno_games (
   drawn_numbers    integer[]   NOT NULL,
   matches          integer     NOT NULL,
   multiplier       integer     NOT NULL DEFAULT 0,
-  result_amount    integer     NOT NULL DEFAULT 0,
+  result_amount    bigint      NOT NULL DEFAULT 0,
   spots            integer,
   server_seed_hash text,
   client_seed      text,

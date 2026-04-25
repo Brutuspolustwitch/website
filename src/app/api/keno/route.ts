@@ -3,25 +3,27 @@ import { cookies } from "next/headers";
 import { supabase } from "@/lib/supabase";
 import crypto from "crypto";
 
-const GRID_SIZE  = 80;   // total numbers in the pool
-const DRAW_COUNT = 20;   // numbers drawn per round
+const GRID_SIZE  = 40;   // total numbers in the pool
+const DRAW_COUNT = 10;   // numbers drawn per round
 const SE_API     = "https://api.streamelements.com/kappa/v2";
 
-/* ── Payout table: PAYOUTS[spots][hits] = multiplier ────────────
-   Calibrated against hypergeometric probabilities for ~92 % RTP.
-   Pick-10 bonus: 0 hits → 2× (P ≈ 4.6 % with N=80, K=20, S=10).
-   ─────────────────────────────────────────────────────────────── */
+/* ── Payout table: PAYOUTS[spots][hits] = multiplier ──────────────
+   N=40, K=10 hypergeometric distribution.
+   Calibrated RTPs: ~75% (S=1) to ~94% (S=4–9).
+   S=10 is jackpot-tier (~36% RTP) — chasing 50,000,000× is the appeal.
+   P(0/10) ≈ 3.5% → 2× consolation bonus maintained.
+   ─────────────────────────────────────────────────────────────────── */
 const PAYOUTS: Record<number, Record<number, number>> = {
   1:  { 1: 3 },
-  2:  { 2: 10,    1: 1 },
-  3:  { 3: 30,    2: 2 },
-  4:  { 4: 80,    3: 4,    2: 1 },
-  5:  { 5: 200,   4: 15,   3: 2 },
-  6:  { 6: 500,   5: 35,   4: 5,    3: 1 },
-  7:  { 7: 1000,  6: 75,   5: 12,   4: 2 },
-  8:  { 8: 2000,  7: 150,  6: 20,   5: 4,    4: 1 },
-  9:  { 9: 5000,  8: 300,  7: 40,   6: 6,    5: 2 },
-  10: { 10: 10000, 9: 1000, 8: 100, 7: 15,   6: 4,  5: 1,  0: 2 },
+  2:  { 2: 10,     1: 1 },
+  3:  { 3: 50,     2: 2 },
+  4:  { 4: 200,    3: 6,     2: 1 },
+  5:  { 5: 1600,   4: 14,    3: 2 },
+  6:  { 6: 11000,  5: 45,    4: 4,    3: 1 },
+  7:  { 7: 85000,  6: 500,   5: 20,   4: 2 },
+  8:  { 8: 900000, 7: 2500,  6: 100,  5: 8,    4: 1 },
+  9:  { 9: 7000000, 8: 70000, 7: 900, 6: 25,   5: 3 },
+  10: { 10: 50000000, 9: 50000, 8: 800, 7: 50, 6: 10,  5: 2,  0: 2 },
 };
 
 /* ═══════════════════════════════════════════════════════════════
@@ -85,10 +87,10 @@ function hashSeed(seed: string): string {
  * Returns the first DRAW_COUNT values as the drawn numbers.
  */
 function generateDraw(serverSeed: string, clientSeed: string, nonce: number): number[] {
-  // Each HMAC round → 32 bytes. Fisher-Yates on 80 elements needs
-  // 79 iterations × 4 bytes = 316 bytes → 10 rounds = 320 bytes.
+  // Each HMAC round → 32 bytes. Fisher-Yates on 40 elements needs
+  // 39 iterations × 4 bytes = 156 bytes → 5 rounds = 160 bytes.
   const bytes: number[] = [];
-  for (let counter = 0; bytes.length < 320; counter++) {
+  for (let counter = 0; bytes.length < (GRID_SIZE - 1) * 4; counter++) {
     const hmac = crypto
       .createHmac("sha256", serverSeed)
       .update(`${clientSeed}:${nonce}:${counter}`)
