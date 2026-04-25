@@ -231,17 +231,17 @@ export function StreamCalendar() {
                 <div className="schedule-modal-title">{selectedStream.title}</div>
                 <div className="schedule-modal-meta">
                   <span className="schedule-modal-meta-chip">
-                    <Calendar size={14} />
+                    <Calendar size={18} />
                     {formatDatePT(selectedStream.stream_date)}
                   </span>
                   <span className="schedule-modal-meta-chip">
-                    <Clock size={14} />
+                    <Clock size={18} />
                     {selectedStream.start_time.slice(0, 5)}
                     {selectedStream.end_time ? ` – ${selectedStream.end_time.slice(0, 5)}` : ""}
                   </span>
                   {selectedStream.casino && (
                     <span className="schedule-modal-meta-chip">
-                      <Zap size={14} />
+                      <Zap size={18} />
                       {selectedStream.casino}
                     </span>
                   )}
