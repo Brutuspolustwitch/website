@@ -278,7 +278,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                 <CornerOrnament className="absolute bottom-2 right-2 w-5 h-5 -scale-x-100 -scale-y-100" />
 
                 {/* Column headers */}
-                <div className="scroll-content" style={{ padding: "10px 20px 0" }}>
+                <div className="scroll-content" style={{ padding: "28px 20px 0" }}>
                   <div className="bh-table-header">
                     <span className="bh-col-num">#</span>
                     <span className="bh-col-slot">SLOT</span>
