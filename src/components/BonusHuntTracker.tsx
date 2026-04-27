@@ -271,8 +271,8 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
 
               {/* ── Slot rows ────────────────────────── */}
               <div className="scroll-content" style={{ padding: "0 20px 8px" }}>
-                {(compact ? paginatedSlots : slots).map((slot, i) => {
-                  const globalIndex = compact ? slotPage * SLOTS_PER_PAGE + i : i;
+                {(paginatedSlots).map((slot, i) => {
+                  const globalIndex = slotPage * SLOTS_PER_PAGE + i;
                   const multi = slot.bet_size && slot.bet_size > 0 && slot.payout
                     ? (slot.payout / slot.bet_size)
                     : null;
@@ -294,16 +294,16 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
                       </span>
 
                       {/* Slot: thumbnail + name + provider */}
-                      <div className="bh-col-slot" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                      <div className="bh-col-slot" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                         {slot.thumbnail_url ? (
                           <img
                             src={slot.thumbnail_url}
                             alt={slot.name}
                             loading="lazy"
                             style={{
-                              width: "40px",
-                              height: "40px",
-                              borderRadius: "6px",
+                              width: compact ? "40px" : "60px",
+                              height: compact ? "40px" : "60px",
+                              borderRadius: "8px",
                               objectFit: "cover",
                               border: "1px solid rgba(139,105,20,0.2)",
                               flexShrink: 0,
@@ -311,15 +311,15 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
                           />
                         ) : (
                           <div style={{
-                            width: "40px",
-                            height: "40px",
-                            borderRadius: "6px",
+                            width: compact ? "40px" : "60px",
+                            height: compact ? "40px" : "60px",
+                            borderRadius: "8px",
                             background: "rgba(139,105,20,0.08)",
                             border: "1px solid rgba(139,105,20,0.15)",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            fontSize: "0.9rem",
+                            fontSize: compact ? "0.9rem" : "1.4rem",
                             flexShrink: 0,
                           }}>
                             🎰
@@ -399,7 +399,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
                 })}
 
                 {/* ── Pagination controls ──────────── */}
-                {compact && totalPages > 1 && (
+                {totalPages > 1 && (
                   <div style={{
                     display: "flex",
                     alignItems: "center",
