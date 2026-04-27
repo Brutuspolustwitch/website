@@ -291,6 +291,15 @@ export async function PATCH(request: Request) {
       .single();
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+    // Award winner with 500 points
+    if (winner.user_id) {
+      await supabase.rpc("increment_user_points", {
+        p_user_id: winner.user_id,
+        p_amount: 500,
+      });
+    }
+
     return NextResponse.json({ guessSession: data, winner });
   }
 
