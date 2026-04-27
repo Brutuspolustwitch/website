@@ -31,10 +31,16 @@ interface TwitchVideo {
 }
 
 type ContentType = "clips" | "videos";
+type ClipMode = "recent" | "top";
 
 const TABS: { value: ContentType; label: string }[] = [
   { value: "clips", label: "Clips" },
   { value: "videos", label: "VODs" },
+];
+
+const CLIP_MODES: { value: ClipMode; label: string }[] = [
+  { value: "recent", label: "Recentes" },
+  { value: "top", label: "Top 20" },
 ];
 
 const REFRESH_INTERVAL = 120_000; // 2 minutes
@@ -221,6 +227,7 @@ function VideoCard({ video }: { video: TwitchVideo }) {
 
 export function DestaquesContent() {
   const [activeTab, setActiveTab] = useState<ContentType>("clips");
+  const [clipMode, setClipMode] = useState<ClipMode>("recent");
   const [topClips, setTopClips] = useState<TwitchClip[]>([]);
   const [recentClips, setRecentClips] = useState<TwitchClip[]>([]);
   const [videos, setVideos] = useState<TwitchVideo[]>([]);
@@ -272,8 +279,9 @@ export function DestaquesContent() {
     return () => clearInterval(timer);
   }, []);
 
-  // Merge recent + top all-time, dedupe by id, sort newest-first
-  const clips = (() => {
+  // Recent = chronological newest-first (last 30 days, plus any all-time top
+  // clips that fall in the same window). Top 20 = all-time most viewed.
+  const recentMerged = (() => {
     const seen = new Set<string>();
     const merged: TwitchClip[] = [];
     for (const c of [...recentClips, ...topClips]) {
@@ -286,6 +294,7 @@ export function DestaquesContent() {
       (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     );
   })();
+  const clips = clipMode === "recent" ? recentMerged : topClips;
   const currentItems = activeTab === "clips" ? clips : videos;
 
   return (
@@ -317,6 +326,24 @@ export function DestaquesContent() {
               {activeTab === "clips" ? "clips" : "vídeos"}
             </span>
           </div>
+
+          {activeTab === "clips" && (
+            <div className="flex gap-1.5">
+              {CLIP_MODES.map((m) => (
+                <button
+                  key={m.value}
+                  onClick={() => setClipMode(m.value)}
+                  className={`px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider rounded-md border transition-colors duration-200 ${
+                    clipMode === m.value
+                      ? "bg-arena-crimson/20 text-arena-crimson border-arena-crimson/40"
+                      : "bg-arena-charcoal/50 text-arena-ash border-arena-steel/30 hover:text-arena-smoke"
+                  }`}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-3 text-xs text-arena-ash">
@@ -371,13 +398,20 @@ export function DestaquesContent() {
 
       {/* Content grid */}
       {!loading && currentItems.length > 0 && (
-        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <AnimatePresence mode="popLayout">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={`${activeTab}-${activeTab === "clips" ? clipMode : "vods"}`}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
             {activeTab === "clips"
               ? clips.map((clip) => <ClipCard key={clip.id} clip={clip} />)
               : videos.map((video) => <VideoCard key={video.id} video={video} />)}
-          </AnimatePresence>
-        </motion.div>
+          </motion.div>
+        </AnimatePresence>
       )}
 
       {/* Empty state */}
