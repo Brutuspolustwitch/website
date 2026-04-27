@@ -465,7 +465,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                 }}>
                   {([
                     { id: "war-stats", label: "Estatísticas", icon: "📊" },
-                    { id: "treasury", label: "Tesouro", icon: "💰" },
+                    { id: "treasury", label: "Resultados", icon: "💰" },
                     { id: "favor", label: "Apostas", icon: "⭐" },
                     { id: "records", label: "Histórico", icon: "🕐" },
                   ] as { id: StatsTab; label: string; icon: string }[]).map((t) => (
