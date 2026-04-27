@@ -62,7 +62,7 @@ export async function GET(request: Request) {
   if (guessSession.status === "resolved" || isAdmin) {
     const { data } = await supabase
       .from("guess_predictions")
-      .select("*")
+      .select("*, users:user_id(profile_image_url, login)")
       .eq("guess_session_id", guessSession.id)
       .order("created_at", { ascending: true });
     predictions = data ?? [];

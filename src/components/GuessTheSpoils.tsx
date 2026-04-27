@@ -812,10 +812,32 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                                         border: isWinner ? "1px solid rgba(139,105,20,0.25)" : "1px solid transparent",
                                       }}
                                     >
-                                      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                                         <span style={{ fontFamily: "var(--font-display)", fontSize: "0.55rem", color: "var(--ink-light)", width: "16px", textAlign: "right" }}>
                                           {isWinner ? "🏆" : `${i + 1}`}
                                         </span>
+                                        {p.users?.profile_image_url ? (
+                                          // eslint-disable-next-line @next/next/no-img-element
+                                          <img
+                                            src={p.users.profile_image_url}
+                                            alt={p.display_name}
+                                            style={{
+                                              width: "22px",
+                                              height: "22px",
+                                              borderRadius: "50%",
+                                              objectFit: "cover",
+                                              border: isWinner ? "1px solid var(--gold-dark)" : "1px solid rgba(139,105,20,0.25)",
+                                            }}
+                                          />
+                                        ) : (
+                                          <div style={{
+                                            width: "22px",
+                                            height: "22px",
+                                            borderRadius: "50%",
+                                            background: "rgba(139,105,20,0.15)",
+                                            border: "1px solid rgba(139,105,20,0.25)",
+                                          }} />
+                                        )}
                                         <span style={{ fontFamily: "var(--font-ui)", fontSize: "0.75rem", fontWeight: 600, color: isWinner ? "var(--gold-dark)" : "var(--ink-dark)" }}>
                                           {p.display_name}
                                         </span>

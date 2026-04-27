@@ -263,4 +263,5 @@ export interface GuessPrediction {
   display_name: string;
   predicted_amount: number;
   created_at: string;
+  users?: { profile_image_url: string | null; login: string | null } | null;
 }
