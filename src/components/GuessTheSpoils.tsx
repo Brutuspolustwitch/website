@@ -1178,25 +1178,24 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
 /* ── Small stat box (papyrus style) ────────────────────────────────── */
 
 function StatBox({
-  icon, label, value, highlight = false,
+  label, value, highlight = false,
 }: {
-  icon: string; label: string; value: string; highlight?: boolean;
+  icon?: string; label: string; value: string; highlight?: boolean;
 }) {
   return (
     <div style={{
       border: "1px solid rgba(139,105,20,0.15)",
       borderRadius: "6px",
-      padding: "8px 6px",
+      padding: "12px 8px",
       textAlign: "center",
       background: "rgba(139,105,20,0.04)",
     }}>
-      <div style={{ fontSize: "0.75rem", marginBottom: "2px" }}>{icon}</div>
-      <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, marginBottom: "2px" }}>
+      <p style={{ fontFamily: "var(--font-display)", fontSize: "0.6rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, marginBottom: "6px" }}>
         {label}
       </p>
       <p style={{
         fontFamily: "var(--font-ui)",
-        fontSize: "0.8rem",
+        fontSize: "1.15rem",
         fontWeight: 700,
         color: highlight ? "var(--gold-dark)" : "var(--ink-dark)",
       }}>
