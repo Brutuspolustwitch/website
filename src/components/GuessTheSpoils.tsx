@@ -232,28 +232,46 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
             </div>
 
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <span style={{
-                fontFamily: "var(--font-display)",
-                fontSize: "0.6rem",
-                fontWeight: 600,
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                padding: "4px 10px",
-                borderRadius: "4px",
-                background: campaign.phase === "completed"
+              {(() => {
+                const votingOpen = !!guessSession?.betting_open && guessSession?.status === "open";
+                const isResolved = guessSession?.status === "resolved";
+                const label = isResolved
+                  ? "🏁 APOSTAS RESOLVIDAS"
+                  : votingOpen
+                  ? "🟢 APOSTAS ABERTAS"
+                  : "🔒 APOSTAS FECHADAS";
+                const bg = isResolved
                   ? "rgba(139,105,20,0.12)"
-                  : campaign.phase === "opening"
-                  ? "rgba(212,168,67,0.15)"
-                  : "rgba(34,197,94,0.15)",
-                color: campaign.phase === "completed"
+                  : votingOpen
+                  ? "rgba(34,197,94,0.15)"
+                  : "rgba(139,26,26,0.15)";
+                const color = isResolved
                   ? "var(--gold-dark)"
-                  : campaign.phase === "opening"
-                  ? "#d4a843"
-                  : "#22c55e",
-                border: `1px solid ${campaign.phase === "completed" ? "rgba(139,105,20,0.2)" : campaign.phase === "opening" ? "rgba(212,168,67,0.3)" : "rgba(34,197,94,0.3)"}`,
-              }}>
-                {phaseLabel}
-              </span>
+                  : votingOpen
+                  ? "#22c55e"
+                  : "#c0392b";
+                const border = isResolved
+                  ? "rgba(139,105,20,0.25)"
+                  : votingOpen
+                  ? "rgba(34,197,94,0.3)"
+                  : "rgba(139,26,26,0.3)";
+                return (
+                  <span style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "0.6rem",
+                    fontWeight: 600,
+                    letterSpacing: "0.12em",
+                    textTransform: "uppercase",
+                    padding: "4px 10px",
+                    borderRadius: "4px",
+                    background: bg,
+                    color,
+                    border: `1px solid ${border}`,
+                  }}>
+                    {label}
+                  </span>
+                );
+              })()}
               <span style={{
                 fontFamily: "var(--font-ui)",
                 fontSize: "0.75rem",
