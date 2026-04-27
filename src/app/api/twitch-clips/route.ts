@@ -112,6 +112,7 @@ export async function GET(request: Request) {
             "Client-ID": clientId,
             Authorization: `Bearer ${token}`,
           },
+          cache: "no-store",
         }
       );
       const data = await res.json();
@@ -121,7 +122,7 @@ export async function GET(request: Request) {
         { videos, lastUpdated: new Date().toISOString() },
         {
           headers: {
-            "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
+            "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
           },
         }
       );
@@ -135,6 +136,7 @@ export async function GET(request: Request) {
           "Client-ID": clientId,
           Authorization: `Bearer ${token}`,
         },
+        cache: "no-store",
       }
     );
     const data = await res.json();
@@ -144,7 +146,7 @@ export async function GET(request: Request) {
       { clips, lastUpdated: new Date().toISOString() },
       {
         headers: {
-          "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
+          "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
         },
       }
     );
