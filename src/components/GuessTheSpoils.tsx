@@ -910,11 +910,6 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                         )}
                         {recentWinners.map((w, i) => (
                           <div key={w.id} style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(139,105,20,0.07)", borderRadius: 6, padding: "7px 16px", minWidth: 220 }}>
-                            {w.users?.profile_image_url ? (
-                              <img src={w.users.profile_image_url} alt={w.winner_display_name} style={{ width: 28, height: 28, borderRadius: "50%", objectFit: "cover", border: "1.5px solid var(--gold-dark)" }} />
-                            ) : (
-                              <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#e0cfa2", border: "1.5px solid #bfa14a" }} />
-                            )}
                             <span style={{ fontFamily: "var(--font-ui)", fontWeight: 700, fontSize: "0.95rem", color: "var(--gold-dark)", minWidth: 90, textAlign: "left" }}>{w.winner_display_name}</span>
                             <span style={{ fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: "0.85rem", color: "var(--ink-dark)", minWidth: 60, textAlign: "right" }}>{w.winner_predicted_amount?.toFixed(2)}€</span>
                             <span style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "0.7rem", color: "#8b6914", minWidth: 60, textAlign: "right" }}>Payout: {w.final_payout?.toFixed(2)}€</span>
