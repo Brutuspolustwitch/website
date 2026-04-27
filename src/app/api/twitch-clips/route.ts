@@ -129,8 +129,15 @@ export async function GET(request: Request) {
     }
 
     // Default: clips
+    // Helix /clips defaults to all-time top by views, so brand-new clips never
+    // surface. Pull a recent window (last 30 days) and sort newest-first.
+    const ended = new Date();
+    const started = new Date(ended.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const startedAt = started.toISOString();
+    const endedAt = ended.toISOString();
+    const fetchLimit = Math.min(100, Math.max(limit * 3, 50));
     const res = await fetch(
-      `https://api.twitch.tv/helix/clips?broadcaster_id=${broadcasterId}&first=${limit}`,
+      `https://api.twitch.tv/helix/clips?broadcaster_id=${broadcasterId}&first=${fetchLimit}&started_at=${encodeURIComponent(startedAt)}&ended_at=${encodeURIComponent(endedAt)}`,
       {
         headers: {
           "Client-ID": clientId,
@@ -140,7 +147,11 @@ export async function GET(request: Request) {
       }
     );
     const data = await res.json();
-    const clips: TwitchClip[] = data.data || [];
+    const allClips: TwitchClip[] = data.data || [];
+    const clips = allClips
+      .slice()
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .slice(0, limit);
 
     return NextResponse.json(
       { clips, lastUpdated: new Date().toISOString() },
