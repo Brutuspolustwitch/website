@@ -48,6 +48,7 @@ export async function PATCH(request: Request, ctx: { params: Promise<{ id: strin
   const { id } = await ctx.params;
   if (!id) return NextResponse.json({ error: "ID obrigatório" }, { status: 400 });
 
+
   let body: Record<string, unknown>;
   try { body = (await request.json()) as Record<string, unknown>; }
   catch { return NextResponse.json({ error: "Pedido inválido" }, { status: 400 }); }
@@ -59,6 +60,20 @@ export async function PATCH(request: Request, ctx: { params: Promise<{ id: strin
     .from("hov_victories").select("*").eq("id", id).maybeSingle();
   if (loadErr) return NextResponse.json({ error: loadErr.message }, { status: 500 });
   if (!existing) return NextResponse.json({ error: "Não encontrado" }, { status: 404 });
+
+  // Award SSE points to a user for a victory (manual moderator action)
+  if (action === "award_points") {
+    const amount = typeof body.amount === "number" && body.amount > 0 ? Math.floor(body.amount) : null;
+    if (!amount) return NextResponse.json({ error: "Valor inválido" }, { status: 400 });
+    // Fetch winner's twitch login
+    const { data: winner } = await supabase
+      .from("users").select("login, se_username").eq("id", existing.user_id).maybeSingle();
+    await awardSEPoints(winner?.se_username || winner?.login, amount);
+    return NextResponse.json({ ok: true, awarded: amount });
+  }
+
+
+
 
   const modUserId = await getUserDbId(mod.id);
 

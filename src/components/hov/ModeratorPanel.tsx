@@ -8,10 +8,15 @@ import { PROVIDERS } from "./types";
 
 type EditState = Partial<Victory>;
 
+type Top3 = { id: string; user_id: string; username: string; avatar_url?: string; multiplier: number; rank: number }[];
+
 export default function ModeratorPanel() {
   const [items, setItems] = useState<Victory[]>([]);
   const [loading, setLoading] = useState(true);
   const [edits, setEdits] = useState<Record<string, EditState>>({});
+  const [top3, setTop3] = useState<Top3>([]);
+  const [awarding, setAwarding] = useState<string | null>(null);
+  const [awarded, setAwarded] = useState<Record<string, boolean>>({});
   const [busy, setBusy] = useState<string | null>(null);
   const [uploading, setUploading] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
@@ -40,7 +45,35 @@ export default function ModeratorPanel() {
     } finally { setBusy(null); }
   }
 
+  // Fetch all victories
   useEffect(() => { void load(); }, []);
+
+  // Fetch top 3 for current week/month
+  useEffect(() => {
+    fetch("/api/hall-of-victors/winners")
+      .then(r => r.json())
+      .then(j => setTop3(j.live_top3 ?? []));
+  }, []);
+  // Award SSE points to a user
+  async function awardPoints(v: { id: string; user_id: string; username: string }, amount: number) {
+    if (!window.confirm(`Dar ${amount} SSE pontos para @${v.username}?`)) return;
+    setAwarding(v.id);
+    try {
+      const res = await fetch(`/api/hall-of-victors/${v.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "award_points", amount }),
+      });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.error || "Falha ao premiar");
+      setMsg(`Prémio entregue a @${v.username} (+${amount} SSE)`);
+      setAwarded(prev => ({ ...prev, [v.id]: true }));
+    } catch (e) {
+      setMsg(e instanceof Error ? e.message : "Erro");
+    } finally {
+      setAwarding(null);
+    }
+  }
 
   function setField(id: string, field: keyof Victory, value: unknown) {
     setEdits(prev => ({ ...prev, [id]: { ...prev[id], [field]: value } }));
@@ -115,6 +148,35 @@ export default function ModeratorPanel() {
         </h2>
         <button onClick={load} className="text-sm text-arena-smoke hover:text-arena-gold-light">↻ Atualizar</button>
       </div>
+
+      {/* Top 3 SSE Award Section */}
+      <div className="my-6 p-4 rounded-xl border border-arena-gold/40 bg-arena-gold/5">
+        <div className="font-[family-name:var(--font-display)] text-lg text-arena-gold-light uppercase tracking-widest mb-2">Top 3 Multiplicadores (Semana/Mês)</div>
+        <div className="flex flex-col md:flex-row gap-4">
+          {top3.length === 0 && <div className="text-arena-smoke">Nenhum vencedor ainda.</div>}
+          {top3.map((v, i) => (
+            <div key={v.id} className="flex-1 min-w-[180px] bg-black/30 rounded-lg p-3 flex flex-col items-center border border-arena-gold/20">
+              {v.avatar_url && <img src={v.avatar_url} alt={v.username} className="w-12 h-12 rounded-full mb-2 border border-arena-gold/40" />}
+              <div className="font-bold text-arena-gold-light">{v.username}</div>
+              <div className="text-arena-smoke text-xs mb-1">x{v.multiplier.toLocaleString("pt-PT", { maximumFractionDigits: 2 })}</div>
+              <button
+                disabled={!!awarded[v.id] || awarding === v.id}
+                onClick={() => awardPoints(v, i === 0 ? 1500 : i === 1 ? 1000 : 500)}
+                className="mt-2 px-4 py-2 rounded font-bold uppercase tracking-widest text-sm disabled:opacity-50"
+                style={{
+                  background: i === 0 ? "linear-gradient(90deg,#ffd700,#bfa100)" : i === 1 ? "linear-gradient(90deg,#c0c0c0,#a0a0a0)" : "linear-gradient(90deg,#cd7f32,#a05e1e)",
+                  color: i === 0 ? "#222" : "#222",
+                  border: "1px solid #e5c100",
+                }}
+              >
+                {awarding === v.id ? "A premiar…" : awarded[v.id] ? "Prémio entregue" : `Dar ${i === 0 ? 1500 : i === 1 ? 1000 : 500} SSE`}
+              </button>
+            </div>
+          ))}
+        </div>
+        <div className="text-xs text-arena-smoke mt-2">O moderador deve premiar manualmente os vencedores do mês.</div>
+      </div>
+// --- PATCH endpoint support for award_points action ---
 
       {msg && (
         <div className="text-sm px-3 py-2 rounded border border-arena-gold/40 bg-arena-gold/10 text-arena-gold-light">
