@@ -916,7 +916,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                           fontWeight: 700,
                           boxShadow: "0 2px 8px rgba(46,125,50,0.3)",
                         }}>
-                          🏆 Melhor
+                          🏆 A Bruta
                         </div>
                       </div>
                       <div style={{ aspectRatio: "3/4", background: "#000", borderRadius: "6px", overflow: "hidden", border: "2px solid rgba(46,125,50,0.3)" }}>
@@ -1068,7 +1068,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                           fontWeight: 700,
                           boxShadow: "0 2px 8px rgba(139,26,26,0.3)",
                         }}>
-                          💀 Pior
+                          💀 Tenebrosa
                         </div>
                       </div>
                       <div style={{ aspectRatio: "3/4", background: "#000", borderRadius: "6px", overflow: "hidden", border: "2px solid rgba(139,26,26,0.3)" }}>
