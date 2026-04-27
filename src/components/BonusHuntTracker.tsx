@@ -155,48 +155,50 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
+      {/* ── Hunt Navigation Bar (above the layout, full width) ──────────── */}
+      {!compact && sessions.length > 1 && (
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "flex-start",
+          marginBottom: "12px",
+          gap: "8px",
+        }}>
+          <button
+            onClick={prevSession}
+            disabled={sessionIdx >= sessions.length - 1}
+            className="bh-nav-btn"
+            style={{ borderColor: "rgba(255,255,255,0.15)", color: "var(--arena-smoke, #e0ddd4)" }}
+            aria-label="Hunt anterior"
+          >
+            ‹
+          </button>
+          <span style={{
+            fontFamily: "var(--font-display)",
+            fontSize: "0.75rem",
+            color: "var(--arena-smoke, #e0ddd4)",
+            letterSpacing: "0.1em",
+          }}>
+            Bonus Hunt {sessionIdx + 1} / {sessions.length}
+          </span>
+          <button
+            onClick={nextSession}
+            disabled={sessionIdx <= 0}
+            className="bh-nav-btn"
+            style={{ borderColor: "rgba(255,255,255,0.15)", color: "var(--arena-smoke, #e0ddd4)" }}
+            aria-label="Próximo hunt"
+          >
+            ›
+          </button>
+        </div>
+      )}
+
       {/* Flex Container: Table on Left, Cards on Right */}
       <div className="bh-layout">
         
         {/* Left Side: Table */}
         <div className="bh-layout-table" style={{ maxWidth: compact ? "100%" : "calc(100% - 344px)" }}>
-            {/* ── Hunt Navigation Bar (above card) ──────────── */}
-            {!compact && sessions.length > 1 && (
-              <div style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                marginBottom: "12px",
-                gap: "8px",
-              }}>
-                <button
-                  onClick={prevSession}
-                  disabled={sessionIdx >= sessions.length - 1}
-                  className="bh-nav-btn"
-                  style={{ borderColor: "rgba(255,255,255,0.15)", color: "var(--arena-smoke, #e0ddd4)" }}
-                  aria-label="Hunt anterior"
-                >
-                  ‹
-                </button>
-                <span style={{
-                  fontFamily: "var(--font-display)",
-                  fontSize: "0.75rem",
-                  color: "var(--arena-smoke, #e0ddd4)",
-                  letterSpacing: "0.1em",
-                }}>
-                  Bonus Hunt {sessionIdx + 1} / {sessions.length}
-                </span>
-                <button
-                  onClick={nextSession}
-                  disabled={sessionIdx <= 0}
-                  className="bh-nav-btn"
-                  style={{ borderColor: "rgba(255,255,255,0.15)", color: "var(--arena-smoke, #e0ddd4)" }}
-                  aria-label="Próximo hunt"
-                >
-                  ›
-                </button>
-              </div>
-            )}
+
 
             <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom bonus-hunt-scroll">
               <CornerOrnament className="absolute top-2 left-2 w-5 h-5" />
