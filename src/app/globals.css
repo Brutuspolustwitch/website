@@ -380,7 +380,7 @@ body {
   perspective: 1000px;
   -webkit-perspective: 1000px;
   width: 100%;
-  max-width: 400px;
+  max-width: 360px;
   height: 480px;
   cursor: pointer;
 }
