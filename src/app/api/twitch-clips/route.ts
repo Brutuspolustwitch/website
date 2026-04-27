@@ -128,33 +128,48 @@ export async function GET(request: Request) {
       );
     }
 
-    // Default: clips
-    // Helix /clips defaults to all-time top by views, so brand-new clips never
-    // surface. Pull a recent window (last 30 days) and sort newest-first.
+    // Default: clips — fetch BOTH the all-time top 20 (by views) AND the latest
+    // clips published. Helix /clips with no date range returns all-time top by
+    // views; with a date range it returns clips from that window which we sort
+    // newest-first to get the most recent ones.
+    const headers = {
+      "Client-ID": clientId,
+      Authorization: `Bearer ${token}`,
+    };
+
+    // Top 20 all-time
+    const topRes = await fetch(
+      `https://api.twitch.tv/helix/clips?broadcaster_id=${broadcasterId}&first=20`,
+      { headers, cache: "no-store" }
+    );
+    const topData = await topRes.json();
+    const topClips: TwitchClip[] = topData.data || [];
+
+    // Recent clips: pull last 30 days, sort newest-first, take requested limit
     const ended = new Date();
     const started = new Date(ended.getTime() - 30 * 24 * 60 * 60 * 1000);
     const startedAt = started.toISOString();
     const endedAt = ended.toISOString();
-    const fetchLimit = Math.min(100, Math.max(limit * 3, 50));
-    const res = await fetch(
-      `https://api.twitch.tv/helix/clips?broadcaster_id=${broadcasterId}&first=${fetchLimit}&started_at=${encodeURIComponent(startedAt)}&ended_at=${encodeURIComponent(endedAt)}`,
-      {
-        headers: {
-          "Client-ID": clientId,
-          Authorization: `Bearer ${token}`,
-        },
-        cache: "no-store",
-      }
+    const recentFetchLimit = Math.min(100, Math.max(limit * 3, 50));
+    const recentRes = await fetch(
+      `https://api.twitch.tv/helix/clips?broadcaster_id=${broadcasterId}&first=${recentFetchLimit}&started_at=${encodeURIComponent(startedAt)}&ended_at=${encodeURIComponent(endedAt)}`,
+      { headers, cache: "no-store" }
     );
-    const data = await res.json();
-    const allClips: TwitchClip[] = data.data || [];
-    const clips = allClips
+    const recentData = await recentRes.json();
+    const recentAll: TwitchClip[] = recentData.data || [];
+    const recentClips = recentAll
       .slice()
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
       .slice(0, limit);
 
     return NextResponse.json(
-      { clips, lastUpdated: new Date().toISOString() },
+      {
+        // Backwards-compat: `clips` defaults to the top set
+        clips: topClips,
+        topClips,
+        recentClips,
+        lastUpdated: new Date().toISOString(),
+      },
       {
         headers: {
           "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",

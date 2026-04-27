@@ -31,10 +31,16 @@ interface TwitchVideo {
 }
 
 type ContentType = "clips" | "videos";
+type ClipMode = "top" | "recent";
 
 const TABS: { value: ContentType; label: string }[] = [
   { value: "clips", label: "Clips" },
   { value: "videos", label: "VODs" },
+];
+
+const CLIP_MODES: { value: ClipMode; label: string }[] = [
+  { value: "top", label: "Top 20" },
+  { value: "recent", label: "Recentes" },
 ];
 
 const REFRESH_INTERVAL = 120_000; // 2 minutes
@@ -221,7 +227,9 @@ function VideoCard({ video }: { video: TwitchVideo }) {
 
 export function DestaquesContent() {
   const [activeTab, setActiveTab] = useState<ContentType>("clips");
-  const [clips, setClips] = useState<TwitchClip[]>([]);
+  const [clipMode, setClipMode] = useState<ClipMode>("top");
+  const [topClips, setTopClips] = useState<TwitchClip[]>([]);
+  const [recentClips, setRecentClips] = useState<TwitchClip[]>([]);
   const [videos, setVideos] = useState<TwitchVideo[]>([]);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -241,7 +249,8 @@ export function DestaquesContent() {
       }
 
       if (type === "clips") {
-        setClips(data.clips || []);
+        setTopClips(data.topClips || data.clips || []);
+        setRecentClips(data.recentClips || []);
       } else {
         setVideos(data.videos || []);
       }
@@ -270,6 +279,7 @@ export function DestaquesContent() {
     return () => clearInterval(timer);
   }, []);
 
+  const clips = clipMode === "top" ? topClips : recentClips;
   const currentItems = activeTab === "clips" ? clips : videos;
 
   return (
@@ -293,6 +303,24 @@ export function DestaquesContent() {
               </button>
             ))}
           </div>
+
+          {activeTab === "clips" && (
+            <div className="flex gap-1.5">
+              {CLIP_MODES.map((m) => (
+                <button
+                  key={m.value}
+                  onClick={() => setClipMode(m.value)}
+                  className={`px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider rounded-md border transition-all duration-200 ${
+                    clipMode === m.value
+                      ? "bg-arena-crimson/20 text-arena-crimson border-arena-crimson/40"
+                      : "bg-arena-charcoal/50 text-arena-ash border-arena-steel/30 hover:text-arena-smoke"
+                  }`}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+          )}
 
           <div className="flex items-center gap-2">
             <span className="inline-block w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
