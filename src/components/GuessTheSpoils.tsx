@@ -692,14 +692,15 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                               </p>
                               {guessSession.betting_open && (
                                 <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", marginTop: "2px" }}>
-                                  Podes alterar a previsão enquanto as apostas estiverem abertas
+                                  Aposta registada — boa sorte!
+                                </p>
                                 </p>
                               )}
                             </div>
                           )}
 
-                          {/* Submit form */}
-                          {guessSession.betting_open && (
+                          {/* Submit form (only if user has not predicted yet) */}
+                          {guessSession.betting_open && !myPrediction && (
                             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                               {user ? (
                                 <>
@@ -743,7 +744,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                                         whiteSpace: "nowrap",
                                       }}
                                     >
-                                      {predLoading ? "…" : myPrediction ? "Atualizar" : "Apostar"}
+                                      {predLoading ? "…" : "Apostar"}
                                     </button>
                                   </div>
                                   {predMsg && (

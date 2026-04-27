@@ -118,17 +118,29 @@ export async function POST(request: Request) {
 
   if (!user) return NextResponse.json({ error: "Utilizador não encontrado" }, { status: 404 });
 
+  // Enforce single bet per user per session
+  const { data: existing } = await supabase
+    .from("guess_predictions")
+    .select("id")
+    .eq("guess_session_id", guessSession.id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (existing) {
+    return NextResponse.json(
+      { error: "Já apostaste nesta sessão. Só é permitida uma aposta." },
+      { status: 409 }
+    );
+  }
+
   const { data: prediction, error } = await supabase
     .from("guess_predictions")
-    .upsert(
-      {
-        guess_session_id: guessSession.id,
-        user_id: user.id,
-        display_name: user.display_name,
-        predicted_amount: amount,
-      },
-      { onConflict: "guess_session_id,user_id" }
-    )
+    .insert({
+      guess_session_id: guessSession.id,
+      user_id: user.id,
+      display_name: user.display_name,
+      predicted_amount: amount,
+    })
     .select()
     .single();
 
