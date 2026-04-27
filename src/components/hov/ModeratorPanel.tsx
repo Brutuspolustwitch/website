@@ -19,10 +19,25 @@ export default function ModeratorPanel() {
   async function load() {
     setLoading(true);
     try {
-      const res = await fetch("/api/hall-of-victors?pending=1", { cache: "no-store" });
+      // Fetch all victories (no filter)
+      const res = await fetch("/api/hall-of-victors", { cache: "no-store" });
       const j = await res.json();
       if (res.ok) setItems(j.victories ?? []);
     } finally { setLoading(false); }
+  }
+  async function removeVictory(v: Victory) {
+    if (!window.confirm("Remover esta vitória? Esta ação é irreversível.")) return;
+    setBusy(v.id);
+    try {
+      const res = await fetch(`/api/hall-of-victors/${v.id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error((await res.json()).error || "Falha ao remover");
+      setMsg("Removido");
+      setItems(prev => prev.filter(x => x.id !== v.id));
+    } catch (e) {
+      setMsg(e instanceof Error ? e.message : "Erro");
+    } finally { setBusy(null); }
   }
 
   useEffect(() => { void load(); }, []);
@@ -109,35 +124,44 @@ export default function ModeratorPanel() {
 
       {loading && <div className="text-arena-smoke">A carregar…</div>}
       {!loading && items.length === 0 && (
-        <div className="text-arena-smoke italic">Nenhuma vitória pendente.</div>
+        <div className="text-arena-smoke italic">Nenhuma vitória encontrada.</div>
       )}
 
-      <AnimatePresence>
-        {items.map(v => {
-          const e = edits[v.id] ?? {};
-          const merged = { ...v, ...e };
-          const mult = merged.bet_amount && merged.bet_amount > 0
-            ? (merged.win_amount as number) / (merged.bet_amount as number) : v.multiplier;
-          return (
-            <ModRow
-              key={v.id}
-              v={v} merged={merged} mult={mult}
-              busy={busy === v.id} uploading={uploading === v.id}
-              setField={(f, val) => setField(v.id, f, val)}
-              onUpload={(file) => uploadImage(v.id, file)}
-              onApprove={() => approve(v)}
-              onReject={() => reject(v)}
-            />
-          );
-        })}
-      </AnimatePresence>
+      {/* Group by status for clarity */}
+      {['pending', 'approved', 'rejected'].map(status => (
+        <div key={status} className="mt-8">
+          <h3 className="font-[family-name:var(--font-display)] text-lg text-arena-gold-light uppercase tracking-widest mb-2">
+            {status === 'pending' ? 'Pendentes' : status === 'approved' ? 'Aprovadas' : 'Rejeitadas'}
+          </h3>
+          <AnimatePresence>
+            {items.filter(v => v.status === status).map(v => {
+              const e = edits[v.id] ?? {};
+              const merged = { ...v, ...e };
+              const mult = merged.bet_amount && merged.bet_amount > 0
+                ? (merged.win_amount as number) / (merged.bet_amount as number) : v.multiplier;
+              return (
+                <ModRow
+                  key={v.id}
+                  v={v} merged={merged} mult={mult}
+                  busy={busy === v.id} uploading={uploading === v.id}
+                  setField={(f, val) => setField(v.id, f, val)}
+                  onUpload={(file) => uploadImage(v.id, file)}
+                  onApprove={() => approve(v)}
+                  onReject={() => reject(v)}
+                  onRemove={() => removeVictory(v)}
+                />
+              );
+            })}
+          </AnimatePresence>
+        </div>
+      ))}
     </div>
   );
 }
 
 function ModRow({
   v, merged, mult, busy, uploading,
-  setField, onUpload, onApprove, onReject,
+  setField, onUpload, onApprove, onReject, onRemove,
 }: {
   v: Victory; merged: Victory; mult: number;
   busy: boolean; uploading: boolean;
@@ -145,6 +169,7 @@ function ModRow({
   onUpload: (file: File) => void;
   onApprove: () => void;
   onReject: () => void;
+  onRemove: () => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   return (
@@ -235,6 +260,14 @@ function ModRow({
               style={{ background: "linear-gradient(180deg,#7d1f15,#3a0e08)", color: "#ffe0d6", border: "1px solid #c0392b" }}
             >
               Rejeitar
+            </button>
+            <button
+              disabled={busy}
+              onClick={onRemove}
+              className="px-4 py-2 rounded font-bold uppercase tracking-widest text-sm disabled:opacity-50"
+              style={{ background: "linear-gradient(180deg,#222,#000)", color: "#fff", border: "1px solid #888" }}
+            >
+              Remover
             </button>
           </div>
         </div>
