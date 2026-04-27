@@ -503,11 +503,10 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                   {/* WAR STATS */}
                   {tab === "war-stats" && (
                     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                      {/* Start / Stop / Target */}
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px" }}>
+                      {/* Start / Stop */}
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                         <StatBox icon="⚔" label="Início" value={`${campaign.start_money.toFixed(2)}€`} />
                         <StatBox icon="⭕" label="Stop Loss" value={`${campaign.stop_loss.toFixed(2)}€`} />
-                        <StatBox icon="🎯" label="Buy-In" value={`${(campaign.total_buy ?? 0).toFixed(2)}€`} highlight />
                       </div>
 
                       {/* Campaign progress */}
@@ -519,7 +518,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                       }}>
                         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
                           <span style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>
-                            Progresso da Campanha
+                            Progresso
                           </span>
                           <span style={{
                             fontSize: "0.55rem",
