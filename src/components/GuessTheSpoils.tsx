@@ -159,6 +159,11 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
     campaign?.status === "active" ? "EM BATALHA" :
     campaign?.status === "completed" ? "COMPLETA" : "PRÓXIMA";
 
+  // Green stat: start - stop
+  const startMinusStop = campaign ? campaign.start_money - campaign.stop_loss : 0;
+  // Green stat for resultados: (start - stop) + totalWin
+  const resultadosGreen = startMinusStop + totalWin;
+
   /* ── Render ──────────────────────────────────────────────────────── */
 
   return (
@@ -521,10 +526,16 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                   {/* WAR STATS */}
                   {tab === "war-stats" && (
                     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                      {/* Start / Stop */}
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-                        <StatBox icon="⚔" label="Início" value={`${campaign.start_money.toFixed(2)}€`} />
-                        <StatBox icon="⭕" label="Stop Loss" value={`${campaign.stop_loss.toFixed(2)}€`} />
+                      {/* Start - Stop (green stat) */}
+                      <div style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        padding: "8px 0 0 0",
+                      }}>
+                        <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.5rem", fontWeight: 700, color: "#2e7d32" }}>
+                          {startMinusStop >= 0 ? "+" : ""}{startMinusStop.toFixed(2)}€
+                        </span>
                       </div>
 
                       {/* Campaign progress */}
@@ -872,9 +883,26 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                   {/* RECORDS */}
                   {tab === "records" && (
                     <div style={{ padding: "24px 0", textAlign: "center" }}>
-                      <p style={{ fontFamily: "var(--font-display)", fontSize: "0.8rem", color: "var(--ink-light)" }}>
-                        Histórico em breve.
+                      <p style={{ fontFamily: "var(--font-display)", fontSize: "0.8rem", color: "var(--ink-light)", marginBottom: 12 }}>
+                        Últimos 5 vencedores
                       </p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "center" }}>
+                        {recentWinners.length === 0 && (
+                          <span style={{ color: "#8b6914", fontSize: "0.7rem" }}>Nenhum vencedor ainda.</span>
+                        )}
+                        {recentWinners.map((w, i) => (
+                          <div key={w.id} style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(139,105,20,0.07)", borderRadius: 6, padding: "7px 16px", minWidth: 220 }}>
+                            {w.users?.profile_image_url ? (
+                              <img src={w.users.profile_image_url} alt={w.winner_display_name} style={{ width: 28, height: 28, borderRadius: "50%", objectFit: "cover", border: "1.5px solid var(--gold-dark)" }} />
+                            ) : (
+                              <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#e0cfa2", border: "1.5px solid #bfa14a" }} />
+                            )}
+                            <span style={{ fontFamily: "var(--font-ui)", fontWeight: 700, fontSize: "0.95rem", color: "var(--gold-dark)", minWidth: 90, textAlign: "left" }}>{w.winner_display_name}</span>
+                            <span style={{ fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: "0.85rem", color: "var(--ink-dark)", minWidth: 60, textAlign: "right" }}>{w.winner_predicted_amount?.toFixed(2)}€</span>
+                            <span style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "0.7rem", color: "#8b6914", minWidth: 60, textAlign: "right" }}>Payout: {w.final_payout?.toFixed(2)}€</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -1226,3 +1254,4 @@ function StatBox({
     </div>
   );
 }
+
