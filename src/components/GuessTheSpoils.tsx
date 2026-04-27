@@ -142,6 +142,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
 
   const totalBuy = slots.reduce((s, r) => s + r.buy_value, 0);
   const currentBE = totalBuy > 0 ? totalWin / totalBuy : 0;
+  const initialBE = totalBuy > 0 ? campaign.start_money / totalBuy : 0;
   const progress = total > 0 ? (opened / total) * 100 : 0;
 
   const openedSlots = slots.filter((s) => s.result != null && s.buy_value > 0);
@@ -463,10 +464,10 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                   borderBottom: "2px solid rgba(139,105,20,0.15)",
                 }}>
                   {([
-                    { id: "war-stats", label: "War Stats", icon: "📊" },
-                    { id: "treasury", label: "Treasury", icon: "💰" },
-                    { id: "favor", label: "Favor", icon: "⭐" },
-                    { id: "records", label: "Records", icon: "🕐" },
+                    { id: "war-stats", label: "Estatísticas", icon: "📊" },
+                    { id: "treasury", label: "Tesouro", icon: "💰" },
+                    { id: "favor", label: "Apostas", icon: "⭐" },
+                    { id: "records", label: "Histórico", icon: "🕐" },
                   ] as { id: StatsTab; label: string; icon: string }[]).map((t) => (
                     <button
                       key={t.id}
@@ -504,8 +505,8 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                       {/* Start / Stop / Target */}
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px" }}>
-                        <StatBox icon="⚔" label="Start" value={`${campaign.start_money.toFixed(2)}€`} />
-                        <StatBox icon="⭕" label="Stop" value={`${campaign.stop_loss.toFixed(2)}€`} />
+                        <StatBox icon="⚔" label="Início" value={`${campaign.start_money.toFixed(2)}€`} />
+                        <StatBox icon="⭕" label="Stop Loss" value={`${campaign.stop_loss.toFixed(2)}€`} />
                         <StatBox icon="🎯" label="Buy-In" value={`${(campaign.total_buy ?? 0).toFixed(2)}€`} highlight />
                       </div>
 
@@ -518,7 +519,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                       }}>
                         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
                           <span style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>
-                            Campaign Progress
+                            Progresso da Campanha
                           </span>
                           <span style={{
                             fontSize: "0.55rem",
@@ -558,7 +559,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                         padding: "6px 4px",
                       }}>
                         <span style={{ fontFamily: "var(--font-display)", fontSize: "0.55rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>
-                          ⚡ Current BE
+                          ⚡ BE Atual
                         </span>
                         <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "var(--ink-dark)" }}>
                           {currentBE.toFixed(2)}x
@@ -574,10 +575,10 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                         borderTop: "1px solid rgba(139,105,20,0.12)",
                       }}>
                         <span style={{ fontFamily: "var(--font-display)", fontSize: "0.55rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>
-                          ○ Initial BE
+                          ○ BE Inicial
                         </span>
                         <span style={{ fontFamily: "var(--font-ui)", fontSize: "0.9rem", fontWeight: 700, color: "var(--ink-dark)" }}>
-                          1.00x
+                          {initialBE.toFixed(2)}x
                         </span>
                       </div>
                     </div>
@@ -587,13 +588,13 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                   {tab === "treasury" && (
                     <div style={{ padding: "24px 0", textAlign: "center" }}>
                       <p style={{ fontFamily: "var(--font-display)", fontSize: "0.55rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "4px" }}>
-                        💰 Total Winnings
+                        💰 Ganhos Totais
                       </p>
                       <p style={{ fontFamily: "var(--font-ui)", fontSize: "1.8rem", fontWeight: 700, color: "var(--gold-dark)", marginBottom: "6px" }}>
                         {totalWin.toFixed(2)}€
                       </p>
                       <p style={{ fontFamily: "var(--font-display)", fontSize: "0.55rem", color: "var(--ink-light)", letterSpacing: "0.1em", marginBottom: "4px" }}>
-                        Total Buy: {totalBuy.toFixed(2)}€
+                        Buy-In Total: {totalBuy.toFixed(2)}€
                       </p>
                       <p style={{
                         fontFamily: "var(--font-ui)",
