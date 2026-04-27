@@ -24,6 +24,9 @@ type StatsTab = "war-stats" | "treasury" | "favor" | "records";
 /* ── Component ──────────────────────────────────────────────────────── */
 
 export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = {}) {
+    // Recent winners for Histórico tab
+    const [recentWinners, setRecentWinners] = useState<any[]>([]);
+
   const { user } = useAuth();
   const [campaigns, setCampaigns] = useState<BonusHuntSession[]>([]);
   const [idx, setIdx] = useState(0);
@@ -165,6 +168,18 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
   const resultadosGreen = startMinusStop + totalWin;
 
   /* ── Render ──────────────────────────────────────────────────────── */
+
+  // Fetch recent winners when tab is 'records'
+  useEffect(() => {
+    if (tab !== "records") return;
+    (async () => {
+      const res = await fetch("/api/guess-predictions/winners");
+      if (res.ok) {
+        const data = await res.json();
+        setRecentWinners(data.winners ?? []);
+      }
+    })();
+  }, [tab]);
 
   return (
     <section className="py-16 px-4 sm:px-6 lg:px-8 min-h-screen relative">
@@ -529,10 +544,13 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                       {/* Start - Stop (green stat) */}
                       <div style={{
                         display: "flex",
-                        justifyContent: "center",
+                        flexDirection: "column",
                         alignItems: "center",
                         padding: "8px 0 0 0",
                       }}>
+                        <span style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, marginBottom: "2px" }}>
+                          Início - Stop
+                        </span>
                         <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.5rem", fontWeight: 700, color: "#2e7d32" }}>
                           {startMinusStop >= 0 ? "+" : ""}{startMinusStop.toFixed(2)}€
                         </span>
