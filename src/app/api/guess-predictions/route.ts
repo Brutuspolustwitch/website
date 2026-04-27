@@ -145,6 +145,10 @@ export async function POST(request: Request) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // Reward 20 points for placing a bet
+  await supabase.rpc("increment_user_points", { p_user_id: user.id, p_amount: 20 });
+
   return NextResponse.json({ prediction });
 }
 
@@ -245,10 +249,32 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ guessSession: data, winner: null });
     }
 
-    const winner = predictions.reduce((best, p) => {
-      const bestDiff = Math.abs((best.predicted_amount as number) - payout);
-      const pDiff = Math.abs((p.predicted_amount as number) - payout);
-      return pDiff < bestDiff ? p : best;
+    // Price-Is-Right rule: winner is the closest prediction AT OR ABOVE the payout.
+    // If nobody bet >= payout, there is no winner.
+    const eligible = predictions.filter(
+      (p) => (p.predicted_amount as number) >= payout
+    );
+
+    if (eligible.length === 0) {
+      const { data, error } = await supabase
+        .from("guess_sessions")
+        .update(baseUpdate)
+        .eq("id", guessSessionId)
+        .select()
+        .single();
+      if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ guessSession: data, winner: null });
+    }
+
+    // Smallest amount above the payout wins; tie-break: earliest guess.
+    const winner = eligible.reduce((best, p) => {
+      const bestAmt = best.predicted_amount as number;
+      const pAmt = p.predicted_amount as number;
+      if (pAmt < bestAmt) return p;
+      if (pAmt === bestAmt) {
+        return new Date(p.created_at as string) < new Date(best.created_at as string) ? p : best;
+      }
+      return best;
     });
 
     const { data, error } = await supabase
