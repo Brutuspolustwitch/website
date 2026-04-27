@@ -694,7 +694,6 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                                 <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", marginTop: "2px" }}>
                                   Aposta registada — boa sorte!
                                 </p>
-                                </p>
                               )}
                             </div>
                           )}
