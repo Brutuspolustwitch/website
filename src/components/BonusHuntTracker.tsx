@@ -215,6 +215,14 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
                       {(selectedSession?.start_money ?? 0).toFixed(2)}{currency}
                     </p>
                   </div>
+                  {(selectedSession?.stop_loss ?? 0) > 0 && (
+                    <div>
+                      <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Stop Loss</p>
+                      <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "#b45309" }}>
+                        {(selectedSession?.stop_loss ?? 0).toFixed(2)}{currency}
+                      </p>
+                    </div>
+                  )}
                   <div>
                     <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Total Win</p>
                     <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "#2e7d32" }}>

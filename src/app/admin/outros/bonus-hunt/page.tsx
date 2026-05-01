@@ -18,6 +18,7 @@ interface ParsedPreview {
   currency: string;
   hunt_date?: string;
   start_money: number;
+  stop_loss: number;
   total_win: number;
   profit: number;
   bonus_count: number;
@@ -165,19 +166,7 @@ export default function AdminBonusHuntPage() {
           return;
         }
 
-        setRawData(text);
-        setPreview({
-          hunt_name: data.hunt_name,
-          currency: data.currency || "€",
-          hunt_date: data.hunt_date,
-          start_money: data.start_money ?? 0,
-          total_win: data.total_win ?? 0,
-          profit: data.profit ?? 0,
-          bonus_count: data.bonus_count ?? data.bonuses.length,
-          avg_multi: data.avg_multi ?? 0,
-          best_multi: data.best_multi ?? 0,
-          best_slot_name: data.best_slot_name ?? "",
-          bonuses: data.bonuses.map((b: Record<string, unknown>) => ({
+        const bonusesArr: ParsedPreview["bonuses"] = data.bonuses.map((b: Record<string, unknown>) => ({
             slotName: (b.slotName as string) || ((b.slot as Record<string, unknown>)?.name as string) || "Unknown",
             betSize: (b.betSize as number) ?? 0,
             payout: (b.payout as number) ?? 0,
@@ -185,7 +174,25 @@ export default function AdminBonusHuntPage() {
             provider: ((b.slot as Record<string, unknown>)?.provider as string) || undefined,
             isSuperBonus: (b.isSuperBonus as boolean) ?? false,
             isExtremeBonus: (b.isExtremeBonus as boolean) ?? false,
-          })),
+          }));
+          // Recalculate profit using only opened bonuses (consistent with import route)
+          const openedBuy = bonusesArr.filter((b) => b.opened).reduce((s, b) => s + b.betSize, 0);
+          const recalcProfit = (data.total_win ?? 0) - openedBuy;
+
+        setRawData(text);
+        setPreview({
+          hunt_name: data.hunt_name,
+          currency: data.currency || "€",
+          hunt_date: data.hunt_date,
+          start_money: data.start_money ?? 0,
+          stop_loss: data.stop_loss ?? 0,
+          total_win: data.total_win ?? 0,
+          profit: recalcProfit,
+          bonus_count: data.bonus_count ?? data.bonuses.length,
+          avg_multi: data.avg_multi ?? 0,
+          best_multi: data.best_multi ?? 0,
+          best_slot_name: data.best_slot_name ?? "",
+          bonuses: bonusesArr,
         });
       } catch {
         setError("Erro ao ler o ficheiro JSON.");
@@ -338,6 +345,12 @@ export default function AdminBonusHuntPage() {
                       <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">Start</span>
                       <span className="text-arena-smoke">{preview.currency}{preview.start_money.toLocaleString()}</span>
                     </div>
+                    {preview.stop_loss > 0 && (
+                      <div>
+                        <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">Stop Loss</span>
+                        <span className="text-amber-400">{preview.currency}{preview.stop_loss.toLocaleString()}</span>
+                      </div>
+                    )}
                     <div>
                       <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">Total Win</span>
                       <span className="text-green-400">{preview.currency}{preview.total_win.toLocaleString()}</span>
