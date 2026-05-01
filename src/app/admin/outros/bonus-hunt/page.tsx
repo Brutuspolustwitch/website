@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/lib/auth-context";
-import { supabase, type GuessSession, type GuessPrediction } from "@/lib/supabase";
+import { supabase, type GuessSession, type GuessPrediction, type BonusHuntSlot } from "@/lib/supabase";
 
 interface ImportResult {
   success: boolean;
@@ -66,6 +66,15 @@ export default function AdminBonusHuntPage() {
   const [guessPayoutInput, setGuessPayoutInput] = useState("");
   const [guessMsg, setGuessMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [guessActionLoading, setGuessActionLoading] = useState(false);
+
+  /* Slot payouts state */
+  const [payoutsHuntId, setPayoutsHuntId] = useState<string | null>(null);
+  const [slots, setSlots] = useState<BonusHuntSlot[]>([]);
+  const [slotsLoading, setSlotsLoading] = useState(false);
+  const [slotPayoutEdits, setSlotPayoutEdits] = useState<Record<string, string>>({});
+  const [slotSaving, setSlotSaving] = useState<Record<string, boolean>>({});
+  const [payoutsMsg, setPayoutsMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const payoutsJsonRef = useRef<HTMLInputElement>(null);
 
   const isAdmin = user?.role === "admin" || user?.role === "configurador" || user?.role === "moderador";
 
@@ -250,6 +259,97 @@ export default function AdminBonusHuntPage() {
     } finally {
       setImporting(false);
     }
+  }
+
+  const loadSlots = useCallback(async (huntId: string) => {
+    setSlotsLoading(true);
+    const { data } = await supabase
+      .from("bonus_hunt_slots")
+      .select("*")
+      .eq("session_id", huntId)
+      .order("order_index", { ascending: true });
+    const list = (data ?? []) as BonusHuntSlot[];
+    setSlots(list);
+    const edits: Record<string, string> = {};
+    list.forEach((slot) => {
+      edits[slot.id] = slot.payout != null ? String(slot.payout) : "";
+    });
+    setSlotPayoutEdits(edits);
+    setSlotsLoading(false);
+  }, []);
+
+  async function togglePayoutsPanel(huntId: string) {
+    if (payoutsHuntId === huntId) { setPayoutsHuntId(null); return; }
+    setPayoutsHuntId(huntId);
+    setPayoutsMsg(null);
+    await loadSlots(huntId);
+  }
+
+  async function saveSlotPayout(slotId: string) {
+    const val = slotPayoutEdits[slotId];
+    const n = parseFloat((val || "0").replace(",", "."));
+    if (!isFinite(n) || n < 0) { setPayoutsMsg({ ok: false, text: "Valor inválido" }); return false; }
+    setSlotSaving((prev) => ({ ...prev, [slotId]: true }));
+    const res = await fetch(`/api/bonus-hunt/slots/${slotId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ payout: n }),
+    });
+    setSlotSaving((prev) => ({ ...prev, [slotId]: false }));
+    if (!res.ok) {
+      const d = await res.json();
+      setPayoutsMsg({ ok: false, text: d.error ?? "Erro" });
+      return false;
+    }
+    return true;
+  }
+
+  async function bulkSavePayouts(edits: Record<string, string>, slotsToSave: BonusHuntSlot[], huntId: string) {
+    setPayoutsMsg({ ok: true, text: "A guardar..." });
+    let failed = 0;
+    for (const slot of slotsToSave) {
+      const val = edits[slot.id];
+      if (val == null || val === "") continue;
+      const n = parseFloat(val.replace(",", "."));
+      if (!isFinite(n) || n < 0) continue;
+      setSlotSaving((prev) => ({ ...prev, [slot.id]: true }));
+      const res = await fetch(`/api/bonus-hunt/slots/${slot.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ payout: n }),
+      });
+      setSlotSaving((prev) => ({ ...prev, [slot.id]: false }));
+      if (!res.ok) failed++;
+    }
+    await loadSlots(huntId);
+    fetchHistory();
+    setPayoutsMsg(failed === 0 ? { ok: true, text: "Todos guardados!" } : { ok: false, text: `${failed} slot(s) falharam.` });
+  }
+
+  function handlePayoutsJson(file: File, currentSlots: BonusHuntSlot[], huntId: string) {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const data = JSON.parse(e.target?.result as string);
+        if (!Array.isArray(data.bonuses)) {
+          setPayoutsMsg({ ok: false, text: "JSON inválido — precisa de campo 'bonuses'" });
+          return;
+        }
+        const jsonBonuses = data.bonuses as { slotName?: string; payout?: number }[];
+        const newEdits: Record<string, string> = {};
+        currentSlots.forEach((slot, idx) => {
+          const match =
+            jsonBonuses.find((b) => b.slotName?.toLowerCase().trim() === slot.name.toLowerCase().trim()) ??
+            jsonBonuses[idx];
+          newEdits[slot.id] = match?.payout != null ? String(match.payout) : (slotPayoutEdits[slot.id] ?? "");
+        });
+        setSlotPayoutEdits(newEdits);
+        await bulkSavePayouts(newEdits, currentSlots, huntId);
+      } catch {
+        setPayoutsMsg({ ok: false, text: "Erro ao ler JSON." });
+      }
+    };
+    reader.readAsText(file);
   }
 
   function handleReset() {
@@ -540,6 +640,18 @@ export default function AdminBonusHuntPage() {
                           <td className="px-4 py-3 text-arena-smoke/60 max-w-[120px] truncate">{s.best_slot_name || "—"}</td>
                           <td className="px-4 py-3 text-right">
                             <div className="flex items-center justify-end gap-2">
+                              {/* Payouts panel toggle */}
+                              <button
+                                onClick={() => togglePayoutsPanel(s.id)}
+                                className={`px-3 py-1.5 text-xs rounded border transition-all cursor-pointer ${
+                                  payoutsHuntId === s.id
+                                    ? "border-arena-steel/60 bg-arena-steel/10 text-arena-smoke"
+                                    : "border-arena-steel/20 text-arena-smoke/50 hover:border-arena-steel/40 hover:text-arena-smoke/80"
+                                }`}
+                                title="Editar payouts dos slots"
+                              >
+                                🎰 Slots
+                              </button>
                               {/* Guess panel toggle */}
                               <button
                                 onClick={() => toggleGuessPanel(s.id)}
@@ -729,6 +841,111 @@ export default function AdminBonusHuntPage() {
                                 {guessMsg && (
                                   <p className="text-xs font-[family-name:var(--font-display)] tracking-wide" style={{ color: guessMsg.ok ? "#22c55e" : "#8b1a1a" }}>
                                     {guessMsg.ok ? "✓" : "✗"} {guessMsg.text}
+                                  </p>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+
+                        {/* ── Payouts panel (expandable) ── */}
+                        {payoutsHuntId === s.id && (
+                          <tr>
+                            <td colSpan={11} className="px-4 py-4 bg-arena-charcoal/30 border-t border-arena-steel/10">
+                              <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                  <span className="font-[family-name:var(--font-display)] text-arena-smoke/60 text-xs tracking-widest uppercase">
+                                    🎰 Payouts — {s.title}
+                                  </span>
+                                  <div className="flex gap-2 items-center">
+                                    <input
+                                      ref={payoutsJsonRef}
+                                      type="file"
+                                      accept=".json"
+                                      className="hidden"
+                                      onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) handlePayoutsJson(file, slots, s.id);
+                                        if (payoutsJsonRef.current) payoutsJsonRef.current.value = "";
+                                      }}
+                                    />
+                                    <button
+                                      onClick={() => payoutsJsonRef.current?.click()}
+                                      className="px-3 py-1.5 text-xs rounded border border-arena-steel/30 text-arena-smoke/60 hover:border-arena-gold/30 hover:text-arena-gold transition-all cursor-pointer font-[family-name:var(--font-display)] tracking-widest uppercase"
+                                      title="Importar payouts de ficheiro JSON"
+                                    >
+                                      📤 Upload JSON
+                                    </button>
+                                    <button
+                                      onClick={() => bulkSavePayouts(slotPayoutEdits, slots, s.id)}
+                                      className="px-3 py-1.5 text-xs rounded border border-arena-gold/30 text-arena-gold/70 hover:bg-arena-gold/10 hover:text-arena-gold transition-all cursor-pointer font-[family-name:var(--font-display)] tracking-widest uppercase"
+                                    >
+                                      💾 Guardar Todos
+                                    </button>
+                                  </div>
+                                </div>
+                                {slotsLoading ? (
+                                  <p className="text-xs text-arena-smoke/40">A carregar slots...</p>
+                                ) : (
+                                  <div className="max-h-64 overflow-y-auto rounded border border-arena-steel/20">
+                                    <table className="w-full text-xs">
+                                      <thead>
+                                        <tr className="text-left text-arena-smoke/40 uppercase tracking-wider border-b border-arena-steel/10 bg-arena-charcoal/60 sticky top-0">
+                                          <th className="px-3 py-2">#</th>
+                                          <th className="px-3 py-2">Slot</th>
+                                          <th className="px-3 py-2">Bet</th>
+                                          <th className="px-3 py-2">Payout</th>
+                                          <th className="px-3 py-2">Multi</th>
+                                          <th className="px-3 py-2"></th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {slots.map((slot, i) => {
+                                          const bet = slot.bet_size ?? slot.buy_value ?? 0;
+                                          const payoutVal = parseFloat((slotPayoutEdits[slot.id] || "0").replace(",", "."));
+                                          const multi = bet > 0 && isFinite(payoutVal) ? (payoutVal / bet).toFixed(1) : "—";
+                                          return (
+                                            <tr key={slot.id} className="border-b border-arena-steel/5 hover:bg-white/[0.02]">
+                                              <td className="px-3 py-1.5 text-arena-smoke/40">{i + 1}</td>
+                                              <td className="px-3 py-1.5 text-arena-smoke max-w-[140px] truncate">{slot.name}</td>
+                                              <td className="px-3 py-1.5 text-arena-smoke/60">{s.currency}{bet.toFixed(2)}</td>
+                                              <td className="px-3 py-1.5">
+                                                <input
+                                                  type="number"
+                                                  step="0.01"
+                                                  min="0"
+                                                  value={slotPayoutEdits[slot.id] ?? ""}
+                                                  onChange={(e) => setSlotPayoutEdits((prev) => ({ ...prev, [slot.id]: e.target.value }))}
+                                                  className="w-24 bg-arena-charcoal border border-arena-gold/20 rounded px-2 py-0.5 text-arena-smoke text-xs focus:outline-none focus:border-amber-400/50"
+                                                />
+                                              </td>
+                                              <td className="px-3 py-1.5 text-arena-gold">{multi}x</td>
+                                              <td className="px-3 py-1.5">
+                                                <button
+                                                  onClick={async () => {
+                                                    const ok = await saveSlotPayout(slot.id);
+                                                    if (ok && payoutsHuntId) {
+                                                      await loadSlots(payoutsHuntId);
+                                                      fetchHistory();
+                                                      setPayoutsMsg({ ok: true, text: "Guardado!" });
+                                                    }
+                                                  }}
+                                                  disabled={slotSaving[slot.id]}
+                                                  className="px-2 py-0.5 text-xs rounded border border-arena-gold/30 text-arena-gold/70 hover:bg-arena-gold/10 hover:text-arena-gold transition-all disabled:opacity-50 cursor-pointer font-[family-name:var(--font-display)] tracking-widest uppercase"
+                                                >
+                                                  {slotSaving[slot.id] ? "..." : "Guardar"}
+                                                </button>
+                                              </td>
+                                            </tr>
+                                          );
+                                        })}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                )}
+                                {payoutsMsg && (
+                                  <p className="text-xs font-[family-name:var(--font-display)] tracking-wide" style={{ color: payoutsMsg.ok ? "#22c55e" : "#8b1a1a" }}>
+                                    {payoutsMsg.ok ? "✓" : "✗"} {payoutsMsg.text}
                                   </p>
                                 )}
                               </div>
