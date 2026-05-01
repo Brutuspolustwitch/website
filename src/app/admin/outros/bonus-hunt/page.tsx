@@ -492,7 +492,6 @@ export default function AdminBonusHuntPage() {
               </div>
             ) : (
               <div className="rounded-xl bg-arena-charcoal/60 border border-arena-steel/20 overflow-hidden">
-                <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="text-left text-arena-smoke/50 text-xs uppercase tracking-wider border-b border-arena-steel/10">
@@ -513,7 +512,7 @@ export default function AdminBonusHuntPage() {
                       {history.map((s) => (
                         <React.Fragment key={s.id}>
                         <tr className="border-b border-arena-steel/5 hover:bg-white/[0.02]">
-                          <td className="px-4 py-3 text-arena-smoke font-medium max-w-[180px] truncate">{s.title}</td>
+                          <td className="px-4 py-3 text-arena-smoke font-medium truncate">{s.title}</td>
                           <td className="px-4 py-3 text-arena-smoke/60">
                             {s.hunt_date
                               ? new Date(s.hunt_date).toLocaleDateString("pt-PT")
@@ -724,7 +723,6 @@ export default function AdminBonusHuntPage() {
                       ))}
                     </tbody>
                   </table>
-                </div>
               </div>
             )}
           </div>
