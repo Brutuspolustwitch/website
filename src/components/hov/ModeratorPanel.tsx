@@ -310,15 +310,33 @@ function VictoryCard({
   onRemove: () => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const [dragOver, setDragOver] = useState(false);
+
+  function handleFiles(files: FileList | null) {
+    const f = files?.[0];
+    if (f && f.type.startsWith("image/")) onUpload(f);
+  }
 
   return (
-    <div className="rounded-xl overflow-hidden border border-arena-gold/30 bg-black/80">
+    <div
+      className="rounded-xl overflow-hidden border border-arena-gold/30 bg-black/80"
+      tabIndex={0}
+      onPaste={(e) => {
+        const item = Array.from(e.clipboardData.items).find(i => i.type.startsWith("image/"));
+        if (item) { const f = item.getAsFile(); if (f) onUpload(f); }
+      }}
+    >
       <div className="grid md:grid-cols-[220px_1fr] gap-0">
 
         {/* Image slot */}
         <div
           onClick={() => fileRef.current?.click()}
-          className="relative aspect-[5/4] md:aspect-auto md:min-h-[180px] bg-black/60 border-b md:border-b-0 md:border-r border-arena-gold/20 cursor-pointer flex items-center justify-center group"
+          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={(e) => { e.preventDefault(); setDragOver(false); handleFiles(e.dataTransfer.files); }}
+          className={`relative aspect-[5/4] md:aspect-auto md:min-h-[180px] bg-black/60 border-b md:border-b-0 md:border-r border-arena-gold/20 cursor-pointer flex items-center justify-center group transition-colors ${
+            dragOver ? "bg-arena-gold/10 border-arena-gold/60" : ""
+          }`}
         >
           {merged.image_url ? (
             <>
@@ -332,7 +350,7 @@ function VictoryCard({
           ) : (
             <span className="text-arena-smoke text-xs px-3 text-center flex flex-col items-center gap-1">
               <Upload size={16} className="opacity-50" />
-              {uploading ? "A carregar…" : "Clica para adicionar imagem"}
+              {uploading ? "A carregar…" : dragOver ? "Larga aqui!" : "Clica, arrasta ou Ctrl+V"}
             </span>
           )}
           {v.suspicious && (
@@ -346,7 +364,7 @@ function VictoryCard({
           type="file"
           accept="image/jpeg,image/png,image/webp,image/gif"
           className="hidden"
-          onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(f); }}
+          onChange={(e) => handleFiles(e.target.files)}
         />
 
         {/* Fields */}
