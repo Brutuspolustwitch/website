@@ -8,42 +8,66 @@ import { STAGGER_CONTAINER, STAGGER_ITEM } from "@/lib/animations";
 /* ── Arena content types ─────────────────────────────────────────── */
 const ARENA_TYPES = [
   {
-    icon: "⚔",
-    label: "Combates",
-    badge: "Slots",
-    desc: "Cada spin é um duelo. Sem redes, sem proteção. O cilindro gira e decide quem fica de pé.",
+    icon: "🏆",
+    label: "Liga dos Brutus",
+    badge: "Torneio",
+    desc: "Todas as semanas selecionamos jogadores de diferentes formas para competir no torneio de final do mês. Quem entra, combate.",
     variant: "gold" as const,
+    href: "/liga-dos-brutus",
   },
   {
-    icon: "🛡",
-    label: "Campanhas",
-    badge: "Bonus Hunts",
-    desc: "Guerras de longa distância. Acumula-se munição, escolhe-se o momento, entra-se com força total.",
+    icon: "🎰",
+    label: "Bonus Hunt",
+    badge: "Campanhas",
+    desc: "Sempre a tentar aumentar o cardápio. Acumula-se munição, escolhe-se o momento, entra-se com força total.",
     variant: "crimson" as const,
+    href: "/bonus-hunt",
   },
   {
-    icon: "👑",
-    label: "Vitórias",
-    badge: "Wins",
-    desc: "Quando a arena sorri. Celebradas em conjunto — a Legião está sempre presente quando o campo rende.",
+    icon: "🌾",
+    label: "Slot Farm",
+    badge: "Marathons",
+    desc: "Quando castigamos mesmo muito. As sessões mais longas e intensas da arena — sem pausas, sem piedade.",
+    variant: "crimson" as const,
+    href: null,
+  },
+  {
+    icon: "🎮",
+    label: "Slot Request",
+    badge: "Tu decides",
+    desc: "Fazes tu o Bonus Hunt. O chat escolhe os slots, define as apostas. A arena é de todos.",
     variant: "gold" as const,
-  },
-  {
-    icon: "☠",
-    label: "Quedas",
-    badge: "Losses",
-    desc: "A arena cobra o seu preço. Mostro tudo — as quedas fazem parte de qualquer batalha honesta.",
-    variant: "crimson" as const,
+    href: null,
   },
 ];
 
-/* ── Code of the Arena rules ─────────────────────────────────────── */
-const CODE_ITEMS = [
-  { numeral: "I",   line: "Sem filtros",     sub: "A câmara não apaga. O que acontece, fica." },
-  { numeral: "II",  line: "Sem garantias",   sub: "Cada sessão pode ir para qualquer lado." },
-  { numeral: "III", line: "Só jogo real",    sub: "Zero encenação. Zero edição de resultado." },
-  { numeral: "IV",  line: "A Legião decide", sub: "O chat tem voz real nas batalhas." },
-  { numeral: "V",   line: "Cada spin conta", sub: "Nenhum é descartado. Nenhum é esquecido." },
+/* ── Timeline items ─────────────────────────────────────────────── */
+const TIMELINE_ITEMS = [
+  {
+    year: "1990",
+    label: "Nasce em Coimbra",
+    desc: "Coimbra, Portugal. O início de tudo.",
+    image: null as string | null,
+  },
+  {
+    year: "2015",
+    label: "Poker & Slots em Coimbra",
+    desc: "Durante os anos na Universidade de Direito, o poker era o passatempo. As slots vieram nas pausas dos estudos — e foi aí que este mundo começou.",
+    image: null as string | null,
+  },
+  {
+    year: "2020",
+    label: "Início do Streaming",
+    desc: "Encontrou a Twitch pela primeira vez. Criou uma conta, pesquisou, aprendeu e lançou o canal. O que era diversão passou a ser trabalho diário.",
+    image: null as string | null,
+  },
+  {
+    year: "Hoje",
+    label: "A Arena Está Aberta",
+    desc: "Uma equipa, uma comunidade e um canal que cresceu com o seu criador. A arena aguarda.",
+    video: "https://www.twitch.tv/brutuspolus",
+    image: null as string | null,
+  },
 ];
 
 /* ── Reusable section label with ornamental line ─────────────────── */
@@ -137,13 +161,27 @@ export function SobreContent() {
 
           {/* Subtitle */}
           <motion.p
-            className="gladiator-subtitle text-sm sm:text-base tracking-[0.28em]"
+            className="gladiator-subtitle text-sm sm:text-base tracking-[0.28em] mb-5"
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.68, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             Sem filtros · Sem encenação · Só a arena
           </motion.p>
+
+          {/* "A História" label */}
+          <motion.div
+            className="flex items-center justify-center gap-4 mt-4"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.82, ease: [0.25, 0.46, 0.45, 0.94] }}
+          >
+            <div className="h-px w-10 bg-arena-gold/25" />
+            <span className="font-[family-name:var(--font-display)] text-arena-gold/55 text-xs tracking-[0.38em] uppercase">
+              A História
+            </span>
+            <div className="h-px w-10 bg-arena-gold/25" />
+          </motion.div>
 
         </div>
       </section>
@@ -166,28 +204,26 @@ export function SobreContent() {
             {/* Bio — left column */}
             <div className="lg:col-span-7 space-y-7">
 
-              {/* First paragraph: bold left border in crimson (most important statement) */}
+              {/* First paragraph */}
               <ScrollReveal delay={0.1}>
                 <p className="text-arena-white/90 text-base sm:text-lg leading-relaxed pl-5 border-l-2 border-arena-crimson/60">
-                  <span className="font-[family-name:var(--font-display)] text-arena-gold">Chamo-me Brutuspolus.</span>{" "}
-                  Sou o gladiador português que entra na arena do casino sem rede nem proteção. Mostro tudo — as vitórias que fazem a multidão gritar e as quedas que provam que o campo de batalha não perdoa.
+                  <span className="font-[family-name:var(--font-display)] text-arena-gold">Apaixonado pelo gambling</span>{" "}
+                  desde os tempos em que estudava na Universidade de Direito de Coimbra. O poker era o passatempo nas pausas dos estudos — e foi aí que as slots apareceram pela primeira vez, a jogar com os amigos. Estava descoberta a entrada para este mundo.
                 </p>
               </ScrollReveal>
 
-              {/* Second paragraph: subtler gold border */}
+              {/* Second paragraph */}
               <ScrollReveal delay={0.18}>
                 <p className="text-arena-smoke text-base sm:text-lg leading-relaxed pl-5 border-l border-arena-gold/20">
-                  Das campanhas de bonus hunt aos combates diretos com novos slots — cada sessão é um campo de batalha diferente. O chat não assiste:{" "}
-                  <span className="text-arena-white/80">decide</span>. Muitas das batalhas são travadas em conjunto, e é essa voz coletiva que dá pulso à arena.
+                  Encontrei a Twitch — era a primeira vez que entrava nesta plataforma. Criei uma conta, pesquisei artigos, vi vídeos de como configurar o canal e comecei esta aventura. Seria suficiente? Achei que não.
                 </p>
               </ScrollReveal>
 
               {/* Third paragraph */}
               <ScrollReveal delay={0.26}>
                 <p className="text-arena-smoke text-base sm:text-lg leading-relaxed pl-5 border-l border-arena-gold/20">
-                  Isto não é entretenimento. É a{" "}
-                  <span className="text-arena-white/80">experiência completa</span>{" "}
-                  da arena — onde cada spin tem peso real, cada decisão tem consequência, e quem está do outro lado vive tudo comigo, em tempo real, sem cortes.
+                  Fui evoluindo cada vez mais o canal e, comigo, foi crescendo também uma equipa que me tem ajudado a concretizar este projeto.{" "}
+                  <span className="text-arena-white/80">O que era um momento de diversão, passou a ser o meu trabalho diário.</span>
                 </p>
               </ScrollReveal>
 
@@ -224,13 +260,13 @@ export function SobreContent() {
                   {/* Quick-fact grid */}
                   <div className="grid grid-cols-2 gap-3">
                     {[
-                      { value: "500+", label: "Slots Testados" },
-                      { value: "Chat", label: "Decide Tudo" },
+                      { value: "1990", label: "Nascido" },
+                      { value: "Coimbra", label: "Origem" },
+                      { value: "2020", label: "Streaming Slots desde" },
                       { value: "100%", label: "Real e Ao Vivo" },
-                      { value: "Zero", label: "Filtros" },
                     ].map((s) => (
                       <div key={s.label} className="sobre-stat-box rounded-sm">
-                        <p className="font-[family-name:var(--font-ui)] text-arena-gold text-2xl tracking-wider leading-none mb-1">
+                        <p className="font-[family-name:var(--font-ui)] text-arena-gold text-xl tracking-wider leading-none mb-1">
                           {s.value}
                         </p>
                         <p className="font-[family-name:var(--font-display)] text-arena-smoke/55 text-xs tracking-widest uppercase">
@@ -281,22 +317,13 @@ export function SobreContent() {
             viewport={{ once: true, margin: "-60px" }}
             className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5"
           >
-            {ARENA_TYPES.map((type) => (
-              /* Framer handles the lift on hover — CSS transform would conflict */
-              <motion.div
-                key={type.label}
-                variants={STAGGER_ITEM}
-                whileHover={{ y: -5, transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] } }}
-              >
-                <div className={`stone-panel${type.variant === "crimson" ? " stone-panel--crimson" : ""} rounded-sm p-6 sm:p-7 h-full arena-shine group cursor-default`}>
+            {ARENA_TYPES.map((type) => {
+              const cardContent = (
+                <div className={`stone-panel${type.variant === "crimson" ? " stone-panel--crimson" : ""} rounded-sm p-6 sm:p-7 h-full arena-shine group ${type.href ? "cursor-pointer" : "cursor-default"}`}>
                   <div className="flex items-start gap-4">
-
-                    {/* Icon — scales up on group-hover */}
                     <div className="text-2xl sm:text-3xl leading-none mt-0.5 shrink-0 group-hover:scale-110 transition-transform duration-300">
                       {type.icon}
                     </div>
-
-                    {/* Card body */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2.5 mb-3 flex-wrap">
                         <h3 className={`font-[family-name:var(--font-ui)] text-lg sm:text-xl tracking-[0.15em] uppercase leading-none ${
@@ -304,7 +331,6 @@ export function SobreContent() {
                         }`}>
                           {type.label}
                         </h3>
-                        {/* Original-name badge — subtle engraved tag */}
                         <span className={`font-[family-name:var(--font-display)] text-xs px-2 py-0.5 border tracking-wider rounded-sm leading-none ${
                           type.variant === "gold"
                             ? "border-arena-gold/20 text-arena-gold/40 bg-arena-gold/5"
@@ -316,12 +342,31 @@ export function SobreContent() {
                       <p className="text-arena-smoke/80 text-sm sm:text-base leading-relaxed">
                         {type.desc}
                       </p>
+                      {type.href && (
+                        <span className={`inline-block mt-3 text-xs tracking-[0.18em] uppercase font-[family-name:var(--font-ui)] ${
+                          type.variant === "gold" ? "text-arena-gold/55 group-hover:text-arena-gold" : "text-arena-red/55 group-hover:text-arena-red"
+                        } transition-colors duration-300`}>
+                          Ver mais →
+                        </span>
+                      )}
                     </div>
-
                   </div>
                 </div>
-              </motion.div>
-            ))}
+              );
+              return (
+                <motion.div
+                  key={type.label}
+                  variants={STAGGER_ITEM}
+                  whileHover={{ y: -5, transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] } }}
+                >
+                  {type.href ? (
+                    <a href={type.href}>{cardContent}</a>
+                  ) : (
+                    cardContent
+                  )}
+                </motion.div>
+              );
+            })}
           </motion.div>
 
         </div>
@@ -329,20 +374,19 @@ export function SobreContent() {
 
 
       {/* ═══════════════════════════════════════════════════════════
-          III — A LEGIÃO
+          III — A COMUNIDADE
           Community section. Crimson atmospheric glow.
-          Left: powerful quote + copy. Right: three community pillars.
+          Left: quote. Right: three community feature cards with links.
           ══════════════════════════════════════════════════════════ */}
       <section className="py-20 sm:py-28 relative overflow-hidden">
 
-        {/* Atmospheric tint — subtle crimson field rising from center */}
         <div className="absolute inset-0 bg-gradient-to-b from-arena-black via-arena-blood/[0.07] to-arena-black pointer-events-none" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-arena-crimson/[0.06] blur-[90px] rounded-full pointer-events-none" />
 
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
           <ScrollReveal>
-            <SectionLabel numeral="III" label="A Legião" />
+            <SectionLabel numeral="III" label="A Comunidade" />
           </ScrollReveal>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-14 items-start">
@@ -351,9 +395,9 @@ export function SobreContent() {
             <div className="lg:col-span-7">
               <ScrollReveal delay={0.1}>
                 <blockquote className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl lg:text-[2rem] text-arena-white/90 leading-snug mb-6">
-                  "O chat não é audiência.{" "}
-                  <em className="text-arena-red/80 not-italic">É a legião</em>{" "}
-                  que combate ao meu lado."
+                  "Não é apenas um canal Twitch,{" "}
+                  <em className="text-arena-gold/80 not-italic">é uma família</em>{" "}
+                  que partilha o gosto pelo gambling."
                 </blockquote>
                 <p className="text-arena-smoke/80 text-base sm:text-lg leading-relaxed max-w-lg">
                   Nas streams de Brutuspolus, ninguém está de fora. A comunidade decide, arrisca e celebra — cada spin é vivido por todos, em simultâneo, com peso real.
@@ -361,39 +405,45 @@ export function SobreContent() {
               </ScrollReveal>
             </div>
 
-            {/* Three pillars — right */}
+            {/* Community feature cards — right */}
             <div className="lg:col-span-5 space-y-3">
               {[
                 {
+                  icon: "🏆",
+                  title: "Leaderboard",
+                  desc: "A tabela dos nossos Brutus",
+                  href: "/leaderboard",
+                },
+                {
                   icon: "⚔",
-                  title: "Decisões em conjunto",
-                  desc: "O chat define as batalhas — que slot entrar, quanto apostar, quando parar.",
+                  title: "Bruta do Mês",
+                  desc: "Onde partilhas as tuas vitórias e ganhas prémios",
+                  href: "/hall-of-victories",
                 },
                 {
-                  icon: "🔴",
-                  title: "Ao vivo, sem cortes",
-                  desc: "Nada é editado. A arena mostra tudo — vitórias e derrotas em tempo real.",
+                  icon: "🎁",
+                  title: "Giveaways",
+                  desc: "Sorteios que decorrem na nossa live stream",
+                  href: "/giveaways",
                 },
-                {
-                  icon: "🏛",
-                  title: "Pertences à legião",
-                  desc: "Aqui não há espectadores passivos. Só guerreiros que sentem cada combate.",
-                },
-              ].map((pillar, i) => (
-                <ScrollReveal key={pillar.title} delay={0.1 * (i + 1)}>
-                  <div className="flex gap-4 p-4 sm:p-5 rounded-sm border border-arena-crimson/15 bg-arena-crimson/[0.04] hover:border-arena-crimson/30 hover:bg-arena-crimson/[0.07] transition-all duration-300 group">
-                    <span className="text-xl leading-none mt-0.5 shrink-0 group-hover:scale-110 transition-transform duration-300">
-                      {pillar.icon}
-                    </span>
-                    <div>
-                      <p className="font-[family-name:var(--font-ui)] text-arena-white/85 tracking-wider text-sm uppercase mb-1 group-hover:text-arena-white transition-colors duration-300">
-                        {pillar.title}
-                      </p>
-                      <p className="text-arena-smoke/65 text-sm leading-relaxed">
-                        {pillar.desc}
-                      </p>
+              ].map((card, i) => (
+                <ScrollReveal key={card.title} delay={0.1 * (i + 1)}>
+                  <a href={card.href} className="block group">
+                    <div className="flex gap-4 p-4 sm:p-5 rounded-sm border border-arena-gold/15 bg-arena-gold/[0.03] hover:border-arena-gold/35 hover:bg-arena-gold/[0.07] transition-all duration-300">
+                      <span className="text-xl leading-none mt-0.5 shrink-0 group-hover:scale-110 transition-transform duration-300">
+                        {card.icon}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-[family-name:var(--font-ui)] text-arena-gold/85 tracking-wider text-sm uppercase mb-1 group-hover:text-arena-gold transition-colors duration-300">
+                          {card.title}
+                        </p>
+                        <p className="text-arena-smoke/65 text-sm leading-relaxed">
+                          {card.desc}
+                        </p>
+                      </div>
+                      <span className="text-arena-gold/30 group-hover:text-arena-gold/70 transition-colors duration-300 text-sm self-center shrink-0">→</span>
                     </div>
-                  </div>
+                  </a>
                 </ScrollReveal>
               ))}
             </div>
@@ -404,56 +454,81 @@ export function SobreContent() {
 
 
       {/* ═══════════════════════════════════════════════════════════
-          IV — CÓDIGO DA ARENA
-          Numbered rules styled as engraved stone edicts.
-          Each item slides right on hover, numeral glows gold.
+          IV — CRONOLOGIA DO BRUTUS
+          Vertical timeline with year markers, images, and a video.
           ══════════════════════════════════════════════════════════ */}
       <section className="py-20 sm:py-28">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
           <ScrollReveal>
-            <SectionLabel numeral="IV" label="Código da Arena" />
-            <div className="mb-10 -mt-4">
+            <SectionLabel numeral="IV" label="Cronologia do Brutus" />
+            <div className="mb-12 -mt-4">
               <h2 className="font-[family-name:var(--font-display)] text-arena-white/85 text-xl sm:text-2xl tracking-wide">
-                As leis que regem cada batalha
+                A linha do tempo
               </h2>
             </div>
           </ScrollReveal>
 
-          <motion.div
-            variants={STAGGER_CONTAINER}
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true, margin: "-40px" }}
-            className="space-y-2"
-          >
-            {CODE_ITEMS.map((item) => (
-              <motion.div key={item.numeral} variants={STAGGER_ITEM}>
-                {/* CSS handles the translateX slide (no Framer conflict since no y/scale motion here) */}
-                <div className="arena-code-item rounded-sm group">
+          <div className="relative">
+            {/* Vertical line */}
+            <div className="absolute left-6 sm:left-8 top-0 bottom-0 w-px bg-gradient-to-b from-arena-gold/30 via-arena-gold/15 to-transparent" />
 
-                  {/* Roman numeral — faint, glows on hover */}
-                  <span className="font-[family-name:var(--font-display)] text-arena-gold/30 text-xs tracking-[0.22em] w-8 shrink-0 group-hover:text-arena-gold/65 transition-colors duration-300">
-                    {item.numeral}
-                  </span>
+            <div className="space-y-12 sm:space-y-16">
+              {TIMELINE_ITEMS.map((item, i) => (
+                <ScrollReveal key={item.year} delay={0.1 * (i + 1)}>
+                  <div className="flex gap-6 sm:gap-10 items-start pl-2">
 
-                  {/* Vertical separator line */}
-                  <div className="w-px h-9 bg-arena-gold/12 shrink-0 group-hover:bg-arena-gold/35 transition-colors duration-300" />
+                    {/* Year node */}
+                    <div className="relative shrink-0 flex flex-col items-center">
+                      <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-sm border border-arena-gold/30 bg-arena-gold/[0.06] flex items-center justify-center z-10">
+                        <span className="font-[family-name:var(--font-ui)] text-arena-gold text-xs sm:text-sm tracking-wider leading-none text-center">
+                          {item.year}
+                        </span>
+                      </div>
+                    </div>
 
-                  {/* Rule text */}
-                  <div className="flex-1 min-w-0">
-                    <p className="font-[family-name:var(--font-ui)] text-arena-white/90 text-lg sm:text-xl tracking-wider uppercase group-hover:text-arena-gold transition-colors duration-300 leading-tight">
-                      {item.line}
-                    </p>
-                    <p className="text-arena-smoke/55 text-xs sm:text-sm mt-0.5 leading-relaxed">
-                      {item.sub}
-                    </p>
+                    {/* Content */}
+                    <div className="flex-1 min-w-0 pb-2">
+                      <h3 className="font-[family-name:var(--font-ui)] text-arena-white/90 text-base sm:text-lg tracking-wider uppercase mb-2">
+                        {item.label}
+                      </h3>
+                      <p className="text-arena-smoke/70 text-sm sm:text-base leading-relaxed mb-4">
+                        {item.desc}
+                      </p>
+
+                      {/* Image slot */}
+                      {item.image && (
+                        <div className="relative w-full max-w-sm h-40 sm:h-52 rounded-sm overflow-hidden border border-arena-gold/15">
+                          <Image
+                            src={item.image}
+                            alt={item.label}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+
+                      {/* Video link */}
+                      {"video" in item && item.video && (
+                        <a
+                          href={item.video}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-sm border border-arena-gold/25 bg-arena-gold/[0.05] hover:border-arena-gold/50 hover:bg-arena-gold/[0.10] transition-all duration-300 group"
+                        >
+                          <span className="text-base">▶</span>
+                          <span className="font-[family-name:var(--font-ui)] text-arena-gold/75 group-hover:text-arena-gold text-xs tracking-[0.18em] uppercase transition-colors duration-300">
+                            Ver na Twitch
+                          </span>
+                        </a>
+                      )}
+                    </div>
+
                   </div>
-
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+                </ScrollReveal>
+              ))}
+            </div>
+          </div>
 
         </div>
       </section>
@@ -470,7 +545,7 @@ export function SobreContent() {
             <div className="h-px w-12 bg-gradient-to-l from-transparent to-arena-gold/25" />
           </div>
           <p className="font-[family-name:var(--font-display)] text-arena-smoke/40 text-xs tracking-[0.28em] uppercase">
-            A arena está aberta · A legião aguarda
+            A arena está aberta · A família aguarda
           </p>
         </ScrollReveal>
       </section>
