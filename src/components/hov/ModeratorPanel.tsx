@@ -35,7 +35,7 @@ export default function ModeratorPanel() {
   async function load() {
     setLoading(true);
     try {
-      const res = await fetch("/api/hall-of-victors", { cache: "no-store" });
+      const res = await fetch("/api/hall-of-victors?mod=1", { cache: "no-store" });
       const j = await res.json();
       if (res.ok) setItems(j.victories ?? []);
     } finally { setLoading(false); }

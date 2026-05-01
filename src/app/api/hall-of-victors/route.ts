@@ -57,7 +57,20 @@ function num(v: unknown): number | null {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
 
-  // Moderation queue
+  // Moderation queue — all statuses
+  if (searchParams.get("mod") === "1") {
+    const mod = await getModSession();
+    if (!mod) return NextResponse.json({ error: "Sem permissão" }, { status: 403 });
+    const { data, error } = await supabase
+      .from("hov_victories")
+      .select("*")
+      .in("status", ["pending", "approved", "rejected"])
+      .order("created_at", { ascending: false });
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ victories: data ?? [] });
+  }
+
+  // Legacy: pending-only queue
   if (searchParams.get("pending") === "1") {
     const mod = await getModSession();
     if (!mod) return NextResponse.json({ error: "Sem permissão" }, { status: 403 });
