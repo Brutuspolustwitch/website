@@ -175,9 +175,13 @@ export default function AdminBonusHuntPage() {
             isSuperBonus: (b.isSuperBonus as boolean) ?? false,
             isExtremeBonus: (b.isExtremeBonus as boolean) ?? false,
           }));
-          // Recalculate profit using only opened bonuses (consistent with import route)
-          const openedBuy = bonusesArr.filter((b) => b.opened).reduce((s, b) => s + b.betSize, 0);
-          const recalcProfit = (data.total_win ?? 0) - openedBuy;
+          // Recalculate profit (matches import route logic)
+          const stopLoss = (data.stop_loss as number) ?? 0;
+          const startMoney = (data.start_money as number) ?? 0;
+          const actualCost = stopLoss > 0
+            ? startMoney - stopLoss
+            : bonusesArr.filter((b) => b.opened).reduce((s, b) => s + b.betSize, 0);
+          const recalcProfit = ((data.total_win as number) ?? 0) - actualCost;
 
         setRawData(text);
         setPreview({

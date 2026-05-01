@@ -85,12 +85,16 @@ export async function POST(request: NextRequest) {
   // Calculate total_buy from betSize sum (all bonuses purchased)
   const totalBuy = data.bonuses.reduce((sum, b) => sum + (b.betSize ?? 0), 0);
 
-  // Calculate profit using only opened bonuses — if stop_loss triggered, unopened
-  // bonuses were not played so only count their buy cost when opened.
-  const openedBuy = data.bonuses
-    .filter((b) => b.opened)
-    .reduce((sum, b) => sum + (b.betSize ?? 0), 0);
-  const recalcProfit = (data.total_win ?? 0) - openedBuy;
+  // Profit formula:
+  //   With stop_loss: only risk the difference (start_money - stop_loss)
+  //     e.g. start=1000, stop=700 → cost=300, profit = total_win - 300
+  //   Without stop_loss: cost = sum of all opened bonus buy values
+  const stopLoss = data.stop_loss ?? 0;
+  const startMoney = data.start_money ?? 0;
+  const actualCost = stopLoss > 0
+    ? startMoney - stopLoss
+    : data.bonuses.filter((b) => b.opened).reduce((sum, b) => sum + (b.betSize ?? 0), 0);
+  const recalcProfit = (data.total_win ?? 0) - actualCost;
 
   // 1. Insert session
   const { data: sessionRow, error: sessionError } = await supabase
