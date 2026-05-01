@@ -4,7 +4,7 @@ import { supabase } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
-const APPROVAL_REWARD = 300; // SE points
+const APPROVAL_REWARD = 250; // SE points
 
 type Session = { id: string; login: string; role?: string };
 
