@@ -24,16 +24,30 @@ interface SlotRow {
 }
 
 async function recomputeSessionTotals(sessionId: string) {
-  const { data: slots } = await supabase
-    .from("bonus_hunt_slots")
-    .select("id, buy_value, bet_size, payout, result, opened, name")
-    .eq("session_id", sessionId);
+  const [{ data: slots }, { data: sessionRow }] = await Promise.all([
+    supabase
+      .from("bonus_hunt_slots")
+      .select("id, buy_value, bet_size, payout, result, opened, name")
+      .eq("session_id", sessionId),
+    supabase
+      .from("bonus_hunt_sessions")
+      .select("start_money, stop_loss")
+      .eq("id", sessionId)
+      .single(),
+  ]);
 
   const list = (slots ?? []) as SlotRow[];
   const opened = list.filter((s) => s.opened);
   const total_buy = list.reduce((sum, s) => sum + (Number(s.buy_value) || 0), 0);
   const total_result = opened.reduce((sum, s) => sum + (Number(s.payout) || Number(s.result) || 0), 0);
-  const profit = total_result - total_buy;
+
+  // Use the same profit formula as the import:
+  // if stop_loss is set → actual cost = start_money - stop_loss
+  // otherwise → actual cost = sum of all slot buy values
+  const startMoney = Number(sessionRow?.start_money) || 0;
+  const stopLoss = Number(sessionRow?.stop_loss) || 0;
+  const actualCost = stopLoss > 0 ? startMoney - stopLoss : total_buy;
+  const profit = total_result - actualCost;
 
   let best_multi = 0;
   let best_slot_name: string | null = null;
