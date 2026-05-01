@@ -127,7 +127,7 @@ export default function HallOfVictorsArena() {
                 boxShadow: "0 0 30px rgba(199,57,43,0.55), inset 0 0 0 1px rgba(0,0,0,0.4)",
               }}
             >
-              Submit Your Victory
+              Submeter a Tua Vitória
             </motion.button>
           ) : (
             <div className="text-arena-smoke">
