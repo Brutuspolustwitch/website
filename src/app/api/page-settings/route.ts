@@ -40,7 +40,7 @@ const CANONICAL_PAGES: { slug: string; name: string }[] = [
   { slug: "politica-de-privacidade", name: "Política de Privacidade" },
   { slug: "politica-de-cookies", name: "Política de Cookies" },
   { slug: "termos-e-condicoes", name: "Termos e Condições" },
-  { slug: "comunidade/mines", name: "Mines" },
+  { slug: "comunidade/mines", name: "Minas" },
   { slug: "comunidade/keno", name: "Keno" },
 ];
 

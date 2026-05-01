@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import MinesGame from "@/components/MinesGame";
 
 export const metadata: Metadata = {
-  title: "Mines | Arena",
+  title: "Minas | Arena",
   description: "Joga Mines e multiplica os teus pontos. Evita as minas e faz cashout a tempo!",
 };
 

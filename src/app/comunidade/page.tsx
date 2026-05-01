@@ -51,7 +51,7 @@ const CATEGORIES = [
   },
   {
     href: "/comunidade/mines",
-    title: "Mines",
+    title: "Minas",
     description: "Evita as minas, revela diamantes e multiplica os teus pontos",
     icon: "💣",
     color: "from-red-600/20 to-red-500/10",
