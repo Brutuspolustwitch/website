@@ -562,8 +562,8 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                         <span style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, marginBottom: "2px" }}>
                           Início - Stop
                         </span>
-                        <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.5rem", fontWeight: 700, color: "#2e7d32" }}>
-                          {startMinusStop >= 0 ? "+" : ""}{startMinusStop.toFixed(2)}€
+                        <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.5rem", fontWeight: 700, color: "#c62828" }}>
+                          -{startMinusStop.toFixed(2)}€
                         </span>
                       </div>
 
