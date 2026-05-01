@@ -43,6 +43,24 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
   const [predLoading, setPredLoading] = useState(false);
   const [predMsg, setPredMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
+  /* Jackpot state */
+  const [jackpot, setJackpot] = useState<number>(30);
+
+  /* Fetch jackpot on mount + realtime subscription */
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.from("jackpot").select("amount").eq("id", 1).single();
+      if (data) setJackpot(Number(data.amount));
+    })();
+    const ch = supabase
+      .channel("jackpot-realtime")
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "jackpot" }, (payload) => {
+        setJackpot(Number((payload.new as { amount: number }).amount));
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, []);
+
   /* Fetch all campaigns */
   useEffect(() => {
     (async () => {
@@ -490,7 +508,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                                 letterSpacing: "0.06em",
                                 lineHeight: 1.3,
                               }}>
-                                {(slot.result / slot.buy_value).toFixed(2)}x
+                                {Math.round(slot.result / slot.buy_value)}x
                               </p>
                             )}
                           </>
@@ -570,7 +588,29 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                   {/* WAR STATS */}
                   {tab === "war-stats" && (
                     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                      {/* Start - Stop (green stat) */}
+
+                      {/* Jackpot */}
+                      <div style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        padding: "10px 8px",
+                        borderRadius: "8px",
+                        background: "linear-gradient(135deg, rgba(212,175,55,0.18) 0%, rgba(180,140,30,0.08) 100%)",
+                        border: "1.5px solid rgba(212,175,55,0.5)",
+                      }}>
+                        <span style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--gold-dark)", letterSpacing: "0.18em", textTransform: "uppercase", fontWeight: 700, marginBottom: "2px" }}>
+                          🎰 Jackpot
+                        </span>
+                        <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.8rem", fontWeight: 800, color: "var(--gold-dark)", lineHeight: 1 }}>
+                          {Math.round(jackpot)}€
+                        </span>
+                        <span style={{ fontFamily: "var(--font-display)", fontSize: "0.4rem", color: "var(--ink-light)", letterSpacing: "0.1em", marginTop: "3px" }}>
+                          Adivinha o total exato para ganhar
+                        </span>
+                      </div>
+
+                      {/* Profit / Loss */}
                       <div style={{
                         display: "flex",
                         flexDirection: "column",
@@ -581,7 +621,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                           Profit / Loss
                         </span>
                         <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.5rem", fontWeight: 700, color: profitLoss >= 0 ? "#22c55e" : "#c62828" }}>
-                          {profitLoss >= 0 ? "+" : ""}{profitLoss.toFixed(2)}{campaign?.currency ?? "€"}
+                          {profitLoss >= 0 ? "+" : ""}{Math.round(profitLoss)}{campaign?.currency ?? "€"}
                         </span>
                       </div>
 
@@ -637,7 +677,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                           ⚡ BE Atual
                         </span>
                         <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "var(--ink-dark)" }}>
-                          {currentBE.toFixed(2)}x
+                          {Math.round(currentBE)}x
                         </span>
                       </div>
 
@@ -653,7 +693,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                           ○ BE Inicial
                         </span>
                         <span style={{ fontFamily: "var(--font-ui)", fontSize: "0.9rem", fontWeight: 700, color: "var(--ink-dark)" }}>
-                          {initialBE.toFixed(2)}x
+                          {Math.round(initialBE)}x
                         </span>
                       </div>
                     </div>
@@ -699,7 +739,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                                 <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
                                   {multi != null && (
                                     <span style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)" }}>
-                                      {multi.toFixed(1)}x
+                                      {Math.round(multi)}x
                                     </span>
                                   )}
                                   <span style={{ fontFamily: "var(--font-ui)", fontSize: "0.75rem", fontWeight: 700, color: !slot.opened ? "var(--ink-light)" : isWin ? "#2e7d32" : "#c62828", fontStyle: !slot.opened ? "italic" : "normal" }}>

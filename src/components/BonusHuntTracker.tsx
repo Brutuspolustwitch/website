@@ -250,19 +250,19 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
                       fontWeight: 700,
                       color: (selectedSession?.profit ?? 0) >= 0 ? "#2e7d32" : "#8b1a1a",
                     }}>
-                      {(selectedSession?.profit ?? 0) >= 0 ? "+" : ""}{(selectedSession?.profit ?? 0).toFixed(2)}{currency}
+                      {(selectedSession?.profit ?? 0) >= 0 ? "+" : ""}{Math.round(selectedSession?.profit ?? 0)}{currency}
                     </p>
                   </div>
                   <div>
                     <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Best Multi</p>
                     <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "var(--gold-dark)" }}>
-                      {(selectedSession?.best_multi ?? 0).toFixed(1)}x
+                      {Math.round(selectedSession?.best_multi ?? 0)}x
                     </p>
                   </div>
                   <div>
                     <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Avg Multi</p>
                     <p style={{ fontFamily: "var(--font-ui)", fontSize: "1rem", fontWeight: 700, color: "var(--ink-dark)" }}>
-                      {(selectedSession?.avg_multi ?? 0).toFixed(1)}x
+                      {Math.round(selectedSession?.avg_multi ?? 0)}x
                     </p>
                   </div>
                 </div>
@@ -277,7 +277,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
                       letterSpacing: "0.15em",
                       textTransform: "uppercase",
                     }}>
-                      🏆 Melhor Slot: {selectedSession.best_slot_name} ({selectedSession.best_multi.toFixed(1)}x)
+                      🏆 Melhor Slot: {selectedSession.best_slot_name} ({Math.round(selectedSession.best_multi)}x)
                     </span>
                   </div>
                 )}
@@ -410,7 +410,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
                               {slot.payout.toFixed(2)}{currency}
                               {multi !== null && (
                                 <span style={{ fontSize: "0.65rem", fontWeight: 400, color: "var(--ink-light)", marginLeft: "4px" }}>
-                                  ({multi.toFixed(1)}x)
+                                  ({Math.round(multi)}x)
                                 </span>
                               )}
                             </>
@@ -621,7 +621,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
                           fontWeight: 700,
                           color: "#2e7d32",
                         }}>
-                          {((bestSlot.result ?? 0) / bestSlot.buy_value).toFixed(1)}x
+                          {Math.round((bestSlot.result ?? 0) / bestSlot.buy_value)}x
                         </span>
                       </div>
                     </div>
@@ -770,7 +770,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
                           fontWeight: 700,
                           color: "#8b1a1a",
                         }}>
-                          {((worstSlot.result ?? 0) / worstSlot.buy_value).toFixed(1)}x
+                          {Math.round((worstSlot.result ?? 0) / worstSlot.buy_value)}x
                         </span>
                       </div>
                     </div>

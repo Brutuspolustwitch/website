@@ -32,11 +32,12 @@ interface DailySessionData {
    ANIMATED COUNTER
    ═══════════════════════════════════════════════════════════════════ */
 
-function AnimatedCounter({ value, prefix = "", suffix = "", className = "" }: {
+function AnimatedCounter({ value, prefix = "", suffix = "", className = "", decimals = 2 }: {
   value: number;
   prefix?: string;
   suffix?: string;
   className?: string;
+  decimals?: number;
 }) {
   const [display, setDisplay] = useState(0);
   const prevValue = useRef(0);
@@ -61,7 +62,7 @@ function AnimatedCounter({ value, prefix = "", suffix = "", className = "" }: {
 
   return (
     <span className={className}>
-      {prefix}{display.toFixed(2)}{suffix}
+      {prefix}{display.toFixed(decimals)}{suffix}
     </span>
   );
 }
@@ -420,7 +421,7 @@ export default function DailySessionContent() {
                       <div>
                         <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Resultado</p>
                         <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: net >= 0 ? "#2e7d32" : "#8b1a1a" }}>
-                          <AnimatedCounter value={net} suffix="€" />
+                          <AnimatedCounter value={net} suffix="€" decimals={0} />
                         </span>
                       </div>
                       {session.bonuses_count > 0 && (
@@ -558,7 +559,7 @@ export default function DailySessionContent() {
                             fontWeight: 700,
                             color: (monthly.withdrawals - monthly.deposits) >= 0 ? "#2e7d32" : "#8b1a1a",
                           }}>
-                            {(monthly.withdrawals - monthly.deposits).toFixed(2)}€
+                            {Math.round(monthly.withdrawals - monthly.deposits)}€
                           </p>
                         </div>
                       </div>

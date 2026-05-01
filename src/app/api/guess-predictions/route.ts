@@ -318,7 +318,63 @@ export async function PATCH(request: Request) {
       });
     }
 
-    return NextResponse.json({ guessSession: data, winner });
+    // ── Jackpot check: did anyone predict the EXACT final payout? ──
+    const jackpotWinnerPred = predictions.find(
+      (p) => Math.abs((p.predicted_amount as number) - payout) < 0.01
+    );
+
+    let jackpotWinner = null;
+    if (jackpotWinnerPred) {
+      // Read current jackpot amount
+      const { data: jackpotRow } = await supabase
+        .from("jackpot")
+        .select("amount")
+        .eq("id", 1)
+        .single();
+      const jackpotAmount = Number(jackpotRow?.amount ?? 30);
+
+      // Get winner's twitch info for SE + notification
+      const { data: jackpotUser } = await supabase
+        .from("users")
+        .select("twitch_id, login, se_username, display_name")
+        .eq("id", jackpotWinnerPred.user_id as string)
+        .single();
+
+      if (jackpotUser) {
+        // Award 1500 SE points
+        const channelId = process.env.STREAMELEMENTS_CHANNEL_ID;
+        const token = process.env.STREAMELEMENTS_JWT;
+        if (channelId && token) {
+          const seUsername = (jackpotUser.se_username as string | null) || (jackpotUser.login as string);
+          await fetch(
+            `https://api.streamelements.com/kappa/v2/points/${channelId}/${encodeURIComponent(seUsername)}/1500`,
+            { method: "PUT", headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } }
+          ).catch(() => {/* silent */});
+        }
+
+        // Insert notification
+        await supabase.from("notifications").insert({
+          user_twitch_id: jackpotUser.twitch_id as string,
+          type: "jackpot_win",
+          title: "🎰 JACKPOT!",
+          message: `Previste exatamente o valor total do Bonus Hunt! Ganhaste o jackpot de ${Math.round(jackpotAmount)}€ + 1500 pontos SE!`,
+          read: false,
+        });
+
+        jackpotWinner = {
+          display_name: (jackpotUser.display_name as string) || (jackpotWinnerPred.display_name as string),
+          amount: jackpotAmount,
+        };
+      }
+
+      // Reset jackpot to 30€
+      await supabase
+        .from("jackpot")
+        .update({ amount: 30, updated_at: new Date().toISOString() })
+        .eq("id", 1);
+    }
+
+    return NextResponse.json({ guessSession: data, winner, jackpotWinner });
   }
 
   return NextResponse.json({ error: "action inválida" }, { status: 400 });

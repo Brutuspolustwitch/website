@@ -160,6 +160,19 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Increment jackpot by 1€ for each new bonus hunt
+  const { data: jackpotRow } = await supabase
+    .from("jackpot")
+    .select("amount")
+    .eq("id", 1)
+    .single();
+  if (jackpotRow != null) {
+    await supabase
+      .from("jackpot")
+      .update({ amount: (jackpotRow.amount as number) + 1, updated_at: new Date().toISOString() })
+      .eq("id", 1);
+  }
+
   return NextResponse.json({
     success: true,
     session_id: sessionRow.id,
