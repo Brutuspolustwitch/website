@@ -94,12 +94,10 @@ const SECONDARY_LINKS: NavItem[] = [
     minRole: "moderador",
     children: [
       { href: "/admin/outros/daily-session", label: "Sessão do Dia" },
-      { href: "/admin/outros/bonus-hunt", label: "Bonus Hunt" },
       { href: "/admin/outros/calendario", label: "Calendário" },
       { href: "/admin/outros/giveaways", label: "Giveaways" },
       { href: "/admin/outros/liga", label: "Liga dos Brutus" },
       { href: "/moderador/hall-of-victors", label: "Bruta do Mês" },
-      { href: "/moderador/bonus-hunt", label: "Bonus Hunt — Payouts" },
     ],
   },
 ];
