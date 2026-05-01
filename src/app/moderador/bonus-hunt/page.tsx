@@ -171,6 +171,11 @@ export default function ModeradorBonusHuntPage() {
     callGuess({ action: "toggle_betting", guessSessionId: guessSession.id });
   }
 
+  function toggleLiga() {
+    if (!guessSession) return;
+    callGuess({ action: "toggle_liga", guessSessionId: guessSession.id });
+  }
+
   /* ── Render ───────────────────────────────── */
   if (!allowed) {
     return (
@@ -241,7 +246,7 @@ export default function ModeradorBonusHuntPage() {
                       : "Sem sessão de apostas para esta hunt."}
                   </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   {!guessSession ? (
                     <button
                       onClick={createGuess}
@@ -251,17 +256,30 @@ export default function ModeradorBonusHuntPage() {
                       Criar sessão de apostas
                     </button>
                   ) : guessSession.status === "open" ? (
-                    <button
-                      onClick={toggleBetting}
-                      disabled={guessLoading}
-                      className={`text-sm px-4 py-2 rounded-md border disabled:opacity-50 ${
-                        guessSession.betting_open
-                          ? "border-red-500/50 bg-red-500/15 text-red-100 hover:bg-red-500/25"
-                          : "border-green-500/50 bg-green-500/15 text-green-100 hover:bg-green-500/25"
-                      }`}
-                    >
-                      {guessSession.betting_open ? "Parar apostas" : "Começar apostas"}
-                    </button>
+                    <>
+                      <button
+                        onClick={toggleBetting}
+                        disabled={guessLoading}
+                        className={`text-sm px-4 py-2 rounded-md border disabled:opacity-50 ${
+                          guessSession.betting_open
+                            ? "border-red-500/50 bg-red-500/15 text-red-100 hover:bg-red-500/25"
+                            : "border-green-500/50 bg-green-500/15 text-green-100 hover:bg-green-500/25"
+                        }`}
+                      >
+                        {guessSession.betting_open ? "Parar apostas" : "Começar apostas"}
+                      </button>
+                      <button
+                        onClick={toggleLiga}
+                        disabled={guessLoading}
+                        className={`text-sm px-4 py-2 rounded-md border disabled:opacity-50 ${
+                          guessSession.liga_dos_brutus
+                            ? "border-yellow-500/60 bg-yellow-500/20 text-yellow-100 hover:bg-yellow-500/30"
+                            : "border-white/20 bg-white/5 text-white/60 hover:bg-white/10"
+                        }`}
+                      >
+                        {guessSession.liga_dos_brutus ? "⚡ Liga Ativa" : "Liga dos Brutus"}
+                      </button>
+                    </>
                   ) : (
                     <span className="text-xs text-white/50 px-3 py-2 border border-white/10 rounded-md">
                       Apostas {guessSession.status === "locked" ? "bloqueadas" : "resolvidas"}

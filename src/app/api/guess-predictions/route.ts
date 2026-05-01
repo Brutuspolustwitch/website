@@ -176,7 +176,7 @@ export async function PATCH(request: Request) {
 
   // moderador may only create or toggle betting; lock/resolve are admin/configurador only
   const isPrivileged = ["admin", "configurador"].includes(admin.role);
-  if (!isPrivileged && !["create", "toggle_betting"].includes(action)) {
+  if (!isPrivileged && !["create", "toggle_betting", "toggle_liga"].includes(action)) {
     return NextResponse.json({ error: "Sem permissão para esta acção" }, { status: 403 });
   }
 
@@ -186,6 +186,24 @@ export async function PATCH(request: Request) {
       .insert({ bonus_hunt_session_id: huntSessionId, betting_open: false, status: "open" })
       .select()
       .single();
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ guessSession: data });
+  }
+
+  if (action === "toggle_liga") {
+    const { data: current } = await supabase
+      .from("guess_sessions")
+      .select("liga_dos_brutus")
+      .eq("id", guessSessionId)
+      .single();
+
+    const { data, error } = await supabase
+      .from("guess_sessions")
+      .update({ liga_dos_brutus: !current?.liga_dos_brutus })
+      .eq("id", guessSessionId)
+      .select()
+      .single();
+
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ guessSession: data });
   }

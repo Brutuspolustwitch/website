@@ -240,7 +240,7 @@ export default function MinesGame() {
         <div className="text-5xl">💣</div>
         <h2 className="text-2xl font-bold font-[family-name:var(--font-display)]"
           style={{ color: P.brown }}>
-          Mines
+          Minas
         </h2>
         <p style={{ color: P.brownLight }}>Inicia sessão para jogar</p>
       </div>
@@ -333,7 +333,7 @@ export default function MinesGame() {
         style={{ background: `linear-gradient(135deg, ${P.parchmentDeep} 0%, ${P.parchmentMid} 100%)`, border: `2px solid ${P.border}`, boxShadow: "0 4px 16px rgba(0,0,0,0.25)" }}>
         <h1 className="text-3xl font-bold font-[family-name:var(--font-display)] tracking-wider"
           style={{ color: P.brown, textShadow: `0 1px 0 rgba(255,255,200,0.5)` }}>
-          💣 Mines
+          💣 Minas
         </h1>
         <div className="text-right">
           <p className="text-xs uppercase tracking-widest" style={{ color: P.brownLight }}>Saldo</p>

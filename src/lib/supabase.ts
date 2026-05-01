@@ -246,6 +246,7 @@ export interface GuessSession {
   id: string;
   bonus_hunt_session_id: string;
   betting_open: boolean;
+  liga_dos_brutus: boolean;
   final_payout: number | null;
   status: "open" | "locked" | "resolved";
   winner_user_id: string | null;

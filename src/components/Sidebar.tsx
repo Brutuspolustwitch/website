@@ -48,7 +48,7 @@ const MAIN_LINKS: NavItem[] = [
       { href: "/hall-of-victories", label: "Bruta do Mês" },
       { href: "/giveaways", label: "Giveaways" },
       { href: "/leaderboard", label: "Leaderboard" },
-      { href: "/comunidade/mines", label: "Mines" },
+      { href: "/comunidade/mines", label: "Minas" },
       { href: "/comunidade/keno", label: "Keno" },
     ],
   },

@@ -303,6 +303,22 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                   </span>
                 );
               })()}
+              {guessSession?.liga_dos_brutus && (
+                <span style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: "0.6rem",
+                  fontWeight: 600,
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  padding: "4px 10px",
+                  borderRadius: "4px",
+                  background: "rgba(234,179,8,0.15)",
+                  color: "#eab308",
+                  border: "1px solid rgba(234,179,8,0.35)",
+                }}>
+                  ⚡ Liga dos Brutus
+                </span>
+              )}
               <span style={{
                 fontFamily: "var(--font-ui)",
                 fontSize: "0.75rem",
