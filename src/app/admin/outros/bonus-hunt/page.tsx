@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/lib/auth-context";
-import { supabase, type BonusHuntSlot, type GuessSession, type GuessPrediction } from "@/lib/supabase";
+import { supabase, type GuessSession, type GuessPrediction } from "@/lib/supabase";
 
 interface ImportResult {
   success: boolean;
@@ -66,14 +66,6 @@ export default function AdminBonusHuntPage() {
   const [guessPayoutInput, setGuessPayoutInput] = useState("");
   const [guessMsg, setGuessMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [guessActionLoading, setGuessActionLoading] = useState(false);
-
-  /* Slot payouts state */
-  const [payoutsHuntId, setPayoutsHuntId] = useState<string | null>(null);
-  const [slots, setSlots] = useState<BonusHuntSlot[]>([]);
-  const [slotsLoading, setSlotsLoading] = useState(false);
-  const [drafts, setDrafts] = useState<Record<string, string>>({});
-  const [savingSlot, setSavingSlot] = useState<string | null>(null);
-  const [slotMsg, setSlotMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   const isAdmin = user?.role === "admin" || user?.role === "configurador" || user?.role === "moderador";
 
@@ -266,75 +258,6 @@ export default function AdminBonusHuntPage() {
     setResult(null);
     setError("");
     if (fileInputRef.current) fileInputRef.current.value = "";
-  }
-
-  /* ── Slot payouts ─────────────────────────── */
-  const loadSlots = useCallback(async (huntId: string) => {
-    setSlotsLoading(true);
-    const { data } = await supabase
-      .from("bonus_hunt_slots")
-      .select("*")
-      .eq("session_id", huntId)
-      .order("order_index", { ascending: true });
-    setSlots((data as BonusHuntSlot[]) ?? []);
-    setDrafts({});
-    setSlotsLoading(false);
-  }, []);
-
-  async function togglePayoutsPanel(huntId: string) {
-    if (payoutsHuntId === huntId) {
-      setPayoutsHuntId(null);
-      return;
-    }
-    setPayoutsHuntId(huntId);
-    setSlotMsg(null);
-    setDrafts({});
-    await loadSlots(huntId);
-  }
-
-  async function savePayout(slot: BonusHuntSlot) {
-    const raw = drafts[slot.id];
-    if (raw === undefined) return;
-    const trimmed = raw.trim().replace(",", ".");
-    const payout = trimmed === "" ? null : Number(trimmed);
-    if (payout !== null && (!isFinite(payout) || payout < 0)) {
-      setSlotMsg({ ok: false, text: "Valor inválido" });
-      return;
-    }
-    setSavingSlot(slot.id);
-    setSlotMsg(null);
-    const res = await fetch(`/api/bonus-hunt/slots/${slot.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ payout }),
-    });
-    setSavingSlot(null);
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      setSlotMsg({ ok: false, text: data.error ?? "Erro ao guardar" });
-      return;
-    }
-    setSlotMsg({ ok: true, text: `Payout guardado para ${slot.name}` });
-    setDrafts((prev) => { const c = { ...prev }; delete c[slot.id]; return c; });
-    await loadSlots(slot.session_id);
-  }
-
-  async function clearPayout(slot: BonusHuntSlot) {
-    setSavingSlot(slot.id);
-    setSlotMsg(null);
-    const res = await fetch(`/api/bonus-hunt/slots/${slot.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ opened: false }),
-    });
-    setSavingSlot(null);
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      setSlotMsg({ ok: false, text: data.error ?? "Erro" });
-      return;
-    }
-    setSlotMsg({ ok: true, text: `Payout removido de ${slot.name}` });
-    await loadSlots(slot.session_id);
   }
 
   if (!isAdmin) {
@@ -617,18 +540,6 @@ export default function AdminBonusHuntPage() {
                           <td className="px-4 py-3 text-arena-smoke/60 max-w-[120px] truncate">{s.best_slot_name || "—"}</td>
                           <td className="px-4 py-3 text-right">
                             <div className="flex items-center justify-end gap-2">
-                              {/* Payouts panel toggle */}
-                              <button
-                                onClick={() => togglePayoutsPanel(s.id)}
-                                className={`px-3 py-1.5 text-xs rounded border transition-all cursor-pointer ${
-                                  payoutsHuntId === s.id
-                                    ? "border-green-400/60 bg-green-400/10 text-green-400"
-                                    : "border-green-400/20 text-green-400/60 hover:border-green-400/40 hover:text-green-400"
-                                }`}
-                                title="Editar payouts dos slots"
-                              >
-                                🎰 Payouts
-                              </button>
                               {/* Guess panel toggle */}
                               <button
                                 onClick={() => toggleGuessPanel(s.id)}
@@ -713,6 +624,22 @@ export default function AdminBonusHuntPage() {
                                         }}
                                       >
                                         {guessSession.betting_open ? "🔒 Fechar Apostas" : "🟢 Abrir Apostas"}
+                                      </button>
+                                    )}
+
+                                    {/* Liga dos Brutus toggle */}
+                                    {guessSession.status === "open" && (
+                                      <button
+                                        onClick={() => guessAction({ action: "toggle_liga", guessSessionId: guessSession.id })}
+                                        disabled={guessActionLoading}
+                                        className="px-3 py-1.5 text-xs rounded border transition-all disabled:opacity-50 cursor-pointer font-[family-name:var(--font-display)] tracking-widest uppercase"
+                                        style={{
+                                          borderColor: guessSession.liga_dos_brutus ? "rgba(234,179,8,0.5)" : "rgba(255,255,255,0.15)",
+                                          color: guessSession.liga_dos_brutus ? "#eab308" : "rgba(255,255,255,0.4)",
+                                          background: guessSession.liga_dos_brutus ? "rgba(234,179,8,0.12)" : "transparent",
+                                        }}
+                                      >
+                                        {guessSession.liga_dos_brutus ? "⚡ Liga Ativa" : "Liga dos Brutus"}
                                       </button>
                                     )}
 
@@ -809,110 +736,6 @@ export default function AdminBonusHuntPage() {
                           </tr>
                         )}
 
-                        {/* ── Payouts panel (expandable) ── */}
-                        {payoutsHuntId === s.id && (
-                          <tr>
-                            <td colSpan={11} className="px-4 py-4 bg-green-950/10 border-t border-green-400/10">
-                              <div className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                  <span className="font-[family-name:var(--font-display)] text-green-400 text-xs tracking-widest uppercase">
-                                    🎰 Payouts — {s.title}
-                                  </span>
-                                  <span className="text-xs text-white/40">
-                                    {slots.filter((sl) => sl.opened).length} / {slots.length} abertos
-                                  </span>
-                                </div>
-                                {slotsLoading ? (
-                                  <p className="text-white/40 text-sm">A carregar slots...</p>
-                                ) : slots.length === 0 ? (
-                                  <p className="text-white/40 text-sm">Sem slots nesta sessão.</p>
-                                ) : (
-                                  <table className="w-full text-xs">
-                                    <thead>
-                                      <tr className="text-left text-white/50 border-b border-white/10">
-                                        <th className="px-2 py-2 w-10">#</th>
-                                        <th className="px-2 py-2">Slot</th>
-                                        <th className="px-2 py-2 w-20">Bet</th>
-                                        <th className="px-2 py-2 w-28">Payout actual</th>
-                                        <th className="px-2 py-2 w-36">Novo payout</th>
-                                        <th className="px-2 py-2 w-36">Acções</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {slots.map((sl, i) => {
-                                        const currentPayout = (sl.payout ?? sl.result ?? null) as number | null;
-                                        const draft = drafts[sl.id];
-                                        const dirty = draft !== undefined && draft !== "";
-                                        return (
-                                          <tr key={sl.id} className="border-b border-white/5">
-                                            <td className="px-2 py-1.5 text-white/40">#{i + 1}</td>
-                                            <td className="px-2 py-1.5">
-                                              <div className="flex items-center gap-2">
-                                                {sl.thumbnail_url && (
-                                                  // eslint-disable-next-line @next/next/no-img-element
-                                                  <img src={sl.thumbnail_url} alt={sl.name} className="w-7 h-7 rounded object-cover" />
-                                                )}
-                                                <div>
-                                                  <div className="text-white font-medium">{sl.name}</div>
-                                                  {sl.provider && <div className="text-[10px] text-white/40">{sl.provider}</div>}
-                                                </div>
-                                              </div>
-                                            </td>
-                                            <td className="px-2 py-1.5 text-white/70">{(sl.bet_size ?? sl.buy_value ?? 0).toFixed(2)}€</td>
-                                            <td className="px-2 py-1.5">
-                                              {currentPayout != null ? (
-                                                <span className={currentPayout >= (sl.bet_size ?? sl.buy_value ?? 0) ? "text-green-400" : "text-red-400"}>
-                                                  {currentPayout.toFixed(2)}€
-                                                </span>
-                                              ) : (
-                                                <span className="text-white/30">—</span>
-                                              )}
-                                            </td>
-                                            <td className="px-2 py-1.5">
-                                              <input
-                                                type="text"
-                                                inputMode="decimal"
-                                                value={draft ?? ""}
-                                                placeholder={currentPayout != null ? currentPayout.toFixed(2) : "0.00"}
-                                                onChange={(e) => setDrafts((p) => ({ ...p, [sl.id]: e.target.value }))}
-                                                className="w-full bg-white/5 border border-white/15 rounded px-2 py-1 text-white text-xs focus:outline-none focus:border-green-400/50"
-                                              />
-                                            </td>
-                                            <td className="px-2 py-1.5">
-                                              <div className="flex gap-1.5">
-                                                <button
-                                                  onClick={() => savePayout(sl)}
-                                                  disabled={!dirty || savingSlot === sl.id}
-                                                  className="text-xs px-2 py-1 rounded border border-green-400/40 bg-green-400/10 text-white hover:bg-green-400/20 disabled:opacity-40 cursor-pointer"
-                                                >
-                                                  {savingSlot === sl.id ? "..." : "Guardar"}
-                                                </button>
-                                                {sl.opened && (
-                                                  <button
-                                                    onClick={() => clearPayout(sl)}
-                                                    disabled={savingSlot === sl.id}
-                                                    className="text-xs px-2 py-1 rounded border border-white/15 text-white/70 hover:bg-white/10 disabled:opacity-40 cursor-pointer"
-                                                  >
-                                                    Limpar
-                                                  </button>
-                                                )}
-                                              </div>
-                                            </td>
-                                          </tr>
-                                        );
-                                      })}
-                                    </tbody>
-                                  </table>
-                                )}
-                                {slotMsg && (
-                                  <p className="text-xs font-[family-name:var(--font-display)] tracking-wide" style={{ color: slotMsg.ok ? "#22c55e" : "#8b1a1a" }}>
-                                    {slotMsg.ok ? "✓" : "✗"} {slotMsg.text}
-                                  </p>
-                                )}
-                              </div>
-                            </td>
-                          </tr>
-                        )}
                         </React.Fragment>
                       ))}
                     </tbody>
