@@ -162,8 +162,10 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
     campaign?.status === "active" ? "EM BATALHA" :
     campaign?.status === "completed" ? "COMPLETA" : "PRÓXIMA";
 
-  // Green stat: start - stop
+  // Cost target: start - stop
   const startMinusStop = campaign ? campaign.start_money - campaign.stop_loss : 0;
+  // Live profit/loss: totalWin - cost
+  const profitLoss = totalWin - startMinusStop;
   // Green stat for resultados: (start - stop) + totalWin
   const resultadosGreen = startMinusStop + totalWin;
 
@@ -576,10 +578,10 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                         padding: "8px 0 0 0",
                       }}>
                         <span style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, marginBottom: "2px" }}>
-                          Início - Stop
+                          Profit / Loss
                         </span>
-                        <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.5rem", fontWeight: 700, color: "#c62828" }}>
-                          -{startMinusStop.toFixed(2)}€
+                        <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.5rem", fontWeight: 700, color: profitLoss >= 0 ? "#22c55e" : "#c62828" }}>
+                          {profitLoss >= 0 ? "+" : ""}{profitLoss.toFixed(2)}{campaign?.currency ?? "€"}
                         </span>
                       </div>
 
