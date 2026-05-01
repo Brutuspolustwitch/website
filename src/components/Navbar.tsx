@@ -63,6 +63,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
     "/admin/analitics/fraude": "Fraude",
     "/admin/outros/liga": "Liga dos Brutus",
     "/leaderboard": "Leaderboard",
+    "/hall-of-victories": "Brutas da Semana",
     "/comunidade/mines": "Minas",
     "/comunidade/keno": "Keno",
   };
