@@ -208,6 +208,19 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
 
               {/* ── Stats bar (top) ────────────────────── */}
               <div className="scroll-content" style={{ padding: "18px 20px 0" }}>
+                {selectedSession?.title && (
+                  <p style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "0.65rem",
+                    color: "var(--gold-dark)",
+                    letterSpacing: "0.18em",
+                    textTransform: "uppercase",
+                    textAlign: "center",
+                    marginBottom: "10px",
+                  }}>
+                    {selectedSession.title}
+                  </p>
+                )}
                 <div className="bh-stats-bar">
                   <div>
                     <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2px" }}>Start</p>

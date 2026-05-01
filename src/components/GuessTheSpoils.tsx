@@ -249,6 +249,17 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                   </span>
                 </>
               )}
+              {campaign?.title && (
+                <span style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: "0.7rem",
+                  color: "var(--gold-dark)",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                }}>
+                  {campaign.title}
+                </span>
+              )}
             </div>
 
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
