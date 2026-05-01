@@ -650,14 +650,6 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                       <p style={{ fontFamily: "var(--font-ui)", fontSize: "1.8rem", fontWeight: 700, color: "var(--gold-dark)", marginBottom: "6px" }}>
                         {totalWin.toFixed(2)}€
                       </p>
-                      <p style={{
-                        fontFamily: "var(--font-ui)",
-                        fontSize: "0.9rem",
-                        fontWeight: 700,
-                        color: totalWin >= totalBuy ? "#2e7d32" : "#8b1a1a",
-                      }}>
-                        {totalWin >= totalBuy ? "+" : ""}{(totalWin - totalBuy).toFixed(2)}€
-                      </p>
                     </div>
                   )}
 
