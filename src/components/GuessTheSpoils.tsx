@@ -592,21 +592,16 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                       {/* Jackpot */}
                       <div style={{
                         display: "flex",
-                        flexDirection: "column",
+                        justifyContent: "space-between",
                         alignItems: "center",
-                        padding: "10px 8px",
-                        borderRadius: "8px",
-                        background: "linear-gradient(135deg, rgba(212,175,55,0.18) 0%, rgba(180,140,30,0.08) 100%)",
-                        border: "1.5px solid rgba(212,175,55,0.5)",
+                        padding: "6px 4px",
+                        borderBottom: "1px solid rgba(139,105,20,0.12)",
                       }}>
-                        <span style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--gold-dark)", letterSpacing: "0.18em", textTransform: "uppercase", fontWeight: 700, marginBottom: "2px" }}>
+                        <span style={{ fontFamily: "var(--font-display)", fontSize: "0.55rem", color: "var(--gold-dark)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>
                           🎰 Jackpot
                         </span>
-                        <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.8rem", fontWeight: 800, color: "var(--gold-dark)", lineHeight: 1 }}>
+                        <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "var(--gold-dark)" }}>
                           {Math.round(jackpot)}€
-                        </span>
-                        <span style={{ fontFamily: "var(--font-display)", fontSize: "0.4rem", color: "var(--ink-light)", letterSpacing: "0.1em", marginTop: "3px" }}>
-                          Adivinha o total exato para ganhar
                         </span>
                       </div>
 
