@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { ArenaCard } from "@/components/ui/ArenaCard";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { STAGGER_CONTAINER, STAGGER_ITEM } from "@/lib/animations";
+import { useAuth } from "@/lib/auth-context";
 
 interface SELeaderboardEntry {
   username: string;
@@ -19,6 +20,7 @@ interface SELeaderboardEntry {
  * Updates every 60 seconds via API cache.
  */
 export default function LeaderboardPage() {
+  const { user } = useAuth();
   const [entries, setEntries] = useState<SELeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -101,15 +103,42 @@ export default function LeaderboardPage() {
             viewport={{ once: true }}
             className="space-y-3"
           >
+            {/* Current user position banner */}
+            {(() => {
+              if (!user) return null;
+              const pos = entries.findIndex(e => e.username.toLowerCase() === user.login.toLowerCase());
+              if (pos === -1) return null;
+              const e = entries[pos];
+              return (
+                <div className="mb-4 flex items-center justify-center gap-3 py-2 px-4 rounded-lg"
+                  style={{
+                    background: "rgba(212,175,55,0.08)",
+                    border: "1px solid rgba(212,175,55,0.3)",
+                  }}
+                >
+                  <span className="font-[family-name:var(--font-display)] text-xs uppercase tracking-[0.2em] text-arena-smoke">
+                    A tua posição
+                  </span>
+                  <span className="font-[family-name:var(--font-display)] text-arena-gold font-bold text-base">
+                    #{pos + 1}
+                  </span>
+                  <span className="font-[family-name:var(--font-display)] text-arena-smoke text-xs">
+                    · {e.points.toLocaleString("pt-PT")} pontos
+                  </span>
+                </div>
+              );
+            })()}
             {entries.map((entry, i) => {
               // Format points with thousands separator
               const formattedPoints = entry.points.toLocaleString("pt-PT");
+              const isMe = user && entry.username.toLowerCase() === user.login.toLowerCase();
 
               return (
                 <motion.div key={`${entry.username}-${i}`} variants={STAGGER_ITEM}>
                   <ArenaCard
                     variant={i < 3 ? "gold" : "default"}
                     className="p-4 arena-shine hover:border-arena-gold/50 transition-colors"
+                    style={isMe ? { border: "1.5px solid rgba(212,175,55,0.7)", background: "rgba(212,175,55,0.06)" } : undefined}
                   >
                     <div className="flex items-center gap-4">
                       {/* Position / Medal */}
