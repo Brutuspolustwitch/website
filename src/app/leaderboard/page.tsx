@@ -135,10 +135,10 @@ export default function LeaderboardPage() {
 
               return (
                 <motion.div key={`${entry.username}-${i}`} variants={STAGGER_ITEM}>
+                  <div style={isMe ? { borderRadius: "inherit", outline: "1.5px solid rgba(212,175,55,0.6)", outlineOffset: "-1.5px" } : undefined}>
                   <ArenaCard
                     variant={i < 3 ? "gold" : "default"}
-                    className="p-4 arena-shine hover:border-arena-gold/50 transition-colors"
-                    style={isMe ? { border: "1.5px solid rgba(212,175,55,0.7)", background: "rgba(212,175,55,0.06)" } : undefined}
+                    className={`p-4 arena-shine hover:border-arena-gold/50 transition-colors${isMe ? " !bg-[rgba(212,175,55,0.05)]" : ""}`}
                   >
                     <div className="flex items-center gap-4">
                       {/* Position / Medal */}
@@ -172,6 +172,7 @@ export default function LeaderboardPage() {
                       </div>
                     </div>
                   </ArenaCard>
+                  </div>
                 </motion.div>
               );
             })}
