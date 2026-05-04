@@ -84,6 +84,8 @@ export async function POST(request: Request) {
         withdrawals: body.withdrawals ?? 0,
         bonuses_count: body.bonuses_count ?? 0,
         biggest_win: body.biggest_win ?? 0,
+        wager_target: body.wager_target ?? 0,
+        wager_done: body.wager_done ?? 0,
         is_active: body.is_active ?? false,
         updated_at: new Date().toISOString(),
       })
@@ -111,6 +113,8 @@ export async function POST(request: Request) {
       withdrawals: body.withdrawals ?? 0,
       bonuses_count: body.bonuses_count ?? 0,
       biggest_win: body.biggest_win ?? 0,
+      wager_target: body.wager_target ?? 0,
+      wager_done: body.wager_done ?? 0,
       is_active: body.is_active ?? true,
     })
     .select()

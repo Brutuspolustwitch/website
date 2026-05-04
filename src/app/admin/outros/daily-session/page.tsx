@@ -19,6 +19,8 @@ interface DailySessionRow {
   withdrawals: number;
   bonuses_count: number;
   biggest_win: number;
+  wager_target: number;
+  wager_done: number;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -45,6 +47,8 @@ export default function AdminDailySessionPage() {
   const [withdrawals, setWithdrawals] = useState("");
   const [bonusesCount, setBonusesCount] = useState("");
   const [biggestWin, setBiggestWin] = useState("");
+  const [wagerTarget, setWagerTarget] = useState("");
+  const [wagerDone, setWagerDone] = useState("");
   const [isActive, setIsActive] = useState(true);
 
   const [deleting, setDeleting] = useState<string | null>(null);
@@ -72,6 +76,8 @@ export default function AdminDailySessionPage() {
     setWithdrawals(s.withdrawals ? String(s.withdrawals) : "");
     setBonusesCount(s.bonuses_count ? String(s.bonuses_count) : "");
     setBiggestWin(s.biggest_win ? String(s.biggest_win) : "");
+    setWagerTarget(s.wager_target ? String(s.wager_target) : "");
+    setWagerDone(s.wager_done ? String(s.wager_done) : "");
     setIsActive(s.is_active);
   };
 
@@ -119,6 +125,8 @@ export default function AdminDailySessionPage() {
         withdrawals: parseFloat(withdrawals) || 0,
         bonuses_count: parseInt(bonusesCount) || 0,
         biggest_win: parseFloat(biggestWin) || 0,
+        wager_target: parseFloat(wagerTarget) || 0,
+        wager_done: parseFloat(wagerDone) || 0,
         is_active: isActive,
       };
 
@@ -154,6 +162,8 @@ export default function AdminDailySessionPage() {
     setWithdrawals("");
     setBonusesCount("");
     setBiggestWin("");
+    setWagerTarget("");
+    setWagerDone("");
     setIsActive(true);
 
     setSaving(true);
@@ -170,6 +180,8 @@ export default function AdminDailySessionPage() {
           withdrawals: 0,
           bonuses_count: 0,
           biggest_win: 0,
+          wager_target: 0,
+          wager_done: 0,
           is_active: true,
         }),
       });
@@ -216,6 +228,8 @@ export default function AdminDailySessionPage() {
         setWithdrawals("");
         setBonusesCount("");
         setBiggestWin("");
+        setWagerTarget("");
+        setWagerDone("");
         setIsActive(true);
       }
       await refreshSessions();
@@ -263,6 +277,11 @@ export default function AdminDailySessionPage() {
   const witVal = parseFloat(withdrawals) || 0;
   const net = witVal - depVal;
   const netColor = net > 0 ? "text-green-400" : net < 0 ? "text-red-400" : "text-arena-gold";
+
+  const wagerTargetVal = parseFloat(wagerTarget) || 0;
+  const wagerDoneVal = parseFloat(wagerDone) || 0;
+  const wagerPct = wagerTargetVal > 0 ? Math.min(100, (wagerDoneVal / wagerTargetVal) * 100) : 0;
+  const wagerColor = wagerPct >= 100 ? "#2e7d32" : wagerPct >= 60 ? "#d4a017" : "#8b1a1a";
 
   const selectedCasino = casinos.find((c) => c.id === casinoId);
 
@@ -521,6 +540,55 @@ export default function AdminDailySessionPage() {
                     className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded-lg px-3 py-2.5 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors"
                   />
                 </div>
+              </div>
+
+              {/* Wager */}
+              <div>
+                <p className="text-xs font-bold text-arena-gold uppercase tracking-wider font-[family-name:var(--font-display)] mb-2">Wager</p>
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  <div>
+                    <label className="block text-xs text-arena-smoke mb-1">Wager Total (€)</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={wagerTarget}
+                      onChange={(e) => setWagerTarget(e.target.value)}
+                      placeholder="0.00"
+                      className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded-lg px-3 py-2.5 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-arena-smoke mb-1">Wager Feito (€)</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={wagerDone}
+                      onChange={(e) => setWagerDone(e.target.value)}
+                      placeholder="0.00"
+                      className="w-full bg-arena-iron/60 border border-arena-gold/15 rounded-lg px-3 py-2.5 text-sm text-arena-white focus:outline-none focus:border-arena-gold/40 transition-colors"
+                    />
+                  </div>
+                </div>
+                {/* Live progress bar */}
+                {wagerTargetVal > 0 && (
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-[10px] text-arena-smoke uppercase tracking-wider">Progresso</span>
+                      <span className="text-xs font-bold" style={{ color: wagerColor }}>{wagerPct.toFixed(1)}%</span>
+                    </div>
+                    <div className="h-3 rounded-full bg-arena-iron/60 border border-arena-gold/10 overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{ width: `${wagerPct}%`, background: `linear-gradient(90deg, ${wagerColor}99, ${wagerColor})` }}
+                      />
+                    </div>
+                    <p className="text-[10px] text-arena-smoke mt-1 text-right">
+                      {wagerDoneVal.toFixed(2)}€ / {wagerTargetVal.toFixed(2)}€
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 

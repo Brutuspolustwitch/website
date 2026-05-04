@@ -24,6 +24,8 @@ interface DailySessionData {
   withdrawals: number;
   bonuses_count: number;
   biggest_win: number;
+  wager_target: number;
+  wager_done: number;
   is_active: boolean;
   casino: CasinoOfferRow | null;
 }
@@ -319,6 +321,10 @@ export default function DailySessionContent() {
 
   const net = (session?.withdrawals ?? 0) - (session?.deposits ?? 0);
   const netGlow = net > 0 ? "green" : net < 0 ? "red" : "gold";
+  const wagerTarget = session?.wager_target ?? 0;
+  const wagerDone = session?.wager_done ?? 0;
+  const wagerPct = wagerTarget > 0 ? Math.min(100, (wagerDone / wagerTarget) * 100) : 0;
+  const wagerBarColor = wagerPct >= 100 ? "#2e7d32" : wagerPct >= 60 ? "#d4a017" : "#8b1a1a";
 
   /* ── OBS Overlay Mode ──────────────────────────────────── */
   if (isOverlay) {
@@ -443,6 +449,28 @@ export default function DailySessionContent() {
                         </>
                       )}
                     </div>
+                    {/* Wager progress bar — only shown when wager target is set */}
+                    {wagerTarget > 0 && (
+                      <div style={{ marginTop: "10px", paddingTop: "10px", borderTop: "1px solid rgba(139,105,20,0.15)" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "5px" }}>
+                          <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", fontWeight: 600, color: "var(--ink-light)", letterSpacing: "0.18em", textTransform: "uppercase" }}>Wager</p>
+                          <span style={{ fontFamily: "var(--font-ui)", fontSize: "0.75rem", fontWeight: 700, color: wagerBarColor }}>
+                            {wagerPct.toFixed(1)}% · {wagerDone.toFixed(2)}€ / {wagerTarget.toFixed(2)}€
+                          </span>
+                        </div>
+                        <div style={{ height: "8px", borderRadius: "9999px", background: "rgba(139,105,20,0.12)", border: "1px solid rgba(139,105,20,0.2)", overflow: "hidden" }}>
+                          <div
+                            style={{
+                              height: "100%",
+                              width: `${wagerPct}%`,
+                              borderRadius: "9999px",
+                              background: `linear-gradient(90deg, ${wagerBarColor}88, ${wagerBarColor})`,
+                              transition: "width 0.8s ease",
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </motion.div>
