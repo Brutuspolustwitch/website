@@ -120,7 +120,7 @@ export default function LeaderboardPage() {
                   }}
                 >
                   <div className="flex items-center justify-center gap-4">
-                    <span className="text-arena-gold/40 text-lg select-none">⚔</span>
+                    <span className="text-arena-gold/70 text-lg select-none">⚔</span>
                     <div className="flex items-baseline gap-3">
                       <span className="font-[family-name:var(--font-display)] text-[10px] uppercase tracking-[0.25em] text-arena-smoke/60">
                         A tua posição
@@ -136,11 +136,11 @@ export default function LeaderboardPage() {
                       >
                         #{pos + 1}
                       </span>
-                      <span className="font-[family-name:var(--font-display)] text-arena-smoke/50 text-xs tracking-wider">
+                      <span className="font-[family-name:var(--font-display)] text-arena-smoke/80 text-xs tracking-wider">
                         · {e.points.toLocaleString("pt-PT")} pts
                       </span>
                     </div>
-                    <span className="text-arena-gold/40 text-lg select-none">⚔</span>
+                    <span className="text-arena-gold/70 text-lg select-none">⚔</span>
                   </div>
                 </ArenaCard>
               );
@@ -169,7 +169,7 @@ export default function LeaderboardPage() {
                             {i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉"}
                           </span>
                         ) : (
-                          <span className="font-[family-name:var(--font-display)] text-xl text-arena-ash">
+                          <span className="font-[family-name:var(--font-display)] text-xl text-white/60">
                             {i + 1}
                           </span>
                         )}
@@ -177,17 +177,17 @@ export default function LeaderboardPage() {
 
                       {/* Username */}
                       <div className="flex-1 min-w-0">
-                        <p className="font-[family-name:var(--font-display)] text-arena-gold text-lg truncate">
+                        <p className="font-[family-name:var(--font-display)] text-arena-gold-light text-lg truncate">
                           {entry.username}
                         </p>
                       </div>
 
                       {/* Points */}
                       <div className="text-right">
-                        <p className="font-[family-name:var(--font-display)] text-arena-gold text-xl font-bold">
+                        <p className="font-[family-name:var(--font-display)] text-arena-gold-light text-xl font-bold">
                           {formattedPoints}
                         </p>
-                        <p className="text-xs text-arena-ash uppercase tracking-wider">
+                        <p className="text-xs text-arena-smoke/60 uppercase tracking-wider">
                           Pontos
                         </p>
                       </div>
