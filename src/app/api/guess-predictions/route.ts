@@ -57,22 +57,38 @@ export async function GET(request: Request) {
     .select("*", { count: "exact", head: true })
     .eq("guess_session_id", guessSession.id);
 
-  // Return full predictions only after resolve or to admins
+  // Always return predictions so viewers can see each other's bets.
+  // While betting is open, mask amounts (null) except for the viewer's own bet.
+  const isResolved = guessSession.status === "resolved";
+  const bettingOpen = !!guessSession.betting_open && !isResolved;
+
   let predictions: Record<string, unknown>[] = [];
-  if (guessSession.status === "resolved" || isAdmin) {
+  {
     const { data } = await supabase
       .from("guess_predictions")
       .select("*, users:user_id(profile_image_url, login)")
       .eq("guess_session_id", guessSession.id)
       .order("created_at", { ascending: true });
-    predictions = data ?? [];
 
-    if (guessSession.status === "resolved" && guessSession.final_payout != null) {
-      predictions = predictions.sort((a, b) =>
+    let rows = data ?? [];
+
+    // Sort by closest diff when resolved
+    if (isResolved && guessSession.final_payout != null) {
+      rows = rows.sort((a, b) =>
         Math.abs((a.predicted_amount as number) - guessSession.final_payout) -
         Math.abs((b.predicted_amount as number) - guessSession.final_payout)
       );
     }
+
+    // Mask amounts while betting is still open (unless admin or own prediction)
+    const myUserId = myPrediction ? (myPrediction as Record<string, unknown>).user_id : null;
+    predictions = rows.map((p) => {
+      const isMine = p.user_id === myUserId;
+      if (bettingOpen && !isAdmin && !isMine) {
+        return { ...p, predicted_amount: null };
+      }
+      return p;
+    });
   }
 
   return NextResponse.json({ guessSession, myPrediction, predictions, totalCount: totalCount ?? 0 });

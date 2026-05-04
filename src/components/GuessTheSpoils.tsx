@@ -42,6 +42,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
   const [predInput, setPredInput] = useState("");
   const [predLoading, setPredLoading] = useState(false);
   const [predMsg, setPredMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [predPage, setPredPage] = useState(0);
 
   /* Jackpot state */
   const [jackpot, setJackpot] = useState<number>(30);
@@ -133,6 +134,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
   useEffect(() => {
     if (!campaign) return;
     fetchGuessData(campaign.id);
+    setPredPage(0);
   }, [campaign, fetchGuessData]);
 
   /* Submit prediction */
@@ -911,81 +913,170 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                             </div>
                           )}
 
-                          {/* Predictions leaderboard (resolved or admin) */}
-                          {predictions.length > 0 && (
-                            <div style={{ marginTop: "4px" }}>
-                              <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "6px" }}>
-                                Todas as Previsões
-                              </p>
-                              <div style={{ display: "flex", flexDirection: "column", gap: "3px", maxHeight: "220px", overflowY: "auto" }}>
-                                {predictions.map((p, i) => {
-                                  const isWinner = guessSession.winner_user_id === p.user_id;
-                                  const diff = guessSession.final_payout != null
-                                    ? Math.abs(p.predicted_amount - guessSession.final_payout)
-                                    : null;
-                                  return (
-                                    <div
-                                      key={p.id}
-                                      style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "space-between",
-                                        padding: "5px 8px",
-                                        borderRadius: "4px",
-                                        background: isWinner
-                                          ? "rgba(139,105,20,0.12)"
-                                          : myPrediction?.id === p.id
-                                          ? "rgba(34,197,94,0.06)"
-                                          : "transparent",
-                                        border: isWinner ? "1px solid rgba(139,105,20,0.25)" : "1px solid transparent",
-                                      }}
-                                    >
-                                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                        <span style={{ fontFamily: "var(--font-display)", fontSize: "0.55rem", color: "var(--ink-light)", width: "16px", textAlign: "right" }}>
-                                          {isWinner ? "🏆" : `${i + 1}`}
-                                        </span>
-                                        {p.users?.profile_image_url ? (
-                                          // eslint-disable-next-line @next/next/no-img-element
-                                          <img
-                                            src={p.users.profile_image_url}
-                                            alt={p.display_name}
+                          {/* Predictions list — always visible, paginated */}
+                          {(() => {
+                            const PAGE_SIZE = 5;
+                            const totalPages = Math.ceil(predictions.length / PAGE_SIZE);
+                            const page = Math.min(predPage, Math.max(0, totalPages - 1));
+                            const pagePreds = predictions.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+                            const bettingStillOpen = !!guessSession.betting_open && guessSession.status !== "resolved";
+                            return (
+                              <div style={{ marginTop: "8px" }}>
+                                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                                  <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase" }}>
+                                    {bettingStillOpen ? "Gladiadores · valores escondidos" : "Todas as Previsões"}
+                                  </p>
+                                  {totalPages > 1 && (
+                                    <span style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)" }}>
+                                      {page + 1} / {totalPages}
+                                    </span>
+                                  )}
+                                </div>
+
+                                {predictions.length === 0 ? (
+                                  <p style={{ fontFamily: "var(--font-display)", fontSize: "0.55rem", color: "var(--ink-light)", textAlign: "center", padding: "12px 0" }}>
+                                    Nenhuma aposta ainda.
+                                  </p>
+                                ) : (
+                                  <>
+                                    <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                                      {pagePreds.map((p, i) => {
+                                        const globalIdx = page * PAGE_SIZE + i;
+                                        const isWinner = guessSession.winner_user_id === p.user_id;
+                                        const isMine = myPrediction?.id === p.id;
+                                        const amountHidden = p.predicted_amount == null;
+                                        const diff = guessSession.final_payout != null && p.predicted_amount != null
+                                          ? Math.abs((p.predicted_amount as number) - guessSession.final_payout)
+                                          : null;
+                                        return (
+                                          <div
+                                            key={p.id}
                                             style={{
-                                              width: "22px",
-                                              height: "22px",
-                                              borderRadius: "50%",
-                                              objectFit: "cover",
-                                              border: isWinner ? "1px solid var(--gold-dark)" : "1px solid rgba(139,105,20,0.25)",
+                                              display: "flex",
+                                              alignItems: "center",
+                                              justifyContent: "space-between",
+                                              padding: "5px 8px",
+                                              borderRadius: "4px",
+                                              background: isWinner
+                                                ? "rgba(139,105,20,0.12)"
+                                                : isMine
+                                                ? "rgba(34,197,94,0.06)"
+                                                : "transparent",
+                                              border: isWinner
+                                                ? "1px solid rgba(139,105,20,0.25)"
+                                                : isMine
+                                                ? "1px solid rgba(34,197,94,0.2)"
+                                                : "1px solid transparent",
                                             }}
-                                          />
-                                        ) : (
-                                          <div style={{
-                                            width: "22px",
-                                            height: "22px",
-                                            borderRadius: "50%",
-                                            background: "rgba(139,105,20,0.15)",
-                                            border: "1px solid rgba(139,105,20,0.25)",
-                                          }} />
-                                        )}
-                                        <span style={{ fontFamily: "var(--font-ui)", fontSize: "0.75rem", fontWeight: 600, color: isWinner ? "var(--gold-dark)" : "var(--ink-dark)" }}>
-                                          {p.display_name}
-                                        </span>
-                                      </div>
-                                      <div style={{ textAlign: "right" }}>
-                                        <span style={{ fontFamily: "var(--font-ui)", fontSize: "0.75rem", fontWeight: 700, color: isWinner ? "var(--gold-dark)" : "var(--ink-dark)" }}>
-                                          {p.predicted_amount.toFixed(2)}€
-                                        </span>
-                                        {diff != null && (
-                                          <span style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", display: "block" }}>
-                                            ±{diff.toFixed(2)}€
-                                          </span>
-                                        )}
-                                      </div>
+                                          >
+                                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                              <span style={{ fontFamily: "var(--font-display)", fontSize: "0.55rem", color: "var(--ink-light)", width: "18px", textAlign: "right", flexShrink: 0 }}>
+                                                {isWinner ? "🏆" : `${globalIdx + 1}`}
+                                              </span>
+                                              {p.users?.profile_image_url ? (
+                                                // eslint-disable-next-line @next/next/no-img-element
+                                                <img
+                                                  src={p.users.profile_image_url}
+                                                  alt={p.display_name}
+                                                  style={{
+                                                    width: "22px",
+                                                    height: "22px",
+                                                    borderRadius: "50%",
+                                                    objectFit: "cover",
+                                                    border: isWinner ? "1px solid var(--gold-dark)" : "1px solid rgba(139,105,20,0.25)",
+                                                    flexShrink: 0,
+                                                  }}
+                                                />
+                                              ) : (
+                                                <div style={{
+                                                  width: "22px",
+                                                  height: "22px",
+                                                  borderRadius: "50%",
+                                                  background: "rgba(139,105,20,0.15)",
+                                                  border: "1px solid rgba(139,105,20,0.25)",
+                                                  flexShrink: 0,
+                                                }} />
+                                              )}
+                                              <span style={{ fontFamily: "var(--font-ui)", fontSize: "0.75rem", fontWeight: 600, color: isWinner ? "var(--gold-dark)" : isMine ? "#22c55e" : "var(--ink-dark)" }}>
+                                                {p.display_name}{isMine && !isWinner ? " 👤" : ""}
+                                              </span>
+                                            </div>
+                                            <div style={{ textAlign: "right", flexShrink: 0 }}>
+                                              {amountHidden ? (
+                                                <span style={{ fontFamily: "var(--font-display)", fontSize: "0.6rem", color: "var(--ink-light)", letterSpacing: "0.1em" }}>???</span>
+                                              ) : (
+                                                <>
+                                                  <span style={{ fontFamily: "var(--font-ui)", fontSize: "0.75rem", fontWeight: 700, color: isWinner ? "var(--gold-dark)" : "var(--ink-dark)" }}>
+                                                    {(p.predicted_amount as number).toFixed(2)}€
+                                                  </span>
+                                                  {diff != null && (
+                                                    <span style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", display: "block" }}>
+                                                      ±{diff.toFixed(2)}€
+                                                    </span>
+                                                  )}
+                                                </>
+                                              )}
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
                                     </div>
-                                  );
-                                })}
+
+                                    {/* Pagination controls */}
+                                    {totalPages > 1 && (
+                                      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginTop: "8px" }}>
+                                        <button
+                                          onClick={() => setPredPage((p) => Math.max(0, p - 1))}
+                                          disabled={page === 0}
+                                          style={{
+                                            padding: "4px 10px",
+                                            fontFamily: "var(--font-display)",
+                                            fontSize: "0.7rem",
+                                            background: "transparent",
+                                            border: "1px solid rgba(139,105,20,0.25)",
+                                            borderRadius: "4px",
+                                            color: page === 0 ? "rgba(139,105,20,0.3)" : "var(--gold-dark)",
+                                            cursor: page === 0 ? "not-allowed" : "pointer",
+                                          }}
+                                        >‹</button>
+                                        {Array.from({ length: totalPages }).map((_, pi) => (
+                                          <button
+                                            key={pi}
+                                            onClick={() => setPredPage(pi)}
+                                            style={{
+                                              width: "24px",
+                                              height: "24px",
+                                              fontFamily: "var(--font-display)",
+                                              fontSize: "0.55rem",
+                                              background: pi === page ? "rgba(139,105,20,0.15)" : "transparent",
+                                              border: pi === page ? "1px solid rgba(139,105,20,0.4)" : "1px solid rgba(139,105,20,0.15)",
+                                              borderRadius: "4px",
+                                              color: pi === page ? "var(--gold-dark)" : "var(--ink-light)",
+                                              cursor: "pointer",
+                                            }}
+                                          >{pi + 1}</button>
+                                        ))}
+                                        <button
+                                          onClick={() => setPredPage((p) => Math.min(totalPages - 1, p + 1))}
+                                          disabled={page === totalPages - 1}
+                                          style={{
+                                            padding: "4px 10px",
+                                            fontFamily: "var(--font-display)",
+                                            fontSize: "0.7rem",
+                                            background: "transparent",
+                                            border: "1px solid rgba(139,105,20,0.25)",
+                                            borderRadius: "4px",
+                                            color: page === totalPages - 1 ? "rgba(139,105,20,0.3)" : "var(--gold-dark)",
+                                            cursor: page === totalPages - 1 ? "not-allowed" : "pointer",
+                                          }}
+                                        >›</button>
+                                      </div>
+                                    )}
+                                  </>
+                                )}
                               </div>
-                            </div>
-                          )}
+                            );
+                          })()}
                         </>
                       ) : (
                         <div style={{ padding: "24px 0", textAlign: "center" }}>
