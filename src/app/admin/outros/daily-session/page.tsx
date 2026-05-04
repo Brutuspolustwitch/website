@@ -273,6 +273,20 @@ export default function AdminDailySessionPage() {
     }
   };
 
+  const [startupModal, setStartupModal] = useState(true);
+  const [startupLoading, setStartupLoading] = useState(false);
+
+  const handleStartupNew = async () => {
+    setStartupLoading(true);
+    await handleNewSession();
+    setStartupLoading(false);
+    setStartupModal(false);
+  };
+
+  const handleStartupContinue = () => {
+    setStartupModal(false);
+  };
+
   const depVal = parseFloat(deposits) || 0;
   const witVal = parseFloat(withdrawals) || 0;
   const net = witVal - depVal;
@@ -302,6 +316,49 @@ export default function AdminDailySessionPage() {
 
   return (
     <div className="min-h-screen bg-arena-black p-3 sm:p-4 lg:p-5">
+
+      {/* ── Startup modal ────────────────────────────────────────── */}
+      {!loading && startupModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.92, y: 16 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="bg-arena-dark border border-arena-gold/25 rounded-xl shadow-2xl p-8 max-w-sm w-full mx-4 text-center"
+          >
+            <div className="text-3xl mb-3">⚔️</div>
+            <h2 className="text-lg font-bold font-[family-name:var(--font-display)] text-arena-gold mb-1 tracking-wide uppercase">
+              Sessão do Dia
+            </h2>
+            <p className="text-xs text-arena-smoke mb-6">
+              O que pretendes fazer hoje?
+            </p>
+
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={handleStartupNew}
+                disabled={startupLoading}
+                className="w-full py-3 px-4 rounded-lg bg-arena-gold/10 hover:bg-arena-gold/20 border border-arena-gold/30 text-arena-gold font-bold text-sm font-[family-name:var(--font-display)] tracking-wide uppercase transition-colors disabled:opacity-50"
+              >
+                {startupLoading ? "A criar…" : "🆕 Nova Sessão"}
+              </button>
+              <button
+                onClick={handleStartupContinue}
+                disabled={startupLoading}
+                className="w-full py-3 px-4 rounded-lg bg-arena-iron/60 hover:bg-arena-iron/90 border border-arena-gold/10 text-arena-white font-semibold text-sm transition-colors disabled:opacity-50"
+              >
+                ✏️ Continuar Sessão Anterior
+                {allSessions.length > 0 && (
+                  <span className="block text-[10px] text-arena-smoke font-normal mt-0.5">
+                    {allSessions[0]?.session_date}
+                  </span>
+                )}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       {/* Toast */}
       {toast && (
         <motion.div
