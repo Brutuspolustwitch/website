@@ -7,7 +7,7 @@ const CATEGORIES = [
   {
     href: "/leaderboard",
     title: "Leaderboard",
-    description: "Vê os top membros da comunidade por pontos SE",
+    description: "Vê a tua classificação",
     icon: "🏆",
     color: "from-yellow-600/20 to-yellow-500/10",
     borderColor: "border-arena-gold/30",
@@ -25,7 +25,7 @@ const CATEGORIES = [
   {
     href: "/giveaways",
     title: "Giveaways",
-    description: "Participa em sorteios e ganha prémios incríveis",
+    description: "Participa em sorteios e ganha prémios",
     icon: "🎁",
     color: "from-green-600/20 to-green-500/10",
     borderColor: "border-green-500/30",
@@ -34,7 +34,7 @@ const CATEGORIES = [
   {
     href: "/liga-dos-brutus",
     title: "Liga dos Brutus",
-    description: "Compete no ranking e torna-te o melhor gladiador",
+    description: "Consulta os vencedores mensais",
     icon: "⚔️",
     color: "from-yellow-600/20 to-yellow-500/10",
     borderColor: "border-arena-gold/30",
@@ -43,7 +43,7 @@ const CATEGORIES = [
   {
     href: "/hall-of-victories",
     title: "Bruta do Mês",
-    description: "Celebra as maiores vitórias da comunidade",
+    description: "Partilha as tuas vitórias e ganha prémios",
     icon: "👑",
     color: "from-red-600/20 to-red-500/10",
     borderColor: "border-red-500/30",
@@ -70,7 +70,7 @@ const CATEGORIES = [
   {
     href: "/adivinha-o-resultado",
     title: "Adivinha o Resultado",
-    description: "Prevê os resultados dos bonus hunts e ganha pontos",
+    description: "Dá o teu palpite e ganha prémios",
     icon: "🎯",
     color: "from-blue-600/20 to-blue-500/10",
     borderColor: "border-blue-500/30",
