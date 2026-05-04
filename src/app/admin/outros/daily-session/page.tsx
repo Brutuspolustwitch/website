@@ -87,7 +87,7 @@ export default function AdminDailySessionPage() {
     try {
       const [sessionsRes, casinoRes] = await Promise.all([
         supabase.from("daily_sessions").select("*").order("session_date", { ascending: false }),
-        supabase.from("casino_offers").select("*").eq("visible", true).order("sort_order"),
+        supabase.from("casino_offers").select("*").order("sort_order"),
       ]);
 
       if (casinoRes.data) setCasinos(casinoRes.data);
@@ -258,7 +258,7 @@ export default function AdminDailySessionPage() {
 
       // Reload casinos and auto-select the new one
       const { data: updatedCasinos } = await supabase
-        .from("casino_offers").select("*").eq("visible", true).order("sort_order");
+        .from("casino_offers").select("*").order("sort_order");
       if (updatedCasinos) setCasinos(updatedCasinos);
       setCasinoId(data.casino.id);
 
@@ -464,7 +464,7 @@ export default function AdminDailySessionPage() {
                           if (!confirm(`Apagar "${c.name}"?`)) return;
                           await supabase.from("casino_offers").delete().eq("id", c.id);
                           if (casinoId === c.id) setCasinoId("");
-                          const { data: updated } = await supabase.from("casino_offers").select("*").eq("visible", true).order("sort_order");
+                          const { data: updated } = await supabase.from("casino_offers").select("*").order("sort_order");
                           if (updated) setCasinos(updated);
                           showToast(`"${c.name}" apagado.`);
                         }}
