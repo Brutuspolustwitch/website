@@ -607,19 +607,28 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                         </span>
                       </div>
 
-                      {/* Profit / Loss */}
+                      {/* Profit / Loss + Total Payout side by side */}
                       <div style={{
                         display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
+                        gap: "8px",
                         padding: "8px 0 0 0",
                       }}>
-                        <span style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, marginBottom: "2px" }}>
-                          Profit / Loss
-                        </span>
-                        <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.5rem", fontWeight: 700, color: profitLoss >= 0 ? "#22c55e" : "#c62828" }}>
-                          {profitLoss >= 0 ? "+" : ""}{Math.round(profitLoss)}{campaign?.currency ?? "€"}
-                        </span>
+                        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", background: "rgba(139,105,20,0.04)", border: "1px solid rgba(139,105,20,0.12)", borderRadius: "6px", padding: "8px 4px" }}>
+                          <span style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600, marginBottom: "2px" }}>
+                            Profit / Loss
+                          </span>
+                          <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: profitLoss >= 0 ? "#22c55e" : "#c62828" }}>
+                            {profitLoss >= 0 ? "+" : ""}{Math.round(profitLoss)}{campaign?.currency ?? "€"}
+                          </span>
+                        </div>
+                        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", background: "rgba(139,105,20,0.04)", border: "1px solid rgba(139,105,20,0.12)", borderRadius: "6px", padding: "8px 4px" }}>
+                          <span style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600, marginBottom: "2px" }}>
+                            Total Payout
+                          </span>
+                          <span style={{ fontFamily: "var(--font-ui)", fontSize: "1.2rem", fontWeight: 700, color: "var(--gold-dark)" }}>
+                            {totalWin.toFixed(2)}{campaign?.currency ?? "€"}
+                          </span>
+                        </div>
                       </div>
 
                       {/* Campaign progress */}
