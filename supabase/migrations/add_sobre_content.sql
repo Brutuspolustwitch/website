@@ -8,21 +8,21 @@ create table if not exists sobre_content (
   constraint sobre_single_row check (id = 1)
 );
 
--- Seed default content
+-- Seed default content (all non-ASCII chars use \uXXXX JSON escapes — encoding-safe)
 insert into sobre_content (id, data) values (1, '{
   "hero": {
-    "prelabel": "Brutuspolus · Streamer · Portugal",
+    "prelabel": "Brutuspolus \u00b7 Streamer \u00b7 Portugal",
     "title": "ENTRA NA ARENA",
-    "subtitle": "Sem filtros · Sem encenação · Só a arena",
-    "history_label": "A História"
+    "subtitle": "Sem filtros \u00b7 Sem encena\u00e7\u00e3o \u00b7 S\u00f3 a arena",
+    "history_label": "A Hist\u00f3ria"
   },
   "bio": {
     "p1_bold": "Apaixonado pelo gambling",
-    "p1": "desde os tempos em que estudava na Universidade de Direito de Coimbra. O poker era o passatempo nas pausas dos estudos — e foi aí que as slots apareceram pela primeira vez, a jogar com os amigos. Estava descoberta a entrada para este mundo.",
-    "p2": "Encontrei a Twitch — era a primeira vez que entrava nesta plataforma. Criei uma conta, pesquisei artigos, vi vídeos de como configurar o canal e comecei esta aventura. Seria suficiente? Achei que não.",
-    "p3": "Fui evoluindo cada vez mais o canal e, comigo, foi crescendo também uma equipa que me tem ajudado a concretizar este projeto.",
-    "p3_highlight": "O que era um momento de diversão, passou a ser o meu trabalho diário.",
-    "quote": "Aqui não há histórias bonitas.\nSó a verdade do jogo.",
+    "p1": "desde os tempos em que estudava na Universidade de Direito de Coimbra. O poker era o passatempo nas pausas dos estudos \u2014 e foi a\u00ed que as slots apareceram pela primeira vez, a jogar com os amigos. Estava descoberta a entrada para este mundo.",
+    "p2": "Encontrei a Twitch \u2014 era a primeira vez que entrava nesta plataforma. Criei uma conta, pesquisei artigos, vi v\u00eddeos de como configurar o canal e comecei esta aventura. Seria suficiente? Achei que n\u00e3o.",
+    "p3": "Fui evoluindo cada vez mais o canal e, comigo, foi crescendo tamb\u00e9m uma equipa que me tem ajudado a concretizar este projeto.",
+    "p3_highlight": "O que era um momento de divers\u00e3o, passou a ser o meu trabalho di\u00e1rio.",
+    "quote": "Aqui n\u00e3o h\u00e1 hist\u00f3rias bonitas.\nS\u00f3 a verdade do jogo.",
     "stats": [
       { "value": "1990", "label": "Nascido" },
       { "value": "Coimbra", "label": "Origem" },
@@ -32,36 +32,36 @@ insert into sobre_content (id, data) values (1, '{
   },
   "arena": {
     "section_title": "O que acontece na arena",
-    "section_desc": "Cada sessão tem o seu propósito. Cada batalha, o seu nome.",
+    "section_desc": "Cada sess\u00e3o tem o seu prop\u00f3sito. Cada batalha, o seu nome.",
     "types": [
-      { "icon": "🏆", "label": "Liga dos Brutus", "badge": "Torneio", "desc": "Todas as semanas selecionamos jogadores de diferentes formas para competir no torneio de final do mês. Quem entra, combate.", "variant": "gold", "href": "/liga-dos-brutus" },
-      { "icon": "🎰", "label": "Bonus Hunt", "badge": "Campanhas", "desc": "Sempre a tentar aumentar o cardápio. Acumula-se munição, escolhe-se o momento, entra-se com força total.", "variant": "crimson", "href": "/bonus-hunt" },
-      { "icon": "🌾", "label": "Slot Farm", "badge": "Marathons", "desc": "Quando castigamos mesmo muito. As sessões mais longas e intensas da arena — sem pausas, sem piedade.", "variant": "crimson", "href": null },
-      { "icon": "🎮", "label": "Slot Request", "badge": "Tu decides", "desc": "Fazes tu o Bonus Hunt. O chat escolhe os slots, define as apostas. A arena é de todos.", "variant": "gold", "href": null }
+      { "icon": "\ud83c\udfc6", "label": "Liga dos Brutus", "badge": "Torneio", "desc": "Todas as semanas selecionamos jogadores de diferentes formas para competir no torneio de final do m\u00eas. Quem entra, combate.", "variant": "gold", "href": "/liga-dos-brutus" },
+      { "icon": "\ud83c\udfb0", "label": "Bonus Hunt", "badge": "Campanhas", "desc": "Sempre a tentar aumentar o card\u00e1pio. Acumula-se muni\u00e7\u00e3o, escolhe-se o momento, entra-se com for\u00e7a total.", "variant": "crimson", "href": "/bonus-hunt" },
+      { "icon": "\ud83c\udf3e", "label": "Slot Farm", "badge": "Marathons", "desc": "Quando castigamos mesmo muito. As sess\u00f5es mais longas e intensas da arena \u2014 sem pausas, sem piedade.", "variant": "crimson", "href": null },
+      { "icon": "\ud83c\udfae", "label": "Slot Request", "badge": "Tu decides", "desc": "Fazes tu o Bonus Hunt. O chat escolhe os slots, define as apostas. A arena \u00e9 de todos.", "variant": "gold", "href": null }
     ]
   },
   "community": {
-    "blockquote_line1": "Não é apenas um canal Twitch,",
-    "blockquote_emphasis": "é uma família",
+    "blockquote_line1": "N\u00e3o \u00e9 apenas um canal Twitch,",
+    "blockquote_emphasis": "\u00e9 uma fam\u00edlia",
     "blockquote_line2": "que partilha o gosto pelo gambling.",
-    "desc": "Nas streams de Brutuspolus, ninguém está de fora. A comunidade decide, arrisca e celebra — cada spin é vivido por todos, em simultâneo, com peso real.",
+    "desc": "Nas streams de Brutuspolus, ningu\u00e9m est\u00e1 de fora. A comunidade decide, arrisca e celebra \u2014 cada spin \u00e9 vivido por todos, em simult\u00e2neo, com peso real.",
     "cards": [
-      { "icon": "🏆", "title": "Leaderboard", "desc": "A tabela dos nossos Brutus", "href": "/leaderboard" },
-      { "icon": "⚔", "title": "Bruta do Mês", "desc": "Onde partilhas as tuas vitórias e ganhas prémios", "href": "/hall-of-victories" },
-      { "icon": "🎁", "title": "Giveaways", "desc": "Sorteios que decorrem na nossa live stream", "href": "/giveaways" }
+      { "icon": "\ud83c\udfc6", "title": "Leaderboard", "desc": "A tabela dos nossos Brutus", "href": "/leaderboard" },
+      { "icon": "\u2694", "title": "Bruta do M\u00eas", "desc": "Onde partilhas as tuas vit\u00f3rias e ganhas pr\u00e9mios", "href": "/hall-of-victories" },
+      { "icon": "\ud83c\udf81", "title": "Giveaways", "desc": "Sorteios que decorrem na nossa live stream", "href": "/giveaways" }
     ]
   },
   "timeline": {
     "section_title": "A linha do tempo",
     "items": [
-      { "year": "1990", "label": "Nasce em Coimbra", "desc": "Coimbra, Portugal. O início de tudo.", "video": null },
-      { "year": "2015", "label": "Poker & Slots em Coimbra", "desc": "Durante os anos na Universidade de Direito, o poker era o passatempo. As slots vieram nas pausas dos estudos — e foi aí que este mundo começou.", "video": null },
-      { "year": "2020", "label": "Início do Streaming", "desc": "Encontrou a Twitch pela primeira vez. Criou uma conta, pesquisou, aprendeu e lançou o canal. O que era diversão passou a ser trabalho diário.", "video": null },
-      { "year": "Hoje", "label": "A Arena Está Aberta", "desc": "Uma equipa, uma comunidade e um canal que cresceu com o seu criador. A arena aguarda.", "video": "https://www.twitch.tv/brutuspolus" }
+      { "year": "1990", "label": "Nasce em Coimbra", "desc": "Coimbra, Portugal. O in\u00edcio de tudo.", "video": null },
+      { "year": "2015", "label": "Poker & Slots em Coimbra", "desc": "Durante os anos na Universidade de Direito, o poker era o passatempo. As slots vieram nas pausas dos estudos \u2014 e foi a\u00ed que este mundo come\u00e7ou.", "video": null },
+      { "year": "2020", "label": "In\u00edcio do Streaming", "desc": "Encontrou a Twitch pela primeira vez. Criou uma conta, pesquisou, aprendeu e lan\u00e7ou o canal. O que era divers\u00e3o passou a ser trabalho di\u00e1rio.", "video": null },
+      { "year": "Hoje", "label": "A Arena Est\u00e1 Aberta", "desc": "Uma equipa, uma comunidade e um canal que cresceu com o seu criador. A arena aguarda.", "video": "https://www.twitch.tv/brutuspolus" }
     ]
   },
   "closing": {
-    "text": "A arena está aberta · A família aguarda"
+    "text": "A arena est\u00e1 aberta \u00b7 A fam\u00edlia aguarda"
   }
 }'::jsonb)
-on conflict (id) do nothing;
+on conflict (id) do update set data = EXCLUDED.data, updated_at = now();
