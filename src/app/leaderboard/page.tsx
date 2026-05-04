@@ -122,7 +122,7 @@ export default function LeaderboardPage() {
                   <div className="flex items-center justify-center gap-4">
                     <span className="text-arena-gold/70 text-lg select-none">⚔</span>
                     <div className="flex items-baseline gap-3">
-                      <span className="font-[family-name:var(--font-display)] text-[10px] uppercase tracking-[0.25em] text-arena-smoke/60">
+                      <span className="font-[family-name:var(--font-display)] text-[10px] uppercase tracking-[0.25em] text-white">
                         A tua posição
                       </span>
                       <span
@@ -136,7 +136,7 @@ export default function LeaderboardPage() {
                       >
                         #{pos + 1}
                       </span>
-                      <span className="font-[family-name:var(--font-display)] text-arena-smoke/80 text-xs tracking-wider">
+                      <span className="font-[family-name:var(--font-display)] text-white text-xs tracking-wider">
                         · {e.points.toLocaleString("pt-PT")} pts
                       </span>
                     </div>
