@@ -9,6 +9,7 @@ import { CookieConsent } from "@/components/CookieConsent";
 import { AuthProvider } from "@/lib/auth-context";
 import PageViewTracker from "@/components/PageViewTracker";
 import { DynamicPageBackground } from "@/components/DynamicPageBackground";
+import { PageGuard } from "@/components/PageGuard";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -22,7 +23,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
         {/* Push content below navbar + right of sidebar */}
-        <main className="relative z-10 flex-1 pt-16 lg:pl-56 flex flex-col">{children}</main>
+        <main className="relative z-10 flex-1 pt-16 lg:pl-56 flex flex-col">
+          <PageGuard>{children}</PageGuard>
+        </main>
 
         <div className="lg:pl-56">
           <Footer />
