@@ -79,11 +79,11 @@ function PodiumCard({ v, rank }: { v: Victory; rank: 0 | 1 | 2 }) {
       >
         {/* Arch / pediment */}
         <div
-          className="px-4 pt-3 pb-2 text-center border-b"
+          className="px-2 pt-1 pb-1 text-center border-b"
           style={{ borderColor: t.border, background: "rgba(0,0,0,0.45)" }}
         >
           <div
-            className="text-[10px] font-bold uppercase tracking-[0.4em] font-[family-name:var(--font-display)]"
+            className="text-[18px] font-black uppercase tracking-[0.2em] font-[family-name:var(--font-display)]"
             style={{ color: t.accent }}
           >
             #{rank + 1}

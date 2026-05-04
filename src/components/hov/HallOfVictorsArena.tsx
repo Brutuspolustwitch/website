@@ -28,7 +28,7 @@ export default function HallOfVictorsArena() {
     const j: WinnersResponse = await res.json();
     if (j.frozen && j.frozen.victories.length > 0) {
       setWinners(j.frozen.victories);
-      setWinnersLabel(`Semana de ${j.frozen.week_id}`);
+      setWinnersLabel(`Semana ${Math.ceil(new Date(j.frozen.week_id).getDate() / 7)}`);
     } else {
       setWinners(j.live_top3);
       setWinnersLabel(`Esta semana — em curso`);
