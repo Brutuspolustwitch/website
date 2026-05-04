@@ -173,7 +173,7 @@ export function SobreContent() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.85, delay: 0.28, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            ENTRA NA ARENA
+            {c.hero.title}
           </motion.h1>
 
           {/* Diamond divider — clean decorative break */}
