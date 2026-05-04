@@ -110,22 +110,39 @@ export default function LeaderboardPage() {
               if (pos === -1) return null;
               const e = entries[pos];
               return (
-                <div className="mb-4 flex items-center justify-center gap-3 py-2 px-4 rounded-lg"
+                <ArenaCard
+                  variant="gold"
+                  className="mb-2 px-6 py-3"
                   style={{
-                    background: "rgba(212,175,55,0.08)",
-                    border: "1px solid rgba(212,175,55,0.3)",
+                    background: "linear-gradient(160deg, #1e1a0e 0%, #1a1a1a 50%, #1e1a0e 100%)",
+                    border: "1px solid rgba(212,168,67,0.45)",
+                    boxShadow: "inset 0 0 30px rgba(0,0,0,0.6), 0 0 20px rgba(212,168,67,0.12)",
                   }}
                 >
-                  <span className="font-[family-name:var(--font-display)] text-xs uppercase tracking-[0.2em] text-arena-smoke">
-                    A tua posição
-                  </span>
-                  <span className="font-[family-name:var(--font-display)] text-arena-gold font-bold text-base">
-                    #{pos + 1}
-                  </span>
-                  <span className="font-[family-name:var(--font-display)] text-arena-smoke text-xs">
-                    · {e.points.toLocaleString("pt-PT")} pontos
-                  </span>
-                </div>
+                  <div className="flex items-center justify-center gap-4">
+                    <span className="text-arena-gold/40 text-lg select-none">⚔</span>
+                    <div className="flex items-baseline gap-3">
+                      <span className="font-[family-name:var(--font-display)] text-[10px] uppercase tracking-[0.25em] text-arena-smoke/60">
+                        A tua posição
+                      </span>
+                      <span
+                        className="font-[family-name:var(--font-display)] text-2xl font-black arena-glow"
+                        style={{
+                          background: "linear-gradient(160deg,#cd7f32 0%,#d4a843 30%,#f0d78c 50%,#d4a843 70%,#cd7f32 100%)",
+                          WebkitBackgroundClip: "text",
+                          WebkitTextFillColor: "transparent",
+                          backgroundClip: "text",
+                        }}
+                      >
+                        #{pos + 1}
+                      </span>
+                      <span className="font-[family-name:var(--font-display)] text-arena-smoke/50 text-xs tracking-wider">
+                        · {e.points.toLocaleString("pt-PT")} pts
+                      </span>
+                    </div>
+                    <span className="text-arena-gold/40 text-lg select-none">⚔</span>
+                  </div>
+                </ArenaCard>
               );
             })()}
             {entries.map((entry, i) => {
@@ -135,10 +152,14 @@ export default function LeaderboardPage() {
 
               return (
                 <motion.div key={`${entry.username}-${i}`} variants={STAGGER_ITEM}>
-                  <div style={isMe ? { borderRadius: "inherit", outline: "1.5px solid rgba(212,175,55,0.6)", outlineOffset: "-1.5px" } : undefined}>
                   <ArenaCard
                     variant={i < 3 ? "gold" : "default"}
-                    className={`p-4 arena-shine hover:border-arena-gold/50 transition-colors${isMe ? " !bg-[rgba(212,175,55,0.05)]" : ""}`}
+                    className="p-4 arena-shine hover:border-arena-gold/50 transition-colors"
+                    style={isMe ? {
+                      background: "linear-gradient(160deg, #1e1a0e 0%, #1a1a1a 50%, #1e1a0e 100%)",
+                      border: "1px solid rgba(212,168,67,0.5)",
+                      boxShadow: "inset 0 0 24px rgba(0,0,0,0.5), 0 0 18px rgba(212,168,67,0.15)",
+                    } : undefined}
                   >
                     <div className="flex items-center gap-4">
                       {/* Position / Medal */}
@@ -172,7 +193,6 @@ export default function LeaderboardPage() {
                       </div>
                     </div>
                   </ArenaCard>
-                  </div>
                 </motion.div>
               );
             })}

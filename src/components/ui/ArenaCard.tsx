@@ -1,18 +1,19 @@
 "use client";
 
-import { ReactNode } from "react";
+import { CSSProperties, ReactNode } from "react";
 
 interface ArenaCardProps {
   children: ReactNode;
   className?: string;
   variant?: "default" | "crimson" | "gold";
+  style?: CSSProperties;
 }
 
 /**
  * Engraved-style card with metallic border glow.
  * Sharp edges, game-UI aesthetic.
  */
-export function ArenaCard({ children, className = "", variant = "default" }: ArenaCardProps) {
+export function ArenaCard({ children, className = "", variant = "default", style }: ArenaCardProps) {
   const borders = {
     default: "arena-border",
     crimson: "arena-border-crimson",
@@ -21,6 +22,7 @@ export function ArenaCard({ children, className = "", variant = "default" }: Are
 
   return (
     <div
+      style={style}
       className={`bg-gradient-to-b from-arena-charcoal to-arena-dark ${borders[variant]} arena-shine ${className}`}
     >
       {children}
