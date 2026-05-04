@@ -75,6 +75,7 @@ const SECONDARY_LINKS: NavItem[] = [
         ],
       },
       { href: "/admin/parcerias", label: "Parcerias" },
+      { href: "/admin/sobre", label: "Sobre" },
       { href: "/admin/outros/daily-wheel", label: "Daily Wheel" },
       { href: "/admin/utilizadores", label: "Utilizadores" },
       {
