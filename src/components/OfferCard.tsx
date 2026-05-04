@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import type { CasinoOfferRow } from "@/lib/supabase";
-import { trackOfferClick } from "@/lib/analytics/tracker";
 import { WaxSealBadge } from "@/components/WaxSealBadge";
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -29,7 +28,6 @@ export interface CasinoOffer {
   license: string;
   established: string;
   notes: string[];
-  affiliate_url: string;
   rating: number;
   is_exclusive?: boolean;
 }
@@ -100,10 +98,11 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
   }, [offer.code]);
 
   const perks = offer.tags.length > 0 ? offer.tags : ["🎰 Slots", "⚡ Instant Play", "🛡 SSL"];
-  const externalUrl = offer.affiliate_url.startsWith("http") ? offer.affiliate_url : `https://${offer.affiliate_url}`;
 
+  // Use server-side redirect — the real destination URL is never exposed in the DOM,
+  // so ad blockers and VPNs cannot detect or block the link.
   const ctaButton = (
-    <a href={externalUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => { e.stopPropagation(); trackOfferClick(offer.id, offer.name); }}>
+    <a href={`/go/${offer.slug}`} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
       <button className="cta-button w-full">⚔ Resgatar Bónus ⚔</button>
     </a>
   );
@@ -270,7 +269,6 @@ export function OfferCards({ emptyClassName = "" }: { emptyClassName?: string })
             license: r.license,
             established: r.established,
             notes: r.notes,
-            affiliate_url: r.affiliate_url,
             rating: r.rating ?? 4.5,
             is_exclusive: r.is_exclusive ?? true,
           }))

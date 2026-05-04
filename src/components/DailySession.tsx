@@ -595,7 +595,6 @@ export default function DailySessionContent() {
                       license: session.casino.license,
                       established: session.casino.established,
                       notes: session.casino.notes,
-                      affiliate_url: session.casino.affiliate_url,
                       rating: session.casino.rating ?? 4.5,
                     }} />
                   ) : (
