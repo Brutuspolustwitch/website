@@ -38,7 +38,7 @@ const RANK_THEMES = [
 ] as const;
 
 function fmt(n: number) {
-  return n.toLocaleString("pt-PT", { maximumFractionDigits: 2 });
+  return n.toLocaleString("pt-PT", { maximumFractionDigits: 0 });
 }
 
 function PodiumCard({ v, rank }: { v: Victory; rank: 0 | 1 | 2 }) {
@@ -86,7 +86,7 @@ function PodiumCard({ v, rank }: { v: Victory; rank: 0 | 1 | 2 }) {
             className="text-[10px] font-bold uppercase tracking-[0.4em] font-[family-name:var(--font-display)]"
             style={{ color: t.accent }}
           >
-            {t.label} · #{rank + 1}
+            #{rank + 1}
           </div>
         </div>
 
