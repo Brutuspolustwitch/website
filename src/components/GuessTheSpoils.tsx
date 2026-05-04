@@ -232,7 +232,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
         ) : !campaign ? (
           <div className="papyrus-scroll greek-key-border" style={{ maxWidth: "100%", padding: "32px", textAlign: "center" }}>
             <p style={{ fontFamily: "var(--font-display)", color: "var(--ink-light)", fontSize: "0.9rem" }}>
-              Nenhuma campanha ativa. As campanhas aparecem aqui durante os Bonus Hunts.
+              O Adivinha o Resultado estará disponível brevemente.
             </p>
           </div>
         ) : (
