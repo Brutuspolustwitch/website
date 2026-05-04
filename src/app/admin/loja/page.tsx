@@ -28,6 +28,8 @@ const emptyReward: Omit<Reward, "id"> = {
 
 type FormReward = typeof emptyReward & { id?: string };
 
+interface VipConfig { warrior_min: number; champion_min: number; legend_min: number; }
+
 export default function AdminRewardsPage() {
   const { user } = useAuth();
   const [rewards, setRewards] = useState<Reward[]>([]);
@@ -35,6 +37,41 @@ export default function AdminRewardsPage() {
   const [editing, setEditing] = useState<FormReward | null>(null);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [vipConfig, setVipConfig] = useState<VipConfig>({ warrior_min: 500, champion_min: 2000, legend_min: 5000 });
+  const [vipDraft, setVipDraft] = useState<VipConfig>({ warrior_min: 500, champion_min: 2000, legend_min: 5000 });
+  const [vipSaving, setVipSaving] = useState(false);
+
+  const fetchVipConfig = useCallback(async () => {
+    try {
+      const res = await fetch("/api/vip-config");
+      const data = await res.json();
+      setVipConfig(data);
+      setVipDraft(data);
+    } catch { /* ignore */ }
+  }, []);
+
+  useEffect(() => { fetchVipConfig(); }, [fetchVipConfig]);
+
+  async function handleSaveVip() {
+    setVipSaving(true);
+    try {
+      const res = await fetch("/api/vip-config", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(vipDraft),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error || "Erro ao guardar config VIP");
+      } else {
+        setVipConfig(data);
+        showToast("Configuração VIP guardada");
+      }
+    } catch {
+      showToast("Erro de rede");
+    }
+    setVipSaving(false);
+  }
 
   const fetchRewards = useCallback(async () => {
     try {
@@ -199,20 +236,26 @@ export default function AdminRewardsPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <Field label="Tier">
                       <div className="flex gap-2">
-                        {(["common", "legendary"] as const).map((t) => (
+                        {([
+                          { v: "common", label: "⚔️ Loja dos Brutus" },
+                          { v: "elite", label: "🌟 Elite" },
+                          { v: "legendary", label: "👑 Tempo Limitado" },
+                        ] as const).map((t) => (
                           <button
-                            key={t}
+                            key={t.v}
                             type="button"
-                            onClick={() => setEditing({ ...editing, tier: t })}
+                            onClick={() => setEditing({ ...editing, tier: t.v })}
                             className={`flex-1 py-2 rounded-lg text-xs gladiator-label uppercase transition-all cursor-pointer border
-                              ${editing.tier === t
-                                ? t === "common"
+                              ${editing.tier === t.v
+                                ? t.v === "common"
                                   ? "bg-arena-steel/30 border-arena-smoke/40 text-arena-white"
-                                  : "bg-arena-crimson/15 border-arena-red/40 text-arena-red"
+                                  : t.v === "elite"
+                                    ? "bg-arena-gold/15 border-arena-gold/30 text-arena-gold"
+                                    : "bg-arena-crimson/15 border-arena-red/40 text-arena-red"
                                 : "bg-transparent border-white/10 text-arena-ash hover:border-white/20"
                               }`}
                           >
-                            {t === "common" ? "⚔️ Loja dos Brutus" : "👑 Tempo Limitado"}
+                            {t.label}
                           </button>
                         ))}
                       </div>
@@ -316,6 +359,38 @@ export default function AdminRewardsPage() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* VIP Config Section */}
+        <div className="rounded-2xl border border-arena-gold/20 bg-[#111] p-6 mb-8">
+          <h2 className="gladiator-label text-base text-arena-gold mb-1">Configuração VIP</h2>
+          <p className="text-xs text-arena-ash mb-5">Pontos SE mínimos para cada nível. Os valores devem ser crescentes.</p>
+          <div className="grid grid-cols-3 gap-4">
+            {([
+              { key: "warrior_min" as const, label: "🗡️ Warrior", current: vipConfig.warrior_min },
+              { key: "champion_min" as const, label: "🏆 Champion", current: vipConfig.champion_min },
+              { key: "legend_min" as const, label: "👑 Legend", current: vipConfig.legend_min },
+            ]).map(({ key, label, current }) => (
+              <Field key={key} label={`${label} (atual: ${current.toLocaleString()})`}>
+                <input
+                  type="number"
+                  min={1}
+                  value={vipDraft[key]}
+                  onChange={(e) => setVipDraft((d) => ({ ...d, [key]: parseInt(e.target.value) || 0 }))}
+                  className={INPUT_CLS}
+                />
+              </Field>
+            ))}
+          </div>
+          <div className="flex justify-end mt-4">
+            <button
+              onClick={handleSaveVip}
+              disabled={vipSaving}
+              className="px-5 py-2 rounded-lg bg-arena-gold/20 hover:bg-arena-gold/30 text-arena-gold text-sm gladiator-label border border-arena-gold/30 disabled:opacity-40 transition-all cursor-pointer"
+            >
+              {vipSaving ? "A guardar..." : "Guardar Config VIP"}
+            </button>
+          </div>
+        </div>
 
         {/* Rewards Table */}
         {loading ? (

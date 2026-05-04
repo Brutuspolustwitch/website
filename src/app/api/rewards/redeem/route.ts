@@ -62,6 +62,16 @@ export async function POST(request: Request) {
 
   // Check VIP requirement
   if (reward.vip_only && reward.vip_level_required) {
+    // Fetch VIP thresholds from config (falls back to defaults if not set)
+    const { data: vipCfg } = await supabase
+      .from("vip_config")
+      .select("warrior_min, champion_min, legend_min")
+      .eq("id", 1)
+      .single();
+    const warriorMin = vipCfg?.warrior_min ?? 500;
+    const championMin = vipCfg?.champion_min ?? 2000;
+    const legendMin = vipCfg?.legend_min ?? 5000;
+
     // Get user points to determine VIP level via ranks
     const headers = getHeaders();
     const channelId = getChannelId();
@@ -73,11 +83,10 @@ export async function POST(request: Request) {
       if (pointsRes.ok) {
         const pointsData = await pointsRes.json();
         const userPoints = pointsData.points || 0;
-        // VIP levels: 0=recruit(<500), 1=warrior(500+), 2=champion(2000+), 3=legend(5000+)
         let vipLevel = 0;
-        if (userPoints >= 5000) vipLevel = 3;
-        else if (userPoints >= 2000) vipLevel = 2;
-        else if (userPoints >= 500) vipLevel = 1;
+        if (userPoints >= legendMin) vipLevel = 3;
+        else if (userPoints >= championMin) vipLevel = 2;
+        else if (userPoints >= warriorMin) vipLevel = 1;
 
         if (vipLevel < reward.vip_level_required) {
           return NextResponse.json({ error: "Nível VIP insuficiente" }, { status: 403 });
