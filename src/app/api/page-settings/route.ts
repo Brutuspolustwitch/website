@@ -86,7 +86,7 @@ export async function PUT(request: Request) {
   if (!admin) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   const body = await request.json();
-  const { id, background_image, hero_image, hero_title, hero_description, hero_title_size, hero_description_size, hero_text_align, hero_position_x, hero_position_y, hero_max_width, effect, effect_intensity, overlay_opacity, bg_brightness, bg_saturation, bg_contrast, bg_position_x, bg_position_y, bg_zoom, bg_color, mobile_background_image, mobile_bg_position_x, mobile_bg_position_y, mobile_bg_zoom } = body;
+  const { id, background_image, hero_image, hero_title, hero_description, hero_title_size, hero_description_size, hero_text_align, hero_position_x, hero_position_y, hero_max_width, effect, effect_intensity, overlay_opacity, bg_brightness, bg_saturation, bg_contrast, bg_position_x, bg_position_y, bg_zoom, bg_color, mobile_background_image, mobile_bg_position_x, mobile_bg_position_y, mobile_bg_zoom, is_active, min_role } = body;
 
   if (!id) {
     return NextResponse.json({ error: "ID is required" }, { status: 400 });
@@ -122,6 +122,9 @@ export async function PUT(request: Request) {
   if (mobile_bg_position_x !== undefined) updates.mobile_bg_position_x = Math.min(100, Math.max(0, Math.round(Number(mobile_bg_position_x))));
   if (mobile_bg_position_y !== undefined) updates.mobile_bg_position_y = Math.min(100, Math.max(0, Math.round(Number(mobile_bg_position_y))));
   if (mobile_bg_zoom !== undefined) updates.mobile_bg_zoom = Math.min(200, Math.max(50, Number(mobile_bg_zoom)));
+  if (is_active !== undefined) updates.is_active = Boolean(is_active);
+  const validRoles = ["viewer", "moderador", "configurador", "admin"];
+  if (min_role !== undefined && validRoles.includes(min_role)) updates.min_role = min_role;
 
   const { data, error } = await supabase
     .from("page_settings")
