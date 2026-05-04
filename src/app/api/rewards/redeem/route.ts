@@ -107,10 +107,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Pontos insuficientes" }, { status: 400 });
   }
 
-  // Deduct points via SE API
+  // Deduct points via SE API (negative amount deducts)
   const deductRes = await fetch(
-    `${SE_API}/points/${channelId}/${encodeURIComponent(session.login)}/${reward.cost}`,
-    { method: "PUT", headers: { ...headers, "Content-Type": "application/json" }, body: JSON.stringify({ amount: -reward.cost }) }
+    `${SE_API}/points/${channelId}/${encodeURIComponent(session.login)}/${-reward.cost}`,
+    { method: "PUT", headers }
   );
 
   if (!deductRes.ok) {
