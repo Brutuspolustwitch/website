@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth-context";
+import { LoginPromptModal } from "@/components/ui/LoginPromptModal";
 import type { SpinHistoryRow, WheelSegmentRow } from "@/lib/supabase";
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -440,6 +441,7 @@ function WinHistory({ history }: { history: HistoryEntry[] }) {
 
 export function SpinWheel() {
   const { user } = useAuth();
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [loading, setLoading] = useState(true);
   const [rotation, setRotation] = useState(0);
@@ -562,8 +564,7 @@ export function SpinWheel() {
 
   /* ── SPIN ────────────────────────────────────────────────── */
   const spin = useCallback(async () => {
-    if (spinning || cooldown > 0 || rewards.length === 0) return;
-    if (!tickAudioRef.current) tickAudioRef.current = new AudioContext();
+    if (spinning || cooldown > 0 || rewards.length === 0) return;    if (!user) { setShowLoginModal(true); return; }    if (!tickAudioRef.current) tickAudioRef.current = new AudioContext();
 
     // Record spin server-side first (enforces cooldown)
     const res = await fetch("/api/spin-cooldown", { method: "POST" });
@@ -654,6 +655,12 @@ export function SpinWheel() {
 
   return (
     <div className={`h-full w-full flex flex-col items-center justify-center transition-transform duration-300 relative ${screenShake ? "animate-[shake_0.3s_ease-in-out]" : ""}`}>
+
+      <LoginPromptModal
+        open={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        description="Inicia sessão para girar a Roda Diária e ganhar prémios."
+      />
 
       {/* ── FULL-AREA BACKGROUND ──────────────────────── */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0"><EmberCanvas /></div>

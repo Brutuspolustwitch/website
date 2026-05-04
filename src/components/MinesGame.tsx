@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/lib/auth-context";
+import { LoginPromptModal } from "@/components/ui/LoginPromptModal";
 
 const GRID_SIZE = 25;
 const MINE_OPTIONS = [5, 7, 10, 15, 20, 24];
@@ -243,6 +244,7 @@ export default function MinesGame() {
           Minas
         </h2>
         <p style={{ color: P.brownLight }}>Inicia sessão para jogar</p>
+        <LoginPromptModal open={true} description="Inicia sessão para jogar Minas e apostares os teus pontos." />
       </div>
     );
   }

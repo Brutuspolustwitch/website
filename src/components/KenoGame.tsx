@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/lib/auth-context";
+import { LoginPromptModal } from "@/components/ui/LoginPromptModal";
 
 const GRID_SIZE  = 40;
 const DRAW_COUNT = 10;
@@ -256,6 +257,7 @@ export default function KenoGame() {
         <div className="text-5xl">🎱</div>
         <h2 className="text-2xl font-bold font-[family-name:var(--font-display)]" style={{ color: P.brown }}>Keno</h2>
         <p style={{ color: P.brownLight }}>Inicia sessão para jogar</p>
+        <LoginPromptModal open={true} description="Inicia sessão para jogar Keno e apostares os teus pontos." />
       </div>
     );
   }

@@ -6,6 +6,7 @@ import { supabase, type BonusHuntSession, type BonusHuntSlot, type GuessSession,
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useAuth } from "@/lib/auth-context";
+import { LoginPromptModal } from "@/components/ui/LoginPromptModal";
 
 /* ── Helpers ────────────────────────────────────────────────────────── */
 
@@ -28,6 +29,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
     const [recentWinners, setRecentWinners] = useState<any[]>([]);
 
   const { user } = useAuth();
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [campaigns, setCampaigns] = useState<BonusHuntSession[]>([]);
   const [idx, setIdx] = useState(0);
   const [slots, setSlots] = useState<BonusHuntSlot[]>([]);
@@ -876,9 +878,19 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                                   )}
                                 </>
                               ) : (
-                                <p style={{ fontFamily: "var(--font-display)", fontSize: "0.6rem", color: "var(--ink-light)", textAlign: "center", padding: "8px 0" }}>
-                                  Faz login com Twitch para apostares
-                                </p>
+                                <>
+                                  <LoginPromptModal
+                                    open={showLoginModal}
+                                    onClose={() => setShowLoginModal(false)}
+                                    description="Inicia sessão para apostares no resultado do Bonus Hunt."
+                                  />
+                                  <button
+                                    onClick={() => setShowLoginModal(true)}
+                                    style={{ fontFamily: "var(--font-display)", fontSize: "0.6rem", color: "var(--ink-light)", textAlign: "center", padding: "8px 0", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", width: "100%" }}
+                                  >
+                                    Faz login com Twitch para apostares
+                                  </button>
+                                </>
                               )}
                             </div>
                           )}
