@@ -708,46 +708,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                           {totalWin.toFixed(2)}{campaign?.currency ?? "€"}
                         </p>
                       </div>
-                      {/* Per-slot payouts */}
-                      {slots.length > 0 && (
-                        <div style={{ maxHeight: "280px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "2px", borderTop: "1px solid rgba(139,105,20,0.12)", paddingTop: "8px" }}>
-                          {slots.map((slot, i) => {
-                            const bet = slot.bet_size ?? slot.buy_value ?? 0;
-                            const payout = slot.payout ?? slot.result ?? null;
-                            const multi = payout != null && bet > 0 ? (payout / bet) : null;
-                            const isWin = payout != null && payout >= bet;
-                            return (
-                              <div key={slot.id} style={{
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                                padding: "5px 6px",
-                                borderRadius: "4px",
-                                background: slot.status === "active" ? "rgba(139,105,20,0.1)" : "transparent",
-                              }}>
-                                <div style={{ display: "flex", alignItems: "center", gap: "6px", flex: 1, minWidth: 0 }}>
-                                  <span style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", width: "16px", flexShrink: 0 }}>
-                                    #{i + 1}
-                                  </span>
-                                  <span style={{ fontFamily: "var(--font-ui)", fontSize: "0.7rem", fontWeight: 600, color: "var(--ink-dark)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                    {slot.name}
-                                  </span>
-                                </div>
-                                <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
-                                  {multi != null && (
-                                    <span style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)" }}>
-                                      {Math.round(multi)}x
-                                    </span>
-                                  )}
-                                  <span style={{ fontFamily: "var(--font-ui)", fontSize: "0.75rem", fontWeight: 700, color: !slot.opened ? "var(--ink-light)" : isWin ? "#2e7d32" : "#c62828", fontStyle: !slot.opened ? "italic" : "normal" }}>
-                                    {slot.opened && payout != null ? `${payout.toFixed(2)}${campaign?.currency ?? "€"}` : "???"}
-                                  </span>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
+
                     </div>
                   )}
 
@@ -919,12 +880,11 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                             const totalPages = Math.ceil(predictions.length / PAGE_SIZE);
                             const page = Math.min(predPage, Math.max(0, totalPages - 1));
                             const pagePreds = predictions.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
-                            const bettingStillOpen = !!guessSession.betting_open && guessSession.status !== "resolved";
                             return (
                               <div style={{ marginTop: "8px" }}>
                                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
                                   <p style={{ fontFamily: "var(--font-display)", fontSize: "0.5rem", color: "var(--ink-light)", letterSpacing: "0.12em", textTransform: "uppercase" }}>
-                                    {bettingStillOpen ? "Gladiadores · valores escondidos" : "Todas as Previsões"}
+                                    Todas as Previsões
                                   </p>
                                   {totalPages > 1 && (
                                     <span style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)" }}>
@@ -944,7 +904,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                                         const globalIdx = page * PAGE_SIZE + i;
                                         const isWinner = guessSession.winner_user_id === p.user_id;
                                         const isMine = myPrediction?.id === p.id;
-                                        const amountHidden = p.predicted_amount == null;
+                                        const amountHidden = false;
                                         const diff = guessSession.final_payout != null && p.predicted_amount != null
                                           ? Math.abs((p.predicted_amount as number) - guessSession.final_payout)
                                           : null;
@@ -1002,9 +962,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                                               </span>
                                             </div>
                                             <div style={{ textAlign: "right", flexShrink: 0 }}>
-                                              {amountHidden ? (
-                                                <span style={{ fontFamily: "var(--font-display)", fontSize: "0.6rem", color: "var(--ink-light)", letterSpacing: "0.1em" }}>???</span>
-                                              ) : (
+                                              {p.predicted_amount != null ? (
                                                 <>
                                                   <span style={{ fontFamily: "var(--font-ui)", fontSize: "0.75rem", fontWeight: 700, color: isWinner ? "var(--gold-dark)" : "var(--ink-dark)" }}>
                                                     {(p.predicted_amount as number).toFixed(2)}€
@@ -1015,6 +973,8 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                                                     </span>
                                                   )}
                                                 </>
+                                              ) : (
+                                                <span style={{ fontFamily: "var(--font-display)", fontSize: "0.6rem", color: "var(--ink-light)", letterSpacing: "0.1em" }}>—</span>
                                               )}
                                             </div>
                                           </div>

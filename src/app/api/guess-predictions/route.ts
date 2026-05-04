@@ -58,9 +58,7 @@ export async function GET(request: Request) {
     .eq("guess_session_id", guessSession.id);
 
   // Always return predictions so viewers can see each other's bets.
-  // While betting is open, mask amounts (null) except for the viewer's own bet.
   const isResolved = guessSession.status === "resolved";
-  const bettingOpen = !!guessSession.betting_open && !isResolved;
 
   let predictions: Record<string, unknown>[] = [];
   {
@@ -80,15 +78,8 @@ export async function GET(request: Request) {
       );
     }
 
-    // Mask amounts while betting is still open (unless admin or own prediction)
-    const myUserId = myPrediction ? (myPrediction as Record<string, unknown>).user_id : null;
-    predictions = rows.map((p) => {
-      const isMine = p.user_id === myUserId;
-      if (bettingOpen && !isAdmin && !isMine) {
-        return { ...p, predicted_amount: null };
-      }
-      return p;
-    });
+    // Always return all predictions with full amounts visible
+    predictions = rows;
   }
 
   return NextResponse.json({ guessSession, myPrediction, predictions, totalCount: totalCount ?? 0 });
