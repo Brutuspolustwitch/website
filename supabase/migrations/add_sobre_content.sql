@@ -14,7 +14,9 @@ insert into sobre_content (id, data) values (1, '{
     "prelabel": "Brutuspolus \u00b7 Streamer \u00b7 Portugal",
     "title": "ENTRA NA ARENA",
     "subtitle": "Sem filtros \u00b7 Sem encena\u00e7\u00e3o \u00b7 S\u00f3 a arena",
-    "history_label": "A Hist\u00f3ria"
+    "history_label": "A Hist\u00f3ria",
+    "layout": "centered",
+    "bg_image": null
   },
   "bio": {
     "p1_bold": "Apaixonado pelo gambling",
@@ -23,6 +25,7 @@ insert into sobre_content (id, data) values (1, '{
     "p3": "Fui evoluindo cada vez mais o canal e, comigo, foi crescendo tamb\u00e9m uma equipa que me tem ajudado a concretizar este projeto.",
     "p3_highlight": "O que era um momento de divers\u00e3o, passou a ser o meu trabalho di\u00e1rio.",
     "quote": "Aqui n\u00e3o h\u00e1 hist\u00f3rias bonitas.\nS\u00f3 a verdade do jogo.",
+    "layout": "sidebar",
     "stats": [
       { "value": "1990", "label": "Nascido" },
       { "value": "Coimbra", "label": "Origem" },
@@ -33,6 +36,7 @@ insert into sobre_content (id, data) values (1, '{
   "arena": {
     "section_title": "O que acontece na arena",
     "section_desc": "Cada sess\u00e3o tem o seu prop\u00f3sito. Cada batalha, o seu nome.",
+    "layout": "grid",
     "types": [
       { "icon": "\ud83c\udfc6", "label": "Liga dos Brutus", "badge": "Torneio", "desc": "Todas as semanas selecionamos jogadores de diferentes formas para competir no torneio de final do m\u00eas. Quem entra, combate.", "variant": "gold", "href": "/liga-dos-brutus" },
       { "icon": "\ud83c\udfb0", "label": "Bonus Hunt", "badge": "Campanhas", "desc": "Sempre a tentar aumentar o card\u00e1pio. Acumula-se muni\u00e7\u00e3o, escolhe-se o momento, entra-se com for\u00e7a total.", "variant": "crimson", "href": "/bonus-hunt" },
@@ -45,6 +49,7 @@ insert into sobre_content (id, data) values (1, '{
     "blockquote_emphasis": "\u00e9 uma fam\u00edlia",
     "blockquote_line2": "que partilha o gosto pelo gambling.",
     "desc": "Nas streams de Brutuspolus, ningu\u00e9m est\u00e1 de fora. A comunidade decide, arrisca e celebra \u2014 cada spin \u00e9 vivido por todos, em simult\u00e2neo, com peso real.",
+    "layout": "split",
     "cards": [
       { "icon": "\ud83c\udfc6", "title": "Leaderboard", "desc": "A tabela dos nossos Brutus", "href": "/leaderboard" },
       { "icon": "\u2694", "title": "Bruta do M\u00eas", "desc": "Onde partilhas as tuas vit\u00f3rias e ganhas pr\u00e9mios", "href": "/hall-of-victories" },
@@ -53,11 +58,12 @@ insert into sobre_content (id, data) values (1, '{
   },
   "timeline": {
     "section_title": "A linha do tempo",
+    "layout": "left-line",
     "items": [
-      { "year": "1990", "label": "Nasce em Coimbra", "desc": "Coimbra, Portugal. O in\u00edcio de tudo.", "image": null, "video": null },
-      { "year": "2015", "label": "Poker & Slots em Coimbra", "desc": "Durante os anos na Universidade de Direito, o poker era o passatempo. As slots vieram nas pausas dos estudos \u2014 e foi a\u00ed que este mundo come\u00e7ou.", "image": null, "video": null },
-      { "year": "2020", "label": "In\u00edcio do Streaming", "desc": "Encontrou a Twitch pela primeira vez. Criou uma conta, pesquisou, aprendeu e lan\u00e7ou o canal. O que era divers\u00e3o passou a ser trabalho di\u00e1rio.", "image": null, "video": null },
-      { "year": "Hoje", "label": "A Arena Est\u00e1 Aberta", "desc": "Uma equipa, uma comunidade e um canal que cresceu com o seu criador. A arena aguarda.", "image": null, "video": "https://www.twitch.tv/brutuspolus" }
+      { "id": "1", "year": "1990", "label": "Nasce em Coimbra", "desc": "Coimbra, Portugal. O in\u00edcio de tudo.", "image": null, "video": null, "accent": "gold" },
+      { "id": "2", "year": "2015", "label": "Poker & Slots em Coimbra", "desc": "Durante os anos na Universidade de Direito, o poker era o passatempo. As slots vieram nas pausas dos estudos \u2014 e foi a\u00ed que este mundo come\u00e7ou.", "image": null, "video": null, "accent": "none" },
+      { "id": "3", "year": "2020", "label": "In\u00edcio do Streaming", "desc": "Encontrou a Twitch pela primeira vez. Criou uma conta, pesquisou, aprendeu e lan\u00e7ou o canal. O que era divers\u00e3o passou a ser trabalho di\u00e1rio.", "image": null, "video": null, "accent": "crimson" },
+      { "id": "4", "year": "Hoje", "label": "A Arena Est\u00e1 Aberta", "desc": "Uma equipa, uma comunidade e um canal que cresceu com o seu criador. A arena aguarda.", "image": null, "video": "https://www.twitch.tv/brutuspolus", "accent": "gold" }
     ]
   },
   "closing": {
