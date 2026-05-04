@@ -59,6 +59,15 @@ const ADMIN_CATEGORIES = [
     borderColor: "border-gray-500/30",
     hoverColor: "hover:border-gray-500/50",
   },
+  {
+    href: "/admin/sobre",
+    title: "Sobre",
+    description: "Editar todos os textos da página Sobre",
+    icon: "⚔️",
+    color: "from-amber-600/20 to-amber-500/10",
+    borderColor: "border-amber-500/30",
+    hoverColor: "hover:border-amber-500/50",
+  },
 ] as const;
 
 export default function AdminPage() {
