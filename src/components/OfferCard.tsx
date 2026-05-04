@@ -107,8 +107,12 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
     </a>
   );
 
+  const handleCardClick = useCallback(() => {
+    window.open(`/go/${offer.slug}`, "_blank", "noopener,noreferrer");
+  }, [offer.slug]);
+
   return (
-    <div className="papyrus-flip-container">
+    <div className="papyrus-flip-container" onClick={handleCardClick} style={{ cursor: "pointer" }}>
       <div className={`papyrus-flip-inner ${flipped ? "papyrus-flipped" : ""}`}>
 
         {/* ═══ FRONT ═══ */}
