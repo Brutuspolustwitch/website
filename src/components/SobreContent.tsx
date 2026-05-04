@@ -11,7 +11,7 @@ interface ArenaType {
   icon: string; label: string; badge: string; desc: string;
   variant: "gold" | "crimson"; href: string | null;
 }
-interface TimelineItem { year: string; label: string; desc: string; video?: string | null; }
+interface TimelineItem { year: string; label: string; desc: string; image?: string | null; video?: string | null; }
 interface Stat { value: string; label: string; }
 interface CommunityCard { icon: string; title: string; desc: string; href: string; }
 interface SobreData {
@@ -69,10 +69,10 @@ const DEFAULTS: SobreData = {
   timeline: {
     section_title: "A linha do tempo",
     items: [
-      { year: "1990", label: "Nasce em Coimbra", desc: "Coimbra, Portugal. O início de tudo.", video: null },
-      { year: "2015", label: "Poker & Slots em Coimbra", desc: "Durante os anos na Universidade de Direito, o poker era o passatempo. As slots vieram nas pausas dos estudos — e foi aí que este mundo começou.", video: null },
-      { year: "2020", label: "Início do Streaming", desc: "Encontrou a Twitch pela primeira vez. Criou uma conta, pesquisou, aprendeu e lançou o canal. O que era diversão passou a ser trabalho diário.", video: null },
-      { year: "Hoje", label: "A Arena Está Aberta", desc: "Uma equipa, uma comunidade e um canal que cresceu com o seu criador. A arena aguarda.", video: "https://www.twitch.tv/brutuspolus" },
+      { year: "1990", label: "Nasce em Coimbra", desc: "Coimbra, Portugal. O início de tudo.", image: null, video: null },
+      { year: "2015", label: "Poker & Slots em Coimbra", desc: "Durante os anos na Universidade de Direito, o poker era o passatempo. As slots vieram nas pausas dos estudos — e foi aí que este mundo começou.", image: null, video: null },
+      { year: "2020", label: "Início do Streaming", desc: "Encontrou a Twitch pela primeira vez. Criou uma conta, pesquisou, aprendeu e lançou o canal. O que era diversão passou a ser trabalho diário.", image: null, video: null },
+      { year: "Hoje", label: "A Arena Está Aberta", desc: "Uma equipa, uma comunidade e um canal que cresceu com o seu criador. A arena aguarda.", image: null, video: "https://www.twitch.tv/brutuspolus" },
     ],
   },
   closing: { text: "A arena está aberta · A família aguarda" },
@@ -496,6 +496,17 @@ export function SobreContent() {
                       <p className="text-arena-smoke/70 text-sm sm:text-base leading-relaxed mb-4">
                         {item.desc}
                       </p>
+
+                      {/* Image */}
+                      {item.image && (
+                        <div className="relative w-full max-w-lg rounded-sm overflow-hidden border border-arena-gold/15 mb-4">
+                          <img
+                            src={item.image}
+                            alt={item.label}
+                            className="w-full h-auto object-cover"
+                          />
+                        </div>
+                      )}
 
                       {/* Video link */}
                       {item.video && (

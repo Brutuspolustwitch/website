@@ -6,7 +6,7 @@ import { useEffect, useState, useCallback } from "react";
 
 /* ── Types (mirrored from SobreContent.tsx) ──────────────── */
 interface ArenaType { icon: string; label: string; badge: string; desc: string; variant: "gold" | "crimson"; href: string | null; }
-interface TimelineItem { year: string; label: string; desc: string; video?: string | null; }
+interface TimelineItem { year: string; label: string; desc: string; image?: string | null; video?: string | null; }
 interface Stat { value: string; label: string; }
 interface CommunityCard { icon: string; title: string; desc: string; href: string; }
 interface SobreData {
@@ -56,10 +56,10 @@ const DEFAULTS: SobreData = {
   timeline: {
     section_title: "A linha do tempo",
     items: [
-      { year: "1990", label: "Nasce em Coimbra", desc: "Coimbra, Portugal. O início de tudo.", video: null },
-      { year: "2015", label: "Poker & Slots em Coimbra", desc: "Durante os anos na Universidade de Direito, o poker era o passatempo. As slots vieram nas pausas dos estudos — e foi aí que este mundo começou.", video: null },
-      { year: "2020", label: "Início do Streaming", desc: "Encontrou a Twitch pela primeira vez. Criou uma conta, pesquisou, aprendeu e lançou o canal. O que era diversão passou a ser trabalho diário.", video: null },
-      { year: "Hoje", label: "A Arena Está Aberta", desc: "Uma equipa, uma comunidade e um canal que cresceu com o seu criador. A arena aguarda.", video: "https://www.twitch.tv/brutuspolus" },
+      { year: "1990", label: "Nasce em Coimbra", desc: "Coimbra, Portugal. O início de tudo.", image: null, video: null },
+      { year: "2015", label: "Poker & Slots em Coimbra", desc: "Durante os anos na Universidade de Direito, o poker era o passatempo. As slots vieram nas pausas dos estudos — e foi aí que este mundo começou.", image: null, video: null },
+      { year: "2020", label: "Início do Streaming", desc: "Encontrou a Twitch pela primeira vez. Criou uma conta, pesquisou, aprendeu e lançou o canal. O que era diversão passou a ser trabalho diário.", image: null, video: null },
+      { year: "Hoje", label: "A Arena Está Aberta", desc: "Uma equipa, uma comunidade e um canal que cresceu com o seu criador. A arena aguarda.", image: null, video: "https://www.twitch.tv/brutuspolus" },
     ],
   },
   closing: { text: "A arena está aberta · A família aguarda" },
@@ -252,6 +252,10 @@ export default function AdminSobrePage() {
                 <Field label="Título do item" value={item.label} onChange={v => setTimelineItem(i, "label", v)} />
               </div>
               <Field label="Descrição" value={item.desc} onChange={v => setTimelineItem(i, "desc", v)} multiline rows={2} />
+              <Field label="URL da imagem (ou vazio)" value={item.image ?? ""} onChange={v => setTimelineItem(i, "image", v || null as unknown as string)} />
+              {item.image && (
+                <img src={item.image} alt={item.label} className="w-full max-w-xs h-auto rounded-sm border border-arena-gold/15 mt-1" />
+              )}
               <Field label="Link de vídeo (Twitch, ou vazio)" value={item.video ?? ""} onChange={v => setTimelineItem(i, "video", v || null as unknown as string)} />
             </div>
           ))}

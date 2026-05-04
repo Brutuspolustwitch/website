@@ -54,10 +54,10 @@ insert into sobre_content (id, data) values (1, '{
   "timeline": {
     "section_title": "A linha do tempo",
     "items": [
-      { "year": "1990", "label": "Nasce em Coimbra", "desc": "Coimbra, Portugal. O in\u00edcio de tudo.", "video": null },
-      { "year": "2015", "label": "Poker & Slots em Coimbra", "desc": "Durante os anos na Universidade de Direito, o poker era o passatempo. As slots vieram nas pausas dos estudos \u2014 e foi a\u00ed que este mundo come\u00e7ou.", "video": null },
-      { "year": "2020", "label": "In\u00edcio do Streaming", "desc": "Encontrou a Twitch pela primeira vez. Criou uma conta, pesquisou, aprendeu e lan\u00e7ou o canal. O que era divers\u00e3o passou a ser trabalho di\u00e1rio.", "video": null },
-      { "year": "Hoje", "label": "A Arena Est\u00e1 Aberta", "desc": "Uma equipa, uma comunidade e um canal que cresceu com o seu criador. A arena aguarda.", "video": "https://www.twitch.tv/brutuspolus" }
+      { "year": "1990", "label": "Nasce em Coimbra", "desc": "Coimbra, Portugal. O in\u00edcio de tudo.", "image": null, "video": null },
+      { "year": "2015", "label": "Poker & Slots em Coimbra", "desc": "Durante os anos na Universidade de Direito, o poker era o passatempo. As slots vieram nas pausas dos estudos \u2014 e foi a\u00ed que este mundo come\u00e7ou.", "image": null, "video": null },
+      { "year": "2020", "label": "In\u00edcio do Streaming", "desc": "Encontrou a Twitch pela primeira vez. Criou uma conta, pesquisou, aprendeu e lan\u00e7ou o canal. O que era divers\u00e3o passou a ser trabalho di\u00e1rio.", "image": null, "video": null },
+      { "year": "Hoje", "label": "A Arena Est\u00e1 Aberta", "desc": "Uma equipa, uma comunidade e um canal que cresceu com o seu criador. A arena aguarda.", "image": null, "video": "https://www.twitch.tv/brutuspolus" }
     ]
   },
   "closing": {
