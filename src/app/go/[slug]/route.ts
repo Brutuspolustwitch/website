@@ -34,7 +34,7 @@ export async function GET(
 
   // If not found, redirect home
   if (!offer?.affiliate_url) {
-    return NextResponse.redirect(new URL("/ofertas", process.env.NEXT_PUBLIC_SITE_URL ?? "https://brutuspolus.tv"));
+    return NextResponse.redirect(new URL("/ofertas", process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.brutuspolus.com"));
   }
 
   // Ensure destination is an absolute URL
