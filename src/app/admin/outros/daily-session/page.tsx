@@ -475,12 +475,6 @@ export default function AdminDailySessionPage() {
                       </button>
                     </div>
                   ))}
-                  <button
-                    onClick={() => { setShowOutros(true); setCasinoId(""); }}
-                    className="w-full text-left px-3 py-2 rounded text-sm text-arena-gold/70 hover:bg-arena-iron hover:text-arena-gold transition-colors"
-                  >
-                    ➕ Outros (adicionar novo)
-                  </button>
                 </div>
 
                 {/* "Outros" quick-add form */}
