@@ -212,7 +212,8 @@ export default function GiveawayArena() {
   const myChance = totalTickets > 0 && myTickets > 0 ? ((myTickets / totalTickets) * 100).toFixed(1) : null;
 
   return (
-    <div className="space-y-6">
+    <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom" style={{ maxWidth: "100%" }}>
+      <div className="p-4 sm:p-7 space-y-5">
       {/* Tab switcher */}
       <div className="flex gap-2">
         {(["active", "archive"] as const).map((t) => (
@@ -232,12 +233,11 @@ export default function GiveawayArena() {
           <div className="space-y-4">
             {/* Main Card — papyrus scroll */}
             <motion.div
-              className="papyrus-scroll papyrus-scroll-top papyrus-scroll-bottom greek-key-border"
-              style={{ maxWidth: "100%" }}
+              className="relative"
               animate={entryPulse ? { boxShadow: ["0 0 0 0 rgba(180,130,20,0)", "0 0 24px 8px rgba(180,130,20,0.35)", "0 0 0 0 rgba(180,130,20,0)"] } : {}}
               transition={{ duration: 0.6 }}
             >
-              <div className="relative p-5 sm:p-7">
+              <div className="relative">
                 {/* Status + Title */}
                 <div className="mb-5">
                   <div className="flex items-center gap-3 mb-2 flex-wrap">
@@ -411,7 +411,7 @@ export default function GiveawayArena() {
 
             {/* Top Participants leaderboard */}
             {participants.length > 0 && (
-              <div className="papyrus-scroll papyrus-scroll-top papyrus-scroll-bottom" style={{ maxWidth: "100%", padding: "1.25rem 1.5rem" }}>
+              <div style={{ borderTop: "1px solid rgba(180,130,20,0.3)", paddingTop: "1.25rem", marginTop: "1.25rem" }}>
                 <h3 className="text-sm font-bold uppercase tracking-wider mb-4 font-[family-name:var(--font-display)]"
                   style={{ color: "var(--ink-mid)" }}>
                   ⚔ Gladiadores na Arena
@@ -455,7 +455,7 @@ export default function GiveawayArena() {
           </div>
         ) : (
           /* No active giveaway */
-          <div className="papyrus-scroll papyrus-scroll-top papyrus-scroll-bottom" style={{ maxWidth: "100%", padding: "4rem 2rem" }}>
+          <div style={{ padding: "4rem 2rem" }}>
             <div className="flex flex-col items-center justify-center text-center">
               <div className="text-5xl mb-5">⚔️</div>
               <h2 className="text-2xl font-bold font-[family-name:var(--font-display)] tracking-wider mb-3"
@@ -470,7 +470,7 @@ export default function GiveawayArena() {
         )
       ) : (
         /* Archive tab */
-        <div className="papyrus-scroll papyrus-scroll-top papyrus-scroll-bottom" style={{ padding: "1.5rem" }}>
+        <div>
           {pastGiveaways.length === 0 ? (
             <p className="text-sm text-center py-12" style={{ color: "var(--ink-mid)" }}>Nenhum giveaway passado.</p>
           ) : (
@@ -490,6 +490,7 @@ export default function GiveawayArena() {
         prize={giveaway?.prize}
         onDismiss={() => setCelebrationWinner(null)}
       />
+      </div>
     </div>
   );
 }
