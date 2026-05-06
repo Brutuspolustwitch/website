@@ -24,12 +24,12 @@ export async function GET(
 
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  // Look up the offer by slug
+  // Look up the offer by slug (visibility does not affect the redirect — hidden offers
+  // still appear on daily-session and should resolve to their affiliate URL)
   const { data: offer } = await supabase
     .from("casino_offers")
     .select("id, name, affiliate_url")
     .eq("slug", slug)
-    .eq("visible", true)
     .single();
 
   // If not found, redirect home
