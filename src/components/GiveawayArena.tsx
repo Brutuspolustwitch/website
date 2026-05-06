@@ -299,7 +299,7 @@ export default function GiveawayArena() {
                     <p className="text-xs uppercase tracking-widest font-[family-name:var(--font-display)] mb-1"
                       style={{ color: "var(--ink-mid)" }}>Tempo Restante</p>
                     <motion.p
-                      className="text-5xl sm:text-6xl font-bold font-[family-name:var(--font-display)] tracking-[0.15em]"
+                      className="text-4xl sm:text-5xl lg:text-6xl font-bold font-[family-name:var(--font-display)] tracking-[0.08em] sm:tracking-[0.15em]"
                       style={{ color: remaining <= 30 ? "#8b1a1a" : "var(--gold-dark)" }}
                       animate={remaining <= 10 && remaining > 0 ? { scale: [1, 1.05, 1] } : {}}
                       transition={{ duration: 0.5, repeat: Infinity }}
@@ -317,11 +317,11 @@ export default function GiveawayArena() {
                     { label: "Os Teus Tickets", val: myTickets },
                     { label: "Hipótese", val: myChance ? `${myChance}%` : "—" },
                   ].map(({ label, val }) => (
-                    <div key={label} className="rounded p-3 text-center"
+                    <div key={label} className="rounded p-2 sm:p-3 text-center"
                       style={{ background: "rgba(180,130,20,0.08)", border: "1px solid rgba(180,130,20,0.25)" }}>
-                      <p className="text-xs uppercase tracking-wider font-[family-name:var(--font-display)]"
+                      <p className="text-[10px] sm:text-xs uppercase tracking-normal sm:tracking-wider font-[family-name:var(--font-display)] leading-tight"
                         style={{ color: "var(--ink-mid)" }}>{label}</p>
-                      <p className="text-xl font-bold font-[family-name:var(--font-display)]"
+                      <p className="text-lg sm:text-xl font-bold font-[family-name:var(--font-display)] mt-0.5"
                         style={{ color: "var(--ink-dark)" }}>{val}</p>
                     </div>
                   ))}
@@ -357,8 +357,8 @@ export default function GiveawayArena() {
                     <button
                       onClick={handleEnter}
                       disabled={entering || (giveaway.mode === "single" && myTickets > 0)}
-                      className={`cta-button flex-1 sm:flex-none disabled:opacity-40 disabled:cursor-not-allowed`}
-                      style={{ width: "auto", padding: "0 2em" }}
+                      className={`cta-button w-full sm:w-auto sm:flex-none disabled:opacity-40 disabled:cursor-not-allowed`}
+                      style={{ padding: "0 2em" }}
                     >
                       {entering ? (
                         <span className="flex items-center gap-2 justify-center">
@@ -432,19 +432,19 @@ export default function GiveawayArena() {
                             border: isMe ? "1px solid rgba(180,130,20,0.3)" : "1px solid transparent",
                           }}
                         >
-                          <div className="flex items-center gap-3">
-                            <span className="text-sm w-6 text-right font-bold"
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <span className="text-sm w-6 shrink-0 text-right font-bold"
                               style={{ color: i < 3 ? "var(--gold-dark)" : "var(--stone-mid)" }}>
                               {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}.`}
                             </span>
-                            <span className="text-sm"
+                            <span className="text-sm truncate min-w-0"
                               style={{ color: isMe ? "var(--ink-dark)" : "var(--ink-mid)", fontWeight: isMe ? 700 : 400 }}>
                               {p.twitch_username} {isMe && "(tu)"}
                             </span>
                           </div>
-                          <div className="flex items-center gap-4 text-xs">
-                            <span style={{ color: "var(--ink-mid)" }}>{p.tickets} ticket{p.tickets > 1 ? "s" : ""}</span>
-                            <span className="w-12 text-right font-bold" style={{ color: "var(--gold-dark)" }}>{chance}%</span>
+                          <div className="flex items-center gap-2 sm:gap-4 text-xs shrink-0">
+                            <span style={{ color: "var(--ink-mid)" }}>{p.tickets}t</span>
+                            <span className="w-10 sm:w-12 text-right font-bold" style={{ color: "var(--gold-dark)" }}>{chance}%</span>
                           </div>
                         </div>
                       );
