@@ -120,6 +120,89 @@ function deepMerge<T>(defaults: T, override: Partial<T> | null | undefined): T {
   return result;
 }
 
+/* ── Twitch embed helper ─────────────────────────────────────────── */
+function buildTwitchEmbedUrl(url: string): string | null {
+  try {
+    const u = new URL(url);
+    const parent = typeof window !== "undefined" ? window.location.hostname : "www.brutuspolus.com";
+    const p = `parent=${encodeURIComponent(parent)}&autoplay=false`;
+
+    // clips.twitch.tv/ClipSlug
+    if (u.hostname === "clips.twitch.tv") {
+      const slug = u.pathname.replace(/^\//, "").split("/")[0];
+      return `https://clips.twitch.tv/embed?clip=${slug}&${p}`;
+    }
+    // twitch.tv/channel/clip/ClipSlug
+    const clipMatch = u.pathname.match(/\/[^/]+\/clip\/([^/?]+)/);
+    if (clipMatch) return `https://clips.twitch.tv/embed?clip=${clipMatch[1]}&${p}`;
+    // twitch.tv/videos/12345
+    const vodMatch = u.pathname.match(/\/videos\/(\d+)/);
+    if (vodMatch) return `https://player.twitch.tv/?video=${vodMatch[1]}&${p}`;
+    // twitch.tv/channel
+    const chanMatch = u.pathname.match(/^\/([A-Za-z0-9_]+)\/?$/);
+    if (chanMatch && u.hostname.includes("twitch.tv")) return `https://player.twitch.tv/?channel=${chanMatch[1]}&${p}`;
+    return null;
+  } catch { return null; }
+}
+
+function TwitchEmbed({ url, label }: { url: string; label: string }) {
+  const [active, setActive] = useState(false);
+  const embedUrl = buildTwitchEmbedUrl(url);
+
+  if (!embedUrl) {
+    return (
+      <a href={url} target="_blank" rel="noopener noreferrer"
+        className="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-sm border border-arena-gold/25 bg-arena-gold/[0.05] hover:border-arena-gold/50 hover:bg-arena-gold/[0.10] transition-all duration-300 group">
+        <span className="text-base">▶</span>
+        <span className="font-[family-name:var(--font-ui)] text-arena-gold/75 group-hover:text-arena-gold text-xs tracking-[0.18em] uppercase transition-colors duration-300">Ver na Twitch</span>
+      </a>
+    );
+  }
+
+  return (
+    <div className="mt-3 w-full max-w-lg">
+      {active ? (
+        <div className="relative w-full rounded-sm overflow-hidden border border-arena-gold/20"
+          style={{ paddingBottom: "56.25%" }}>
+          <iframe
+            src={embedUrl}
+            title={label}
+            allowFullScreen
+            className="absolute inset-0 w-full h-full"
+            style={{ border: "none" }}
+          />
+        </div>
+      ) : (
+        <button
+          onClick={() => setActive(true)}
+          className="relative w-full rounded-sm overflow-hidden border border-arena-gold/20 bg-black/40 group transition-all hover:border-arena-gold/50"
+          style={{ paddingBottom: "56.25%" }}
+          aria-label={`Reproduzir: ${label}`}
+        >
+          {/* purple Twitch-ish gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1a0a2e] to-[#0d1117]" />
+          {/* Twitch logo watermark */}
+          <svg className="absolute top-3 left-3 w-6 h-6 opacity-30" viewBox="0 0 24 24" fill="#9146ff">
+            <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/>
+          </svg>
+          {/* play button */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-14 h-14 rounded-full bg-[#9146ff]/80 group-hover:bg-[#9146ff] flex items-center justify-center transition-all group-hover:scale-110 shadow-lg"
+              style={{ boxShadow: "0 0 20px rgba(145,70,255,0.4)" }}>
+              <svg className="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </div>
+          </div>
+          <span className="absolute bottom-3 left-0 right-0 text-center font-[family-name:var(--font-ui)] text-arena-white/60 text-xs tracking-[0.18em] uppercase">
+            Ver na Twitch
+          </span>
+        </button>
+      )}
+    </div>
+  );
+}
+
 /* ── Reusable section label with ornamental line ─────────────────── */
 function SectionLabel({ numeral, label }: { numeral: string; label: string }) {
   return (
@@ -523,11 +606,7 @@ export function SobreContent() {
                         <p className="font-[family-name:var(--font-ui)] text-arena-white/90 text-sm tracking-wider uppercase mb-1">{item.label}</p>
                         <p className="text-arena-smoke/65 text-sm leading-relaxed">{item.desc}</p>
                         {item.image && <img src={item.image} alt={item.label} className="w-full max-w-xs h-auto rounded-sm border border-arena-gold/15 mt-3" />}
-                        {item.video && (
-                          <a href={item.video} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 mt-2 text-arena-gold/60 hover:text-arena-gold text-xs tracking-wider transition-colors">
-                            <span>▶</span><span className="font-[family-name:var(--font-ui)] uppercase">Ver na Twitch</span>
-                          </a>
-                        )}
+                        {item.video && <TwitchEmbed url={item.video} label={item.label} />}
                       </div>
                     </div>
                   </ScrollReveal>
@@ -555,12 +634,7 @@ export function SobreContent() {
                           <h3 className="font-[family-name:var(--font-ui)] text-arena-white/90 text-sm sm:text-base tracking-wider uppercase mb-2">{item.label}</h3>
                           <p className="text-arena-smoke/70 text-sm leading-relaxed">{item.desc}</p>
                           {item.image && <img src={item.image} alt={item.label} className="w-full h-auto rounded-sm border border-arena-gold/15 mt-3" />}
-                          {item.video && (
-                            <a href={item.video} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 mt-3 px-3 py-1.5 rounded-sm border border-arena-gold/25 bg-arena-gold/[0.05] hover:border-arena-gold/50 transition-all group text-xs">
-                              <span>▶</span>
-                              <span className="font-[family-name:var(--font-ui)] text-arena-gold/75 group-hover:text-arena-gold tracking-wider uppercase transition-colors">Ver na Twitch</span>
-                            </a>
-                          )}
+                          {item.video && <TwitchEmbed url={item.video} label={item.label} />}
                         </div>
                       </div>
                     </ScrollReveal>
@@ -591,12 +665,7 @@ export function SobreContent() {
                               <img src={item.image} alt={item.label} className="w-full h-auto object-cover" />
                             </div>
                           )}
-                          {item.video && (
-                            <a href={item.video} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-sm border border-arena-gold/25 bg-arena-gold/[0.05] hover:border-arena-gold/50 hover:bg-arena-gold/[0.10] transition-all duration-300 group">
-                              <span className="text-base">▶</span>
-                              <span className="font-[family-name:var(--font-ui)] text-arena-gold/75 group-hover:text-arena-gold text-xs tracking-[0.18em] uppercase transition-colors duration-300">Ver na Twitch</span>
-                            </a>
-                          )}
+                          {item.video && <TwitchEmbed url={item.video} label={item.label} />}
                         </div>
                       </div>
                     </ScrollReveal>
