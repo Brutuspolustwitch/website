@@ -267,6 +267,27 @@ export default function GiveawayArena() {
                       <span className="font-bold font-[family-name:var(--font-display)]">{giveaway.prize}</span>
                     </div>
                   )}
+
+                  {/* Prize image */}
+                  {giveaway.prize_image && (
+                    <div className="mt-4 rounded-lg overflow-hidden relative"
+                      style={{ border: "2px solid var(--gold-dark)", boxShadow: "0 4px 20px rgba(180,130,20,0.2)" }}>
+                      <img
+                        src={giveaway.prize_image}
+                        alt={giveaway.prize || "Prémio"}
+                        className="w-full object-cover block"
+                        style={{ maxHeight: "240px" }}
+                      />
+                      {giveaway.prize && (
+                        <div className="absolute bottom-0 left-0 right-0 px-4 py-3"
+                          style={{ background: "linear-gradient(to top, rgba(20,12,2,0.78) 60%, transparent)" }}>
+                          <p className="text-base font-bold font-[family-name:var(--font-display)] text-white drop-shadow">
+                            🏆 {giveaway.prize}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Divider */}
