@@ -142,6 +142,30 @@ export default function HallOfVictorsArena() {
               Inicia sessão com Twitch para submeteres a tua vitória.
             </div>
           )}
+
+          {/* Rewards info */}
+          <div className="mt-6 inline-flex flex-col items-center gap-2">
+            <p className="text-xs uppercase tracking-[0.2em] text-arena-smoke/60">Recompensas em pontos SE</p>
+            <div className="flex flex-wrap justify-center gap-3 text-xs text-arena-smoke/80">
+              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-arena-gold/25 bg-arena-gold/[0.06]">
+                <span style={{ color: "#ffd700" }}>🥇</span>
+                <span style={{ color: "#f0d78c" }}>1.500 pts</span>
+              </span>
+              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-arena-gold/20 bg-arena-gold/[0.04]">
+                <span style={{ color: "#c0c0c0" }}>🥈</span>
+                <span className="text-arena-smoke">750 pts</span>
+              </span>
+              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-arena-gold/15 bg-arena-gold/[0.03]">
+                <span style={{ color: "#cd7f32" }}>🥉</span>
+                <span className="text-arena-smoke">500 pts</span>
+              </span>
+              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/10 bg-white/[0.03]">
+                <span>✅</span>
+                <span className="text-arena-smoke">250 pts por vitória aprovada</span>
+              </span>
+            </div>
+            <p className="text-[10px] text-arena-smoke/40 mt-1">Top 3 semanal · os pontos são atribuídos automaticamente</p>
+          </div>
         </section>
       </div>
 
