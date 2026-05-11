@@ -58,6 +58,12 @@ export default function AdminBonusHuntPage() {
   const [deleting, setDeleting] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
+  /* Jackpot state */
+  const [jackpot, setJackpot] = useState<number>(30);
+  const [jackpotInput, setJackpotInput] = useState("");
+  const [jackpotSaving, setJackpotSaving] = useState(false);
+  const [jackpotMsg, setJackpotMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
   /* Guess-the-result state */
   const [guessHuntId, setGuessHuntId] = useState<string | null>(null);
   const [guessSession, setGuessSession] = useState<GuessSession | null>(null);
@@ -91,6 +97,32 @@ export default function AdminBonusHuntPage() {
   useEffect(() => {
     if (isAdmin) fetchHistory();
   }, [isAdmin, fetchHistory]);
+
+  /* Load jackpot on mount */
+  useEffect(() => {
+    if (!isAdmin) return;
+    fetch("/api/jackpot")
+      .then((r) => r.json())
+      .then((d) => { if (d.amount != null) { setJackpot(d.amount); setJackpotInput(String(d.amount)); } })
+      .catch(() => {});
+  }, [isAdmin]);
+
+  async function handleJackpotSave() {
+    const val = parseFloat(jackpotInput.replace(",", "."));
+    if (isNaN(val) || val < 0) { setJackpotMsg({ ok: false, text: "Valor inválido" }); return; }
+    setJackpotSaving(true);
+    setJackpotMsg(null);
+    const res = await fetch("/api/jackpot", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount: val }),
+    });
+    const data = await res.json();
+    if (res.ok) { setJackpot(data.amount); setJackpotInput(String(data.amount)); setJackpotMsg({ ok: true, text: `Jackpot atualizado para ${data.amount}€` }); }
+    else { setJackpotMsg({ ok: false, text: data.error ?? "Erro" }); }
+    setJackpotSaving(false);
+    setTimeout(() => setJackpotMsg(null), 3000);
+  }
 
   /* Guess management helpers */
   const loadGuessData = useCallback(async (huntId: string) => {
@@ -577,6 +609,43 @@ export default function AdminBonusHuntPage() {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* ── Jackpot Editor ── */}
+          <div className="rounded-xl bg-arena-charcoal/60 border border-arena-gold/20 p-5">
+            <h3 className="font-[family-name:var(--font-display)] text-arena-gold text-sm tracking-widest uppercase mb-4 flex items-center gap-2">
+              🎰 Jackpot — Adivinha o Resultado
+            </h3>
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-2">
+                <span className="text-arena-smoke/60 text-xs">Valor atual:</span>
+                <span className="font-[family-name:var(--font-display)] text-arena-gold text-lg font-bold">{jackpot}€</span>
+              </div>
+              <div className="flex items-center gap-2 ml-auto">
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={jackpotInput}
+                  onChange={(e) => setJackpotInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleJackpotSave()}
+                  placeholder="Novo valor €"
+                  className="w-32 bg-arena-iron/60 border border-arena-gold/20 rounded-lg px-3 py-2 text-sm text-arena-white focus:outline-none focus:border-arena-gold/50 transition-colors"
+                />
+                <button
+                  onClick={handleJackpotSave}
+                  disabled={jackpotSaving}
+                  className="px-4 py-2 rounded-lg bg-arena-gold/10 border border-arena-gold/30 text-arena-gold text-xs font-[family-name:var(--font-display)] tracking-wide hover:bg-arena-gold/20 transition-all cursor-pointer disabled:opacity-50"
+                >
+                  {jackpotSaving ? "A guardar..." : "Guardar"}
+                </button>
+              </div>
+            </div>
+            {jackpotMsg && (
+              <p className="mt-2 text-xs font-[family-name:var(--font-display)] tracking-wide" style={{ color: jackpotMsg.ok ? "#22c55e" : "#8b1a1a" }}>
+                {jackpotMsg.ok ? "✓" : "✗"} {jackpotMsg.text}
+              </p>
+            )}
+          </div>
 
           {/* ── History ── */}
           <div className="mt-10">
