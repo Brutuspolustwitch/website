@@ -146,7 +146,7 @@ export async function POST(request: Request) {
   // Notify the user
   await notify(session.id, "se_points_spent",
     "🛒 Recompensa Resgatada",
-    `Gastaste ${reward.cost.toLocaleString("pt-PT")} pontos SE em "${reward.title}". O pedido está em análise.`);
+    `Gastaste ${reward.cost.toLocaleString("pt-PT")} pontos SE em "${reward.title}". Abre um ticket no Discord para receberes a tua recompensa.`);
 
   return NextResponse.json({ ok: true, newPoints: currentPoints - reward.cost });
 }
