@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { notify } from "@/lib/notify";
 
 export const dynamic = "force-dynamic";
 
@@ -66,11 +67,18 @@ export async function POST(request: Request) {
     const pts = PODIUM_REWARDS[w.rank];
     if (!v?.user_id || !pts) continue;
     const { data: u } = await supabase
-      .from("users").select("login, se_username").eq("id", v.user_id).maybeSingle();
+      .from("users").select("twitch_id, login, se_username").eq("id", v.user_id).maybeSingle();
     const username = u?.se_username || u?.login;
-    if (username) {
+    if (username && pts) {
       await awardPodiumPoints(username, pts);
       awarded.push({ rank: w.rank, username, points: pts });
+      if (u?.twitch_id) {
+        const medal = w.rank === 1 ? "🥇" : w.rank === 2 ? "🥈" : "🥉";
+        const pos = w.rank === 1 ? "1º lugar" : w.rank === 2 ? "2º lugar" : "3º lugar";
+        await notify(u.twitch_id, "se_points_earned",
+          `${medal} Bruta da Semana — ${pos}`,
+          `Terminaste em ${pos} no Top 3 semanal! Recebeste ${pts.toLocaleString("pt-PT")} pontos SE.`);
+      }
     }
   }
 

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabase } from "@/lib/supabase";
+import { notify } from "@/lib/notify";
 
 function getSession(raw: string): { id: string; login: string; display_name: string; role?: string } | null {
   try { return JSON.parse(raw); } catch { return null; }
@@ -329,6 +330,14 @@ export async function PATCH(request: Request) {
         p_user_id: winner.user_id,
         p_amount: 500,
       });
+      // Notify the winner
+      const { data: winnerUser } = await supabase
+        .from("users").select("twitch_id").eq("id", winner.user_id as string).maybeSingle();
+      if (winnerUser?.twitch_id) {
+        await notify(winnerUser.twitch_id, "guess_result_win",
+          "🎯 Adivinha o Resultado — Ganháste!",
+          `A tua aposta de ${(winner.predicted_amount as number).toLocaleString("pt-PT", { minimumFractionDigits: 2 })}€ foi a mais próxima! Recebeste 500 pontos.`);
+      }
     }
 
     // ── Jackpot check: did anyone predict the EXACT final payout? ──

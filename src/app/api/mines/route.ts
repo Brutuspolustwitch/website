@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabase } from "@/lib/supabase";
+import { notify } from "@/lib/notify";
 
 const GRID_SIZE = 25;
 const MIN_MINES = 5;
@@ -22,7 +23,7 @@ async function getAuthUser() {
   if (!session) return null;
   const { data: user } = await supabase
     .from("users")
-    .select("id, login, se_username")
+    .select("id, twitch_id, login, se_username")
     .eq("twitch_id", session.id)
     .single();
   return user ?? null;
@@ -79,7 +80,7 @@ function generateMinePositions(mineCount: number): number[] {
 }
 
 /* ── Actions ──────────────────────────────────────────────────── */
-async function handleStart(user: { id: string; login: string; se_username: string | null }, body: Record<string, unknown>) {
+async function handleStart(user: { id: string; twitch_id: string; login: string; se_username: string | null }, body: Record<string, unknown>) {
   const bet = Number(body.bet);
   const mineCount = Number(body.mineCount);
 
@@ -106,6 +107,11 @@ async function handleStart(user: { id: string; login: string; se_username: strin
   const deducted = await updateSEPoints(seUser, -bet);
   if (!deducted) {
     return NextResponse.json({ error: "Falha ao deduzir pontos. Verifica o teu saldo." }, { status: 502 });
+  }
+  if (user.twitch_id) {
+    await notify(user.twitch_id, "se_points_spent",
+      "💣 Minas — Aposta",
+      `Apostaste ${bet.toLocaleString("pt-PT")} pontos SE em Minas.`);
   }
 
   const minePositions = generateMinePositions(mineCount);
@@ -210,9 +216,14 @@ async function handleReveal(userId: string, body: Record<string, unknown>) {
       .eq("id", gameId);
 
     // Credit winnings
-    const { data: dbUser } = await supabase.from("users").select("login, se_username").eq("id", userId).single();
+    const { data: dbUser } = await supabase.from("users").select("twitch_id, login, se_username").eq("id", userId).single();
     const seUser = dbUser?.se_username || dbUser?.login || "";
     await updateSEPoints(seUser, newProfit);
+    if (dbUser?.twitch_id) {
+      await notify(dbUser.twitch_id as string, "se_points_earned",
+        "💣 Minas — Vitória Total!",
+        `Revelaste todas as células! +${newProfit.toLocaleString("pt-PT")} pontos SE (×${newMultiplier}).`);
+    }
 
     return NextResponse.json({
       success: true, result: "safe", gameOver: true, won: true, jackpot: true,
@@ -261,9 +272,14 @@ async function handleCashout(userId: string, body: Record<string, unknown>) {
     .update({ status: "won", multiplier: currentMultiplier, result_amount: profit, ended_at: new Date().toISOString() })
     .eq("id", gameId);
 
-  const { data: dbUser } = await supabase.from("users").select("login, se_username").eq("id", userId).single();
+  const { data: dbUser } = await supabase.from("users").select("twitch_id, login, se_username").eq("id", userId).single();
   const seUser = dbUser?.se_username || dbUser?.login || "";
   await updateSEPoints(seUser, profit);
+  if (dbUser?.twitch_id) {
+    await notify(dbUser.twitch_id as string, "se_points_earned",
+      "💣 Minas — Cash Out!",
+      `Sacaste a tempo! +${profit.toLocaleString("pt-PT")} pontos SE (×${currentMultiplier}).`);
+  }
 
   return NextResponse.json({
     success: true, won: true, profit, multiplier: currentMultiplier,

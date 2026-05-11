@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabase } from "@/lib/supabase";
+import { notify } from "@/lib/notify";
 
 export const dynamic = "force-dynamic";
 
@@ -67,8 +68,13 @@ export async function PATCH(request: Request, ctx: { params: Promise<{ id: strin
     if (!amount) return NextResponse.json({ error: "Valor inválido" }, { status: 400 });
     // Fetch winner's twitch login
     const { data: winner } = await supabase
-      .from("users").select("login, se_username").eq("id", existing.user_id).maybeSingle();
+      .from("users").select("twitch_id, login, se_username").eq("id", existing.user_id).maybeSingle();
     await awardSEPoints(winner?.se_username || winner?.login, amount);
+    if (winner?.twitch_id) {
+      await notify(winner.twitch_id, "se_points_earned",
+        "⚔️ Pontos Atribuídos",
+        `O moderador atribuiu-te ${amount.toLocaleString("pt-PT")} pontos SE.`);
+    }
     return NextResponse.json({ ok: true, awarded: amount });
   }
 
@@ -108,8 +114,13 @@ export async function PATCH(request: Request, ctx: { params: Promise<{ id: strin
 
     // Reward — fetch winner's twitch login
     const { data: winner } = await supabase
-      .from("users").select("login, se_username").eq("id", existing.user_id).maybeSingle();
+      .from("users").select("twitch_id, login, se_username").eq("id", existing.user_id).maybeSingle();
     await awardSEPoints(winner?.se_username || winner?.login, APPROVAL_REWARD);
+    if (winner?.twitch_id) {
+      await notify(winner.twitch_id, "se_points_earned",
+        "⚔️ Vitória Aprovada — Bruta do Mês",
+        `A tua vitória em "${updated.slot_name}" foi aprovada! Recebeste ${APPROVAL_REWARD} pontos SE.`);
+    }
 
     return NextResponse.json({ victory: updated, awarded: APPROVAL_REWARD });
   }

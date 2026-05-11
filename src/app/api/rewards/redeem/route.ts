@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabase } from "@/lib/supabase";
+import { notify } from "@/lib/notify";
 
 const SE_API = "https://api.streamelements.com/kappa/v2";
 
@@ -141,6 +142,11 @@ export async function POST(request: Request) {
       .update({ stock: reward.stock - 1, updated_at: new Date().toISOString() })
       .eq("id", rewardId);
   }
+
+  // Notify the user
+  await notify(session.id, "se_points_spent",
+    "🛒 Recompensa Resgatada",
+    `Gastaste ${reward.cost.toLocaleString("pt-PT")} pontos SE em "${reward.title}". O pedido está em análise.`);
 
   return NextResponse.json({ ok: true, newPoints: currentPoints - reward.cost });
 }

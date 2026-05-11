@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
+import { notify } from "@/lib/notify";
 
 // Service-role client — bypasses RLS; safe for server-only API routes.
 // Placeholder fallback prevents build-time crash (same pattern as supabase.ts).
@@ -43,7 +44,7 @@ async function getAuthUser() {
   if (!session) return null;
   const { data: user } = await supabase
     .from("users")
-    .select("id, login, se_username")
+    .select("id, twitch_id, login, se_username")
     .eq("twitch_id", session.id)
     .single();
   return user ?? null;
@@ -151,7 +152,7 @@ async function getOrCreateActiveSeed(userId: string): Promise<SeedRow | null> {
    ACTION HANDLERS
    ═══════════════════════════════════════════════════════════════ */
 async function handlePlay(
-  user: { id: string; login: string; se_username: string | null },
+  user: { id: string; twitch_id: string; login: string; se_username: string | null },
   body: Record<string, unknown>
 ) {
   const bet   = Number(body.bet);
@@ -181,7 +182,18 @@ async function handlePlay(
   const multiplier   = getMultiplier(picks.length, matches);
   const resultAmount = Math.floor(bet * multiplier);
 
-  if (resultAmount > 0) await updateSEPoints(seUser, resultAmount);
+  if (resultAmount > 0) {
+    await updateSEPoints(seUser, resultAmount);
+    if (user.twitch_id) {
+      await notify(user.twitch_id, "se_points_earned",
+        `🎰 Keno — ${matches} acerto${matches !== 1 ? "s" : ""}!`,
+        `${matches} acerto${matches !== 1 ? "s" : ""} em ${picks.length} números! +${resultAmount.toLocaleString("pt-PT")} pontos SE (×${multiplier}).`);
+    }
+  } else if (user.twitch_id) {
+    await notify(user.twitch_id, "se_points_spent",
+      "🎰 Keno — Sem prémio",
+      `Sem acertos suficientes. -${bet.toLocaleString("pt-PT")} pontos SE.`);
+  }
 
   // Increment nonce for next round
   await supabase.from("keno_seeds").update({ nonce: seed.nonce + 1 }).eq("id", seed.id);
