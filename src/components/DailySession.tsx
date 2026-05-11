@@ -477,7 +477,7 @@ export default function DailySessionContent() {
               </motion.div>
 
               {/* Best/Worst + Bonus Hunt */}
-              <motion.div
+              {session.show_hunt && <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15 }}
@@ -538,13 +538,11 @@ export default function DailySessionContent() {
                     </div>
                   )}
                   {/* Bonus Hunt — flex-1 takes full width when no best/worst sibling */}
-                  {session.show_hunt && (
                   <div className="flex-1 min-w-0 w-full">
                     <BonusHuntTracker compact />
                   </div>
-                  )}
                 </div>
-              </motion.div>
+              </motion.div>}
             </div>
 
             {/* RIGHT — Sidebar (1/3) */}
