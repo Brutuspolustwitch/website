@@ -34,13 +34,11 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "Valor inválido" }, { status: 400 });
   }
 
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from("jackpot")
     .update({ amount, updated_at: new Date().toISOString() })
-    .eq("id", 1)
-    .select("amount")
-    .single();
+    .eq("id", 1);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ amount: Number(data.amount) });
+  return NextResponse.json({ amount });
 }
