@@ -566,8 +566,14 @@ export function SpinWheel() {
   const spin = useCallback(async () => {
     if (spinning || cooldown > 0 || rewards.length === 0) return;    if (!user) { setShowLoginModal(true); return; }    if (!tickAudioRef.current) tickAudioRef.current = new AudioContext();
 
-    // Record spin server-side first (enforces cooldown)
-    const res = await fetch("/api/spin-cooldown", { method: "POST" });
+    // Record spin server-side first (enforces cooldown) and pass winner for notification
+    const winnerIndex = weightedRandom(rewards);
+    const winnerForPost = rewards[winnerIndex];
+    const res = await fetch("/api/spin-cooldown", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ label: winnerForPost.label, tier: winnerForPost.tier }),
+    });
     if (!res.ok) {
       const data = await res.json();
       if (data.remainingMs) setCooldown(data.remainingMs);
@@ -579,7 +585,6 @@ export function SpinWheel() {
     setSpinning(true); setZoom(true);
     if (hapticsEnabled) vibrate([40, 20, 60]);
 
-    const winnerIndex = weightedRandom(rewards);
     const extraSpins = 5 + Math.floor(Math.random() * 3);
     const startRotation = rotation % 360;
     // Pointer is at 90° (right/sword). Compute the exact delta needed so the winner

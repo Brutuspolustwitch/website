@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabase } from "@/lib/supabase";
+import { notify } from "@/lib/notify";
 
 const COOLDOWN_MS = 24 * 60 * 60 * 1000;
 
@@ -35,7 +36,7 @@ export async function GET() {
 }
 
 /** POST /api/spin-cooldown — records spin timestamp for current user */
-export async function POST() {
+export async function POST(request: Request) {
   const cookieStore = await cookies();
   const raw = cookieStore.get("twitch_session")?.value;
   if (!raw) return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
@@ -65,6 +66,20 @@ export async function POST() {
     .eq("twitch_id", session.id);
 
   if (error) return NextResponse.json({ error: "Erro ao registar spin", detail: error.message }, { status: 500 });
+
+  // Send notification for the spin result (if not a loss)
+  let body: { label?: string; tier?: string } = {};
+  try { body = await request.json(); } catch { /* no body is fine */ }
+
+  if (body.tier && body.tier !== "loss" && body.label) {
+    const isJackpot = body.tier === "legendary";
+    const type = isJackpot ? "jackpot_win" : "se_points_earned";
+    const title = isJackpot ? "🎰 JACKPOT na Roda Diária!" : "🎡 Prémio na Roda Diária!";
+    const message = isJackpot
+      ? `Ganhou o JACKPOT na Roda Diária! Prémio: ${body.label}`
+      : `Ganhou ${body.label} na Roda Diária!`;
+    await notify(session.id, type, title, message);
+  }
 
   return NextResponse.json({ ok: true });
 }
