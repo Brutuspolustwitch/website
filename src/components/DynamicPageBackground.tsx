@@ -16,7 +16,9 @@ function DynamicPageBackgroundInner() {
   const [allSettings, setAllSettings] = useState<PageSetting[]>([]);
   const [loaded, setLoaded] = useState(false);
 
-  const slug = pathname === "/" ? "home" : pathname.replace(/^\//, "").split("/")[0];
+  // Use the full normalized path as slug (e.g. "comunidade/mines").
+  // Falls back gracefully — if no setting exists for the sub-path the background is null.
+  const slug = pathname === "/" ? "home" : pathname.replace(/^\//, "").replace(/\/$/, "");
 
   // Initial fetch + Supabase Realtime subscription
   useEffect(() => {
