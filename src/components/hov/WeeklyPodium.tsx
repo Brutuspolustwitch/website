@@ -49,7 +49,7 @@ function PodiumCard({ v, rank }: { v: Victory; rank: 0 | 1 | 2 }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: rank * 0.12 }}
       whileHover={{ y: -6 }}
-      className={`relative flex-1 max-w-[340px] ${t.scale} ${t.z} group`}
+      className={`relative w-full sm:flex-1 sm:max-w-[340px] ${t.scale} ${t.z} group`}
     >
       {/* Torch flickers */}
       <div className="pointer-events-none absolute -top-6 -left-3 w-6 h-12 opacity-70">
@@ -117,7 +117,7 @@ function PodiumCard({ v, rank }: { v: Victory; rank: 0 | 1 | 2 }) {
             <div
               className="font-[family-name:var(--font-display)] font-black tracking-tight text-center"
               style={{
-                fontSize: rank === 0 ? "3.6rem" : "2.6rem",
+              fontSize: rank === 0 ? "clamp(2rem,6vw,3.6rem)" : "clamp(1.6rem,5vw,2.6rem)",
                 color: t.text,
                 textShadow: `0 0 24px ${t.accent}, 0 4px 0 rgba(0,0,0,0.8)`,
                 lineHeight: 1,
@@ -176,7 +176,7 @@ export default function WeeklyPodium({ winners }: { winners: Victory[] }) {
   if (winners[2]) ordered.push({ v: winners[2], rank: 2 });
 
   return (
-    <div className="flex items-end justify-center gap-3 sm:gap-5 px-2">
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-end justify-center gap-4 sm:gap-3 lg:gap-5 px-2">
       {ordered.map(({ v, rank }) => <PodiumCard key={v.id} v={v} rank={rank} />)}
     </div>
   );

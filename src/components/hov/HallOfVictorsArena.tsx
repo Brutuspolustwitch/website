@@ -89,7 +89,7 @@ export default function HallOfVictorsArena() {
           <SectionTitle>Latest Victories</SectionTitle>
 
           {/* Filters */}
-          <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
+          <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-center gap-3 mb-6">
             <Select label="Provedor" value={provider} onChange={setProvider}
               options={["All", ...PROVIDERS]} />
             <NumInput label="Mult. Mínimo" value={minMult} onChange={setMinMult} />
@@ -119,7 +119,7 @@ export default function HallOfVictorsArena() {
             <motion.button
               whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.98 }}
               onClick={() => setModalOpen(true)}
-              className="px-10 py-4 rounded-lg font-[family-name:var(--font-display)] font-black uppercase tracking-[0.3em] text-lg"
+              className="w-full sm:w-auto px-8 sm:px-10 py-4 rounded-lg font-[family-name:var(--font-display)] font-black uppercase tracking-[0.3em] text-base sm:text-lg"
               style={{
                 background: "linear-gradient(180deg,#c0392b,#7d1f15)",
                 color: "#fff1d6",
@@ -161,10 +161,10 @@ function Select({ label, value, onChange, options }: {
   options: ReadonlyArray<string | { value: string; label: string }>;
 }) {
   return (
-    <label className="text-xs uppercase tracking-widest text-arena-smoke flex items-center gap-2">
-      {label}:
+    <label className="text-xs uppercase tracking-widest text-arena-smoke flex items-center justify-between sm:justify-start gap-2">
+      <span className="shrink-0">{label}:</span>
       <select value={value} onChange={(e) => onChange(e.target.value)}
-        className="px-3 py-1.5 rounded bg-black/60 border border-arena-gold/40 text-arena-white text-sm focus:outline-none focus:border-arena-gold-light">
+        className="flex-1 sm:flex-none px-3 py-1.5 rounded bg-black/60 border border-arena-gold/40 text-arena-white text-sm focus:outline-none focus:border-arena-gold-light">
         {options.map(o => {
           const opt = typeof o === "string" ? { value: o, label: o } : o;
           return <option key={opt.value} value={opt.value}>{opt.label}</option>;
@@ -176,10 +176,10 @@ function Select({ label, value, onChange, options }: {
 
 function NumInput({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
   return (
-    <label className="text-xs uppercase tracking-widest text-arena-smoke flex items-center gap-2">
-      {label}:
+    <label className="text-xs uppercase tracking-widest text-arena-smoke flex items-center justify-between sm:justify-start gap-2">
+      <span className="shrink-0">{label}:</span>
       <input value={value} onChange={(e) => onChange(e.target.value)} inputMode="decimal" placeholder="0"
-        className="w-20 px-2 py-1.5 rounded bg-black/60 border border-arena-gold/40 text-arena-white text-sm focus:outline-none focus:border-arena-gold-light" />
+        className="flex-1 sm:flex-none sm:w-20 px-2 py-1.5 rounded bg-black/60 border border-arena-gold/40 text-arena-white text-sm focus:outline-none focus:border-arena-gold-light" />
     </label>
   );
 }

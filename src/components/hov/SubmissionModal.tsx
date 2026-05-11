@@ -67,14 +67,14 @@ export default function SubmissionModal({ open, onClose, onSubmitted }: Props) {
       {open && (
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4"
           style={{ background: "rgba(0,0,0,0.85)" }}
           onClick={onClose}
         >
           <motion.div
             initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="w-full max-w-lg rounded-2xl overflow-hidden"
+            className="w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl overflow-hidden"
             style={{
               background: "linear-gradient(180deg, rgba(30,22,12,0.98), rgba(14,10,6,0.99))",
               border: "1px solid rgba(240,215,140,0.55)",
@@ -92,7 +92,7 @@ export default function SubmissionModal({ open, onClose, onSubmitted }: Props) {
               <button onClick={onClose} className="text-arena-smoke hover:text-white text-xl leading-none">×</button>
             </header>
 
-            <div className="p-5 space-y-3 max-h-[75vh] overflow-y-auto">
+            <div className="p-4 sm:p-5 space-y-3 max-h-[80vh] overflow-y-auto overscroll-contain">
               <Field label="Nome da Slot">
                 <input
                   value={slotName} onChange={(e) => setSlotName(e.target.value)}
