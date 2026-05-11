@@ -271,6 +271,9 @@ export async function PATCH(request: Request) {
         .select()
         .single();
       if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+      // Nobody participated — jackpot rolls over +1€
+      const { data: jRow } = await supabase.from("jackpot").select("amount").eq("id", 1).single();
+      await supabase.from("jackpot").update({ amount: Number(jRow?.amount ?? 30) + 1, updated_at: new Date().toISOString() }).eq("id", 1);
       return NextResponse.json({ guessSession: data, winner: null });
     }
 
@@ -288,6 +291,9 @@ export async function PATCH(request: Request) {
         .select()
         .single();
       if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+      // No eligible bets — jackpot rolls over +1€
+      const { data: jRow } = await supabase.from("jackpot").select("amount").eq("id", 1).single();
+      await supabase.from("jackpot").update({ amount: Number(jRow?.amount ?? 30) + 1, updated_at: new Date().toISOString() }).eq("id", 1);
       return NextResponse.json({ guessSession: data, winner: null });
     }
 
@@ -379,6 +385,10 @@ export async function PATCH(request: Request) {
         .from("jackpot")
         .update({ amount: 30, updated_at: new Date().toISOString() })
         .eq("id", 1);
+    } else {
+      // Winner exists but nobody hit the exact amount — jackpot rolls over +1€
+      const { data: jRow } = await supabase.from("jackpot").select("amount").eq("id", 1).single();
+      await supabase.from("jackpot").update({ amount: Number(jRow?.amount ?? 30) + 1, updated_at: new Date().toISOString() }).eq("id", 1);
     }
 
     return NextResponse.json({ guessSession: data, winner, jackpotWinner });
