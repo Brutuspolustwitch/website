@@ -114,7 +114,7 @@ export default function PerfilPage() {
 
   if (loading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="py-24 flex items-center justify-center">
         <p className="text-arena-smoke">A carregar...</p>
       </div>
     );
@@ -125,11 +125,14 @@ export default function PerfilPage() {
   const typeIcon: Record<string, string> = {
     giveaway_win: "🎁",
     guess_result_win: "🎯",
+    jackpot_win: "🎰",
+    se_points_earned: "💰",
+    se_points_spent: "🛒",
     general: "📢",
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-16 px-4">
+    <div className="pt-24 pb-16 px-4">
       <div className="max-w-2xl mx-auto space-y-8">
         {/* Profile Card */}
         <div className="bg-black/40 backdrop-blur-md border border-arena-gold/20 rounded-2xl p-6 sm:p-8">

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function MinesPage() {
   return (
-    <main className="pt-24 pb-16 min-h-screen">
+    <main className="pt-24 pb-16">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
         <MinesGame />
       </div>

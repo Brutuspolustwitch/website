@@ -83,7 +83,7 @@ export default function LojaPage() {
   const otherRewards = rewards.filter((r) => r.tier !== "legendary");
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <div className="relative">
 
       {/* ── Main Content ── */}
       <div className="relative z-10 pt-20 pb-16 sm:pt-24 sm:pb-20">

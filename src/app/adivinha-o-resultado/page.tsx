@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function AdivinhaResultadoPage() {
   return (
-    <div className="pt-16 min-h-screen">
+    <div className="pt-16">
       <GuessTheSpoils hideTitle />
     </div>
   );

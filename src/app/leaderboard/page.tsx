@@ -57,7 +57,7 @@ export default function LeaderboardPage() {
 
   if (loading) {
     return (
-      <div className="pt-24 pb-16 min-h-screen">
+      <div className="pt-24 pb-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="space-y-3">
             {Array.from({ length: 10 }).map((_, i) => (
@@ -75,7 +75,7 @@ export default function LeaderboardPage() {
 
   if (error) {
     return (
-      <div className="pt-24 pb-16 min-h-screen">
+      <div className="pt-24 pb-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <ArenaCard className="p-8 text-center">
             <p className="text-arena-smoke/70">{error}</p>
@@ -86,7 +86,7 @@ export default function LeaderboardPage() {
   }
 
   return (
-    <div className="pt-24 pb-16 min-h-screen">
+    <div className="pt-24 pb-16">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Leaderboard table */}
         {entries.length === 0 ? (

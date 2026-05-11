@@ -80,7 +80,7 @@ const CATEGORIES = [
 
 export default function ComunidadePage() {
   return (
-    <div className="pt-24 pb-16 min-h-screen">
+    <div className="pt-24 pb-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
 

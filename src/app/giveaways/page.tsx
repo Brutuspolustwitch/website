@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function GiveawaysPage() {
   return (
-    <div className="pt-24 pb-16 min-h-screen">
+    <div className="pt-24 pb-16">
       <div className="max-w-2xl mx-auto px-3 sm:px-5">
         <GiveawayArena />
       </div>

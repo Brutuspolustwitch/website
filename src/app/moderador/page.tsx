@@ -63,7 +63,7 @@ const MODERADOR_CATEGORIES = [
 
 export default function ModeradorPage() {
   return (
-    <div className="pt-24 pb-16 min-h-screen">
+    <div className="pt-24 pb-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Moderador Category Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
