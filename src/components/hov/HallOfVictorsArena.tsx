@@ -61,13 +61,13 @@ export default function HallOfVictorsArena() {
   useEffect(() => { void loadVictories(); }, [loadVictories]);
 
   return (
-    <div className="relative flex-1 pt-20 pb-24 overflow-hidden"
+    <div className="relative pt-20 pb-16"
       style={{
         background: "radial-gradient(ellipse at top, #2a1a0a 0%, #0a0604 65%, #000 100%)",
       }}
     >
-      {/* Embers */}
-      <div className="pointer-events-none absolute inset-0 opacity-40">
+      {/* Embers — overflow-hidden scoped here so particles don't escape, but page content can grow freely */}
+      <div className="pointer-events-none absolute inset-0 opacity-40 overflow-hidden">
         {Array.from({ length: 18 }).map((_, i) => (
           <motion.span
             key={i}

@@ -356,7 +356,7 @@ export default function DailySessionContent() {
   /* ── Loading State ─────────────────────────────────────── */
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="py-24 flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-arena-gold/30 border-t-arena-gold rounded-full animate-spin" />
       </div>
     );
@@ -365,8 +365,8 @@ export default function DailySessionContent() {
   /* ── No Active Session ─────────────────────────────────── */
   if (!session) {
     return (
-      <div className="relative min-h-screen">
-        <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
+      <div className="relative">
+        <div className="relative z-10 flex flex-col items-center justify-center py-24 px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -390,9 +390,7 @@ export default function DailySessionContent() {
   /* ── Active Session ────────────────────────────────────── */
 
   return (
-    <div className="relative min-h-screen">
-
-      {/* Content */}
+      <div className="relative">
       <div className="relative z-10 pt-20 pb-8">
         <div className="max-w-[1400px] mx-auto px-2 sm:px-4 lg:px-4 space-y-6">
 

@@ -75,7 +75,7 @@ export function StreamerHub() {
   return (
     <section
       id="stream"
-      className="relative py-12 px-4 sm:px-6 lg:px-8 min-h-screen"
+      className="relative py-12 px-4 sm:px-6 lg:px-8"
     >
       <div className="relative max-w-[1400px] mx-auto">
         {/* Status indicator */}

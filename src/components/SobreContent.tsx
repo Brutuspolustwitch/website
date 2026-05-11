@@ -231,7 +231,7 @@ export function SobreContent() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-arena-black">
+    <div className="bg-arena-black">
 
       {/* ═══════════════════════════════════════════════════════════
           HERO — layout: "centered" | "split"

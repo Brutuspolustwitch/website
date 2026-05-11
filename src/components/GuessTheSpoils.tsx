@@ -206,7 +206,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
   }, [tab]);
 
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 min-h-screen relative">
+    <section className="py-16 px-4 sm:px-6 lg:px-8 relative">
 
       <div className="relative max-w-[1400px] mx-auto">
 
