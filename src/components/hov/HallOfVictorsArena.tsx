@@ -26,12 +26,20 @@ export default function HallOfVictorsArena() {
     const res = await fetch("/api/hall-of-victors/winners", { cache: "no-store" });
     if (!res.ok) return;
     const j: WinnersResponse = await res.json();
-    if (j.frozen && j.frozen.victories.length > 0) {
-      setWinners(j.frozen.victories);
-      setWinnersLabel(`Semana ${Math.ceil(new Date(j.frozen.week_id).getDate() / 7)}`);
-    } else {
+    // Prefer the current week's live top 3 — it updates as victories are approved.
+    // Only fall back to the frozen (previous) week when nobody has submitted yet this week.
+    if (j.live_top3 && j.live_top3.length > 0) {
       setWinners(j.live_top3);
-      setWinnersLabel(`Esta semana — em curso`);
+      setWinnersLabel("Esta semana — em curso");
+    } else if (j.frozen && j.frozen.victories.length > 0) {
+      setWinners(j.frozen.victories);
+      // Format: "Semana de DD/MM" for the frozen week's Sunday date
+      const d = new Date(j.frozen.week_id + "T12:00:00Z");
+      const label = d.toLocaleDateString("pt-PT", { day: "2-digit", month: "2-digit", timeZone: "UTC" });
+      setWinnersLabel(`Semana de ${label}`);
+    } else {
+      setWinners([]);
+      setWinnersLabel("Sem vitórias esta semana ainda");
     }
   }, []);
 
