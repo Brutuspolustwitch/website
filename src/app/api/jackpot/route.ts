@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { supabase } from "@/lib/supabase";
 
@@ -10,9 +11,9 @@ export async function GET() {
     .from("jackpot")
     .select("amount")
     .eq("id", 1)
-    .single();
+    .maybeSingle();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ amount: Number(data.amount) });
+  return NextResponse.json({ amount: Number(data?.amount ?? 30) });
 }
 
 /** PATCH /api/jackpot — manually set jackpot amount (admin/configurador/moderador only) */
@@ -34,7 +35,13 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "Valor inválido" }, { status: 400 });
   }
 
-  const { error } = await supabase
+  // Use service role key to bypass RLS for this write
+  const admin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  const { error } = await admin
     .from("jackpot")
     .update({ amount, updated_at: new Date().toISOString() })
     .eq("id", 1);
