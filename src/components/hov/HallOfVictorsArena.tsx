@@ -122,7 +122,7 @@ export default function HallOfVictorsArena() {
         </section>
 
         {/* Section C: Submit CTA */}
-        <section className="text-center">
+        <section className="flex flex-col items-center gap-0">
           {user ? (
             <motion.button
               whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.98 }}
@@ -144,7 +144,7 @@ export default function HallOfVictorsArena() {
           )}
 
           {/* Rewards info */}
-          <div className="mt-6 inline-flex flex-col items-center gap-2">
+          <div className="mt-6 flex flex-col items-center gap-2">
             <p className="text-xs uppercase tracking-[0.2em] text-arena-smoke/60">Recompensas em pontos SE</p>
             <div className="flex flex-wrap justify-center gap-3 text-xs text-arena-smoke/80">
               <span className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-arena-gold/25 bg-arena-gold/[0.06]">
@@ -161,7 +161,7 @@ export default function HallOfVictorsArena() {
               </span>
               <span className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/10 bg-white/[0.03]">
                 <span>✅</span>
-                <span className="text-arena-smoke">250 pts por vitória aprovada</span>
+                <span className="text-arena-smoke">250 pts por vitória submetida</span>
               </span>
             </div>
             <p className="text-[10px] text-arena-smoke/40 mt-1">Top 3 semanal · os pontos são atribuídos automaticamente</p>
