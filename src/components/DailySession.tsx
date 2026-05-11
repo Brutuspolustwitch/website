@@ -27,6 +27,7 @@ interface DailySessionData {
   wager_target: number;
   wager_done: number;
   is_active: boolean;
+  show_hunt: boolean;
   casino: CasinoOfferRow | null;
 }
 
@@ -537,9 +538,11 @@ export default function DailySessionContent() {
                     </div>
                   )}
                   {/* Bonus Hunt — flex-1 takes full width when no best/worst sibling */}
+                  {session.show_hunt && (
                   <div className="flex-1 min-w-0 w-full">
                     <BonusHuntTracker compact />
                   </div>
+                  )}
                 </div>
               </motion.div>
             </div>

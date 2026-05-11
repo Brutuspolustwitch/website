@@ -87,6 +87,7 @@ export async function POST(request: Request) {
         wager_target: body.wager_target ?? 0,
         wager_done: body.wager_done ?? 0,
         is_active: body.is_active ?? false,
+        show_hunt: body.show_hunt ?? true,
         updated_at: new Date().toISOString(),
       })
       .eq("id", body.id)
@@ -116,6 +117,7 @@ export async function POST(request: Request) {
       wager_target: body.wager_target ?? 0,
       wager_done: body.wager_done ?? 0,
       is_active: body.is_active ?? true,
+      show_hunt: body.show_hunt ?? true,
     })
     .select()
     .single();

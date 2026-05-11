@@ -22,6 +22,7 @@ interface DailySessionRow {
   wager_target: number;
   wager_done: number;
   is_active: boolean;
+  show_hunt: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -50,6 +51,7 @@ export default function AdminDailySessionPage() {
   const [wagerTarget, setWagerTarget] = useState("");
   const [wagerDone, setWagerDone] = useState("");
   const [isActive, setIsActive] = useState(true);
+  const [showHunt, setShowHunt] = useState(true);
 
   const [deleting, setDeleting] = useState<string | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -79,6 +81,7 @@ export default function AdminDailySessionPage() {
     setWagerTarget(s.wager_target ? String(s.wager_target) : "");
     setWagerDone(s.wager_done ? String(s.wager_done) : "");
     setIsActive(s.is_active);
+    setShowHunt(s.show_hunt ?? true);
   };
 
   // Load all sessions + casinos
@@ -128,6 +131,7 @@ export default function AdminDailySessionPage() {
         wager_target: parseFloat(wagerTarget) || 0,
         wager_done: parseFloat(wagerDone) || 0,
         is_active: isActive,
+        show_hunt: showHunt,
       };
 
       const res = await fetch("/api/daily-session", {
@@ -182,8 +186,7 @@ export default function AdminDailySessionPage() {
           biggest_win: 0,
           wager_target: 0,
           wager_done: 0,
-          is_active: true,
-        }),
+          is_active: true,          show_hunt: true,        }),
       });
       const data = await res.json();
       if (res.ok && data.session) {
@@ -415,20 +418,37 @@ export default function AdminDailySessionPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <label className="text-xs text-arena-smoke">Sessão Ativa</label>
-                <button
-                  onClick={() => setIsActive(!isActive)}
-                  className={`relative w-11 h-6 rounded-full transition-colors duration-300 ${
-                    isActive ? "bg-green-600" : "bg-arena-iron"
-                  }`}
-                >
-                  <span
-                    className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform duration-300 ${
-                      isActive ? "translate-x-5" : ""
+              <div className="flex items-center gap-6 flex-wrap">
+                <div className="flex items-center gap-3">
+                  <label className="text-xs text-arena-smoke">Sessão Ativa</label>
+                  <button
+                    onClick={() => setIsActive(!isActive)}
+                    className={`relative w-11 h-6 rounded-full transition-colors duration-300 ${
+                      isActive ? "bg-green-600" : "bg-arena-iron"
                     }`}
-                  />
-                </button>
+                  >
+                    <span
+                      className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform duration-300 ${
+                        isActive ? "translate-x-5" : ""
+                      }`}
+                    />
+                  </button>
+                </div>
+                <div className="flex items-center gap-3">
+                  <label className="text-xs text-arena-smoke">Hunt Ativo</label>
+                  <button
+                    onClick={() => setShowHunt(!showHunt)}
+                    className={`relative w-11 h-6 rounded-full transition-colors duration-300 ${
+                      showHunt ? "bg-arena-gold" : "bg-arena-iron"
+                    }`}
+                  >
+                    <span
+                      className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform duration-300 ${
+                        showHunt ? "translate-x-5" : ""
+                      }`}
+                    />
+                  </button>
+                </div>
               </div>
             </div>
 
