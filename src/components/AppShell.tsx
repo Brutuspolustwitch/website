@@ -24,12 +24,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         {/* Push content below navbar + right of sidebar */}
         <main className="relative z-10 flex-1 pt-16 lg:pl-56 flex flex-col">
-          <PageGuard>{children}</PageGuard>
-        </main>
-
-        <div className="lg:pl-56">
+          <div className="flex-1">
+            <PageGuard>{children}</PageGuard>
+          </div>
           <Footer />
-        </div>
+        </main>
 
         <AgeGate />
         <CookieConsent />
