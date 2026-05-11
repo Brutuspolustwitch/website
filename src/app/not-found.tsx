@@ -4,7 +4,7 @@ import { ArenaButton } from "@/components/ui/ArenaButton";
 
 export default function NotFound() {
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden">
+    <div className="relative flex-1 flex items-center justify-center px-4 overflow-hidden">
 
       <div className="relative text-center z-10">
         {/* Gladiator portrait */}
