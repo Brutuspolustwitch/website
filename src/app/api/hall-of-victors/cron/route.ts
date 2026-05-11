@@ -62,10 +62,13 @@ export async function POST(request: Request) {
   // Award SE points to each podium finisher
   const awarded: { rank: number; username: string; points: number }[] = [];
   for (const w of winners ?? []) {
-    const v = w.victory as Record<string, unknown> | null;
-    const username = (v?.se_username ?? v?.login) as string | null;
+    const v = w.victory as { user_id?: string } | null;
     const pts = PODIUM_REWARDS[w.rank];
-    if (username && pts) {
+    if (!v?.user_id || !pts) continue;
+    const { data: u } = await supabase
+      .from("users").select("login, se_username").eq("id", v.user_id).maybeSingle();
+    const username = u?.se_username || u?.login;
+    if (username) {
       await awardPodiumPoints(username, pts);
       awarded.push({ rank: w.rank, username, points: pts });
     }
