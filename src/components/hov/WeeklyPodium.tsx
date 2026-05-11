@@ -92,6 +92,15 @@ function PodiumCard({ v, rank }: { v: Victory; rank: 0 | 1 | 2 }) {
 
         {/* Slot image */}
         <div className="relative aspect-[5/4] bg-black/60">
+          {v.url ? (
+            <a
+              href={v.url}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="absolute inset-0 z-10"
+              aria-label={`Ver vitória: ${v.slot_name}`}
+            />
+          ) : null}
           {v.image_url ? (
             <Image
               src={v.image_url}
@@ -108,6 +117,15 @@ function PodiumCard({ v, rank }: { v: Victory; rank: 0 | 1 | 2 }) {
           <div className="absolute inset-0" style={{
             background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.15) 45%, transparent 70%)"
           }} />
+          {v.url && (
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20">
+              <div className="w-12 h-12 rounded-full bg-black/60 border border-white/30 flex items-center justify-center">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-white ml-0.5">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+            </div>
+          )}
           {/* Multiplier — anchored to bottom of image, centered */}
           <motion.div
             className="absolute inset-x-0 bottom-2 flex items-end justify-center pointer-events-none"
