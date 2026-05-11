@@ -21,7 +21,7 @@ export function HeroSection() {
   const imageRef = useRef<HTMLImageElement | null>(null);
   const glowRef = useRef<HTMLDivElement | null>(null);
   const reduceMotion = useReducedMotion();
-  const [heroImage, setHeroImage] = useState("/images/arena-gladiator.jpg");
+  const [heroImage, setHeroImage] = useState("/images/og-image.jpg");
   const [heroFilter, setHeroFilter] = useState("brightness(0.35) saturate(0.7) contrast(0.95)");
   const [heroPosition, setHeroPosition] = useState("50% 50%");
   const [heroTitle, setHeroTitle] = useState("");
