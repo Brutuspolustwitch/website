@@ -26,6 +26,15 @@ export default function VictoryCard({ v }: { v: Victory }) {
     >
       {/* Image */}
       <div className="relative aspect-[16/10] bg-black/50">
+        {v.url ? (
+          <a
+            href={v.url}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="absolute inset-0 z-10"
+            aria-label={`Ver vitória: ${v.slot_name}`}
+          />
+        ) : null}
         {v.image_url ? (
           <Image
             src={v.image_url}
@@ -39,6 +48,15 @@ export default function VictoryCard({ v }: { v: Victory }) {
           <div className="w-full h-full flex items-center justify-center text-5xl opacity-30">🏛️</div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+        {v.url && (
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+            <div className="w-12 h-12 rounded-full bg-black/60 border border-white/30 flex items-center justify-center">
+              <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-white ml-0.5">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </div>
+          </div>
+        )}
 
         {/* Multiplier — bottom centered */}
         <motion.div

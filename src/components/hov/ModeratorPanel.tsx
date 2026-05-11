@@ -77,6 +77,27 @@ export default function ModeratorPanel() {
     } finally { setUploading(null); }
   }
 
+  async function updateVictory(v: Victory) {
+    const e = edits[v.id];
+    if (!e || Object.keys(e).length === 0) { notify("Sem alterações para guardar.", false); return; }
+    setBusy(v.id);
+    try {
+      const res = await fetch(`/api/hall-of-victors/${v.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "update", ...e }),
+      });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.error || "Falha");
+      notify("Atualizado com sucesso");
+      // Merge saved edits back into items and clear edit state
+      setItems(prev => prev.map(x => x.id === v.id ? { ...x, ...e, multiplier: (j.victory?.multiplier ?? x.multiplier) } : x));
+      setEdits(prev => { const n = { ...prev }; delete n[v.id]; return n; });
+    } catch (err) {
+      notify(err instanceof Error ? err.message : "Erro", false);
+    } finally { setBusy(null); }
+  }
+
   async function approve(v: Victory) {
     const e = edits[v.id] ?? {};
     const finalImage = (e.image_url ?? v.image_url) ?? null;
@@ -157,8 +178,10 @@ export default function ModeratorPanel() {
                  : v.multiplier,
     busy:      busy === v.id,
     uploading: uploading === v.id,
+    hasEdits:  !!edits[v.id] && Object.keys(edits[v.id]!).length > 0,
     setField:  (f: keyof Victory, val: unknown) => setField(v.id, f, val),
     onUpload:  (file: File) => uploadImage(v.id, file),
+    onUpdate:  () => updateVictory(v),
     onApprove: () => approve(v),
     onReject:  () => reject(v),
     onRemove:  () => removeVictory(v),
@@ -273,6 +296,7 @@ export default function ModeratorPanel() {
           uploading={uploading}
           loading={loading}
           setField={setField}
+          onUpdate={updateVictory}
           onApprove={approve}
           onReject={reject}
           onRemove={removeVictory}
@@ -298,13 +322,14 @@ export default function ModeratorPanel() {
 
 /* ── VictoryCard ───────────────────────────────────────────────────── */
 function VictoryCard({
-  v, merged, mult, busy, uploading,
-  setField, onUpload, onApprove, onReject, onRemove,
+  v, merged, mult, busy, uploading, hasEdits,
+  setField, onUpload, onUpdate, onApprove, onReject, onRemove,
 }: {
   v: Victory; merged: Victory; mult: number;
-  busy: boolean; uploading: boolean;
+  busy: boolean; uploading: boolean; hasEdits: boolean;
   setField: (f: keyof Victory, val: unknown) => void;
   onUpload: (file: File) => void;
+  onUpdate: () => void;
   onApprove: () => void;
   onReject: () => void;
   onRemove: () => void;
@@ -408,6 +433,15 @@ function VictoryCard({
 
           {/* Action buttons */}
           <div className="flex flex-wrap gap-2 pt-1">
+            {hasEdits && (
+              <button
+                disabled={busy}
+                onClick={onUpdate}
+                className="flex items-center gap-1 px-3 py-1.5 rounded text-xs font-bold uppercase tracking-widest disabled:opacity-50 bg-gradient-to-b from-blue-500 to-blue-700 text-white transition-opacity"
+              >
+                <Check size={12} /> Atualizar
+              </button>
+            )}
             {v.status !== "approved" && (
               <button
                 disabled={busy}
@@ -444,7 +478,7 @@ function VictoryCard({
 /* ── ApprovedList ─────────────────────────────────────────────────── */
 function ApprovedList({
   items, edits, busy, uploading, loading,
-  setField, onApprove, onReject, onRemove, onUpload,
+  setField, onUpdate, onApprove, onReject, onRemove, onUpload,
 }: {
   items: Victory[];
   edits: Record<string, EditState>;
@@ -452,6 +486,7 @@ function ApprovedList({
   uploading: string | null;
   loading: boolean;
   setField: (id: string, f: keyof Victory, val: unknown) => void;
+  onUpdate:  (v: Victory) => void;
   onApprove: (v: Victory) => void;
   onReject:  (v: Victory) => void;
   onRemove:  (v: Victory) => void;
@@ -506,8 +541,10 @@ function ApprovedList({
                   mult={mult}
                   busy={busy === v.id}
                   uploading={uploading === v.id}
+                  hasEdits={!!edits[v.id] && Object.keys(edits[v.id]!).length > 0}
                   setField={(f, val) => setField(v.id, f, val)}
                   onUpload={(file) => onUpload(v.id, file)}
+                  onUpdate={() => onUpdate(v)}
                   onApprove={() => onApprove(v)}
                   onReject={() => onReject(v)}
                   onRemove={() => onRemove(v)}

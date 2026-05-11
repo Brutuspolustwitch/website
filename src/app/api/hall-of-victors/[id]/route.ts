@@ -124,9 +124,9 @@ export async function PATCH(request: Request, ctx: { params: Promise<{ id: strin
     return NextResponse.json({ victory: updated });
   }
 
-  // Plain edit (only allowed while pending)
-  if (existing.status !== "pending") {
-    return NextResponse.json({ error: "Apenas vitórias pendentes podem ser editadas" }, { status: 409 });
+  // Plain edit — allowed for any status when action === "update", otherwise only pending
+  if (action !== "update" && existing.status !== "pending") {
+    return NextResponse.json({ error: "Apenas vitórias pendentes podem ser editadas sem acção explícita" }, { status: 409 });
   }
   const editable = ["slot_name", "provider", "bet_amount", "win_amount", "caption", "image_url", "url", "suspicious"] as const;
   const patch: Record<string, unknown> = {};
@@ -134,6 +134,10 @@ export async function PATCH(request: Request, ctx: { params: Promise<{ id: strin
   if (typeof patch.bet_amount === "number" && typeof patch.win_amount === "number" && patch.bet_amount > 0) {
     patch.multiplier = Math.round((patch.win_amount / patch.bet_amount) * 100) / 100;
     patch.suspicious = (patch.multiplier as number) > 10000 ? true : existing.suspicious;
+  } else if (typeof patch.win_amount === "number" && existing.bet_amount > 0) {
+    patch.multiplier = Math.round((patch.win_amount / existing.bet_amount) * 100) / 100;
+  } else if (typeof patch.bet_amount === "number" && patch.bet_amount > 0 && existing.win_amount) {
+    patch.multiplier = Math.round((existing.win_amount / patch.bet_amount) * 100) / 100;
   }
   const { data: updated, error } = await supabase
     .from("hov_victories").update(patch).eq("id", id).select().single();
