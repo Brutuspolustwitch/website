@@ -24,6 +24,7 @@ interface Giveaway {
   chat_command: string;
   cta_text?: string | null;
   cta_url?: string | null;
+  cta_color?: string | null;
   created_at: string;
 }
 
@@ -300,15 +301,15 @@ export default function GiveawayArena() {
                         rel="noopener noreferrer"
                         className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded font-[family-name:var(--font-display)] text-sm tracking-wider font-bold transition-all"
                         style={{
-                          background: "rgba(180,130,20,0.12)",
-                          border: "1px solid var(--gold-dark)",
+                          background: giveaway.cta_color ? `${giveaway.cta_color}22` : "rgba(180,130,20,0.12)",
+                          border: `1px solid ${giveaway.cta_color ?? "var(--gold-dark)"}`,
                           color: "var(--ink-dark)",
-                          boxShadow: "0 2px 8px rgba(180,130,20,0.15)",
+                          boxShadow: giveaway.cta_color ? `0 2px 8px ${giveaway.cta_color}33` : "0 2px 8px rgba(180,130,20,0.15)",
                         }}
-                        onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(180,130,20,0.22)"; }}
-                        onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(180,130,20,0.12)"; }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = giveaway.cta_color ? `${giveaway.cta_color}44` : "rgba(180,130,20,0.22)"; }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = giveaway.cta_color ? `${giveaway.cta_color}22` : "rgba(180,130,20,0.12)"; }}
                       >
-                        <span style={{ color: "var(--gold-dark)" }}>⚔</span>
+                        <span style={{ color: giveaway.cta_color ?? "var(--gold-dark)" }}>⚔</span>
                         {giveaway.cta_text}
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
                           <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />

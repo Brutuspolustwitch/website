@@ -114,9 +114,8 @@ const MIN_ITEMS = 40;       // minimum items in the strip for good spin
 
 /* ── Main Component ──────────────────────────────────────── */
 export default function GiveawaySpin({ winner, participants, prize, onDismiss }: GiveawaySpinProps) {
-  useScrollLock(true); // This component only mounts when the giveaway overlay is visible
-
   const [phase, setPhase] = useState<"idle" | "spinning" | "landed" | "celebration">("idle");
+  useScrollLock(!!winner && phase !== "idle");
   const stripRef = useRef<HTMLDivElement>(null);
   const animFrameRef = useRef<number>(0);
   const lastTickSlot = useRef(-1);

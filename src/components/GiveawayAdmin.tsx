@@ -27,6 +27,7 @@ interface Giveaway {
   require_live: boolean;
   cta_text?: string | null;
   cta_url?: string | null;
+  cta_color?: string | null;
   created_at: string;
   participant_count?: number;
   total_tickets?: number;
@@ -267,12 +268,12 @@ export default function GiveawayAdmin() {
     showToast("Eliminado ✓");
   };
 
-  const saveCta = async (id: string, ctaText: string, ctaUrl: string) => {
+  const saveCta = async (id: string, ctaText: string, ctaUrl: string, ctaColor: string) => {
     setSaving(true);
     const res = await fetch("/api/giveaways", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, cta_text: ctaText.trim() || null, cta_url: ctaUrl.trim() || null }),
+      body: JSON.stringify({ id, cta_text: ctaText.trim() || null, cta_url: ctaUrl.trim() || null, cta_color: ctaColor || null }),
     });
     const data = await res.json();
     setSaving(false);
@@ -476,17 +477,19 @@ function GiveawayDetail({
   onAction: (action: string) => void;
   onDraw: () => void;
   onDelete: () => void;
-  onSaveCta: (id: string, text: string, url: string) => Promise<void>;
+  onSaveCta: (id: string, text: string, url: string, color: string) => Promise<void>;
 }) {
   const { remaining, display } = useCountdown(giveaway.is_active ? giveaway.end_time : null);
   const totalTickets = participants.reduce((s, p) => s + p.tickets, 0);
   const [ctaText, setCtaText] = useState(giveaway.cta_text ?? "");
   const [ctaUrl, setCtaUrl] = useState(giveaway.cta_url ?? "");
+  const [ctaColor, setCtaColor] = useState(giveaway.cta_color ?? "#B48214");
 
   useEffect(() => {
     setCtaText(giveaway.cta_text ?? "");
     setCtaUrl(giveaway.cta_url ?? "");
-  }, [giveaway.id, giveaway.cta_text, giveaway.cta_url]);
+    setCtaColor(giveaway.cta_color ?? "#B48214");
+  }, [giveaway.id, giveaway.cta_text, giveaway.cta_url, giveaway.cta_color]);
 
   return (
     <div className="space-y-4">
@@ -560,9 +563,42 @@ function GiveawayDetail({
             placeholder="https://..."
           />
         </div>
+        {/* Color picker */}
+        <div className="mb-3">
+          <p className="text-xs uppercase tracking-wider font-medium text-arena-smoke/70 mb-2">Cor do Botão</p>
+          <div className="flex items-center gap-2 flex-wrap">
+            {["#B48214","#8B0000","#1a6b2e","#1a3a8b","#6b1a8b","#1a6b6b"].map((c) => (
+              <button
+                key={c}
+                onClick={() => setCtaColor(c)}
+                title={c}
+                className="w-6 h-6 rounded-full border-2 transition-all cursor-pointer"
+                style={{
+                  background: c,
+                  borderColor: ctaColor === c ? "white" : "transparent",
+                  boxShadow: ctaColor === c ? `0 0 0 1px ${c}` : "none",
+                }}
+              />
+            ))}
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <span className="text-xs text-arena-smoke/50">Personalizada</span>
+              <input
+                type="color"
+                value={ctaColor}
+                onChange={(e) => setCtaColor(e.target.value)}
+                className="w-7 h-7 rounded cursor-pointer border-0 bg-transparent"
+                style={{ padding: 0 }}
+              />
+            </label>
+            <div className="ml-auto flex items-center gap-1.5">
+              <div className="w-4 h-4 rounded-full" style={{ background: ctaColor }} />
+              <span className="text-xs font-mono text-arena-smoke/50">{ctaColor}</span>
+            </div>
+          </div>
+        </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={() => onSaveCta(giveaway.id, ctaText, ctaUrl)}
+            onClick={() => onSaveCta(giveaway.id, ctaText, ctaUrl, ctaColor)}
             disabled={saving}
             className="cta-button disabled:opacity-40"
             style={{ width: "auto", padding: "0 1.25em" }}
@@ -571,7 +607,7 @@ function GiveawayDetail({
           </button>
           {(ctaText || ctaUrl) && (
             <button
-              onClick={() => { setCtaText(""); setCtaUrl(""); onSaveCta(giveaway.id, "", ""); }}
+              onClick={() => { setCtaText(""); setCtaUrl(""); onSaveCta(giveaway.id, "", "", ""); }}
               disabled={saving}
               className="text-xs text-arena-smoke/40 hover:text-arena-smoke/70 transition-colors cursor-pointer"
             >
