@@ -278,10 +278,15 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ guessSession: data, winner: null });
     }
 
-    // Price-Is-Right rule: winner is the closest prediction AT OR ABOVE the payout.
-    // If nobody bet >= payout, there is no winner.
+    // Price-Is-Right rule: winner is the closest prediction AT OR ABOVE the payout,
+    // but cannot exceed 200€ above (i.e. predicted - payout <= 200).
+    // If nobody qualifies, there is no winner.
+    const MAX_GAP = 200;
     const eligible = predictions.filter(
-      (p) => (p.predicted_amount as number) >= payout
+      (p) => {
+        const diff = (p.predicted_amount as number) - payout;
+        return diff >= 0 && diff <= MAX_GAP;
+      }
     );
 
     if (eligible.length === 0) {
@@ -292,7 +297,7 @@ export async function PATCH(request: Request) {
         .select()
         .single();
       if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-      // No eligible bets — jackpot rolls over +1€
+      // No eligible bets (none above payout or all exceeded 200€ gap) — jackpot rolls over +1€
       const { data: jRow } = await supabase.from("jackpot").select("amount").eq("id", 1).single();
       await supabase.from("jackpot").update({ amount: Number(jRow?.amount ?? 30) + 1, updated_at: new Date().toISOString() }).eq("id", 1);
       return NextResponse.json({ guessSession: data, winner: null });

@@ -821,6 +821,9 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                           {/* Submit form (only if user has not predicted yet) */}
                           {guessSession.betting_open && !myPrediction && (
                             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                              <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.08em", textAlign: "center", margin: 0 }}>
+                                ⚔ Aposta acima do resultado final · máx. +200€ de diferença
+                              </p>
                               {user ? (
                                 <>
                                   <div style={{ display: "flex", gap: "6px" }}>
