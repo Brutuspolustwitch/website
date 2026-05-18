@@ -80,6 +80,7 @@ export default function AdminBonusHuntPage() {
   const [slotPayoutEdits, setSlotPayoutEdits] = useState<Record<string, string>>({});
   const [slotSaving, setSlotSaving] = useState<Record<string, boolean>>({});
   const [payoutsMsg, setPayoutsMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [slotSort, setSlotSort] = useState<"default" | "bet_asc" | "bet_desc" | "provider">("default");
   const payoutsJsonRef = useRef<HTMLInputElement>(null);
 
   const isAdmin = user?.role === "admin" || user?.role === "configurador" || user?.role === "moderador";
@@ -962,14 +963,40 @@ export default function AdminBonusHuntPage() {
                                         <tr className="text-left text-arena-smoke/40 uppercase tracking-wider border-b border-arena-steel/10 bg-arena-charcoal/60 sticky top-0">
                                           <th className="px-3 py-2">#</th>
                                           <th className="px-3 py-2">Slot</th>
-                                          <th className="px-3 py-2">Bet</th>
+                                          <th className="px-3 py-2">
+                                            <button
+                                              onClick={() => setSlotSort((prev) => prev === "bet_asc" ? "bet_desc" : "bet_asc")}
+                                              className={`flex items-center gap-1 hover:text-arena-gold transition-colors cursor-pointer ${
+                                                slotSort === "bet_asc" || slotSort === "bet_desc" ? "text-arena-gold" : ""
+                                              }`}
+                                              title="Ordenar por Bet"
+                                            >
+                                              Bet {slotSort === "bet_asc" ? "↑" : slotSort === "bet_desc" ? "↓" : "↕"}
+                                            </button>
+                                          </th>
                                           <th className="px-3 py-2">Payout</th>
                                           <th className="px-3 py-2">Multi</th>
+                                          <th className="px-3 py-2">
+                                            <button
+                                              onClick={() => setSlotSort((prev) => prev === "provider" ? "default" : "provider")}
+                                              className={`flex items-center gap-1 hover:text-arena-gold transition-colors cursor-pointer ${
+                                                slotSort === "provider" ? "text-arena-gold" : ""
+                                              }`}
+                                              title="Ordenar por Provider"
+                                            >
+                                              Provider {slotSort === "provider" ? "↑" : "↕"}
+                                            </button>
+                                          </th>
                                           <th className="px-3 py-2"></th>
                                         </tr>
                                       </thead>
                                       <tbody>
-                                        {slots.map((slot, i) => {
+                                        {[...slots].sort((a, b) => {
+                                          if (slotSort === "bet_asc") return ((a.bet_size ?? a.buy_value ?? 0) - (b.bet_size ?? b.buy_value ?? 0));
+                                          if (slotSort === "bet_desc") return ((b.bet_size ?? b.buy_value ?? 0) - (a.bet_size ?? a.buy_value ?? 0));
+                                          if (slotSort === "provider") return (a.provider ?? "").localeCompare(b.provider ?? "");
+                                          return a.order_index - b.order_index;
+                                        }).map((slot, i) => {
                                           const bet = slot.bet_size ?? slot.buy_value ?? 0;
                                           const payoutVal = parseFloat((slotPayoutEdits[slot.id] || "0").replace(",", "."));
                                           const multi = bet > 0 && isFinite(payoutVal) ? (payoutVal / bet).toFixed(1) : "—";
@@ -989,6 +1016,7 @@ export default function AdminBonusHuntPage() {
                                                 />
                                               </td>
                                               <td className="px-3 py-1.5 text-arena-gold">{multi}x</td>
+                                              <td className="px-3 py-1.5 text-arena-smoke/50">{slot.provider || "—"}</td>
                                               <td className="px-3 py-1.5">
                                                 <button
                                                   onClick={async () => {
