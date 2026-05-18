@@ -25,6 +25,8 @@ interface Giveaway {
   is_ended: boolean;
   chat_command: string;
   require_live: boolean;
+  cta_text?: string | null;
+  cta_url?: string | null;
   created_at: string;
   participant_count?: number;
   total_tickets?: number;
@@ -265,6 +267,24 @@ export default function GiveawayAdmin() {
     showToast("Eliminado ✓");
   };
 
+  const saveCta = async (id: string, ctaText: string, ctaUrl: string) => {
+    setSaving(true);
+    const res = await fetch("/api/giveaways", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, cta_text: ctaText.trim() || null, cta_url: ctaUrl.trim() || null }),
+    });
+    const data = await res.json();
+    setSaving(false);
+    if (data.giveaway) {
+      showToast("Botão CTA guardado ✓");
+      loadGiveaways();
+      loadGiveawayDetail(id);
+    } else {
+      showToast(data.error || "Erro");
+    }
+  };
+
   /* ── Auth gate ──────────────────────────────────────────── */
   if (authLoading) return <div className="min-h-screen bg-arena-black flex items-center justify-center"><div className="animate-pulse font-[family-name:var(--font-display)] text-arena-smoke">A carregar...</div></div>;
   if (!user || !hasRole(user.role, "moderador")) return <div className="min-h-screen bg-arena-black flex items-center justify-center"><div className="text-red-400">Acesso negado</div></div>;
@@ -412,6 +432,7 @@ export default function GiveawayAdmin() {
                 onAction={doAction}
                 onDraw={handleDraw}
                 onDelete={() => deleteGiveaway(selected.id)}
+                onSaveCta={saveCta}
               />
             ) : (
               <div className="flex items-center justify-center h-64 rounded bg-white/[0.02] border border-arena-gold/15">
@@ -444,6 +465,7 @@ function GiveawayDetail({
   onAction,
   onDraw,
   onDelete,
+  onSaveCta,
 }: {
   giveaway: Giveaway;
   participants: Participant[];
@@ -454,9 +476,17 @@ function GiveawayDetail({
   onAction: (action: string) => void;
   onDraw: () => void;
   onDelete: () => void;
+  onSaveCta: (id: string, text: string, url: string) => Promise<void>;
 }) {
   const { remaining, display } = useCountdown(giveaway.is_active ? giveaway.end_time : null);
   const totalTickets = participants.reduce((s, p) => s + p.tickets, 0);
+  const [ctaText, setCtaText] = useState(giveaway.cta_text ?? "");
+  const [ctaUrl, setCtaUrl] = useState(giveaway.cta_url ?? "");
+
+  useEffect(() => {
+    setCtaText(giveaway.cta_text ?? "");
+    setCtaUrl(giveaway.cta_url ?? "");
+  }, [giveaway.id, giveaway.cta_text, giveaway.cta_url]);
 
   return (
     <div className="space-y-4">
@@ -507,6 +537,47 @@ function GiveawayDetail({
             <ActionButton label="↻ Reiniciar" onClick={() => onAction("reset")} disabled={saving} color="steel" />
           )}
           <ActionButton label="🗑 Eliminar" onClick={onDelete} disabled={saving} color="red" />
+        </div>
+      </div>
+
+      {/* CTA Button Editor */}
+      <div className="bg-arena-dark/80 rounded-lg border border-arena-gold/15 p-4">
+        <h3 className="text-xs font-bold uppercase tracking-wider mb-3 font-[family-name:var(--font-display)] text-arena-gold">
+          ⚔ Botão CTA do Card
+        </h3>
+        <p className="text-xs text-arena-smoke/50 mb-3">Aparece no card do giveaway como um link externo (ex: registo no casino).</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+          <FormField
+            label="Texto do Botão"
+            value={ctaText}
+            onChange={setCtaText}
+            placeholder="Ex: Registar no Casino"
+          />
+          <FormField
+            label="Link (URL)"
+            value={ctaUrl}
+            onChange={setCtaUrl}
+            placeholder="https://..."
+          />
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => onSaveCta(giveaway.id, ctaText, ctaUrl)}
+            disabled={saving}
+            className="cta-button disabled:opacity-40"
+            style={{ width: "auto", padding: "0 1.25em" }}
+          >
+            {saving ? "A guardar..." : "Guardar CTA"}
+          </button>
+          {(ctaText || ctaUrl) && (
+            <button
+              onClick={() => { setCtaText(""); setCtaUrl(""); onSaveCta(giveaway.id, "", ""); }}
+              disabled={saving}
+              className="text-xs text-arena-smoke/40 hover:text-arena-smoke/70 transition-colors cursor-pointer"
+            >
+              Remover botão
+            </button>
+          )}
         </div>
       </div>
 

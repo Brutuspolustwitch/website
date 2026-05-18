@@ -96,7 +96,7 @@ export async function POST(request: Request) {
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await request.json();
-  const { title, description, mode, ticket_cost, max_entries_per_user, prize, prize_image, scheduled_end, chat_command, require_live } = body;
+  const { title, description, mode, ticket_cost, max_entries_per_user, prize, prize_image, scheduled_end, chat_command, require_live, cta_text, cta_url } = body;
 
   if (!title) return NextResponse.json({ error: "Title required" }, { status: 400 });
 
@@ -113,6 +113,8 @@ export async function POST(request: Request) {
       scheduled_end: scheduled_end || null,
       chat_command: chat_command || "!enter",
       require_live: require_live !== false,
+      cta_text: cta_text || null,
+      cta_url: cta_url || null,
       created_by: admin.login,
     })
     .select()

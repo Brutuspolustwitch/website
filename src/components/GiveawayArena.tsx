@@ -22,6 +22,8 @@ interface Giveaway {
   is_active: boolean;
   is_ended: boolean;
   chat_command: string;
+  cta_text?: string | null;
+  cta_url?: string | null;
   created_at: string;
 }
 
@@ -286,6 +288,34 @@ export default function GiveawayArena() {
                           </p>
                         </div>
                       )}
+                    </div>
+                  )}
+
+                  {/* CTA Button */}
+                  {giveaway.cta_url && giveaway.cta_text && (
+                    <div className="mt-4">
+                      <a
+                        href={giveaway.cta_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded font-[family-name:var(--font-display)] text-sm tracking-wider font-bold transition-all"
+                        style={{
+                          background: "rgba(180,130,20,0.12)",
+                          border: "1px solid var(--gold-dark)",
+                          color: "var(--ink-dark)",
+                          boxShadow: "0 2px 8px rgba(180,130,20,0.15)",
+                        }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(180,130,20,0.22)"; }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(180,130,20,0.12)"; }}
+                      >
+                        <span style={{ color: "var(--gold-dark)" }}>⚔</span>
+                        {giveaway.cta_text}
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
+                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                          <polyline points="15 3 21 3 21 9" />
+                          <line x1="10" y1="14" x2="21" y2="3" />
+                        </svg>
+                      </a>
                     </div>
                   )}
                 </div>
