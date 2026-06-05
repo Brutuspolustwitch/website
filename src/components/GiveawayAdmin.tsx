@@ -51,6 +51,25 @@ interface Winner {
   selected_at: string;
 }
 
+interface GiveawayTemplate {
+  id: string;
+  name: string;
+  title: string;
+  description: string;
+  prize: string;
+  prize_image: string;
+  mode: "single" | "tickets";
+  ticket_cost: number;
+  max_entries_per_user: string;
+  chat_command: string;
+  require_live: boolean;
+  cta_text: string;
+  cta_url: string;
+  cta_color: string;
+}
+
+const TEMPLATES_KEY = "giveaway_templates_v1";
+
 /* ── Countdown Hook ─────────────────────────────────────────── */
 function useCountdown(endTime: string | null) {
   const [remaining, setRemaining] = useState(0);
@@ -85,6 +104,10 @@ export default function GiveawayAdmin() {
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [templates, setTemplates] = useState<GiveawayTemplate[]>([]);
+  const [autoDrawEnabled, setAutoDrawEnabled] = useState(false);
+  const [templateNamePrompt, setTemplateNamePrompt] = useState(false);
+  const [templateNameInput, setTemplateNameInput] = useState("");
 
   // Form state for creating
   const [form, setForm] = useState({
@@ -104,6 +127,64 @@ export default function GiveawayAdmin() {
     setToast(msg);
     setTimeout(() => setToast(null), 3000);
   }, []);
+
+  // Load templates from localStorage
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(TEMPLATES_KEY);
+      if (stored) setTemplates(JSON.parse(stored));
+    } catch { /* ignore */ }
+  }, []);
+
+  const persistTemplates = (updated: GiveawayTemplate[]) => {
+    setTemplates(updated);
+    localStorage.setItem(TEMPLATES_KEY, JSON.stringify(updated));
+  };
+
+  const saveTemplate = () => {
+    const name = templateNameInput.trim();
+    if (!name) return;
+    const tpl: GiveawayTemplate = {
+      id: `tpl_${Date.now()}`,
+      name,
+      title: form.title,
+      description: form.description,
+      prize: form.prize,
+      prize_image: form.prize_image,
+      mode: form.mode,
+      ticket_cost: form.ticket_cost,
+      max_entries_per_user: form.max_entries_per_user,
+      chat_command: form.chat_command,
+      require_live: form.require_live,
+      cta_text: "",
+      cta_url: "",
+      cta_color: "#B48214",
+    };
+    persistTemplates([...templates, tpl]);
+    setTemplateNameInput("");
+    setTemplateNamePrompt(false);
+    showToast(`Template "${name}" guardado ✓`);
+  };
+
+  const loadTemplate = (tpl: GiveawayTemplate) => {
+    setForm({
+      title: tpl.title,
+      description: tpl.description,
+      prize: tpl.prize,
+      prize_image: tpl.prize_image,
+      mode: tpl.mode,
+      ticket_cost: tpl.ticket_cost,
+      max_entries_per_user: tpl.max_entries_per_user,
+      chat_command: tpl.chat_command,
+      require_live: tpl.require_live,
+      scheduled_end: "",
+    });
+    showToast(`Template "${tpl.name}" carregado ✓`);
+  };
+
+  const deleteTemplate = (id: string) => {
+    persistTemplates(templates.filter((t) => t.id !== id));
+  };
 
   // Selected giveaway
   const selected = giveaways.find((g) => g.id === selectedId) ?? null;
@@ -170,7 +251,7 @@ export default function GiveawayAdmin() {
   /* ── Auto-draw when timer reaches 0 ─────────────────────── */
   const autoDrawRef = useRef(false);
   useEffect(() => {
-    if (!selected?.is_active || !selected?.end_time || autoDrawRef.current) return;
+    if (!autoDrawEnabled || !selected?.is_active || !selected?.end_time || autoDrawRef.current) return;
 
     const endMs = new Date(selected.end_time).getTime();
     const nowMs = Date.now();
@@ -190,7 +271,7 @@ export default function GiveawayAdmin() {
 
     return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selected?.is_active, selected?.end_time]);
+  }, [autoDrawEnabled, selected?.is_active, selected?.end_time]);
 
   // Reset auto-draw flag when selecting different giveaway
   useEffect(() => {
@@ -314,6 +395,63 @@ export default function GiveawayAdmin() {
             >
               <div className="bg-arena-dark/80 rounded-lg border border-arena-gold/15 p-4">
                 <h3 className="text-xs font-bold text-arena-gold uppercase tracking-wider font-[family-name:var(--font-display)] mb-4">Criar Giveaway</h3>
+
+                {/* Templates */}
+                {(templates.length > 0 || !templateNamePrompt) && (
+                  <div className="mb-4 p-3 rounded border border-arena-gold/15 bg-arena-black/30">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-xs uppercase tracking-wider font-medium text-arena-smoke/70">Templates</p>
+                      <button
+                        onClick={() => setTemplateNamePrompt(!templateNamePrompt)}
+                        className="text-xs text-arena-gold/70 hover:text-arena-gold transition-colors"
+                      >
+                        {templateNamePrompt ? "✕ Cancelar" : "+ Guardar Template Atual"}
+                      </button>
+                    </div>
+                    {templateNamePrompt && (
+                      <div className="flex gap-2 mb-2">
+                        <input
+                          type="text"
+                          value={templateNameInput}
+                          onChange={(e) => setTemplateNameInput(e.target.value)}
+                          onKeyDown={(e) => e.key === "Enter" && saveTemplate()}
+                          placeholder="Nome do template..."
+                          className="flex-1 px-3 py-1.5 rounded text-sm bg-arena-black/60 border border-arena-gold/20 text-arena-smoke/90 focus:outline-none"
+                        />
+                        <button
+                          onClick={saveTemplate}
+                          disabled={!templateNameInput.trim()}
+                          className="px-3 py-1.5 rounded text-xs font-medium bg-arena-gold/20 text-arena-gold border border-arena-gold/30 hover:bg-arena-gold/30 transition-colors disabled:opacity-40"
+                        >
+                          Guardar
+                        </button>
+                      </div>
+                    )}
+                    {templates.length === 0 ? (
+                      <p className="text-xs text-arena-smoke/40">Nenhum template guardado.</p>
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        {templates.map((tpl) => (
+                          <div key={tpl.id} className="flex items-center gap-1 rounded bg-arena-gold/10 border border-arena-gold/20 px-2 py-1">
+                            <button
+                              onClick={() => loadTemplate(tpl)}
+                              className="text-xs text-arena-gold hover:text-arena-gold/80 transition-colors font-medium"
+                            >
+                              {tpl.name}
+                            </button>
+                            <button
+                              onClick={() => deleteTemplate(tpl.id)}
+                              className="text-arena-smoke/30 hover:text-red-400 transition-colors text-xs ml-1 leading-none"
+                              title="Eliminar template"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField label="Título" value={form.title} onChange={(v) => setForm({ ...form, title: v })} />
                   <FormField label="Prémio" value={form.prize} onChange={(v) => setForm({ ...form, prize: v })} />
@@ -430,6 +568,8 @@ export default function GiveawayAdmin() {
                 chatStatus={chatStatus}
                 recentEntries={recentEntries}
                 saving={saving}
+                autoDrawEnabled={autoDrawEnabled}
+                onToggleAutoDraw={() => setAutoDrawEnabled((v) => !v)}
                 onAction={doAction}
                 onDraw={handleDraw}
                 onDelete={() => deleteGiveaway(selected.id)}
@@ -463,6 +603,8 @@ function GiveawayDetail({
   chatStatus,
   recentEntries,
   saving,
+  autoDrawEnabled,
+  onToggleAutoDraw,
   onAction,
   onDraw,
   onDelete,
@@ -474,6 +616,8 @@ function GiveawayDetail({
   chatStatus: string;
   recentEntries: { twitch_id: string; twitch_username: string; tickets: number; timestamp: number }[];
   saving: boolean;
+  autoDrawEnabled: boolean;
+  onToggleAutoDraw: () => void;
   onAction: (action: string) => void;
   onDraw: () => void;
   onDelete: () => void;
@@ -523,7 +667,7 @@ function GiveawayDetail({
         )}
 
         {/* Actions */}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 items-center">
           {!giveaway.is_ended && !giveaway.is_active && (
             <ActionButton label="▶ Iniciar" onClick={() => onAction("start")} disabled={saving} color="gold" />
           )}
@@ -540,6 +684,22 @@ function GiveawayDetail({
             <ActionButton label="↻ Reiniciar" onClick={() => onAction("reset")} disabled={saving} color="steel" />
           )}
           <ActionButton label="🗑 Eliminar" onClick={onDelete} disabled={saving} color="red" />
+
+          {/* Auto-draw toggle */}
+          <div className="ml-auto flex items-center gap-2">
+            <span className="text-xs text-arena-smoke/60 uppercase tracking-wider">Sorteio Auto</span>
+            <button
+              onClick={onToggleAutoDraw}
+              className="w-10 h-6 rounded-full transition-all relative shrink-0"
+              style={{ background: autoDrawEnabled ? "var(--gold-bright)" : "rgba(80,80,80,0.5)" }}
+              title={autoDrawEnabled ? "Desativar sorteio automático" : "Ativar sorteio automático ao fim do tempo"}
+            >
+              <div
+                className={`absolute top-0.5 w-5 h-5 rounded-full shadow transition-all ${autoDrawEnabled ? "left-[18px]" : "left-0.5"}`}
+                style={{ background: "#ffffff" }}
+              />
+            </button>
+          </div>
         </div>
       </div>
 
