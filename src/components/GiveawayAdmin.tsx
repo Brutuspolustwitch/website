@@ -57,15 +57,15 @@ interface GiveawayTemplate {
   title: string;
   description: string;
   prize: string;
-  prize_image: string;
+  prize_image: string | null;
   mode: "single" | "tickets";
   ticket_cost: number;
-  max_entries_per_user: string;
+  max_entries_per_user: number | null;
   chat_command: string;
   require_live: boolean;
-  cta_text: string;
-  cta_url: string;
-  cta_color: string;
+  cta_text: string | null;
+  cta_url: string | null;
+  cta_color: string | null;
 }
 
 const TEMPLATES_KEY = "giveaway_templates_v1";
@@ -131,42 +131,50 @@ export default function GiveawayAdmin() {
     setTimeout(() => setToast(null), 3000);
   }, []);
 
-  // Load templates from localStorage
-  useEffect(() => {
+  // Load templates from DB
+  const loadTemplates = useCallback(async () => {
     try {
-      const stored = localStorage.getItem(TEMPLATES_KEY);
-      if (stored) setTemplates(JSON.parse(stored));
+      const res = await fetch("/api/giveaways/templates");
+      const data = await res.json();
+      if (data.templates) setTemplates(data.templates);
     } catch { /* ignore */ }
   }, []);
 
-  const persistTemplates = (updated: GiveawayTemplate[]) => {
-    setTemplates(updated);
-    localStorage.setItem(TEMPLATES_KEY, JSON.stringify(updated));
-  };
+  useEffect(() => {
+    loadTemplates();
+  }, [loadTemplates]);
 
-  const saveTemplate = () => {
+  const saveTemplate = async () => {
     const name = templateNameInput.trim();
     if (!name) return;
-    const tpl: GiveawayTemplate = {
-      id: `tpl_${Date.now()}`,
-      name,
-      title: form.title,
-      description: form.description,
-      prize: form.prize,
-      prize_image: form.prize_image,
-      mode: form.mode,
-      ticket_cost: form.ticket_cost,
-      max_entries_per_user: form.max_entries_per_user,
-      chat_command: form.chat_command,
-      require_live: form.require_live,
-      cta_text: form.cta_text,
-      cta_url: form.cta_url,
-      cta_color: form.cta_color,
-    };
-    persistTemplates([...templates, tpl]);
-    setTemplateNameInput("");
-    setTemplateNamePrompt(false);
-    showToast(`Template "${name}" guardado ✓`);
+    const res = await fetch("/api/giveaways/templates", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        title: form.title,
+        description: form.description,
+        prize: form.prize,
+        prize_image: form.prize_image || null,
+        mode: form.mode,
+        ticket_cost: form.ticket_cost,
+        max_entries_per_user: form.max_entries_per_user ? parseInt(form.max_entries_per_user) : null,
+        chat_command: form.chat_command,
+        require_live: form.require_live,
+        cta_text: form.cta_text || null,
+        cta_url: form.cta_url || null,
+        cta_color: form.cta_color || null,
+      }),
+    });
+    const data = await res.json();
+    if (data.template) {
+      setTemplates((prev) => [...prev, data.template]);
+      setTemplateNameInput("");
+      setTemplateNamePrompt(false);
+      showToast(`Template "${name}" guardado ✓`);
+    } else {
+      showToast(data.error || "Erro ao guardar template");
+    }
   };
 
   const loadTemplate = (tpl: GiveawayTemplate) => {
@@ -174,22 +182,23 @@ export default function GiveawayAdmin() {
       title: tpl.title,
       description: tpl.description,
       prize: tpl.prize,
-      prize_image: tpl.prize_image,
+      prize_image: tpl.prize_image ?? "",
       mode: tpl.mode,
       ticket_cost: tpl.ticket_cost,
-      max_entries_per_user: tpl.max_entries_per_user,
+      max_entries_per_user: tpl.max_entries_per_user ? String(tpl.max_entries_per_user) : "",
       chat_command: tpl.chat_command,
       require_live: tpl.require_live,
       scheduled_end: "",
-      cta_text: tpl.cta_text,
-      cta_url: tpl.cta_url,
-      cta_color: tpl.cta_color,
+      cta_text: tpl.cta_text ?? "",
+      cta_url: tpl.cta_url ?? "",
+      cta_color: tpl.cta_color ?? "#B48214",
     });
     showToast(`Template "${tpl.name}" carregado ✓`);
   };
 
-  const deleteTemplate = (id: string) => {
-    persistTemplates(templates.filter((t) => t.id !== id));
+  const deleteTemplate = async (id: string) => {
+    await fetch(`/api/giveaways/templates?id=${id}`, { method: "DELETE" });
+    setTemplates((prev) => prev.filter((t) => t.id !== id));
   };
 
   // Selected giveaway
