@@ -367,21 +367,34 @@ export default function GiveawayAdmin() {
     showToast("Eliminado ✓");
   };
 
-  const saveCta = async (id: string, ctaText: string, ctaUrl: string, ctaColor: string) => {
-    setSaving(true);
-    const res = await fetch("/api/giveaways", {
-      method: "PUT",
+  const saveGiveawayAsTemplate = async (g: Giveaway) => {
+    const name = prompt(`Nome do template para "${g.title}":`); 
+    if (!name?.trim()) return;
+    const res = await fetch("/api/giveaways/templates", {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, cta_text: ctaText.trim() || null, cta_url: ctaUrl.trim() || null, cta_color: ctaColor || null }),
+      body: JSON.stringify({
+        name: name.trim(),
+        title: g.title,
+        description: g.description,
+        prize: g.prize,
+        prize_image: g.prize_image || null,
+        mode: g.mode,
+        ticket_cost: g.ticket_cost,
+        max_entries_per_user: g.max_entries_per_user || null,
+        chat_command: g.chat_command,
+        require_live: g.require_live,
+        cta_text: g.cta_text || null,
+        cta_url: g.cta_url || null,
+        cta_color: g.cta_color || null,
+      }),
     });
     const data = await res.json();
-    setSaving(false);
-    if (data.giveaway) {
-      showToast("Botão CTA guardado ✓");
-      loadGiveaways();
-      loadGiveawayDetail(id);
+    if (data.template) {
+      setTemplates((prev) => [...prev, data.template]);
+      showToast(`Template "${name.trim()}" guardado ✓`);
     } else {
-      showToast(data.error || "Erro");
+      showToast(data.error || "Erro ao guardar template");
     }
   };
 
@@ -612,21 +625,31 @@ export default function GiveawayAdmin() {
               <div className="text-sm text-arena-smoke/50">Nenhum giveaway criado.</div>
             ) : (
               giveaways.map((g) => (
-                <button
-                  key={g.id}
-                  onClick={() => setSelectedId(g.id)}
-                  className={`w-full text-left rounded p-3 transition-all border ${selectedId === g.id ? "border-arena-gold/60 bg-arena-gold/10" : "border-arena-gold/15 bg-white/[0.02]"}`}
-                >
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-bold font-[family-name:var(--font-display)] truncate text-arena-gold">{g.title}</h4>
-                    <StatusBadge isActive={g.is_active} isEnded={g.is_ended} />
-                  </div>
-                  <div className="flex gap-3 mt-1 text-xs text-arena-smoke/50">
-                    <span>{g.mode === "single" ? "Entrada Única" : "Tickets"}</span>
-                    <span>·</span>
-                    <span>{g.participant_count ?? 0} participantes</span>
-                  </div>
-                </button>
+                <div key={g.id} className={`rounded border transition-all ${selectedId === g.id ? "border-arena-gold/60 bg-arena-gold/10" : "border-arena-gold/15 bg-white/[0.02]"}`}>
+                  <button
+                    onClick={() => setSelectedId(g.id)}
+                    className="w-full text-left p-3"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <h4 className="font-bold font-[family-name:var(--font-display)] truncate text-arena-gold">{g.title}</h4>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); saveGiveawayAsTemplate(g); }}
+                          title="Guardar como template"
+                          className="text-arena-smoke/40 hover:text-arena-gold transition-colors text-xs px-1.5 py-0.5 rounded border border-arena-gold/20 hover:border-arena-gold/50"
+                        >
+                          📋
+                        </button>
+                        <StatusBadge isActive={g.is_active} isEnded={g.is_ended} />
+                      </div>
+                    </div>
+                    <div className="flex gap-3 mt-1 text-xs text-arena-smoke/50">
+                      <span>{g.mode === "single" ? "Entrada Única" : "Tickets"}</span>
+                      <span>·</span>
+                      <span>{g.participant_count ?? 0} participantes</span>
+                    </div>
+                  </button>
+                </div>
               ))
             )}
           </div>
@@ -646,7 +669,6 @@ export default function GiveawayAdmin() {
                 onAction={doAction}
                 onDraw={handleDraw}
                 onDelete={() => deleteGiveaway(selected.id)}
-                onSaveCta={saveCta}
               />
             ) : (
               <div className="flex items-center justify-center h-64 rounded bg-white/[0.02] border border-arena-gold/15">
@@ -694,19 +716,9 @@ function GiveawayDetail({
   onAction: (action: string) => void;
   onDraw: () => void;
   onDelete: () => void;
-  onSaveCta: (id: string, text: string, url: string, color: string) => Promise<void>;
 }) {
   const { remaining, display } = useCountdown(giveaway.is_active ? giveaway.end_time : null);
   const totalTickets = participants.reduce((s, p) => s + p.tickets, 0);
-  const [ctaText, setCtaText] = useState(giveaway.cta_text ?? "");
-  const [ctaUrl, setCtaUrl] = useState(giveaway.cta_url ?? "");
-  const [ctaColor, setCtaColor] = useState(giveaway.cta_color ?? "#B48214");
-
-  useEffect(() => {
-    setCtaText(giveaway.cta_text ?? "");
-    setCtaUrl(giveaway.cta_url ?? "");
-    setCtaColor(giveaway.cta_color ?? "#B48214");
-  }, [giveaway.id, giveaway.cta_text, giveaway.cta_url, giveaway.cta_color]);
 
   return (
     <div className="space-y-4">
@@ -773,80 +785,6 @@ function GiveawayDetail({
               />
             </button>
           </div>
-        </div>
-      </div>
-
-      {/* CTA Button Editor */}
-      <div className="bg-arena-dark/80 rounded-lg border border-arena-gold/15 p-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider mb-3 font-[family-name:var(--font-display)] text-arena-gold">
-          ⚔ Botão CTA do Card
-        </h3>
-        <p className="text-xs text-arena-smoke/50 mb-3">Aparece no card do giveaway como um link externo (ex: registo no casino).</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-          <FormField
-            label="Texto do Botão"
-            value={ctaText}
-            onChange={setCtaText}
-            placeholder="Ex: Registar no Casino"
-          />
-          <FormField
-            label="Link (URL)"
-            value={ctaUrl}
-            onChange={setCtaUrl}
-            placeholder="https://..."
-          />
-        </div>
-        {/* Color picker */}
-        <div className="mb-3">
-          <p className="text-xs uppercase tracking-wider font-medium text-arena-smoke/70 mb-2">Cor do Botão</p>
-          <div className="flex items-center gap-2 flex-wrap">
-            {["#B48214","#8B0000","#1a6b2e","#1a3a8b","#6b1a8b","#1a6b6b"].map((c) => (
-              <button
-                key={c}
-                onClick={() => setCtaColor(c)}
-                title={c}
-                className="w-6 h-6 rounded-full border-2 transition-all cursor-pointer"
-                style={{
-                  background: c,
-                  borderColor: ctaColor === c ? "white" : "transparent",
-                  boxShadow: ctaColor === c ? `0 0 0 1px ${c}` : "none",
-                }}
-              />
-            ))}
-            <label className="flex items-center gap-1.5 cursor-pointer">
-              <span className="text-xs text-arena-smoke/50">Personalizada</span>
-              <input
-                type="color"
-                value={ctaColor}
-                onChange={(e) => setCtaColor(e.target.value)}
-                className="w-7 h-7 rounded cursor-pointer border-0 bg-transparent"
-                style={{ padding: 0 }}
-              />
-            </label>
-            <div className="ml-auto flex items-center gap-1.5">
-              <div className="w-4 h-4 rounded-full" style={{ background: ctaColor }} />
-              <span className="text-xs font-mono text-arena-smoke/50">{ctaColor}</span>
-            </div>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => onSaveCta(giveaway.id, ctaText, ctaUrl, ctaColor)}
-            disabled={saving}
-            className="cta-button disabled:opacity-40"
-            style={{ width: "auto", padding: "0 1.25em" }}
-          >
-            {saving ? "A guardar..." : "Guardar CTA"}
-          </button>
-          {(ctaText || ctaUrl) && (
-            <button
-              onClick={() => { setCtaText(""); setCtaUrl(""); onSaveCta(giveaway.id, "", "", ""); }}
-              disabled={saving}
-              className="text-xs text-arena-smoke/40 hover:text-arena-smoke/70 transition-colors cursor-pointer"
-            >
-              Remover botão
-            </button>
-          )}
         </div>
       </div>
 
