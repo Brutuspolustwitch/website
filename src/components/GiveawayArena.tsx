@@ -149,13 +149,13 @@ export default function GiveawayArena() {
         { event: "*", schema: "public", table: "giveaways", filter: `id=eq.${giveaway.id}` },
         (payload) => {
           const updated = payload.new as Giveaway;
-          setGiveaway(updated);
 
-          // If giveaway just ended, check for winner
+          // Always reload from API to get full row data (avoids partial payload issues)
+          loadActive();
+
+          // If giveaway just ended, also refresh archive + show winner
           if (updated.is_ended) {
-            loadActive();
             loadPast();
-            // Fetch winner
             fetch(`/api/giveaways?id=${updated.id}`)
               .then((r) => r.json())
               .then((d) => {
