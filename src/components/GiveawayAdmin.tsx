@@ -108,6 +108,9 @@ export default function GiveawayAdmin() {
   const [autoDrawEnabled, setAutoDrawEnabled] = useState(false);
   const [templateNamePrompt, setTemplateNamePrompt] = useState(false);
   const [templateNameInput, setTemplateNameInput] = useState("");
+  const [saveAsModal, setSaveAsModal] = useState<Giveaway | null>(null);
+  const [saveAsName, setSaveAsName] = useState("");
+  const [saveAsLoading, setSaveAsLoading] = useState(false);
 
   // Form state for creating
   const [form, setForm] = useState({
@@ -367,14 +370,20 @@ export default function GiveawayAdmin() {
     showToast("Eliminado ✓");
   };
 
-  const saveGiveawayAsTemplate = async (g: Giveaway) => {
-    const name = prompt(`Nome do template para "${g.title}":`); 
-    if (!name?.trim()) return;
+  const saveGiveawayAsTemplate = (g: Giveaway) => {
+    setSaveAsName(g.title);
+    setSaveAsModal(g);
+  };
+
+  const confirmSaveAsTemplate = async () => {
+    if (!saveAsModal || !saveAsName.trim()) return;
+    setSaveAsLoading(true);
+    const g = saveAsModal;
     const res = await fetch("/api/giveaways/templates", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        name: name.trim(),
+        name: saveAsName.trim(),
         title: g.title,
         description: g.description,
         prize: g.prize,
@@ -390,9 +399,12 @@ export default function GiveawayAdmin() {
       }),
     });
     const data = await res.json();
+    setSaveAsLoading(false);
     if (data.template) {
       setTemplates((prev) => [...prev, data.template]);
-      showToast(`Template "${name.trim()}" guardado ✓`);
+      showToast(`Template "${saveAsName.trim()}" guardado ✓`);
+      setSaveAsModal(null);
+      setSaveAsName("");
     } else {
       showToast(data.error || "Erro ao guardar template");
     }
@@ -404,6 +416,65 @@ export default function GiveawayAdmin() {
 
   return (
     <div className="flex flex-col gap-4">
+
+      {/* Save-as-template modal */}
+      <AnimatePresence>
+        {saveAsModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: "rgba(0,0,0,0.75)" }}
+            onClick={() => setSaveAsModal(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.92, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.92, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className="w-full max-w-md rounded-lg border p-6 shadow-2xl"
+              style={{ background: "var(--arena-dark, #0e0c09)", borderColor: "rgba(180,130,20,0.4)" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-sm font-bold uppercase tracking-wider font-[family-name:var(--font-display)] text-arena-gold mb-1">
+                📋 Guardar como Template
+              </h3>
+              <p className="text-xs text-arena-smoke/50 mb-4">
+                A guardar: <span className="text-arena-gold/80">{saveAsModal.title}</span>
+              </p>
+              <label className="text-xs uppercase tracking-wider font-medium text-arena-smoke/70 block mb-1">Nome do Template</label>
+              <input
+                autoFocus
+                type="text"
+                value={saveAsName}
+                onChange={(e) => setSaveAsName(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") confirmSaveAsTemplate(); if (e.key === "Escape") setSaveAsModal(null); }}
+                placeholder="Ex: 10€ Betclic"
+                className="w-full px-3 py-2 rounded text-sm bg-arena-black/60 border border-arena-gold/20 text-arena-smoke/90 focus:outline-none focus:border-arena-gold/50 mb-5"
+              />
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={() => setSaveAsModal(null)}
+                  className="cta-button-inactive"
+                  style={{ width: "auto", padding: "0 1.25em" }}
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={confirmSaveAsTemplate}
+                  disabled={!saveAsName.trim() || saveAsLoading}
+                  className="cta-button disabled:opacity-40"
+                  style={{ width: "auto", padding: "0 1.5em" }}
+                >
+                  {saveAsLoading ? "A guardar..." : "⚔ Guardar"}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Top action bar */}
       <div className="flex justify-end shrink-0">
         <button
