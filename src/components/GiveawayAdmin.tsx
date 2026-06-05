@@ -397,62 +397,71 @@ export default function GiveawayAdmin() {
                 <h3 className="text-xs font-bold text-arena-gold uppercase tracking-wider font-[family-name:var(--font-display)] mb-4">Criar Giveaway</h3>
 
                 {/* Templates */}
-                {(templates.length > 0 || !templateNamePrompt) && (
-                  <div className="mb-4 p-3 rounded border border-arena-gold/15 bg-arena-black/30">
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-xs uppercase tracking-wider font-medium text-arena-smoke/70">Templates</p>
-                      <button
-                        onClick={() => setTemplateNamePrompt(!templateNamePrompt)}
-                        className={templateNamePrompt ? "cta-button-inactive" : "cta-button"}
-                        style={{ width: "auto", padding: "0 1em", fontSize: "0.7rem" }}
+                <div className="mb-4 p-3 rounded border border-arena-gold/15 bg-arena-black/30">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                    <p className="text-xs uppercase tracking-wider font-medium text-arena-smoke/70 shrink-0">Templates</p>
+                    <div className="flex flex-1 items-center gap-2">
+                      <select
+                        className="flex-1 px-3 py-2 rounded text-sm bg-arena-black/60 border border-arena-gold/20 text-arena-smoke/90 focus:outline-none"
+                        style={{ colorScheme: "dark" }}
+                        defaultValue=""
+                        onChange={(e) => {
+                          const tpl = templates.find((t) => t.id === e.target.value);
+                          if (tpl) loadTemplate(tpl);
+                          e.target.value = "";
+                        }}
                       >
-                        {templateNamePrompt ? "✕ Cancelar" : "+ Guardar Template Atual"}
+                        <option value="" disabled>
+                          {templates.length === 0 ? "Nenhum template guardado" : "Carregar template..."}
+                        </option>
+                        {templates.map((tpl) => (
+                          <option key={tpl.id} value={tpl.id}>{tpl.name}</option>
+                        ))}
+                      </select>
+                      {templates.length > 0 && (
+                        <select
+                          className="px-3 py-2 rounded text-sm bg-red-900/20 border border-red-800/30 text-red-400 focus:outline-none"
+                          style={{ colorScheme: "dark" }}
+                          defaultValue=""
+                          onChange={(e) => {
+                            if (e.target.value) { deleteTemplate(e.target.value); e.target.value = ""; }
+                          }}
+                        >
+                          <option value="" disabled>🗑 Eliminar...</option>
+                          {templates.map((tpl) => (
+                            <option key={tpl.id} value={tpl.id}>{tpl.name}</option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => setTemplateNamePrompt(!templateNamePrompt)}
+                      className={templateNamePrompt ? "cta-button-inactive" : "cta-button"}
+                      style={{ width: "auto", padding: "0 1em", fontSize: "0.7rem", flexShrink: 0 }}
+                    >
+                      {templateNamePrompt ? "✕ Cancelar" : "+ Guardar Template Atual"}
+                    </button>
+                  </div>
+                  {templateNamePrompt && (
+                    <div className="flex gap-2 mt-3">
+                      <input
+                        type="text"
+                        value={templateNameInput}
+                        onChange={(e) => setTemplateNameInput(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && saveTemplate()}
+                        placeholder="Nome do template..."
+                        className="flex-1 px-3 py-1.5 rounded text-sm bg-arena-black/60 border border-arena-gold/20 text-arena-smoke/90 focus:outline-none"
+                      />
+                      <button
+                        onClick={saveTemplate}
+                        disabled={!templateNameInput.trim()}
+                        className="px-3 py-1.5 rounded text-xs font-medium bg-arena-gold/20 text-arena-gold border border-arena-gold/30 hover:bg-arena-gold/30 transition-colors disabled:opacity-40"
+                      >
+                        Guardar
                       </button>
                     </div>
-                    {templateNamePrompt && (
-                      <div className="flex gap-2 mb-2">
-                        <input
-                          type="text"
-                          value={templateNameInput}
-                          onChange={(e) => setTemplateNameInput(e.target.value)}
-                          onKeyDown={(e) => e.key === "Enter" && saveTemplate()}
-                          placeholder="Nome do template..."
-                          className="flex-1 px-3 py-1.5 rounded text-sm bg-arena-black/60 border border-arena-gold/20 text-arena-smoke/90 focus:outline-none"
-                        />
-                        <button
-                          onClick={saveTemplate}
-                          disabled={!templateNameInput.trim()}
-                          className="px-3 py-1.5 rounded text-xs font-medium bg-arena-gold/20 text-arena-gold border border-arena-gold/30 hover:bg-arena-gold/30 transition-colors disabled:opacity-40"
-                        >
-                          Guardar
-                        </button>
-                      </div>
-                    )}
-                    {templates.length === 0 ? (
-                      <p className="text-xs text-arena-smoke/40">Nenhum template guardado.</p>
-                    ) : (
-                      <div className="flex flex-wrap gap-2">
-                        {templates.map((tpl) => (
-                          <div key={tpl.id} className="flex items-center gap-1 rounded bg-arena-gold/10 border border-arena-gold/20 px-2 py-1">
-                            <button
-                              onClick={() => loadTemplate(tpl)}
-                              className="text-xs text-arena-gold hover:text-arena-gold/80 transition-colors font-medium"
-                            >
-                              {tpl.name}
-                            </button>
-                            <button
-                              onClick={() => deleteTemplate(tpl.id)}
-                              className="text-arena-smoke/30 hover:text-red-400 transition-colors text-xs ml-1 leading-none"
-                              title="Eliminar template"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
+                  )}
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField label="Título" value={form.title} onChange={(v) => setForm({ ...form, title: v })} />
                   <FormField label="Prémio" value={form.prize} onChange={(v) => setForm({ ...form, prize: v })} />
