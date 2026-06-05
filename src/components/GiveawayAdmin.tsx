@@ -403,7 +403,8 @@ export default function GiveawayAdmin() {
                       <p className="text-xs uppercase tracking-wider font-medium text-arena-smoke/70">Templates</p>
                       <button
                         onClick={() => setTemplateNamePrompt(!templateNamePrompt)}
-                        className="text-xs text-arena-gold/70 hover:text-arena-gold transition-colors"
+                        className={templateNamePrompt ? "cta-button-inactive" : "cta-button"}
+                        style={{ width: "auto", padding: "0 1em", fontSize: "0.7rem" }}
                       >
                         {templateNamePrompt ? "✕ Cancelar" : "+ Guardar Template Atual"}
                       </button>
