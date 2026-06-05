@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function DestaquesPage() {
   return (
     <div className="pt-24 pb-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-1 sm:px-2">
         <div className="mt-4">
           <DestaquesContent />
         </div>

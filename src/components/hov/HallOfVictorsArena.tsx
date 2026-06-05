@@ -84,7 +84,7 @@ export default function HallOfVictorsArena() {
         ))}
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-2 sm:px-4">
+      <div className="relative max-w-7xl mx-auto px-1 sm:px-2">
         {/* Section A: Podium */}
         <section className="mb-16">
           <SectionTitle>Brutas da Semana</SectionTitle>
