@@ -102,23 +102,28 @@ export default function VictoryCard({ v }: { v: Victory }) {
             <span className="mx-1.5 opacity-60">→</span>
             <span className="text-amber-300">{fmt(v.win_amount)}€</span>
           </span>
-          <span className="flex items-center gap-1.5 text-arena-smoke truncate ml-2 max-w-[45%]">
-            {v.avatar_url ? (
-              <Image
-                src={v.avatar_url}
-                alt={v.username}
-                width={18}
-                height={18}
-                className="rounded-full border border-arena-gold/40 shrink-0"
-                unoptimized
-              />
-            ) : (
-              <span className="w-[18px] h-[18px] rounded-full border border-arena-gold/40 bg-black/50 flex items-center justify-center text-[9px] font-bold text-arena-gold-light shrink-0">
-                {v.username.slice(0,1).toUpperCase()}
-              </span>
-            )}
-            <span className="truncate">@{v.username}</span>
-          </span>
+          <div className="flex flex-col items-end gap-0.5 ml-2 max-w-[55%] min-w-0">
+            <span className="text-[10px] text-arena-smoke/50 shrink-0">
+              {new Date(v.created_at).toLocaleDateString("pt-PT", { day: "2-digit", month: "short", year: "numeric" })}
+            </span>
+            <span className="flex items-center gap-1.5 text-arena-smoke truncate">
+              {v.avatar_url ? (
+                <Image
+                  src={v.avatar_url}
+                  alt={v.username}
+                  width={22}
+                  height={22}
+                  className="rounded-full border border-arena-gold/40 shrink-0"
+                  unoptimized
+                />
+              ) : (
+                <span className="w-[22px] h-[22px] rounded-full border border-arena-gold/40 bg-black/50 flex items-center justify-center text-[10px] font-bold text-arena-gold-light shrink-0">
+                  {v.username.slice(0,1).toUpperCase()}
+                </span>
+              )}
+              <span className="truncate text-[13px]">@{v.username}</span>
+            </span>
+          </div>
         </div>
       </div>
     </motion.article>
