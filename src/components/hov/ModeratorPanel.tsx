@@ -63,7 +63,9 @@ export default function ModeratorPanel() {
       const fd = new FormData();
       fd.append("file", file);
       const res = await fetch("/api/hall-of-victors/upload", { method: "POST", body: fd });
-      const j = await res.json();
+      let j: { url?: string; error?: string };
+      try { j = await res.json(); }
+      catch { throw new Error(res.status === 413 ? "Ficheiro demasiado grande (máx. 4 MB)." : `Erro do servidor (${res.status})`); }
       if (!res.ok) throw new Error(j.error || "Falha no upload");
       setField(id, "image_url", j.url);
       await fetch(`/api/hall-of-victors/${id}`, {
@@ -71,7 +73,7 @@ export default function ModeratorPanel() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ image_url: j.url }),
       });
-      setItems(prev => prev.map(v => v.id === id ? { ...v, image_url: j.url } : v));
+      setItems(prev => prev.map(v => v.id === id ? { ...v, image_url: j.url! } : v));
     } catch (e) {
       notify(e instanceof Error ? e.message : "Erro no upload", false);
     } finally { setUploading(null); }
