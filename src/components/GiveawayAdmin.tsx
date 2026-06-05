@@ -121,6 +121,9 @@ export default function GiveawayAdmin() {
     scheduled_end: "",
     chat_command: "!enter",
     require_live: true,
+    cta_text: "",
+    cta_url: "",
+    cta_color: "#B48214",
   });
 
   const showToast = useCallback((msg: string) => {
@@ -156,9 +159,9 @@ export default function GiveawayAdmin() {
       max_entries_per_user: form.max_entries_per_user,
       chat_command: form.chat_command,
       require_live: form.require_live,
-      cta_text: "",
-      cta_url: "",
-      cta_color: "#B48214",
+      cta_text: form.cta_text,
+      cta_url: form.cta_url,
+      cta_color: form.cta_color,
     };
     persistTemplates([...templates, tpl]);
     setTemplateNameInput("");
@@ -178,6 +181,9 @@ export default function GiveawayAdmin() {
       chat_command: tpl.chat_command,
       require_live: tpl.require_live,
       scheduled_end: "",
+      cta_text: tpl.cta_text,
+      cta_url: tpl.cta_url,
+      cta_color: tpl.cta_color,
     });
     showToast(`Template "${tpl.name}" carregado ✓`);
   };
@@ -289,6 +295,9 @@ export default function GiveawayAdmin() {
         prize_image: form.prize_image || null,
         max_entries_per_user: form.max_entries_per_user ? parseInt(form.max_entries_per_user) : null,
         scheduled_end: form.scheduled_end || null,
+        cta_text: form.cta_text || null,
+        cta_url: form.cta_url || null,
+        cta_color: form.cta_color || null,
       }),
     });
     const data = await res.json();
@@ -296,7 +305,7 @@ export default function GiveawayAdmin() {
     if (data.giveaway) {
       showToast("Giveaway criado ✓");
       setShowCreate(false);
-      setForm({ title: "", description: "", mode: "single", ticket_cost: 0, max_entries_per_user: "", prize: "", prize_image: "", scheduled_end: "", chat_command: "!enter", require_live: true });
+      setForm({ title: "", description: "", mode: "single", ticket_cost: 0, max_entries_per_user: "", prize: "", prize_image: "", scheduled_end: "", chat_command: "!enter", require_live: true, cta_text: "", cta_url: "", cta_color: "#B48214" });
       loadGiveaways();
     } else {
       showToast(data.error || "Erro");
@@ -522,6 +531,51 @@ export default function GiveawayAdmin() {
                       <div className={`absolute top-0.5 w-5 h-5 rounded-full shadow transition-all ${form.require_live ? "left-[18px]" : "left-0.5"}`}
                         style={{ background: "#ffffff" }} />
                     </button>
+                  </div>
+                </div>
+
+                {/* CTA Button */}
+                <div className="mt-4 p-3 rounded border border-arena-gold/15 bg-arena-black/30">
+                  <p className="text-xs font-bold uppercase tracking-wider text-arena-gold mb-3">⚔ Botão CTA (opcional)</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                    <FormField
+                      label="Texto do Botão"
+                      value={form.cta_text}
+                      onChange={(v) => setForm({ ...form, cta_text: v })}
+                      placeholder="Ex: Registar no Casino"
+                    />
+                    <FormField
+                      label="Link (URL)"
+                      value={form.cta_url}
+                      onChange={(v) => setForm({ ...form, cta_url: v })}
+                      placeholder="https://..."
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="text-xs text-arena-smoke/60 uppercase tracking-wider mr-1">Cor:</p>
+                    {["#B48214","#8B0000","#1a6b2e","#1a3a8b","#6b1a8b","#1a6b6b"].map((c) => (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => setForm({ ...form, cta_color: c })}
+                        className="w-6 h-6 rounded-full border-2 transition-all cursor-pointer"
+                        style={{
+                          background: c,
+                          borderColor: form.cta_color === c ? "white" : "transparent",
+                          boxShadow: form.cta_color === c ? `0 0 0 1px ${c}` : "none",
+                        }}
+                      />
+                    ))}
+                    <label className="flex items-center gap-1.5 cursor-pointer">
+                      <span className="text-xs text-arena-smoke/50">Personalizada</span>
+                      <input
+                        type="color"
+                        value={form.cta_color}
+                        onChange={(e) => setForm({ ...form, cta_color: e.target.value })}
+                        className="w-7 h-7 rounded cursor-pointer border-0 bg-transparent"
+                        style={{ padding: 0 }}
+                      />
+                    </label>
                   </div>
                 </div>
 
