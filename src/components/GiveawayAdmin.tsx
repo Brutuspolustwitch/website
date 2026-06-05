@@ -703,7 +703,6 @@ function GiveawayDetail({
   onAction,
   onDraw,
   onDelete,
-  onSaveCta,
 }: {
   giveaway: Giveaway;
   participants: Participant[];
