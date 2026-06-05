@@ -84,7 +84,7 @@ export default function HallOfVictorsArena() {
         ))}
       </div>
 
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
+      <div className="relative max-w-7xl mx-auto px-2 sm:px-4">
         {/* Section A: Podium */}
         <section className="mb-16">
           <SectionTitle>Brutas da Semana</SectionTitle>
@@ -113,7 +113,7 @@ export default function HallOfVictorsArena() {
           ) : victories.length === 0 ? (
             <div className="text-center text-arena-smoke italic">Sem vitórias para os filtros escolhidos.</div>
           ) : (
-            <motion.div layout className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <motion.div layout className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               <AnimatePresence>
                 {victories.map(v => <VictoryCard key={v.id} v={v} />)}
               </AnimatePresence>
