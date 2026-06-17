@@ -50,21 +50,6 @@ create table if not exists bonus_hunt_slots (
 
 create index idx_bonus_hunt_slots_session on bonus_hunt_slots(session_id);
 
--- Slot Catalog (autocomplete / managed slot database)
-create extension if not exists pg_trgm;
-
-create table if not exists slots (
-  id uuid primary key default gen_random_uuid(),
-  name text not null,
-  provider text not null default '',
-  thumbnail_url text,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
-  unique (name, provider)
-);
-
-create index if not exists idx_slots_name on slots using gin (name gin_trgm_ops);
-
 -- Slot Requests
 create table if not exists slot_requests (
   id uuid primary key default gen_random_uuid(),
@@ -164,7 +149,6 @@ alter publication supabase_realtime add table spin_history;
 -- Row Level Security (RLS)
 alter table bonus_hunt_sessions enable row level security;
 alter table bonus_hunt_slots enable row level security;
-alter table slots enable row level security;
 alter table slot_requests enable row level security;
 alter table leaderboard enable row level security;
 alter table casino_affiliates enable row level security;
@@ -172,9 +156,6 @@ alter table casino_affiliates enable row level security;
 -- Public read access
 create policy "Public read sessions" on bonus_hunt_sessions for select using (true);
 create policy "Public read slots" on bonus_hunt_slots for select using (true);
-create policy "Public read slots catalog" on slots for select using (true);
-create policy "Admin insert slots catalog" on slots for insert with check (true);
-create policy "Admin update slots catalog" on slots for update using (true);
 create policy "Public read requests" on slot_requests for select using (true);
 create policy "Public read leaderboard" on leaderboard for select using (true);
 create policy "Public read casinos" on casino_affiliates for select using (true);
