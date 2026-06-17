@@ -85,7 +85,7 @@ const cardStyle: React.CSSProperties = {
   boxShadow: "0 4px 20px rgba(139,105,20,0.18), inset 0 1px 0 rgba(255,255,255,0.4)",
 };
 
-export function OfferCard({ offer }: { offer: CasinoOffer }) {
+export function OfferCard({ offer, ctaLabel = "⚔ Resgatar Bónus ⚔" }: { offer: CasinoOffer; ctaLabel?: string }) {
   const [copied, setCopied] = useState(false);
   const [flipped, setFlipped] = useState(false);
 
@@ -103,7 +103,7 @@ export function OfferCard({ offer }: { offer: CasinoOffer }) {
   // so ad blockers and VPNs cannot detect or block the link.
   const ctaButton = (
     <a href={`/go/${offer.slug}`} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
-      <button className="cta-button w-full">⚔ Resgatar Bónus ⚔</button>
+      <button className="cta-button w-full">{ctaLabel}</button>
     </a>
   );
 

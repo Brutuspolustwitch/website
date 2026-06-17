@@ -623,7 +623,7 @@ export default function DailySessionContent() {
                       established: session.casino.established,
                       notes: session.casino.notes,
                       rating: session.casino.rating ?? 4.5,
-                    }} />
+                    }} ctaLabel="CLIQUE AQUI" />
                   ) : (
                     <div className="papyrus-scroll greek-key-border papyrus-scroll-top papyrus-scroll-bottom">
                       <div className="scroll-content" style={{ textAlign: "center", padding: "24px 16px" }}>
