@@ -1,8 +1,8 @@
 ﻿/* Site-wide constants */
 
-export const SITE_NAME = "Arena Gladiator";
+export const SITE_NAME = "BRUTUSPOLUS";
 export const SITE_DESCRIPTION =
-  "Enter the Arena — the ultimate iGaming casino streamer experience. Live streams, bonus hunts, slot battles, and gladiator rankings.";
+  "BRUTUSPOLUS e a sua arena de iGaming em Portugal: streams ao vivo, bonus hunts, ofertas de casino, giveaways, rankings e comunidade.";
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.brutuspolus.com";
 export const TWITCH_CHANNEL = process.env.NEXT_PUBLIC_TWITCH_CHANNEL || "brutuspolus";
 

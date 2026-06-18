@@ -6,7 +6,13 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/"],
+        disallow: [
+          "/api/",
+          "/admin/",
+          "/moderador/",
+          "/perfil/",
+          "/go/",
+        ],
       },
     ],
     sitemap: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.brutuspolus.com"}/sitemap.xml`,

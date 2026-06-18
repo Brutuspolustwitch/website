@@ -4,6 +4,33 @@ import "./globals.css";
 import { AppShell } from "@/components/AppShell";
 import { SITE_NAME, SITE_DESCRIPTION, SITE_URL } from "@/lib/constants";
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: SITE_NAME,
+      url: SITE_URL,
+      logo: `${SITE_URL}/images/logo.png`,
+      sameAs: [
+        "https://www.twitch.tv/brutuspolus",
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: SITE_NAME,
+      description: SITE_DESCRIPTION,
+      inLanguage: "pt-PT",
+      publisher: {
+        "@id": `${SITE_URL}/#organization`,
+      },
+    },
+  ],
+};
+
 const cinzel = Cinzel({
   variable: "--font-display",
   subsets: ["latin"],
@@ -88,6 +115,10 @@ export default function RootLayout({
       className={`${cinzel.variable} ${bebasNeue.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-arena-black text-arena-white">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <AppShell>{children}</AppShell>
       </body>
     </html>

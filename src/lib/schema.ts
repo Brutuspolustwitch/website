@@ -3,7 +3,7 @@
  * Used on casino review pages and the main site.
  */
 
-import { SITE_NAME, SITE_URL } from "@/lib/constants";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/constants";
 
 export function generateWebsiteSchema() {
   return {
@@ -11,7 +11,8 @@ export function generateWebsiteSchema() {
     "@type": "WebSite",
     name: SITE_NAME,
     url: SITE_URL,
-    description: "The ultimate iGaming casino streamer arena. Live streams, bonus hunts, and gladiator rankings.",
+    description: SITE_DESCRIPTION,
+    inLanguage: "pt-PT",
   };
 }
 

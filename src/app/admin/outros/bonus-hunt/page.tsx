@@ -10,6 +10,9 @@ interface ImportResult {
   session_id?: string;
   slots_imported?: number;
   hunt_name?: string;
+  phase?: string;
+  created?: boolean;
+  source?: string;
   error?: string;
 }
 
@@ -51,6 +54,8 @@ export default function AdminBonusHuntPage() {
   const [preview, setPreview] = useState<ParsedPreview | null>(null);
   const [rawData, setRawData] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [syncResult, setSyncResult] = useState<ImportResult | null>(null);
   const [result, setResult] = useState<ImportResult | null>(null);
   const [error, setError] = useState("");
   const [history, setHistory] = useState<HistorySession[]>([]);
@@ -294,6 +299,31 @@ export default function AdminBonusHuntPage() {
     }
   }
 
+  async function handleSyncFromApi() {
+    setSyncing(true);
+    setError("");
+    setSyncResult(null);
+
+    try {
+      const res = await fetch("/api/bonus-hunt/sync", { method: "POST" });
+      const data: ImportResult = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Erro ao sincronizar via API.");
+      } else {
+        setSyncResult(data);
+        setResult(data);
+        setPreview(null);
+        setRawData(null);
+        fetchHistory();
+      }
+    } catch {
+      setError("Erro de rede ao sincronizar via API.");
+    } finally {
+      setSyncing(false);
+    }
+  }
+
   const loadSlots = useCallback(async (huntId: string) => {
     setSlotsLoading(true);
     const { data } = await supabase
@@ -389,6 +419,7 @@ export default function AdminBonusHuntPage() {
     setPreview(null);
     setRawData(null);
     setResult(null);
+    setSyncResult(null);
     setError("");
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
@@ -407,6 +438,30 @@ export default function AdminBonusHuntPage() {
     <div className="pt-24 pb-16 min-h-screen">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mt-4 space-y-6">
+          <div className="rounded-xl bg-arena-charcoal/60 border border-arena-gold/20 p-5">
+            <div className="flex items-center gap-4 justify-between flex-wrap">
+              <div>
+                <h3 className="font-[family-name:var(--font-display)] text-arena-gold text-sm tracking-widest uppercase">
+                  Seca Adegas API
+                </h3>
+                <p className="text-arena-smoke/50 text-xs mt-1">
+                  Busca o bonus hunt atual automaticamente e atualiza a sessao ativa.
+                </p>
+              </div>
+              <button
+                onClick={handleSyncFromApi}
+                disabled={syncing}
+                className="px-5 py-2.5 rounded-lg bg-arena-gold/10 border border-arena-gold/30 text-arena-gold text-xs font-[family-name:var(--font-display)] tracking-widest uppercase hover:bg-arena-gold/20 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {syncing ? "A sincronizar..." : "Sincronizar agora"}
+              </button>
+            </div>
+            {syncResult?.success && (
+              <p className="mt-3 text-xs text-green-400 font-[family-name:var(--font-display)] tracking-wide">
+                Sincronizado: {syncResult.hunt_name} - {syncResult.slots_imported} slots {syncResult.created ? "criados" : "atualizados"}.
+              </p>
+            )}
+          </div>
           {/* ── Upload Zone ── */}
           {!preview && !result && (
             <div
