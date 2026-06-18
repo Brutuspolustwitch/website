@@ -8,7 +8,7 @@ function fmt(n: number) {
   return n.toLocaleString("pt-PT", { maximumFractionDigits: 2 });
 }
 
-export default function VictoryCard({ v }: { v: Victory }) {
+export default function VictoryCard({ v, showSuspiciousBadge = false }: { v: Victory; showSuspiciousBadge?: boolean }) {
   return (
     <motion.article
       layout
@@ -77,7 +77,7 @@ export default function VictoryCard({ v }: { v: Victory }) {
           </div>
         </motion.div>
 
-        {v.suspicious && (
+        {showSuspiciousBadge && v.suspicious && (
           <div
             className="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest"
             style={{
