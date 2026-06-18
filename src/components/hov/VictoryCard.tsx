@@ -8,7 +8,7 @@ function fmt(n: number) {
   return n.toLocaleString("pt-PT", { maximumFractionDigits: 2 });
 }
 
-export default function VictoryCard({ v, showSuspiciousBadge = false }: { v: Victory; showSuspiciousBadge?: boolean }) {
+export default function VictoryCard({ v }: { v: Victory }) {
   return (
     <motion.article
       layout
@@ -77,19 +77,6 @@ export default function VictoryCard({ v, showSuspiciousBadge = false }: { v: Vic
           </div>
         </motion.div>
 
-        {showSuspiciousBadge && v.suspicious && (
-          <div
-            className="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest"
-            style={{
-              background: "rgba(180,30,30,0.95)",
-              color: "#fff",
-              border: "1px solid rgba(255,80,80,0.7)",
-              boxShadow: "0 0 10px rgba(255,40,40,0.5)",
-            }}
-          >
-            ⚠ Suspeito
-          </div>
-        )}
       </div>
 
       {/* Body */}
