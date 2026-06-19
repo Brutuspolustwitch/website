@@ -10,7 +10,7 @@ interface SessionCookie {
   role?: string;
 }
 
-function getSecaAdegasUrl() {
+function getSecaAdegasApiConfig() {
   const apiKey = process.env.SECAADEGAS_API_KEY || process.env.OVERLAY_API_KEY;
   if (!apiKey) {
     throw new Error("SECAADEGAS_API_KEY nao configurada no servidor");
@@ -20,14 +20,21 @@ function getSecaAdegasUrl() {
   const url = new URL(baseUrl);
   url.searchParams.set("key", apiKey);
   url.searchParams.set("action", "bonus_hunt");
-  return url;
+  return { url, apiKey };
 }
 
 async function fetchSecaAdegasData() {
-  const url = getSecaAdegasUrl();
-  const response = await fetch(url, { cache: "no-store" });
+  const { url, apiKey } = getSecaAdegasApiConfig();
+  const response = await fetch(url, {
+    cache: "no-store",
+    headers: {
+      "x-api-key": apiKey,
+    },
+  });
   if (!response.ok) {
-    throw new Error(`Seca Adegas API retornou ${response.status}: ${response.statusText}`);
+    const body = (await response.text()).trim();
+    const detail = body ? ` - ${body}` : "";
+    throw new Error(`Seca Adegas API retornou ${response.status}: ${response.statusText}${detail}`);
   }
   return await response.json() as SourceBonusHunt;
 }
