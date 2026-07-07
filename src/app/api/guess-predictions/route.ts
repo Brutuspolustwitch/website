@@ -7,6 +7,76 @@ function getSession(raw: string): { id: string; login: string; display_name: str
   try { return JSON.parse(raw); } catch { return null; }
 }
 
+type GuessSessionRow = Record<string, unknown> & {
+  id: string;
+  bonus_hunt_session_id?: string;
+  betting_open?: boolean;
+  final_payout?: number | null;
+  status?: string;
+  created_at?: string;
+};
+
+type HuntSessionFingerprint = {
+  id: string;
+  title: string | null;
+  hunt_date: string | null;
+  total_buy: number | null;
+  bonus_count: number | null;
+  start_money: number | null;
+  stop_loss: number | null;
+};
+
+function pickGuessSession(rows: GuessSessionRow[] | null | undefined) {
+  if (!rows?.length) return null;
+  const statusRank: Record<string, number> = { resolved: 0, locked: 1, open: 2 };
+  return [...rows].sort((a, b) => {
+    const rankDiff = (statusRank[a.status ?? ""] ?? 3) - (statusRank[b.status ?? ""] ?? 3);
+    if (rankDiff !== 0) return rankDiff;
+    return new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime();
+  })[0];
+}
+
+async function getGuessSessionForHunt(huntSessionId: string) {
+  const huntIds = await getRelatedHuntSessionIds(huntSessionId);
+  const { data } = await supabase
+    .from("guess_sessions")
+    .select("*")
+    .in("bonus_hunt_session_id", huntIds)
+    .order("created_at", { ascending: false });
+
+  return pickGuessSession(data as GuessSessionRow[] | null);
+}
+
+async function getRelatedHuntSessionIds(huntSessionId: string) {
+  const { data: hunt } = await supabase
+    .from("bonus_hunt_sessions")
+    .select("id, title, hunt_date, total_buy, bonus_count, start_money, stop_loss")
+    .eq("id", huntSessionId)
+    .maybeSingle();
+
+  if (!hunt) return [huntSessionId];
+
+  const current = hunt as HuntSessionFingerprint;
+  let query = supabase
+    .from("bonus_hunt_sessions")
+    .select("id")
+    .eq("title", current.title)
+    .eq("total_buy", current.total_buy)
+    .eq("bonus_count", current.bonus_count)
+    .eq("start_money", current.start_money)
+    .eq("stop_loss", current.stop_loss);
+
+  query = current.hunt_date ? query.eq("hunt_date", current.hunt_date) : query.is("hunt_date", null);
+
+  const { data: matches } = await query;
+  const ids = new Set<string>([huntSessionId]);
+  for (const match of matches ?? []) {
+    if (match.id) ids.add(match.id as string);
+  }
+
+  return [...ids];
+}
+
 /** GET /api/guess-predictions?huntSessionId=xxx */
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -16,11 +86,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "huntSessionId required" }, { status: 400 });
   }
 
-  const { data: guessSession } = await supabase
-    .from("guess_sessions")
-    .select("*")
-    .eq("bonus_hunt_session_id", huntSessionId)
-    .single();
+  const guessSession = await getGuessSessionForHunt(huntSessionId);
 
   if (!guessSession) {
     return NextResponse.json({ guessSession: null, myPrediction: null, predictions: [], totalCount: 0 });
@@ -73,9 +139,10 @@ export async function GET(request: Request) {
 
     // Sort by closest diff when resolved
     if (isResolved && guessSession.final_payout != null) {
+      const finalPayout = guessSession.final_payout;
       rows = rows.sort((a, b) =>
-        Math.abs((a.predicted_amount as number) - guessSession.final_payout) -
-        Math.abs((b.predicted_amount as number) - guessSession.final_payout)
+        Math.abs((a.predicted_amount as number) - finalPayout) -
+        Math.abs((b.predicted_amount as number) - finalPayout)
       );
     }
 
@@ -107,11 +174,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Valor inválido" }, { status: 400 });
   }
 
-  const { data: guessSession } = await supabase
-    .from("guess_sessions")
-    .select("id, betting_open, status")
-    .eq("bonus_hunt_session_id", huntSessionId)
-    .single();
+  const guessSession = await getGuessSessionForHunt(huntSessionId);
 
   if (!guessSession) return NextResponse.json({ error: "Sessão de apostas não encontrada" }, { status: 404 });
   if (!guessSession.betting_open || guessSession.status !== "open") {
@@ -189,6 +252,13 @@ export async function PATCH(request: Request) {
   }
 
   if (action === "create") {
+    if (!huntSessionId) {
+      return NextResponse.json({ error: "huntSessionId obrigatorio" }, { status: 400 });
+    }
+
+    const existing = huntSessionId ? await getGuessSessionForHunt(huntSessionId) : null;
+    if (existing) return NextResponse.json({ guessSession: existing });
+
     const { data, error } = await supabase
       .from("guess_sessions")
       .insert({ bonus_hunt_session_id: huntSessionId, betting_open: false, status: "open" })
@@ -278,41 +348,17 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ guessSession: data, winner: null });
     }
 
-    // Price-Is-Right rule: winner is the closest prediction AT OR ABOVE the payout,
-    // but cannot exceed 200€ above (i.e. predicted - payout <= 200).
-    // If nobody qualifies, there is no winner.
-    const MAX_GAP = 200;
-    const eligible = predictions.filter(
-      (p) => {
-        const diff = (p.predicted_amount as number) - payout;
-        return diff >= 0 && diff <= MAX_GAP;
-      }
-    );
-
-    if (eligible.length === 0) {
-      const { data, error } = await supabase
-        .from("guess_sessions")
-        .update(baseUpdate)
-        .eq("id", guessSessionId)
-        .select()
-        .single();
-      if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-      // No eligible bets (none above payout or all exceeded 200€ gap) — jackpot rolls over +1€
-      const { data: jRow } = await supabase.from("jackpot").select("amount").eq("id", 1).single();
-      await supabase.from("jackpot").update({ amount: Number(jRow?.amount ?? 30) + 1, updated_at: new Date().toISOString() }).eq("id", 1);
-      return NextResponse.json({ guessSession: data, winner: null });
-    }
-
-    // Smallest amount above the payout wins; tie-break: earliest guess.
-    const winner = eligible.reduce((best, p) => {
-      const bestAmt = best.predicted_amount as number;
-      const pAmt = p.predicted_amount as number;
-      if (pAmt < bestAmt) return p;
-      if (pAmt === bestAmt) {
+    // Keep every submitted prediction eligible; closest amount wins.
+    const winner = predictions.reduce((best, p) => {
+      const bestDiff = Math.abs((best.predicted_amount as number) - payout);
+      const pDiff = Math.abs((p.predicted_amount as number) - payout);
+      if (pDiff < bestDiff) return p;
+      if (pDiff === bestDiff) {
         return new Date(p.created_at as string) < new Date(best.created_at as string) ? p : best;
       }
       return best;
     });
+    const winnerDiff = Math.abs((winner.predicted_amount as number) - payout);
 
     const { data, error } = await supabase
       .from("guess_sessions")
@@ -321,7 +367,7 @@ export async function PATCH(request: Request) {
         winner_user_id: winner.user_id,
         winner_display_name: winner.display_name,
         winner_predicted_amount: winner.predicted_amount,
-        winner_diff: Math.abs((winner.predicted_amount as number) - payout),
+        winner_diff: winnerDiff,
       })
       .eq("id", guessSessionId)
       .select()
@@ -370,7 +416,7 @@ export async function PATCH(request: Request) {
       if (jackpotUser) {
         // Award 1500 SE points
         const channelId = process.env.STREAMELEMENTS_CHANNEL_ID;
-        const token = process.env.STREAMELEMENTS_JWT;
+        const token = process.env.STREAMELEMENTS_JWT_TOKEN || process.env.STREAMELEMENTS_JWT;
         if (channelId && token) {
           const seUsername = (jackpotUser.se_username as string | null) || (jackpotUser.login as string);
           await fetch(

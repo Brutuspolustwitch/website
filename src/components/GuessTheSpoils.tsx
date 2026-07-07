@@ -105,7 +105,10 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
             );
           } else if (payload.eventType === "INSERT") {
             setSlots((prev) =>
-              [...prev, payload.new as BonusHuntSlot].sort((a, b) => a.order_index - b.order_index)
+              [
+                ...prev.filter((s) => s.id !== (payload.new as BonusHuntSlot).id),
+                payload.new as BonusHuntSlot,
+              ].sort((a, b) => a.order_index - b.order_index)
             );
           } else if (payload.eventType === "DELETE") {
             setSlots((prev) => prev.filter((s) => s.id !== (payload.old as { id: string }).id));
@@ -822,7 +825,7 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
                           {guessSession.betting_open && !myPrediction && (
                             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                               <p style={{ fontFamily: "var(--font-display)", fontSize: "0.45rem", color: "var(--ink-light)", letterSpacing: "0.08em", textAlign: "center", margin: 0 }}>
-                                ⚔ Aposta acima do resultado final · máx. +200€ de diferença
+                                ⚔ Aposta no total final · ganha a previsão mais próxima
                               </p>
                               {user ? (
                                 <>

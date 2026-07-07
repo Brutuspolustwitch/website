@@ -101,27 +101,43 @@ function normalizeHuntDate(value: string | undefined) {
 }
 
 async function findSessionForUpsert(huntName: string, huntDate: string | null) {
-  const active = await supabase
-    .from("bonus_hunt_sessions")
-    .select("id")
-    .eq("status", "active")
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (active.data?.id) return active.data.id as string;
-
-  let query = supabase
+  let exactQuery = supabase
     .from("bonus_hunt_sessions")
     .select("id")
     .eq("title", huntName)
     .order("created_at", { ascending: false })
     .limit(1);
 
-  query = huntDate ? query.eq("hunt_date", huntDate) : query.is("hunt_date", null);
+  exactQuery = huntDate ? exactQuery.eq("hunt_date", huntDate) : exactQuery.is("hunt_date", null);
 
-  const match = await query.maybeSingle();
-  return (match.data?.id as string | undefined) ?? null;
+  const exact = await exactQuery.maybeSingle();
+  if (exact.data?.id) return exact.data.id as string;
+
+  const activeSameTitle = await supabase
+    .from("bonus_hunt_sessions")
+    .select("id")
+    .eq("status", "active")
+    .eq("title", huntName)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (activeSameTitle.data?.id) return activeSameTitle.data.id as string;
+
+  if (huntDate) {
+    const activeSameDate = await supabase
+      .from("bonus_hunt_sessions")
+      .select("id")
+      .eq("status", "active")
+      .eq("hunt_date", huntDate)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (activeSameDate.data?.id) return activeSameDate.data.id as string;
+  }
+
+  return null;
 }
 
 export async function importBonusHunt(

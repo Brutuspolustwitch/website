@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
@@ -33,24 +33,39 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
   const [slotPage, setSlotPage] = useState(0);
   const SLOTS_PER_PAGE = 15;
 
-  /* Fetch all completed sessions on mount */
-  useEffect(() => {
-    async function load() {
-      const { data } = await supabase
-        .from("bonus_hunt_sessions")
-        .select("*")
-        .order("hunt_date", { ascending: false })
-        .order("created_at", { ascending: false });
+  const loadSessions = useCallback(async () => {
+    const { data } = await supabase
+      .from("bonus_hunt_sessions")
+      .select("*")
+      .order("hunt_date", { ascending: false })
+      .order("created_at", { ascending: false });
 
-      if (data && data.length > 0) {
-        setSessions(data);
-        setSelectedSession(data[0]);
-        setSessionIdx(0);
-      }
-      setLoading(false);
-    }
-    load();
+    const nextSessions = data ?? [];
+    setSessions(nextSessions);
+    setSelectedSession((current) => {
+      const nextSelected = current
+        ? nextSessions.find((session) => session.id === current.id) ?? nextSessions[0] ?? null
+        : nextSessions[0] ?? null;
+      setSessionIdx(Math.max(0, nextSessions.findIndex((session) => session.id === nextSelected?.id)));
+      return nextSelected;
+    });
+    setLoading(false);
   }, []);
+
+  useEffect(() => {
+    loadSessions();
+
+    const channel = supabase
+      .channel("bonus_hunt_sessions_live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "bonus_hunt_sessions" }, () => {
+        loadSessions();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [loadSessions]);
 
   /* Load slots when session changes */
   useEffect(() => {
@@ -67,6 +82,26 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
       setSlots(data ?? []);
     }
     loadSlots();
+
+    const channel = supabase
+      .channel(`bonus_hunt_slots_live_${selectedSession.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "bonus_hunt_slots",
+          filter: `session_id=eq.${selectedSession.id}`,
+        },
+        () => {
+          loadSlots();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [selectedSession]);
 
   const currency = selectedSession?.currency || "€";
