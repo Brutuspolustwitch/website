@@ -13,34 +13,29 @@ import type { SpinHistoryRow, WheelSegmentRow } from "@/lib/supabase";
    ═══════════════════════════════════════════════════════════════════ */
 
 interface Reward {
+  id: string;
   label: string;
   icon: string;
   color: string;
   glowColor: string;
   tier: "legendary" | "epic" | "rare" | "common" | "loss";
+  rewardType: "SE_POINTS" | "FREE_SPIN" | "CUSTOM";
+  rewardValue: number;
   weight: number;
 }
 
 function segmentRowToReward(row: WheelSegmentRow): Reward {
   return {
+    id: row.id,
     label: row.label,
     icon: row.icon,
     color: row.color,
     glowColor: row.glow_color,
     tier: row.tier,
+    rewardType: row.reward_type,
+    rewardValue: row.reward_value,
     weight: row.weight,
   };
-}
-
-/** Pick a weighted-random index from the rewards array */
-function weightedRandom(rewards: Reward[]): number {
-  const totalWeight = rewards.reduce((sum, r) => sum + r.weight, 0);
-  let roll = Math.random() * totalWeight;
-  for (let i = 0; i < rewards.length; i++) {
-    roll -= rewards[i].weight;
-    if (roll <= 0) return i;
-  }
-  return rewards.length - 1;
 }
 
 const COOLDOWN_MS = 24 * 60 * 60 * 1000;
@@ -457,8 +452,7 @@ export function SpinWheel() {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [mounted, setMounted] = useState(false);
 
-  const SEGMENT_COUNT = rewards.length;
-  const SEGMENT_ANGLE = 360 / SEGMENT_COUNT;
+  const SEGMENT_ANGLE = 360 / rewards.length;
 
   const tickAudioRef = useRef<AudioContext | null>(null);
   const lastSegmentRef = useRef(-1);
@@ -566,19 +560,21 @@ export function SpinWheel() {
   const spin = useCallback(async () => {
     if (spinning || cooldown > 0 || rewards.length === 0) return;    if (!user) { setShowLoginModal(true); return; }    if (!tickAudioRef.current) tickAudioRef.current = new AudioContext();
 
-    // Record spin server-side first (enforces cooldown) and pass winner for notification
-    const winnerIndex = weightedRandom(rewards);
-    const winnerForPost = rewards[winnerIndex];
+    // The server picks the winner, enforces cooldown, and awards SE points.
     const res = await fetch("/api/spin-cooldown", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ label: winnerForPost.label, tier: winnerForPost.tier }),
     });
+    const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      const data = await res.json();
       if (data.remainingMs) setCooldown(data.remainingMs);
       return;
     }
+
+    if (!data.reward) return;
+
+    const winner = segmentRowToReward(data.reward as WheelSegmentRow);
+    const winnerIndex = rewards.findIndex((reward) => reward.id === winner.id);
+    const targetIndex = winnerIndex >= 0 ? winnerIndex : 0;
     setCooldown(COOLDOWN_MS);
 
     setResult(null); setShowResult(false); setBurstActive(false);
@@ -589,7 +585,7 @@ export function SpinWheel() {
     const startRotation = rotation % 360;
     // Pointer is at 90° (right/sword). Compute the exact delta needed so the winner
     // segment centre lands at 90°, accounting for the current startRotation.
-    const targetSegAngle = winnerIndex * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
+    const targetSegAngle = targetIndex * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
     const remainder = ((90 - targetSegAngle - startRotation) % 360 + 360) % 360;
     const totalDelta = extraSpins * 360 + remainder;
 
@@ -620,7 +616,6 @@ export function SpinWheel() {
         // Cooldown already set server-side, just ensure local state reflects it
         setCooldown(COOLDOWN_MS);
 
-        const winner = rewards[winnerIndex];
         setResult(winner);
         playImpact(); triggerShake();
         if (hapticsEnabled) vibrate([80, 30, 120]);
@@ -645,7 +640,7 @@ export function SpinWheel() {
     }
 
     spinAnimRef.current = requestAnimationFrame(animate);
-  }, [spinning, rotation, hapticsEnabled, playTick, playImpact, triggerShake, triggerFlash, rewards, SEGMENT_ANGLE, SEGMENT_COUNT]);
+  }, [spinning, cooldown, user, rotation, hapticsEnabled, playTick, playImpact, triggerShake, triggerFlash, rewards, SEGMENT_ANGLE]);
 
   useEffect(() => { return () => { if (spinAnimRef.current) cancelAnimationFrame(spinAnimRef.current); }; }, []);
 
