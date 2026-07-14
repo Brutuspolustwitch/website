@@ -442,7 +442,7 @@ export default function AdminBonusHuntPage() {
             <div className="flex items-center gap-4 justify-between flex-wrap">
               <div>
                 <h3 className="font-[family-name:var(--font-display)] text-arena-gold text-sm tracking-widest uppercase">
-                  Seca Adegas API
+                  Streamers Center API
                 </h3>
                 <p className="text-arena-smoke/50 text-xs mt-1">
                   Busca o bonus hunt atual automaticamente e atualiza a sessao ativa.

@@ -1,46 +1,49 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { importBonusHunt, type SourceBonusHunt } from "@/lib/bonusHuntImport";
+import {
+  buildStreamersCenterApiUrl,
+  getStreamersCenterApiKey,
+  isStreamersCenterApiConfigError,
+} from "@/lib/streamers-center-api";
 
 export const dynamic = "force-dynamic";
-
-const DEFAULT_SECAADEGAS_API_URL = "https://osecaadegas.pt/api/streamer-data";
 
 interface SessionCookie {
   role?: string;
 }
 
-function getSecaAdegasApiConfig() {
-  const apiKey = process.env.SECAADEGAS_API_KEY || process.env.OVERLAY_API_KEY;
-  if (!apiKey) {
-    throw new Error("SECAADEGAS_API_KEY nao configurada no servidor");
-  }
+function getStreamersCenterBonusHuntConfig() {
+  const apiKey = getStreamersCenterApiKey();
+  const url = buildStreamersCenterApiUrl("/api/streamer-data", {
+    key: apiKey,
+    action: "bonus_hunt",
+  });
 
-  const baseUrl = process.env.SECAADEGAS_API_URL || DEFAULT_SECAADEGAS_API_URL;
-  const url = new URL(baseUrl);
-  url.searchParams.set("key", apiKey);
-  url.searchParams.set("action", "bonus_hunt");
   return { url, apiKey };
 }
 
-async function fetchSecaAdegasData() {
-  const { url, apiKey } = getSecaAdegasApiConfig();
+async function fetchStreamersCenterBonusHuntData() {
+  const { url, apiKey } = getStreamersCenterBonusHuntConfig();
   const response = await fetch(url, {
     cache: "no-store",
     headers: {
+      Accept: "application/json",
       "x-api-key": apiKey,
     },
   });
+
   if (!response.ok) {
     const body = (await response.text()).trim();
     const detail = body ? ` - ${body}` : "";
-    throw new Error(`Seca Adegas API retornou ${response.status}: ${response.statusText}${detail}`);
+    throw new Error(`Streamers Center API retornou ${response.status}: ${response.statusText}${detail}`);
   }
+
   return await response.json() as SourceBonusHunt;
 }
 
 async function syncBonusHunt() {
-  const overlayData = await fetchSecaAdegasData();
+  const overlayData = await fetchStreamersCenterBonusHuntData();
   return await importBonusHunt(overlayData, { mode: "upsert-active" });
 }
 
@@ -90,10 +93,10 @@ export async function POST() {
       hunt_name: result.huntName,
       phase: result.phase,
       created: result.created,
-      source: "secaadegas_api",
+      source: "streamers_center_api",
     });
   } catch (error) {
-    return jsonError(error, 502);
+    return jsonError(error, isStreamersCenterApiConfigError(error) ? 500 : 502);
   }
 }
 
@@ -111,9 +114,9 @@ export async function GET(request: NextRequest) {
       hunt_name: result.huntName,
       phase: result.phase,
       created: result.created,
-      source: "secaadegas_api",
+      source: "streamers_center_api",
     });
   } catch (error) {
-    return jsonError(error, 502);
+    return jsonError(error, isStreamersCenterApiConfigError(error) ? 500 : 502);
   }
 }

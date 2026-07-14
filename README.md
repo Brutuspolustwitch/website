@@ -31,6 +31,9 @@ npm run dev
 | `NEXT_PUBLIC_TWITCH_CHANNEL` | Twitch channel username |
 | `TWITCH_CLIENT_ID` | Twitch API client ID (server-side) |
 | `TWITCH_CLIENT_SECRET` | Twitch API client secret (server-side) |
+| `STREAMERS_CENTER_API_URL` | Server-only Streamers Center API origin for external imports. Use `https://streamerscenter.com` with no trailing slash. |
+| `STREAMERS_CENTER_API_KEY` | Server-only API key used by `/api/bonus-hunt/sync` when importing data from Streamers Center. |
+| `BONUS_HUNT_SYNC_SECRET` | Secret for authorized cron or automation calls to `/api/bonus-hunt/sync`. |
 
 ## Required Assets
 
