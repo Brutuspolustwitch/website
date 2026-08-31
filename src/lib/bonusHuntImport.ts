@@ -270,7 +270,7 @@ export async function importBonusHunt(
 
 /** Pulls the current bonus hunt state from the Streamers Center overlay API and upserts it. */
 export async function fetchAndImportFromStreamersCenter() {
-  const apiKey = getStreamersCenterApiKey();
+  const apiKey = await getStreamersCenterApiKey();
   const url = buildStreamersCenterApiUrl("/api/streamer-data", {
     key: apiKey,
     action: "bonus_hunt",

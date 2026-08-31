@@ -69,6 +69,12 @@ export default function AdminBonusHuntPage() {
   const [jackpotSaving, setJackpotSaving] = useState(false);
   const [jackpotMsg, setJackpotMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
+  /* Streamers Center API key state */
+  const [apiKeyStatus, setApiKeyStatus] = useState<{ configured: boolean; source: string; preview: string | null } | null>(null);
+  const [apiKeyInput, setApiKeyInput] = useState("");
+  const [apiKeySaving, setApiKeySaving] = useState(false);
+  const [apiKeyMsg, setApiKeyMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
   /* Guess-the-result state */
   const [guessHuntId, setGuessHuntId] = useState<string | null>(null);
   const [guessSession, setGuessSession] = useState<GuessSession | null>(null);
@@ -112,6 +118,55 @@ export default function AdminBonusHuntPage() {
       .then((d) => { if (d.amount != null) { setJackpot(d.amount); setJackpotInput(String(d.amount)); } })
       .catch(() => {});
   }, [isAdmin]);
+
+  /* Load Streamers Center API key status on mount */
+  const fetchApiKeyStatus = useCallback(async () => {
+    const res = await fetch("/api/admin/integration-settings/streamers-center-key");
+    if (res.ok) setApiKeyStatus(await res.json());
+  }, []);
+
+  useEffect(() => {
+    if (isAdmin) fetchApiKeyStatus();
+  }, [isAdmin, fetchApiKeyStatus]);
+
+  async function handleSaveApiKey() {
+    if (!apiKeyInput.trim()) { setApiKeyMsg({ ok: false, text: "Chave em falta" }); return; }
+    setApiKeySaving(true);
+    setApiKeyMsg(null);
+    try {
+      const res = await fetch("/api/admin/integration-settings/streamers-center-key", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ apiKey: apiKeyInput.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setApiKeyMsg({ ok: false, text: data.error || "Erro ao guardar a chave." });
+      } else {
+        setApiKeyStatus(data);
+        setApiKeyInput("");
+        setApiKeyMsg({ ok: true, text: "Chave guardada." });
+      }
+    } catch {
+      setApiKeyMsg({ ok: false, text: "Erro de rede ao guardar a chave." });
+    } finally {
+      setApiKeySaving(false);
+    }
+  }
+
+  async function handleClearApiKey() {
+    setApiKeySaving(true);
+    setApiKeyMsg(null);
+    try {
+      await fetch("/api/admin/integration-settings/streamers-center-key", { method: "DELETE" });
+      await fetchApiKeyStatus();
+      setApiKeyMsg({ ok: true, text: "Chave removida." });
+    } catch {
+      setApiKeyMsg({ ok: false, text: "Erro de rede ao remover a chave." });
+    } finally {
+      setApiKeySaving(false);
+    }
+  }
 
   async function handleJackpotSave() {
     const val = parseFloat(jackpotInput.replace(",", "."));
@@ -461,6 +516,46 @@ export default function AdminBonusHuntPage() {
                 Sincronizado: {syncResult.hunt_name} - {syncResult.slots_imported} slots {syncResult.created ? "criados" : "atualizados"}.
               </p>
             )}
+            <div className="mt-4 pt-4 border-t border-arena-steel/20">
+              <p className="text-arena-smoke/50 text-xs uppercase tracking-widest mb-2">Chave da API</p>
+              <p className="text-xs mb-2">
+                {apiKeyStatus?.configured ? (
+                  <span className="text-green-400">
+                    Configurada ({apiKeyStatus.source === "database" ? "guardada aqui" : "variavel de ambiente"}) — {apiKeyStatus.preview}
+                  </span>
+                ) : (
+                  <span className="text-red-400">Nao configurada.</span>
+                )}
+              </p>
+              <div className="flex items-center gap-2 flex-wrap">
+                <input
+                  type="password"
+                  value={apiKeyInput}
+                  onChange={(e) => setApiKeyInput(e.target.value)}
+                  placeholder="Nova chave da Streamers Center API"
+                  className="flex-1 min-w-[240px] bg-black/30 border border-arena-steel/30 rounded-lg px-3 py-2 text-sm text-arena-smoke placeholder:text-arena-smoke/30 focus:outline-none focus:border-arena-gold/50"
+                />
+                <button
+                  onClick={handleSaveApiKey}
+                  disabled={apiKeySaving || !apiKeyInput.trim()}
+                  className="px-4 py-2 rounded-lg bg-arena-gold/10 border border-arena-gold/30 text-arena-gold text-xs font-[family-name:var(--font-display)] tracking-widest uppercase hover:bg-arena-gold/20 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Guardar
+                </button>
+                {apiKeyStatus?.source === "database" && (
+                  <button
+                    onClick={handleClearApiKey}
+                    disabled={apiKeySaving}
+                    className="px-4 py-2 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-[family-name:var(--font-display)] tracking-widest uppercase hover:bg-red-500/20 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Remover
+                  </button>
+                )}
+              </div>
+              {apiKeyMsg && (
+                <p className={`mt-2 text-xs ${apiKeyMsg.ok ? "text-green-400" : "text-red-400"}`}>{apiKeyMsg.text}</p>
+              )}
+            </div>
           </div>
           {/* ── Upload Zone ── */}
           {!preview && !result && (

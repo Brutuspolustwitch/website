@@ -1,4 +1,8 @@
+import { getIntegrationSetting } from "@/lib/integration-settings";
+
 const LEGACY_API_HOSTS = new Set(["osecaadegas.pt", "www.osecaadegas.pt"]);
+
+export const STREAMERS_CENTER_API_KEY_SETTING = "streamers_center_api_key";
 
 export class StreamersCenterApiConfigError extends Error {
   constructor(message: string) {
@@ -58,8 +62,10 @@ export function getStreamersCenterApiOrigin() {
   return normalizeStreamersCenterApiOrigin(process.env.STREAMERS_CENTER_API_URL);
 }
 
-export function getStreamersCenterApiKey() {
-  const apiKey = process.env.STREAMERS_CENTER_API_KEY?.trim();
+/** Prefers the key saved via the admin UI (database) over the STREAMERS_CENTER_API_KEY env var. */
+export async function getStreamersCenterApiKey() {
+  const stored = await getIntegrationSetting(STREAMERS_CENTER_API_KEY_SETTING);
+  const apiKey = (stored ?? process.env.STREAMERS_CENTER_API_KEY)?.trim();
   if (!apiKey) {
     throw new StreamersCenterApiConfigError(
       "STREAMERS_CENTER_API_KEY is required for the bonus hunt Streamers Center sync."
