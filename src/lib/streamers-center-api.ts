@@ -3,6 +3,8 @@ import { getIntegrationSetting } from "@/lib/integration-settings";
 const LEGACY_API_HOSTS = new Set(["osecaadegas.pt", "www.osecaadegas.pt"]);
 
 export const STREAMERS_CENTER_API_KEY_SETTING = "streamers_center_api_key";
+export const STREAMERS_CENTER_API_URL_SETTING = "streamers_center_api_url";
+const DEFAULT_STREAMERS_CENTER_API_ORIGIN = "https://streamerscenter.com";
 
 export class StreamersCenterApiConfigError extends Error {
   constructor(message: string) {
@@ -58,8 +60,11 @@ export function normalizeStreamersCenterApiOrigin(rawOrigin: string | undefined)
   return url.origin;
 }
 
-export function getStreamersCenterApiOrigin() {
-  return normalizeStreamersCenterApiOrigin(process.env.STREAMERS_CENTER_API_URL);
+/** Prefers the URL saved via the admin UI (database), then the env var, then the known default origin. */
+export async function getStreamersCenterApiOrigin() {
+  const stored = await getIntegrationSetting(STREAMERS_CENTER_API_URL_SETTING);
+  const rawOrigin = stored ?? process.env.STREAMERS_CENTER_API_URL ?? DEFAULT_STREAMERS_CENTER_API_ORIGIN;
+  return normalizeStreamersCenterApiOrigin(rawOrigin);
 }
 
 /** Prefers the key saved via the admin UI (database) over the STREAMERS_CENTER_API_KEY env var. */
@@ -74,11 +79,11 @@ export async function getStreamersCenterApiKey() {
   return apiKey;
 }
 
-export function buildStreamersCenterApiUrl(
+export async function buildStreamersCenterApiUrl(
   pathname: `/${string}`,
   searchParams: Record<string, string | number | boolean | null | undefined> = {}
 ) {
-  const url = new URL(pathname, getStreamersCenterApiOrigin());
+  const url = new URL(pathname, await getStreamersCenterApiOrigin());
 
   for (const [key, value] of Object.entries(searchParams)) {
     if (value === null || value === undefined || value === "") continue;

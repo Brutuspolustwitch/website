@@ -75,6 +75,12 @@ export default function AdminBonusHuntPage() {
   const [apiKeySaving, setApiKeySaving] = useState(false);
   const [apiKeyMsg, setApiKeyMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
+  /* Streamers Center API URL state */
+  const [apiUrlStatus, setApiUrlStatus] = useState<{ configured: boolean; source: string; value: string | null } | null>(null);
+  const [apiUrlInput, setApiUrlInput] = useState("");
+  const [apiUrlSaving, setApiUrlSaving] = useState(false);
+  const [apiUrlMsg, setApiUrlMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
   /* Guess-the-result state */
   const [guessHuntId, setGuessHuntId] = useState<string | null>(null);
   const [guessSession, setGuessSession] = useState<GuessSession | null>(null);
@@ -165,6 +171,55 @@ export default function AdminBonusHuntPage() {
       setApiKeyMsg({ ok: false, text: "Erro de rede ao remover a chave." });
     } finally {
       setApiKeySaving(false);
+    }
+  }
+
+  /* Load Streamers Center API URL status on mount */
+  const fetchApiUrlStatus = useCallback(async () => {
+    const res = await fetch("/api/admin/integration-settings/streamers-center-url");
+    if (res.ok) setApiUrlStatus(await res.json());
+  }, []);
+
+  useEffect(() => {
+    if (isAdmin) fetchApiUrlStatus();
+  }, [isAdmin, fetchApiUrlStatus]);
+
+  async function handleSaveApiUrl() {
+    if (!apiUrlInput.trim()) { setApiUrlMsg({ ok: false, text: "URL em falta" }); return; }
+    setApiUrlSaving(true);
+    setApiUrlMsg(null);
+    try {
+      const res = await fetch("/api/admin/integration-settings/streamers-center-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ apiUrl: apiUrlInput.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setApiUrlMsg({ ok: false, text: data.error || "Erro ao guardar o URL." });
+      } else {
+        setApiUrlStatus(data);
+        setApiUrlInput("");
+        setApiUrlMsg({ ok: true, text: "URL guardado." });
+      }
+    } catch {
+      setApiUrlMsg({ ok: false, text: "Erro de rede ao guardar o URL." });
+    } finally {
+      setApiUrlSaving(false);
+    }
+  }
+
+  async function handleClearApiUrl() {
+    setApiUrlSaving(true);
+    setApiUrlMsg(null);
+    try {
+      await fetch("/api/admin/integration-settings/streamers-center-url", { method: "DELETE" });
+      await fetchApiUrlStatus();
+      setApiUrlMsg({ ok: true, text: "URL removido (voltou ao valor por omissao)." });
+    } catch {
+      setApiUrlMsg({ ok: false, text: "Erro de rede ao remover o URL." });
+    } finally {
+      setApiUrlSaving(false);
     }
   }
 
@@ -554,6 +609,47 @@ export default function AdminBonusHuntPage() {
               </div>
               {apiKeyMsg && (
                 <p className={`mt-2 text-xs ${apiKeyMsg.ok ? "text-green-400" : "text-red-400"}`}>{apiKeyMsg.text}</p>
+              )}
+            </div>
+            <div className="mt-4 pt-4 border-t border-arena-steel/20">
+              <p className="text-arena-smoke/50 text-xs uppercase tracking-widest mb-2">URL da API</p>
+              <p className="text-xs mb-2">
+                {apiUrlStatus?.configured ? (
+                  <span className="text-green-400">
+                    {apiUrlStatus.value}{" "}
+                    ({apiUrlStatus.source === "database" ? "guardado aqui" : apiUrlStatus.source === "env" ? "variavel de ambiente" : "valor por omissao"})
+                  </span>
+                ) : (
+                  <span className="text-red-400">Nao configurado.</span>
+                )}
+              </p>
+              <div className="flex items-center gap-2 flex-wrap">
+                <input
+                  type="text"
+                  value={apiUrlInput}
+                  onChange={(e) => setApiUrlInput(e.target.value)}
+                  placeholder="https://streamerscenter.com"
+                  className="flex-1 min-w-[240px] bg-black/30 border border-arena-steel/30 rounded-lg px-3 py-2 text-sm text-arena-smoke placeholder:text-arena-smoke/30 focus:outline-none focus:border-arena-gold/50"
+                />
+                <button
+                  onClick={handleSaveApiUrl}
+                  disabled={apiUrlSaving || !apiUrlInput.trim()}
+                  className="px-4 py-2 rounded-lg bg-arena-gold/10 border border-arena-gold/30 text-arena-gold text-xs font-[family-name:var(--font-display)] tracking-widest uppercase hover:bg-arena-gold/20 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Guardar
+                </button>
+                {apiUrlStatus?.source === "database" && (
+                  <button
+                    onClick={handleClearApiUrl}
+                    disabled={apiUrlSaving}
+                    className="px-4 py-2 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-[family-name:var(--font-display)] tracking-widest uppercase hover:bg-red-500/20 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Remover
+                  </button>
+                )}
+              </div>
+              {apiUrlMsg && (
+                <p className={`mt-2 text-xs ${apiUrlMsg.ok ? "text-green-400" : "text-red-400"}`}>{apiUrlMsg.text}</p>
               )}
             </div>
           </div>
