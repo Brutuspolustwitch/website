@@ -19,6 +19,8 @@ create table if not exists bonus_hunt_sessions (
   bonuses_opened integer not null default 0,
   avg_multi numeric not null default 0,
   best_multi numeric not null default 0,
+  break_even numeric not null default 0,
+  live_break_even numeric not null default 0,
   best_slot_name text,
   hunt_date date,
   created_at timestamptz not null default now(),

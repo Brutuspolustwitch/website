@@ -80,6 +80,12 @@ export interface SourceBonusHunt {
   avgMulti?: number;
   best_multi?: number;
   bestMulti?: number;
+  break_even?: number;
+  breakEven?: number;
+  live_be?: number;
+  liveBe?: number;
+  live_break_even?: number;
+  liveBreakEven?: number;
   best_slot_name?: string;
   bestSlotName?: string;
   bonuses?: SourceBonus[];
@@ -118,6 +124,19 @@ function normalizeHuntDate(value: string | undefined) {
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) return value;
   return parsed.toISOString().slice(0, 10);
+}
+
+// B.E. = multiplier needed on ALL bonuses to hit the target; Live B.E. = multiplier needed
+// on the REMAINING (unopened) bonuses only. Mirrors the streamerscenter.com widget's calc.
+function calcBreakEven(bonuses: SourceBonus[], startMoney: number, stopLoss: number, totalBuy: number, totalWin: number) {
+  const target = Math.max(startMoney - stopLoss, 0);
+  const breakEven = totalBuy > 0 ? target / totalBuy : 0;
+  const remainingBuy = bonuses
+    .filter((b) => !(b.opened || b.isOpened))
+    .reduce((sum, b) => sum + num(b.betSize ?? b.bet ?? b.buy), 0);
+  const remainingTarget = Math.max(target - totalWin, 0);
+  const liveBreakEven = remainingBuy > 0 ? remainingTarget / remainingBuy : 0;
+  return { breakEven, liveBreakEven };
 }
 
 async function findSessionForUpsert(huntName: string, huntDate: string | null) {
@@ -185,6 +204,8 @@ export async function importBonusHunt(
   const actualCost = stopLoss > 0 ? startMoney - stopLoss : openedBuy;
   const profit = data.profit ?? (totalWin - actualCost);
 
+  const { breakEven, liveBreakEven } = calcBreakEven(bonuses, startMoney, stopLoss, totalBuy, totalWin);
+
   const sessionPayload = {
     title: huntName,
     status: phase === "completed" ? "completed" : "active",
@@ -199,6 +220,8 @@ export async function importBonusHunt(
     bonuses_opened: num(data.bonuses_opened ?? data.bonusesOpened ?? data.opened, openedCount),
     avg_multi: num(data.avg_multi ?? data.avgMulti),
     best_multi: num(data.best_multi ?? data.bestMulti),
+    break_even: num(data.break_even ?? data.breakEven, breakEven),
+    live_break_even: num(data.live_be ?? data.liveBe ?? data.live_break_even ?? data.liveBreakEven, liveBreakEven),
     best_slot_name: data.best_slot_name || data.bestSlotName || null,
     hunt_date: huntDate,
     completed_at: phase === "completed" ? new Date().toISOString() : null,
