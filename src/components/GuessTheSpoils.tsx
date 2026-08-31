@@ -142,6 +142,40 @@ export function GuessTheSpoils({ hideTitle = false }: { hideTitle?: boolean } = 
     setPredPage(0);
   }, [campaign, fetchGuessData]);
 
+  /* Realtime — reflect betting open/lock/resolve + new predictions instantly */
+  useEffect(() => {
+    if (!campaign) return;
+    const channel = supabase
+      .channel(`gts-guess-${campaign.id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "guess_sessions", filter: `bonus_hunt_session_id=eq.${campaign.id}` },
+        () => fetchGuessData(campaign.id)
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [campaign, fetchGuessData]);
+
+  useEffect(() => {
+    if (!guessSession || !campaign) return;
+    const channel = supabase
+      .channel(`gts-predictions-${guessSession.id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "guess_predictions", filter: `guess_session_id=eq.${guessSession.id}` },
+        () => fetchGuessData(campaign.id)
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [guessSession?.id, campaign, fetchGuessData]);
+
+  /* Safety-net poll every 5 min in case the realtime socket drops */
+  useEffect(() => {
+    if (!campaign) return;
+    const interval = setInterval(() => fetchGuessData(campaign.id), 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [campaign, fetchGuessData]);
+
   /* Submit prediction */
   async function submitPrediction() {
     if (!campaign || !predInput) return;
