@@ -1,4 +1,24 @@
-import { supabase } from "@/lib/supabase";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import {
+  buildStreamersCenterApiUrl,
+  getStreamersCenterApiKey,
+} from "@/lib/streamers-center-api";
+
+// bonus_hunt_sessions / bonus_hunt_slots only have "public read" RLS policies —
+// writes must go through the service role client (the anon client is rejected by RLS).
+// Created lazily (not at module scope) so builds/pages that never call this
+// don't crash when the service role key isn't set in that environment.
+let cachedClient: SupabaseClient | null = null;
+function supabase() {
+  if (cachedClient) return cachedClient;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) {
+    throw new Error("SUPABASE_SERVICE_ROLE_KEY (and NEXT_PUBLIC_SUPABASE_URL) are required for bonus hunt imports.");
+  }
+  cachedClient = createClient(url, key);
+  return cachedClient;
+}
 
 export interface SourceBonus {
   id?: string | number;
@@ -101,7 +121,8 @@ function normalizeHuntDate(value: string | undefined) {
 }
 
 async function findSessionForUpsert(huntName: string, huntDate: string | null) {
-  let exactQuery = supabase
+  const db = supabase();
+  let exactQuery = db
     .from("bonus_hunt_sessions")
     .select("id")
     .eq("title", huntName)
@@ -113,7 +134,7 @@ async function findSessionForUpsert(huntName: string, huntDate: string | null) {
   const exact = await exactQuery.maybeSingle();
   if (exact.data?.id) return exact.data.id as string;
 
-  const activeSameTitle = await supabase
+  const activeSameTitle = await db
     .from("bonus_hunt_sessions")
     .select("id")
     .eq("status", "active")
@@ -125,7 +146,7 @@ async function findSessionForUpsert(huntName: string, huntDate: string | null) {
   if (activeSameTitle.data?.id) return activeSameTitle.data.id as string;
 
   if (huntDate) {
-    const activeSameDate = await supabase
+    const activeSameDate = await db
       .from("bonus_hunt_sessions")
       .select("id")
       .eq("status", "active")
@@ -187,16 +208,17 @@ export async function importBonusHunt(
     ? await findSessionForUpsert(huntName, huntDate)
     : null;
 
+  const db = supabase();
   let sessionId = existingSessionId;
   if (sessionId) {
-    const { error } = await supabase
+    const { error } = await db
       .from("bonus_hunt_sessions")
       .update(sessionPayload)
       .eq("id", sessionId);
     if (error) throw new Error("Erro ao atualizar sessao: " + error.message);
-    await supabase.from("bonus_hunt_slots").delete().eq("session_id", sessionId);
+    await db.from("bonus_hunt_slots").delete().eq("session_id", sessionId);
   } else {
-    const { data: inserted, error } = await supabase
+    const { data: inserted, error } = await db
       .from("bonus_hunt_sessions")
       .insert(sessionPayload)
       .select("id")
@@ -231,9 +253,9 @@ export async function importBonusHunt(
     };
   });
 
-  const { error: slotsError } = await supabase.from("bonus_hunt_slots").insert(slotRows);
+  const { error: slotsError } = await db.from("bonus_hunt_slots").insert(slotRows);
   if (slotsError) {
-    if (!existingSessionId) await supabase.from("bonus_hunt_sessions").delete().eq("id", sessionId);
+    if (!existingSessionId) await db.from("bonus_hunt_sessions").delete().eq("id", sessionId);
     throw new Error("Erro ao inserir slots: " + slotsError.message);
   }
 
@@ -245,3 +267,40 @@ export async function importBonusHunt(
     created: !existingSessionId,
   };
 }
+
+/** Pulls the current bonus hunt state from the Streamers Center overlay API and upserts it. */
+export async function fetchAndImportFromStreamersCenter() {
+  const apiKey = getStreamersCenterApiKey();
+  const url = buildStreamersCenterApiUrl("/api/streamer-data", {
+    key: apiKey,
+    action: "bonus_hunt",
+  });
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+
+  let overlayData: SourceBonusHunt;
+  try {
+    const response = await fetch(url, {
+      cache: "no-store",
+      signal: controller.signal,
+      headers: {
+        Accept: "application/json",
+        "x-api-key": apiKey,
+      },
+    });
+
+    if (!response.ok) {
+      const body = (await response.text()).trim();
+      const detail = body ? ` - ${body}` : "";
+      throw new Error(`Streamers Center API retornou ${response.status}: ${response.statusText}${detail}`);
+    }
+
+    overlayData = (await response.json()) as SourceBonusHunt;
+  } finally {
+    clearTimeout(timeout);
+  }
+
+  return await importBonusHunt(overlayData, { mode: "upsert-active" });
+}
+

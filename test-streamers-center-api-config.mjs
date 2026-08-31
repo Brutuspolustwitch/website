@@ -38,17 +38,22 @@ function isSearchableFile(path) {
 }
 
 const syncRoute = read("src/app/api/bonus-hunt/sync/route.ts");
+const importLib = read("src/lib/bonusHuntImport.ts");
 const helper = read("src/lib/streamers-center-api.ts");
 const envExample = read(".env.example");
 const envLocalExample = read(".env.local.example");
 
-assert.match(syncRoute, /buildStreamersCenterApiUrl/);
-assert.match(syncRoute, /\/api\/streamer-data/);
+assert.match(syncRoute, /fetchAndImportFromStreamersCenter/);
 assert.doesNotMatch(syncRoute, /SECAADEGAS_API_URL|DEFAULT_SECAADEGAS_API_URL/);
+
+assert.match(importLib, /buildStreamersCenterApiUrl/);
+assert.match(importLib, /\/api\/streamer-data/);
+assert.doesNotMatch(importLib, /SECAADEGAS_API_URL|DEFAULT_SECAADEGAS_API_URL/);
 
 assert.match(helper, /STREAMERS_CENTER_API_URL/);
 assert.match(helper, /STREAMERS_CENTER_API_KEY/);
 assert.match(helper, /not the old domain/);
+
 
 for (const envFile of [envExample, envLocalExample]) {
   assert.match(envFile, /STREAMERS_CENTER_API_URL=https:\/\/streamerscenter\.com/);

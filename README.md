@@ -34,6 +34,7 @@ npm run dev
 | `STREAMERS_CENTER_API_URL` | Server-only Streamers Center API origin for external imports. Use `https://streamerscenter.com` with no trailing slash. |
 | `STREAMERS_CENTER_API_KEY` | Server-only API key used by `/api/bonus-hunt/sync` when importing data from Streamers Center. |
 | `BONUS_HUNT_SYNC_SECRET` | Secret for authorized cron or automation calls to `/api/bonus-hunt/sync`. |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server-only key required for bonus hunt imports (`bonus_hunt_sessions`/`bonus_hunt_slots` only allow public reads via RLS, writes must bypass it) and other admin-only writes. |
 
 ## Required Assets
 
@@ -45,7 +46,7 @@ npm run dev
 
 ## Database Setup
 
-Run `supabase/schema.sql` in your Supabase SQL Editor.
+Run `supabase/schema.sql` in your Supabase SQL Editor, then apply the migrations in `supabase/migrations/` in order (includes `add_bonus_hunt_sync_lock.sql`, needed by the `/api/bonus-hunt/live` poll endpoint).
 
 ## Deployment
 

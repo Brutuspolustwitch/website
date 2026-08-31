@@ -67,6 +67,25 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
     };
   }, [loadSessions]);
 
+  /* Poll the Streamers Center overlay for fresh data while this page is open.
+     Throttled server-side, so multiple viewers polling concurrently is cheap.
+     Any change lands in Supabase and reaches every viewer via the realtime channel above. */
+  useEffect(() => {
+    const poll = () => {
+      if (document.visibilityState !== "visible") return;
+      fetch("/api/bonus-hunt/live", { cache: "no-store" }).catch(() => {});
+    };
+
+    poll();
+    const interval = setInterval(poll, 10000);
+    document.addEventListener("visibilitychange", poll);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", poll);
+    };
+  }, []);
+
   /* Load slots when session changes */
   useEffect(() => {
     if (!selectedSession) return;

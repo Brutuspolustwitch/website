@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { importBonusHunt, type SourceBonusHunt } from "@/lib/bonusHuntImport";
-import {
-  buildStreamersCenterApiUrl,
-  getStreamersCenterApiKey,
-  isStreamersCenterApiConfigError,
-} from "@/lib/streamers-center-api";
+import { fetchAndImportFromStreamersCenter } from "@/lib/bonusHuntImport";
+import { isStreamersCenterApiConfigError } from "@/lib/streamers-center-api";
 
 export const dynamic = "force-dynamic";
 
@@ -13,39 +9,10 @@ interface SessionCookie {
   role?: string;
 }
 
-function getStreamersCenterBonusHuntConfig() {
-  const apiKey = getStreamersCenterApiKey();
-  const url = buildStreamersCenterApiUrl("/api/streamer-data", {
-    key: apiKey,
-    action: "bonus_hunt",
-  });
-
-  return { url, apiKey };
-}
-
-async function fetchStreamersCenterBonusHuntData() {
-  const { url, apiKey } = getStreamersCenterBonusHuntConfig();
-  const response = await fetch(url, {
-    cache: "no-store",
-    headers: {
-      Accept: "application/json",
-      "x-api-key": apiKey,
-    },
-  });
-
-  if (!response.ok) {
-    const body = (await response.text()).trim();
-    const detail = body ? ` - ${body}` : "";
-    throw new Error(`Streamers Center API retornou ${response.status}: ${response.statusText}${detail}`);
-  }
-
-  return await response.json() as SourceBonusHunt;
-}
-
 async function syncBonusHunt() {
-  const overlayData = await fetchStreamersCenterBonusHuntData();
-  return await importBonusHunt(overlayData, { mode: "upsert-active" });
+  return await fetchAndImportFromStreamersCenter();
 }
+
 
 async function requireAdmin() {
   const cookieStore = await cookies();
