@@ -114,17 +114,37 @@ export function GuessTheSpoils({
     };
   }, []);
 
-  /* Fetch all campaigns */
-  useEffect(() => {
-    (async () => {
-      const { data } = await supabase
-        .from("bonus_hunt_sessions")
-        .select("*")
-        .order("created_at", { ascending: false });
-      if (data?.length) setCampaigns(data as BonusHuntSession[]);
-      setLoading(false);
-    })();
+  /* Fetch all campaigns — same order as BonusHuntTracker/DailySession so every
+     page agrees on which session is "current" (hunt_date first, then created_at). */
+  const fetchCampaigns = useCallback(async () => {
+    const { data } = await supabase
+      .from("bonus_hunt_sessions")
+      .select("*")
+      .order("hunt_date", { ascending: false })
+      .order("created_at", { ascending: false });
+    if (data) setCampaigns(data as BonusHuntSession[]);
+    setLoading(false);
   }, []);
+
+  useEffect(() => {
+    fetchCampaigns();
+  }, [fetchCampaigns]);
+
+  /* Real-time — pick up new/updated hunts (e.g. a new session starting) without a reload */
+  useEffect(() => {
+    const channel = supabase
+      .channel("gts-sessions")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "bonus_hunt_sessions" },
+        () => fetchCampaigns(),
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchCampaigns]);
+
 
   /* Fetch slots for active campaign */
   const campaign = campaigns[idx];
