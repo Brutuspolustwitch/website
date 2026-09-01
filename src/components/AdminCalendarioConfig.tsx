@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 /* ═══════════════════════════════════════════════════════════════
@@ -88,6 +88,13 @@ export default function AdminCalendarioConfig() {
     const now = new Date();
     return { year: now.getFullYear(), month: now.getMonth() };
   });
+
+  /* ── Filters ──────────────────────────────────────────────── */
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "upcoming" | "past" | "cancelled" | "special">("all");
+  const [search, setSearch] = useState("");
+  const hasActiveFilters = categoryFilter !== "all" || statusFilter !== "all" || search.trim() !== "";
+  const clearFilters = () => { setCategoryFilter("all"); setStatusFilter("all"); setSearch(""); };
 
   const fetchStreams = useCallback(async () => {
     try {
@@ -177,7 +184,22 @@ export default function AdminCalendarioConfig() {
   const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
   const getFirstDayOfWeek = (year: number, month: number) => (new Date(year, month, 1).getDay() + 6) % 7; // Monday = 0
 
-  const streamsForDate = (date: string) => streams.filter((s) => s.stream_date === date);
+  const todayStr = new Date().toISOString().split("T")[0];
+
+  const filteredStreams = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return streams.filter((s) => {
+      if (categoryFilter !== "all" && !(s.categories || []).includes(categoryFilter)) return false;
+      if (statusFilter === "upcoming" && (s.stream_date < todayStr || s.is_cancelled)) return false;
+      if (statusFilter === "past" && s.stream_date >= todayStr) return false;
+      if (statusFilter === "cancelled" && !s.is_cancelled) return false;
+      if (statusFilter === "special" && (!s.is_special || s.is_cancelled)) return false;
+      if (q && !s.title.toLowerCase().includes(q) && !(s.casino || "").toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }, [streams, categoryFilter, statusFilter, search, todayStr]);
+
+  const streamsForDate = (date: string) => filteredStreams.filter((s) => s.stream_date === date);
 
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr + "T00:00:00");
@@ -244,6 +266,45 @@ export default function AdminCalendarioConfig() {
             <div className="text-xs text-arena-ash mt-1">{s.label}</div>
           </div>
         ))}
+      </div>
+
+      {/* ── Filters ──────────────────────────────────────────── */}
+      <div className="flex flex-wrap items-center gap-2 bg-white/[0.03] border border-white/10 rounded-xl p-3">
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Pesquisar por título ou casino..."
+          className="flex-1 min-w-[180px] bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-sm text-arena-white placeholder:text-arena-ash focus:outline-none focus:border-arena-gold/40"
+        />
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          className="bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-sm text-arena-smoke focus:outline-none focus:border-arena-gold/40"
+        >
+          <option value="all">Todas as categorias</option>
+          {CATEGORIES.map((c) => (
+            <option key={c} value={c}>{CATEGORY_ICONS[c]} {c}</option>
+          ))}
+        </select>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
+          className="bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-sm text-arena-smoke focus:outline-none focus:border-arena-gold/40"
+        >
+          <option value="all">Todos os estados</option>
+          <option value="upcoming">Próximas</option>
+          <option value="past">Passadas</option>
+          <option value="cancelled">Canceladas</option>
+          <option value="special">Especiais</option>
+        </select>
+        {hasActiveFilters && (
+          <button
+            onClick={clearFilters}
+            className="px-3 py-2 rounded-lg text-sm font-medium bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20 transition"
+          >✕ Limpar filtros</button>
+        )}
+        <span className="text-xs text-arena-ash ml-auto">{filteredStreams.length} de {streams.length}</span>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -332,14 +393,18 @@ export default function AdminCalendarioConfig() {
           ) : (
             /* List View */
             <div className="space-y-3">
-              {streams.length === 0 ? (
+              {filteredStreams.length === 0 ? (
                 <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-12 text-center">
                   <div className="text-4xl mb-3">📅</div>
-                  <p className="text-arena-smoke">Nenhuma stream agendada</p>
-                  <p className="text-sm text-arena-ash mt-1">Clica em &quot;Nova Stream&quot; para começar</p>
+                  <p className="text-arena-smoke">
+                    {hasActiveFilters ? "Nenhuma stream corresponde aos filtros" : "Nenhuma stream agendada"}
+                  </p>
+                  <p className="text-sm text-arena-ash mt-1">
+                    {hasActiveFilters ? "Tenta ajustar ou limpar os filtros" : 'Clica em "Nova Stream" para começar'}
+                  </p>
                 </div>
               ) : (
-                streams.map((stream) => {
+                filteredStreams.map((stream) => {
                   const cats = stream.categories || ["Outro"];
                   const firstCat = CATEGORY_COLORS[cats[0]] || CATEGORY_COLORS["Outro"];
                   return (
