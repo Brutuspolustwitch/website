@@ -292,8 +292,16 @@ export function GuessTheSpoils({
   }
 
   const totalBuy = slots.reduce((s, r) => s + r.buy_value, 0);
-  const currentBE = totalBuy > 0 ? totalWin / totalBuy : 0;
-  const initialBE = totalBuy > 0 ? campaign.start_money / totalBuy : 0;
+  // Break-even multipliers mirror the streamerscenter widget: target = start - stop.
+  const beTarget = campaign
+    ? Math.max(campaign.start_money - campaign.stop_loss, 0)
+    : 0;
+  const initialBE = totalBuy > 0 ? beTarget / totalBuy : 0;
+  const remainingBuy = slots
+    .filter((s) => !s.opened)
+    .reduce((s, r) => s + r.buy_value, 0);
+  const remainingBeTarget = Math.max(beTarget - totalWin, 0);
+  const currentBE = remainingBuy > 0 ? remainingBeTarget / remainingBuy : 0;
   const progress = total > 0 ? (opened / total) * 100 : 0;
 
   const openedSlots = slots.filter((s) => s.result != null && s.buy_value > 0);
