@@ -23,26 +23,26 @@ npm run dev
 
 ## Environment Variables
 
-| Variable | Description |
-|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key |
-| `NEXT_PUBLIC_SITE_URL` | Production URL for SEO |
-| `NEXT_PUBLIC_TWITCH_CHANNEL` | Twitch channel username |
-| `TWITCH_CLIENT_ID` | Twitch API client ID (server-side) |
-| `TWITCH_CLIENT_SECRET` | Twitch API client secret (server-side) |
-| `STREAMERS_CENTER_API_URL` | Server-only Streamers Center API origin for external imports. Use `https://streamerscenter.com` with no trailing slash. |
-| `STREAMERS_CENTER_API_KEY` | Server-only API key used by `/api/bonus-hunt/sync` when importing data from Streamers Center. Optional if the key is instead saved via the admin UI (Bonus Hunt admin page → Streamers Center API), which stores it in the `integration_settings` table (service-role only, no public RLS policy) and takes precedence over this env var. |
-| `BONUS_HUNT_SYNC_SECRET` | Secret for authorized cron or automation calls to `/api/bonus-hunt/sync`. |
-| `SUPABASE_SERVICE_ROLE_KEY` | Server-only key required for bonus hunt imports (`bonus_hunt_sessions`/`bonus_hunt_slots` only allow public reads via RLS, writes must bypass it) and other admin-only writes. |
+| Variable                        | Description                                                                                                                                                                                                                                                                                                                               |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Supabase project URL                                                                                                                                                                                                                                                                                                                      |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key                                                                                                                                                                                                                                                                                                                    |
+| `NEXT_PUBLIC_SITE_URL`          | Production URL for SEO                                                                                                                                                                                                                                                                                                                    |
+| `NEXT_PUBLIC_TWITCH_CHANNEL`    | Twitch channel username                                                                                                                                                                                                                                                                                                                   |
+| `TWITCH_CLIENT_ID`              | Twitch API client ID (server-side)                                                                                                                                                                                                                                                                                                        |
+| `TWITCH_CLIENT_SECRET`          | Twitch API client secret (server-side)                                                                                                                                                                                                                                                                                                    |
+| `STREAMERS_CENTER_API_URL`      | Server-only Streamers Center API origin for external imports. Use `https://streamerscenter.com` with no trailing slash.                                                                                                                                                                                                                   |
+| `STREAMERS_CENTER_API_KEY`      | Server-only API key used by `/api/bonus-hunt/sync` when importing data from Streamers Center. Optional if the key is instead saved via the admin UI (Bonus Hunt admin page → Streamers Center API), which stores it in the `integration_settings` table (service-role only, no public RLS policy) and takes precedence over this env var. |
+| `BONUS_HUNT_SYNC_SECRET`        | Secret for authorized cron or automation calls to `/api/bonus-hunt/sync`.                                                                                                                                                                                                                                                                 |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Server-only key required for bonus hunt imports (`bonus_hunt_sessions`/`bonus_hunt_slots` only allow public reads via RLS, writes must bypass it) and other admin-only writes.                                                                                                                                                            |
 
 ## Required Assets
 
-| Path | Description |
-|---|---|
+| Path                                | Description                  |
+| ----------------------------------- | ---------------------------- |
 | `/public/images/hero-gladiator.jpg` | Hero background (1920x1080+) |
-| `/public/og-image.jpg` | Open Graph image (1200x630) |
-| `/public/sounds/arena-ambience.mp3` | Ambient sound loop |
+| `/public/og-image.jpg`              | Open Graph image (1200x630)  |
+| `/public/sounds/arena-ambience.mp3` | Ambient sound loop           |
 
 ## Database Setup
 

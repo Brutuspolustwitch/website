@@ -34,15 +34,27 @@ export async function GET() {
 
   const stored = await getIntegrationSetting(STREAMERS_CENTER_API_KEY_SETTING);
   if (stored) {
-    return NextResponse.json({ configured: true, source: "database", preview: maskKey(stored) });
+    return NextResponse.json({
+      configured: true,
+      source: "database",
+      preview: maskKey(stored),
+    });
   }
 
   const envValue = process.env.STREAMERS_CENTER_API_KEY?.trim();
   if (envValue) {
-    return NextResponse.json({ configured: true, source: "env", preview: maskKey(envValue) });
+    return NextResponse.json({
+      configured: true,
+      source: "env",
+      preview: maskKey(envValue),
+    });
   }
 
-  return NextResponse.json({ configured: false, source: "none", preview: null });
+  return NextResponse.json({
+    configured: false,
+    source: "none",
+    preview: null,
+  });
 }
 
 export async function POST(request: Request) {
@@ -53,14 +65,22 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   const apiKey = typeof body?.apiKey === "string" ? body.apiKey.trim() : "";
   if (!apiKey) {
-    return NextResponse.json({ error: "Chave da API em falta." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Chave da API em falta." },
+      { status: 400 },
+    );
   }
 
   try {
     await setIntegrationSetting(STREAMERS_CENTER_API_KEY_SETTING, apiKey);
-    return NextResponse.json({ configured: true, source: "database", preview: maskKey(apiKey) });
+    return NextResponse.json({
+      configured: true,
+      source: "database",
+      preview: maskKey(apiKey),
+    });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Erro desconhecido";
+    const message =
+      error instanceof Error ? error.message : "Erro desconhecido";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

@@ -16,34 +16,39 @@ export class StreamersCenterApiConfigError extends Error {
 function assertValidStreamersCenterOrigin(url: URL) {
   if (!["https:", "http:"].includes(url.protocol)) {
     throw new StreamersCenterApiConfigError(
-      "STREAMERS_CENTER_API_URL must start with https://."
+      "STREAMERS_CENTER_API_URL must start with https://.",
     );
   }
 
-  if (url.protocol === "http:" && !["localhost", "127.0.0.1"].includes(url.hostname)) {
+  if (
+    url.protocol === "http:" &&
+    !["localhost", "127.0.0.1"].includes(url.hostname)
+  ) {
     throw new StreamersCenterApiConfigError(
-      "STREAMERS_CENTER_API_URL must use https outside local development."
+      "STREAMERS_CENTER_API_URL must use https outside local development.",
     );
   }
 
   if (LEGACY_API_HOSTS.has(url.hostname.toLowerCase())) {
     throw new StreamersCenterApiConfigError(
-      "STREAMERS_CENTER_API_URL must point to https://streamerscenter.com, not the old domain."
+      "STREAMERS_CENTER_API_URL must point to https://streamerscenter.com, not the old domain.",
     );
   }
 
   if (url.pathname !== "/" || url.search || url.hash) {
     throw new StreamersCenterApiConfigError(
-      "STREAMERS_CENTER_API_URL must be an origin only, for example https://streamerscenter.com."
+      "STREAMERS_CENTER_API_URL must be an origin only, for example https://streamerscenter.com.",
     );
   }
 }
 
-export function normalizeStreamersCenterApiOrigin(rawOrigin: string | undefined) {
+export function normalizeStreamersCenterApiOrigin(
+  rawOrigin: string | undefined,
+) {
   const trimmed = rawOrigin?.trim().replace(/\/+$/, "");
   if (!trimmed) {
     throw new StreamersCenterApiConfigError(
-      "STREAMERS_CENTER_API_URL is required for external Streamers Center API calls."
+      "STREAMERS_CENTER_API_URL is required for external Streamers Center API calls.",
     );
   }
 
@@ -52,7 +57,7 @@ export function normalizeStreamersCenterApiOrigin(rawOrigin: string | undefined)
     url = new URL(trimmed);
   } catch {
     throw new StreamersCenterApiConfigError(
-      "STREAMERS_CENTER_API_URL must be a valid absolute URL."
+      "STREAMERS_CENTER_API_URL must be a valid absolute URL.",
     );
   }
 
@@ -63,7 +68,10 @@ export function normalizeStreamersCenterApiOrigin(rawOrigin: string | undefined)
 /** Prefers the URL saved via the admin UI (database), then the env var, then the known default origin. */
 export async function getStreamersCenterApiOrigin() {
   const stored = await getIntegrationSetting(STREAMERS_CENTER_API_URL_SETTING);
-  const rawOrigin = stored ?? process.env.STREAMERS_CENTER_API_URL ?? DEFAULT_STREAMERS_CENTER_API_ORIGIN;
+  const rawOrigin =
+    stored ??
+    process.env.STREAMERS_CENTER_API_URL ??
+    DEFAULT_STREAMERS_CENTER_API_ORIGIN;
   return normalizeStreamersCenterApiOrigin(rawOrigin);
 }
 
@@ -73,7 +81,7 @@ export async function getStreamersCenterApiKey() {
   const apiKey = (stored ?? process.env.STREAMERS_CENTER_API_KEY)?.trim();
   if (!apiKey) {
     throw new StreamersCenterApiConfigError(
-      "STREAMERS_CENTER_API_KEY is required for the bonus hunt Streamers Center sync."
+      "STREAMERS_CENTER_API_KEY is required for the bonus hunt Streamers Center sync.",
     );
   }
   return apiKey;
@@ -81,7 +89,10 @@ export async function getStreamersCenterApiKey() {
 
 export async function buildStreamersCenterApiUrl(
   pathname: `/${string}`,
-  searchParams: Record<string, string | number | boolean | null | undefined> = {}
+  searchParams: Record<
+    string,
+    string | number | boolean | null | undefined
+  > = {},
 ) {
   const url = new URL(pathname, await getStreamersCenterApiOrigin());
 

@@ -14,7 +14,9 @@ function supabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY (and NEXT_PUBLIC_SUPABASE_URL) are required for bonus hunt imports.");
+    throw new Error(
+      "SUPABASE_SERVICE_ROLE_KEY (and NEXT_PUBLIC_SUPABASE_URL) are required for bonus hunt imports.",
+    );
   }
   cachedClient = createClient(url, key);
   return cachedClient;
@@ -112,7 +114,8 @@ function num(value: unknown, fallback = 0) {
 
 function normalizePhase(data: SourceBonusHunt, bonuses: SourceBonus[]) {
   const openedCount = bonuses.filter((b) => b.opened || b.isOpened).length;
-  if (data.phase && ["hunting", "opening", "completed"].includes(data.phase)) return data.phase;
+  if (data.phase && ["hunting", "opening", "completed"].includes(data.phase))
+    return data.phase;
   if (data.status === "completed") return "completed";
   if (openedCount === 0) return "hunting";
   if (openedCount < bonuses.length) return "opening";
@@ -128,7 +131,13 @@ function normalizeHuntDate(value: string | undefined) {
 
 // B.E. = multiplier needed on ALL bonuses to hit the target; Live B.E. = multiplier needed
 // on the REMAINING (unopened) bonuses only. Mirrors the streamerscenter.com widget's calc.
-function calcBreakEven(bonuses: SourceBonus[], startMoney: number, stopLoss: number, totalBuy: number, totalWin: number) {
+function calcBreakEven(
+  bonuses: SourceBonus[],
+  startMoney: number,
+  stopLoss: number,
+  totalBuy: number,
+  totalWin: number,
+) {
   const target = Math.max(startMoney - stopLoss, 0);
   const breakEven = totalBuy > 0 ? target / totalBuy : 0;
   const remainingBuy = bonuses
@@ -148,7 +157,9 @@ async function findSessionForUpsert(huntName: string, huntDate: string | null) {
     .order("created_at", { ascending: false })
     .limit(1);
 
-  exactQuery = huntDate ? exactQuery.eq("hunt_date", huntDate) : exactQuery.is("hunt_date", null);
+  exactQuery = huntDate
+    ? exactQuery.eq("hunt_date", huntDate)
+    : exactQuery.is("hunt_date", null);
 
   const exact = await exactQuery.maybeSingle();
   if (exact.data?.id) return exact.data.id as string;
@@ -182,7 +193,7 @@ async function findSessionForUpsert(huntName: string, huntDate: string | null) {
 
 export async function importBonusHunt(
   data: SourceBonusHunt,
-  options: ImportBonusHuntOptions = {}
+  options: ImportBonusHuntOptions = {},
 ): Promise<ImportBonusHuntResult> {
   const bonuses = data.bonuses || data.slots || data.items || [];
   if (!Array.isArray(bonuses) || bonuses.length === 0) {
@@ -191,20 +202,37 @@ export async function importBonusHunt(
 
   const huntName = data.hunt_name || data.huntName || data.name || "Bonus Hunt";
   const phase = normalizePhase(data, bonuses);
-  const huntDate = normalizeHuntDate(data.hunt_date || data.huntDate || data.date);
+  const huntDate = normalizeHuntDate(
+    data.hunt_date || data.huntDate || data.date,
+  );
   const openedCount = bonuses.filter((b) => b.opened || b.isOpened).length;
-  const totalBuy = bonuses.reduce((sum, b) => sum + num(b.betSize ?? b.bet ?? b.buy), 0);
+  const totalBuy = bonuses.reduce(
+    (sum, b) => sum + num(b.betSize ?? b.bet ?? b.buy),
+    0,
+  );
   const totalWin = num(data.total_win ?? data.totalWin);
-  const startMoney = num(data.initial_buy ?? data.initialBuy ?? data.bankroll ?? data.start_money ?? data.startMoney);
+  const startMoney = num(
+    data.initial_buy ??
+      data.initialBuy ??
+      data.bankroll ??
+      data.start_money ??
+      data.startMoney,
+  );
   const stopLoss = num(data.stop_loss ?? data.stopLoss);
 
   const openedBuy = bonuses
     .filter((b) => b.opened || b.isOpened)
     .reduce((sum, b) => sum + num(b.betSize ?? b.bet ?? b.buy), 0);
   const actualCost = stopLoss > 0 ? startMoney - stopLoss : openedBuy;
-  const profit = data.profit ?? (totalWin - actualCost);
+  const profit = data.profit ?? totalWin - actualCost;
 
-  const { breakEven, liveBreakEven } = calcBreakEven(bonuses, startMoney, stopLoss, totalBuy, totalWin);
+  const { breakEven, liveBreakEven } = calcBreakEven(
+    bonuses,
+    startMoney,
+    stopLoss,
+    totalBuy,
+    totalWin,
+  );
 
   const sessionPayload = {
     title: huntName,
@@ -216,20 +244,30 @@ export async function importBonusHunt(
     start_money: startMoney,
     stop_loss: stopLoss,
     profit,
-    bonus_count: num(data.bonus_count ?? data.bonusCount ?? data.count, bonuses.length),
-    bonuses_opened: num(data.bonuses_opened ?? data.bonusesOpened ?? data.opened, openedCount),
+    bonus_count: num(
+      data.bonus_count ?? data.bonusCount ?? data.count,
+      bonuses.length,
+    ),
+    bonuses_opened: num(
+      data.bonuses_opened ?? data.bonusesOpened ?? data.opened,
+      openedCount,
+    ),
     avg_multi: num(data.avg_multi ?? data.avgMulti),
     best_multi: num(data.best_multi ?? data.bestMulti),
     break_even: num(data.break_even ?? data.breakEven, breakEven),
-    live_break_even: num(data.live_be ?? data.liveBe ?? data.live_break_even ?? data.liveBreakEven, liveBreakEven),
+    live_break_even: num(
+      data.live_be ?? data.liveBe ?? data.live_break_even ?? data.liveBreakEven,
+      liveBreakEven,
+    ),
     best_slot_name: data.best_slot_name || data.bestSlotName || null,
     hunt_date: huntDate,
     completed_at: phase === "completed" ? new Date().toISOString() : null,
   };
 
-  const existingSessionId = options.mode === "upsert-active"
-    ? await findSessionForUpsert(huntName, huntDate)
-    : null;
+  const existingSessionId =
+    options.mode === "upsert-active"
+      ? await findSessionForUpsert(huntName, huntDate)
+      : null;
 
   const db = supabase();
   let sessionId = existingSessionId;
@@ -246,7 +284,10 @@ export async function importBonusHunt(
       .insert(sessionPayload)
       .select("id")
       .single();
-    if (error || !inserted) throw new Error("Erro ao criar sessao: " + (error?.message ?? "desconhecido"));
+    if (error || !inserted)
+      throw new Error(
+        "Erro ao criar sessao: " + (error?.message ?? "desconhecido"),
+      );
     sessionId = inserted.id as string;
   }
 
@@ -261,7 +302,9 @@ export async function importBonusHunt(
       name: slotName,
       provider: b.slot?.provider || b.provider || null,
       buy_value: betSize,
-      potential_multiplier: num(b.slot?.max_win_multiplier ?? b.slot?.maxWin ?? b.max_win_multiplier),
+      potential_multiplier: num(
+        b.slot?.max_win_multiplier ?? b.slot?.maxWin ?? b.max_win_multiplier,
+      ),
       result: isOpened ? payout : null,
       bet_size: betSize,
       rtp: b.slot?.rtp ?? b.rtp ?? null,
@@ -276,9 +319,12 @@ export async function importBonusHunt(
     };
   });
 
-  const { error: slotsError } = await db.from("bonus_hunt_slots").insert(slotRows);
+  const { error: slotsError } = await db
+    .from("bonus_hunt_slots")
+    .insert(slotRows);
   if (slotsError) {
-    if (!existingSessionId) await db.from("bonus_hunt_sessions").delete().eq("id", sessionId);
+    if (!existingSessionId)
+      await db.from("bonus_hunt_sessions").delete().eq("id", sessionId);
     throw new Error("Erro ao inserir slots: " + slotsError.message);
   }
 
@@ -316,7 +362,9 @@ export async function fetchAndImportFromStreamersCenter() {
     if (!response.ok) {
       const body = (await response.text()).trim();
       const detail = body ? ` - ${body}` : "";
-      throw new Error(`Streamers Center API retornou ${response.status}: ${response.statusText}${detail}`);
+      throw new Error(
+        `Streamers Center API retornou ${response.status}: ${response.statusText}${detail}`,
+      );
     }
 
     overlayData = (await response.json()) as SourceBonusHunt;
@@ -326,4 +374,3 @@ export async function fetchAndImportFromStreamersCenter() {
 
   return await importBonusHunt(overlayData, { mode: "upsert-active" });
 }
-

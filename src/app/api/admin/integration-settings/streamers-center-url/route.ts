@@ -35,15 +35,27 @@ export async function GET() {
 
   const stored = await getIntegrationSetting(STREAMERS_CENTER_API_URL_SETTING);
   if (stored) {
-    return NextResponse.json({ configured: true, source: "database", value: stored });
+    return NextResponse.json({
+      configured: true,
+      source: "database",
+      value: stored,
+    });
   }
 
   const envValue = process.env.STREAMERS_CENTER_API_URL?.trim();
   if (envValue) {
-    return NextResponse.json({ configured: true, source: "env", value: envValue });
+    return NextResponse.json({
+      configured: true,
+      source: "env",
+      value: envValue,
+    });
   }
 
-  return NextResponse.json({ configured: true, source: "default", value: DEFAULT_ORIGIN });
+  return NextResponse.json({
+    configured: true,
+    source: "default",
+    value: DEFAULT_ORIGIN,
+  });
 }
 
 export async function POST(request: Request) {
@@ -60,10 +72,15 @@ export async function POST(request: Request) {
   try {
     const normalized = normalizeStreamersCenterApiOrigin(rawUrl);
     await setIntegrationSetting(STREAMERS_CENTER_API_URL_SETTING, normalized);
-    return NextResponse.json({ configured: true, source: "database", value: normalized });
+    return NextResponse.json({
+      configured: true,
+      source: "database",
+      value: normalized,
+    });
   } catch (error) {
     const status = isStreamersCenterApiConfigError(error) ? 400 : 500;
-    const message = error instanceof Error ? error.message : "Erro desconhecido";
+    const message =
+      error instanceof Error ? error.message : "Erro desconhecido";
     return NextResponse.json({ error: message }, { status });
   }
 }

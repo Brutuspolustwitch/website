@@ -3,7 +3,12 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/lib/auth-context";
-import { supabase, type GuessSession, type GuessPrediction, type BonusHuntSlot } from "@/lib/supabase";
+import {
+  supabase,
+  type GuessSession,
+  type GuessPrediction,
+  type BonusHuntSlot,
+} from "@/lib/supabase";
 
 interface ImportResult {
   success: boolean;
@@ -28,7 +33,15 @@ interface ParsedPreview {
   avg_multi: number;
   best_multi: number;
   best_slot_name: string;
-  bonuses: { slotName: string; betSize: number; payout: number; opened: boolean; provider?: string; isSuperBonus?: boolean; isExtremeBonus?: boolean }[];
+  bonuses: {
+    slotName: string;
+    betSize: number;
+    payout: number;
+    opened: boolean;
+    provider?: string;
+    isSuperBonus?: boolean;
+    isExtremeBonus?: boolean;
+  }[];
 }
 
 interface HistorySession {
@@ -67,46 +80,80 @@ export default function AdminBonusHuntPage() {
   const [jackpot, setJackpot] = useState<number>(30);
   const [jackpotInput, setJackpotInput] = useState("");
   const [jackpotSaving, setJackpotSaving] = useState(false);
-  const [jackpotMsg, setJackpotMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [jackpotMsg, setJackpotMsg] = useState<{
+    ok: boolean;
+    text: string;
+  } | null>(null);
 
   /* Streamers Center API key state */
-  const [apiKeyStatus, setApiKeyStatus] = useState<{ configured: boolean; source: string; preview: string | null } | null>(null);
+  const [apiKeyStatus, setApiKeyStatus] = useState<{
+    configured: boolean;
+    source: string;
+    preview: string | null;
+  } | null>(null);
   const [apiKeyInput, setApiKeyInput] = useState("");
   const [apiKeySaving, setApiKeySaving] = useState(false);
-  const [apiKeyMsg, setApiKeyMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [apiKeyMsg, setApiKeyMsg] = useState<{
+    ok: boolean;
+    text: string;
+  } | null>(null);
 
   /* Streamers Center API URL state */
-  const [apiUrlStatus, setApiUrlStatus] = useState<{ configured: boolean; source: string; value: string | null } | null>(null);
+  const [apiUrlStatus, setApiUrlStatus] = useState<{
+    configured: boolean;
+    source: string;
+    value: string | null;
+  } | null>(null);
   const [apiUrlInput, setApiUrlInput] = useState("");
   const [apiUrlSaving, setApiUrlSaving] = useState(false);
-  const [apiUrlMsg, setApiUrlMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [apiUrlMsg, setApiUrlMsg] = useState<{
+    ok: boolean;
+    text: string;
+  } | null>(null);
 
   /* Guess-the-result state */
   const [guessHuntId, setGuessHuntId] = useState<string | null>(null);
   const [guessSession, setGuessSession] = useState<GuessSession | null>(null);
   const [guessTotal, setGuessTotal] = useState(0);
-  const [guessPredictions, setGuessPredictions] = useState<GuessPrediction[]>([]);
+  const [guessPredictions, setGuessPredictions] = useState<GuessPrediction[]>(
+    [],
+  );
   const [guessPayoutInput, setGuessPayoutInput] = useState("");
-  const [guessMsg, setGuessMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [guessMsg, setGuessMsg] = useState<{
+    ok: boolean;
+    text: string;
+  } | null>(null);
   const [guessActionLoading, setGuessActionLoading] = useState(false);
 
   /* Slot payouts state */
   const [payoutsHuntId, setPayoutsHuntId] = useState<string | null>(null);
   const [slots, setSlots] = useState<BonusHuntSlot[]>([]);
   const [slotsLoading, setSlotsLoading] = useState(false);
-  const [slotPayoutEdits, setSlotPayoutEdits] = useState<Record<string, string>>({});
+  const [slotPayoutEdits, setSlotPayoutEdits] = useState<
+    Record<string, string>
+  >({});
   const [slotSaving, setSlotSaving] = useState<Record<string, boolean>>({});
-  const [payoutsMsg, setPayoutsMsg] = useState<{ ok: boolean; text: string } | null>(null);
-  const [slotSort, setSlotSort] = useState<"default" | "bet_asc" | "bet_desc" | "provider">("default");
+  const [payoutsMsg, setPayoutsMsg] = useState<{
+    ok: boolean;
+    text: string;
+  } | null>(null);
+  const [slotSort, setSlotSort] = useState<
+    "default" | "bet_asc" | "bet_desc" | "provider"
+  >("default");
   const payoutsJsonRef = useRef<HTMLInputElement>(null);
 
-  const isAdmin = user?.role === "admin" || user?.role === "configurador" || user?.role === "moderador";
+  const isAdmin =
+    user?.role === "admin" ||
+    user?.role === "configurador" ||
+    user?.role === "moderador";
 
   const fetchHistory = useCallback(async () => {
     setHistoryLoading(true);
     const { data, error: err } = await supabase
       .from("bonus_hunt_sessions")
-      .select("id, title, status, currency, total_buy, total_result, profit, bonus_count, avg_multi, best_multi, best_slot_name, hunt_date, created_at")
+      .select(
+        "id, title, status, currency, total_buy, total_result, profit, bonus_count, avg_multi, best_multi, best_slot_name, hunt_date, created_at",
+      )
       .order("created_at", { ascending: false });
     if (!err && data) setHistory(data as HistorySession[]);
     setHistoryLoading(false);
@@ -121,13 +168,20 @@ export default function AdminBonusHuntPage() {
     if (!isAdmin) return;
     fetch("/api/jackpot")
       .then((r) => r.json())
-      .then((d) => { if (d.amount != null) { setJackpot(d.amount); setJackpotInput(String(d.amount)); } })
+      .then((d) => {
+        if (d.amount != null) {
+          setJackpot(d.amount);
+          setJackpotInput(String(d.amount));
+        }
+      })
       .catch(() => {});
   }, [isAdmin]);
 
   /* Load Streamers Center API key status on mount */
   const fetchApiKeyStatus = useCallback(async () => {
-    const res = await fetch("/api/admin/integration-settings/streamers-center-key");
+    const res = await fetch(
+      "/api/admin/integration-settings/streamers-center-key",
+    );
     if (res.ok) setApiKeyStatus(await res.json());
   }, []);
 
@@ -136,18 +190,27 @@ export default function AdminBonusHuntPage() {
   }, [isAdmin, fetchApiKeyStatus]);
 
   async function handleSaveApiKey() {
-    if (!apiKeyInput.trim()) { setApiKeyMsg({ ok: false, text: "Chave em falta" }); return; }
+    if (!apiKeyInput.trim()) {
+      setApiKeyMsg({ ok: false, text: "Chave em falta" });
+      return;
+    }
     setApiKeySaving(true);
     setApiKeyMsg(null);
     try {
-      const res = await fetch("/api/admin/integration-settings/streamers-center-key", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ apiKey: apiKeyInput.trim() }),
-      });
+      const res = await fetch(
+        "/api/admin/integration-settings/streamers-center-key",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ apiKey: apiKeyInput.trim() }),
+        },
+      );
       const data = await res.json();
       if (!res.ok) {
-        setApiKeyMsg({ ok: false, text: data.error || "Erro ao guardar a chave." });
+        setApiKeyMsg({
+          ok: false,
+          text: data.error || "Erro ao guardar a chave.",
+        });
       } else {
         setApiKeyStatus(data);
         setApiKeyInput("");
@@ -164,7 +227,9 @@ export default function AdminBonusHuntPage() {
     setApiKeySaving(true);
     setApiKeyMsg(null);
     try {
-      await fetch("/api/admin/integration-settings/streamers-center-key", { method: "DELETE" });
+      await fetch("/api/admin/integration-settings/streamers-center-key", {
+        method: "DELETE",
+      });
       await fetchApiKeyStatus();
       setApiKeyMsg({ ok: true, text: "Chave removida." });
     } catch {
@@ -176,7 +241,9 @@ export default function AdminBonusHuntPage() {
 
   /* Load Streamers Center API URL status on mount */
   const fetchApiUrlStatus = useCallback(async () => {
-    const res = await fetch("/api/admin/integration-settings/streamers-center-url");
+    const res = await fetch(
+      "/api/admin/integration-settings/streamers-center-url",
+    );
     if (res.ok) setApiUrlStatus(await res.json());
   }, []);
 
@@ -185,18 +252,27 @@ export default function AdminBonusHuntPage() {
   }, [isAdmin, fetchApiUrlStatus]);
 
   async function handleSaveApiUrl() {
-    if (!apiUrlInput.trim()) { setApiUrlMsg({ ok: false, text: "URL em falta" }); return; }
+    if (!apiUrlInput.trim()) {
+      setApiUrlMsg({ ok: false, text: "URL em falta" });
+      return;
+    }
     setApiUrlSaving(true);
     setApiUrlMsg(null);
     try {
-      const res = await fetch("/api/admin/integration-settings/streamers-center-url", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ apiUrl: apiUrlInput.trim() }),
-      });
+      const res = await fetch(
+        "/api/admin/integration-settings/streamers-center-url",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ apiUrl: apiUrlInput.trim() }),
+        },
+      );
       const data = await res.json();
       if (!res.ok) {
-        setApiUrlMsg({ ok: false, text: data.error || "Erro ao guardar o URL." });
+        setApiUrlMsg({
+          ok: false,
+          text: data.error || "Erro ao guardar o URL.",
+        });
       } else {
         setApiUrlStatus(data);
         setApiUrlInput("");
@@ -213,9 +289,14 @@ export default function AdminBonusHuntPage() {
     setApiUrlSaving(true);
     setApiUrlMsg(null);
     try {
-      await fetch("/api/admin/integration-settings/streamers-center-url", { method: "DELETE" });
+      await fetch("/api/admin/integration-settings/streamers-center-url", {
+        method: "DELETE",
+      });
       await fetchApiUrlStatus();
-      setApiUrlMsg({ ok: true, text: "URL removido (voltou ao valor por omissao)." });
+      setApiUrlMsg({
+        ok: true,
+        text: "URL removido (voltou ao valor por omissao).",
+      });
     } catch {
       setApiUrlMsg({ ok: false, text: "Erro de rede ao remover o URL." });
     } finally {
@@ -225,7 +306,10 @@ export default function AdminBonusHuntPage() {
 
   async function handleJackpotSave() {
     const val = parseFloat(jackpotInput.replace(",", "."));
-    if (isNaN(val) || val < 0) { setJackpotMsg({ ok: false, text: "Valor inválido" }); return; }
+    if (isNaN(val) || val < 0) {
+      setJackpotMsg({ ok: false, text: "Valor inválido" });
+      return;
+    }
     setJackpotSaving(true);
     setJackpotMsg(null);
     const res = await fetch("/api/jackpot", {
@@ -234,8 +318,16 @@ export default function AdminBonusHuntPage() {
       body: JSON.stringify({ amount: val }),
     });
     const data = await res.json();
-    if (res.ok) { setJackpot(data.amount); setJackpotInput(String(data.amount)); setJackpotMsg({ ok: true, text: `Jackpot atualizado para ${data.amount}€` }); }
-    else { setJackpotMsg({ ok: false, text: data.error ?? "Erro" }); }
+    if (res.ok) {
+      setJackpot(data.amount);
+      setJackpotInput(String(data.amount));
+      setJackpotMsg({
+        ok: true,
+        text: `Jackpot atualizado para ${data.amount}€`,
+      });
+    } else {
+      setJackpotMsg({ ok: false, text: data.error ?? "Erro" });
+    }
     setJackpotSaving(false);
     setTimeout(() => setJackpotMsg(null), 3000);
   }
@@ -319,26 +411,38 @@ export default function AdminBonusHuntPage() {
         const data = JSON.parse(text);
 
         if (!data.hunt_name || !Array.isArray(data.bonuses)) {
-          setError("JSON inválido — campos 'hunt_name' e 'bonuses' são obrigatórios.");
+          setError(
+            "JSON inválido — campos 'hunt_name' e 'bonuses' são obrigatórios.",
+          );
           return;
         }
 
-        const bonusesArr: ParsedPreview["bonuses"] = data.bonuses.map((b: Record<string, unknown>) => ({
-            slotName: (b.slotName as string) || ((b.slot as Record<string, unknown>)?.name as string) || "Unknown",
+        const bonusesArr: ParsedPreview["bonuses"] = data.bonuses.map(
+          (b: Record<string, unknown>) => ({
+            slotName:
+              (b.slotName as string) ||
+              ((b.slot as Record<string, unknown>)?.name as string) ||
+              "Unknown",
             betSize: (b.betSize as number) ?? 0,
             payout: (b.payout as number) ?? 0,
             opened: (b.opened as boolean) ?? false,
-            provider: ((b.slot as Record<string, unknown>)?.provider as string) || undefined,
+            provider:
+              ((b.slot as Record<string, unknown>)?.provider as string) ||
+              undefined,
             isSuperBonus: (b.isSuperBonus as boolean) ?? false,
             isExtremeBonus: (b.isExtremeBonus as boolean) ?? false,
-          }));
-          // Recalculate profit (matches import route logic)
-          const stopLoss = (data.stop_loss as number) ?? 0;
-          const startMoney = (data.start_money as number) ?? 0;
-          const actualCost = stopLoss > 0
+          }),
+        );
+        // Recalculate profit (matches import route logic)
+        const stopLoss = (data.stop_loss as number) ?? 0;
+        const startMoney = (data.start_money as number) ?? 0;
+        const actualCost =
+          stopLoss > 0
             ? startMoney - stopLoss
-            : bonusesArr.filter((b) => b.opened).reduce((s, b) => s + b.betSize, 0);
-          const recalcProfit = ((data.total_win as number) ?? 0) - actualCost;
+            : bonusesArr
+                .filter((b) => b.opened)
+                .reduce((s, b) => s + b.betSize, 0);
+        const recalcProfit = ((data.total_win as number) ?? 0) - actualCost;
 
         setRawData(text);
         setPreview({
@@ -369,7 +473,7 @@ export default function AdminBonusHuntPage() {
       const file = e.dataTransfer.files[0];
       if (file) parseFile(file);
     },
-    [parseFile]
+    [parseFile],
   );
 
   const handleFileChange = useCallback(
@@ -377,7 +481,7 @@ export default function AdminBonusHuntPage() {
       const file = e.target.files?.[0];
       if (file) parseFile(file);
     },
-    [parseFile]
+    [parseFile],
   );
 
   async function handleImport() {
@@ -452,7 +556,10 @@ export default function AdminBonusHuntPage() {
   }, []);
 
   async function togglePayoutsPanel(huntId: string) {
-    if (payoutsHuntId === huntId) { setPayoutsHuntId(null); return; }
+    if (payoutsHuntId === huntId) {
+      setPayoutsHuntId(null);
+      return;
+    }
     setPayoutsHuntId(huntId);
     setPayoutsMsg(null);
     await loadSlots(huntId);
@@ -461,7 +568,10 @@ export default function AdminBonusHuntPage() {
   async function saveSlotPayout(slotId: string) {
     const val = slotPayoutEdits[slotId];
     const n = parseFloat((val || "0").replace(",", "."));
-    if (!isFinite(n) || n < 0) { setPayoutsMsg({ ok: false, text: "Valor inválido" }); return false; }
+    if (!isFinite(n) || n < 0) {
+      setPayoutsMsg({ ok: false, text: "Valor inválido" });
+      return false;
+    }
     setSlotSaving((prev) => ({ ...prev, [slotId]: true }));
     const res = await fetch(`/api/bonus-hunt/slots/${slotId}`, {
       method: "PATCH",
@@ -477,7 +587,11 @@ export default function AdminBonusHuntPage() {
     return true;
   }
 
-  async function bulkSavePayouts(edits: Record<string, string>, slotsToSave: BonusHuntSlot[], huntId: string) {
+  async function bulkSavePayouts(
+    edits: Record<string, string>,
+    slotsToSave: BonusHuntSlot[],
+    huntId: string,
+  ) {
     setPayoutsMsg({ ok: true, text: "A guardar..." });
     let failed = 0;
     for (const slot of slotsToSave) {
@@ -496,25 +610,45 @@ export default function AdminBonusHuntPage() {
     }
     await loadSlots(huntId);
     fetchHistory();
-    setPayoutsMsg(failed === 0 ? { ok: true, text: "Todos guardados!" } : { ok: false, text: `${failed} slot(s) falharam.` });
+    setPayoutsMsg(
+      failed === 0
+        ? { ok: true, text: "Todos guardados!" }
+        : { ok: false, text: `${failed} slot(s) falharam.` },
+    );
   }
 
-  function handlePayoutsJson(file: File, currentSlots: BonusHuntSlot[], huntId: string) {
+  function handlePayoutsJson(
+    file: File,
+    currentSlots: BonusHuntSlot[],
+    huntId: string,
+  ) {
     const reader = new FileReader();
     reader.onload = async (e) => {
       try {
         const data = JSON.parse(e.target?.result as string);
         if (!Array.isArray(data.bonuses)) {
-          setPayoutsMsg({ ok: false, text: "JSON inválido — precisa de campo 'bonuses'" });
+          setPayoutsMsg({
+            ok: false,
+            text: "JSON inválido — precisa de campo 'bonuses'",
+          });
           return;
         }
-        const jsonBonuses = data.bonuses as { slotName?: string; payout?: number }[];
+        const jsonBonuses = data.bonuses as {
+          slotName?: string;
+          payout?: number;
+        }[];
         const newEdits: Record<string, string> = {};
         currentSlots.forEach((slot, idx) => {
           const match =
-            jsonBonuses.find((b) => b.slotName?.toLowerCase().trim() === slot.name.toLowerCase().trim()) ??
-            jsonBonuses[idx];
-          newEdits[slot.id] = match?.payout != null ? String(match.payout) : (slotPayoutEdits[slot.id] ?? "");
+            jsonBonuses.find(
+              (b) =>
+                b.slotName?.toLowerCase().trim() ===
+                slot.name.toLowerCase().trim(),
+            ) ?? jsonBonuses[idx];
+          newEdits[slot.id] =
+            match?.payout != null
+              ? String(match.payout)
+              : (slotPayoutEdits[slot.id] ?? "");
         });
         setSlotPayoutEdits(newEdits);
         await bulkSavePayouts(newEdits, currentSlots, huntId);
@@ -538,7 +672,10 @@ export default function AdminBonusHuntPage() {
     return (
       <div className="pt-24 pb-16 min-h-screen">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="mt-4 text-arena-smoke/60">Apenas administradores, configuradores e moderadores podem importar bonus hunts.</p>
+          <p className="mt-4 text-arena-smoke/60">
+            Apenas administradores, configuradores e moderadores podem importar
+            bonus hunts.
+          </p>
         </div>
       </div>
     );
@@ -555,7 +692,8 @@ export default function AdminBonusHuntPage() {
                   Streamers Center API
                 </h3>
                 <p className="text-arena-smoke/50 text-xs mt-1">
-                  Busca o bonus hunt atual automaticamente e atualiza a sessao ativa.
+                  Busca o bonus hunt atual automaticamente e atualiza a sessao
+                  ativa.
                 </p>
               </div>
               <button
@@ -568,15 +706,23 @@ export default function AdminBonusHuntPage() {
             </div>
             {syncResult?.success && (
               <p className="mt-3 text-xs text-green-400 font-[family-name:var(--font-display)] tracking-wide">
-                Sincronizado: {syncResult.hunt_name} - {syncResult.slots_imported} slots {syncResult.created ? "criados" : "atualizados"}.
+                Sincronizado: {syncResult.hunt_name} -{" "}
+                {syncResult.slots_imported} slots{" "}
+                {syncResult.created ? "criados" : "atualizados"}.
               </p>
             )}
             <div className="mt-4 pt-4 border-t border-arena-steel/20">
-              <p className="text-arena-smoke/50 text-xs uppercase tracking-widest mb-2">Chave da API</p>
+              <p className="text-arena-smoke/50 text-xs uppercase tracking-widest mb-2">
+                Chave da API
+              </p>
               <p className="text-xs mb-2">
                 {apiKeyStatus?.configured ? (
                   <span className="text-green-400">
-                    Configurada ({apiKeyStatus.source === "database" ? "guardada aqui" : "variavel de ambiente"}) — {apiKeyStatus.preview}
+                    Configurada (
+                    {apiKeyStatus.source === "database"
+                      ? "guardada aqui"
+                      : "variavel de ambiente"}
+                    ) — {apiKeyStatus.preview}
                   </span>
                 ) : (
                   <span className="text-red-400">Nao configurada.</span>
@@ -608,16 +754,27 @@ export default function AdminBonusHuntPage() {
                 )}
               </div>
               {apiKeyMsg && (
-                <p className={`mt-2 text-xs ${apiKeyMsg.ok ? "text-green-400" : "text-red-400"}`}>{apiKeyMsg.text}</p>
+                <p
+                  className={`mt-2 text-xs ${apiKeyMsg.ok ? "text-green-400" : "text-red-400"}`}
+                >
+                  {apiKeyMsg.text}
+                </p>
               )}
             </div>
             <div className="mt-4 pt-4 border-t border-arena-steel/20">
-              <p className="text-arena-smoke/50 text-xs uppercase tracking-widest mb-2">URL da API</p>
+              <p className="text-arena-smoke/50 text-xs uppercase tracking-widest mb-2">
+                URL da API
+              </p>
               <p className="text-xs mb-2">
                 {apiUrlStatus?.configured ? (
                   <span className="text-green-400">
-                    {apiUrlStatus.value}{" "}
-                    ({apiUrlStatus.source === "database" ? "guardado aqui" : apiUrlStatus.source === "env" ? "variavel de ambiente" : "valor por omissao"})
+                    {apiUrlStatus.value} (
+                    {apiUrlStatus.source === "database"
+                      ? "guardado aqui"
+                      : apiUrlStatus.source === "env"
+                        ? "variavel de ambiente"
+                        : "valor por omissao"}
+                    )
                   </span>
                 ) : (
                   <span className="text-red-400">Nao configurado.</span>
@@ -649,21 +806,29 @@ export default function AdminBonusHuntPage() {
                 )}
               </div>
               {apiUrlMsg && (
-                <p className={`mt-2 text-xs ${apiUrlMsg.ok ? "text-green-400" : "text-red-400"}`}>{apiUrlMsg.text}</p>
+                <p
+                  className={`mt-2 text-xs ${apiUrlMsg.ok ? "text-green-400" : "text-red-400"}`}
+                >
+                  {apiUrlMsg.text}
+                </p>
               )}
             </div>
           </div>
           {/* ── Upload Zone ── */}
           {!preview && !result && (
             <div
-              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragOver(true);
+              }}
               onDragLeave={() => setDragOver(false)}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
               className={`relative rounded-xl border-2 border-dashed p-12 text-center cursor-pointer transition-all duration-300
-                ${dragOver
-                  ? "border-arena-gold bg-arena-gold/5 scale-[1.01]"
-                  : "border-arena-steel/30 hover:border-arena-gold/40 hover:bg-white/[0.02]"
+                ${
+                  dragOver
+                    ? "border-arena-gold bg-arena-gold/5 scale-[1.01]"
+                    : "border-arena-steel/30 hover:border-arena-gold/40 hover:bg-white/[0.02]"
                 }`}
             >
               <input
@@ -713,52 +878,105 @@ export default function AdminBonusHuntPage() {
                   </h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 text-sm">
                     <div>
-                      <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">Nome</span>
-                      <span className="text-arena-smoke font-bold">{preview.hunt_name}</span>
-                    </div>
-                    <div>
-                      <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">Data</span>
-                      <span className="text-arena-smoke">{preview.hunt_date || "—"}</span>
-                    </div>
-                    <div>
-                      <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">Moeda</span>
-                      <span className="text-arena-smoke">{preview.currency}</span>
-                    </div>
-                    <div>
-                      <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">Start</span>
-                      <span className="text-arena-smoke">{preview.currency}{preview.start_money.toLocaleString()}</span>
-                    </div>
-                    {preview.stop_loss > 0 && (
-                      <div>
-                        <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">Stop Loss</span>
-                        <span className="text-amber-400">{preview.currency}{preview.stop_loss.toLocaleString()}</span>
-                      </div>
-                    )}
-                    <div>
-                      <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">Total Win</span>
-                      <span className="text-green-400">{preview.currency}{preview.total_win.toLocaleString()}</span>
-                    </div>
-                    <div>
-                      <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">Profit</span>
-                      <span className={preview.profit >= 0 ? "text-green-400" : "text-red-400"}>
-                        {preview.profit >= 0 ? "+" : ""}{preview.currency}{preview.profit.toLocaleString()}
+                      <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">
+                        Nome
+                      </span>
+                      <span className="text-arena-smoke font-bold">
+                        {preview.hunt_name}
                       </span>
                     </div>
                     <div>
-                      <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">Bónus</span>
-                      <span className="text-arena-smoke">{preview.bonus_count}</span>
+                      <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">
+                        Data
+                      </span>
+                      <span className="text-arena-smoke">
+                        {preview.hunt_date || "—"}
+                      </span>
                     </div>
                     <div>
-                      <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">Avg Multi</span>
-                      <span className="text-arena-smoke">{preview.avg_multi.toFixed(1)}x</span>
+                      <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">
+                        Moeda
+                      </span>
+                      <span className="text-arena-smoke">
+                        {preview.currency}
+                      </span>
                     </div>
                     <div>
-                      <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">Best Multi</span>
-                      <span className="text-arena-gold">{preview.best_multi.toFixed(1)}x</span>
+                      <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">
+                        Start
+                      </span>
+                      <span className="text-arena-smoke">
+                        {preview.currency}
+                        {preview.start_money.toLocaleString()}
+                      </span>
+                    </div>
+                    {preview.stop_loss > 0 && (
+                      <div>
+                        <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">
+                          Stop Loss
+                        </span>
+                        <span className="text-amber-400">
+                          {preview.currency}
+                          {preview.stop_loss.toLocaleString()}
+                        </span>
+                      </div>
+                    )}
+                    <div>
+                      <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">
+                        Total Win
+                      </span>
+                      <span className="text-green-400">
+                        {preview.currency}
+                        {preview.total_win.toLocaleString()}
+                      </span>
                     </div>
                     <div>
-                      <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">Best Slot</span>
-                      <span className="text-arena-gold">{preview.best_slot_name}</span>
+                      <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">
+                        Profit
+                      </span>
+                      <span
+                        className={
+                          preview.profit >= 0
+                            ? "text-green-400"
+                            : "text-red-400"
+                        }
+                      >
+                        {preview.profit >= 0 ? "+" : ""}
+                        {preview.currency}
+                        {preview.profit.toLocaleString()}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">
+                        Bónus
+                      </span>
+                      <span className="text-arena-smoke">
+                        {preview.bonus_count}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">
+                        Avg Multi
+                      </span>
+                      <span className="text-arena-smoke">
+                        {preview.avg_multi.toFixed(1)}x
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">
+                        Best Multi
+                      </span>
+                      <span className="text-arena-gold">
+                        {preview.best_multi.toFixed(1)}x
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-arena-smoke/50 block text-xs uppercase tracking-wider">
+                        Best Slot
+                      </span>
+                      <span className="text-arena-gold">
+                        {preview.best_slot_name}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -785,23 +1003,47 @@ export default function AdminBonusHuntPage() {
                       </thead>
                       <tbody>
                         {preview.bonuses.map((b, i) => {
-                          const multi = b.betSize > 0 ? (b.payout / b.betSize).toFixed(1) : "—";
+                          const multi =
+                            b.betSize > 0
+                              ? (b.payout / b.betSize).toFixed(1)
+                              : "—";
                           return (
-                            <tr key={i} className="border-b border-arena-steel/5 hover:bg-white/[0.02]">
-                              <td className="px-4 py-2 text-arena-smoke/40">{i + 1}</td>
-                              <td className="px-4 py-2 text-arena-smoke font-medium">{b.slotName}</td>
-                              <td className="px-4 py-2 text-arena-smoke/60">{b.provider || "—"}</td>
-                              <td className="px-4 py-2 text-arena-smoke">{preview.currency}{b.betSize.toFixed(2)}</td>
-                              <td className={`px-4 py-2 ${b.payout >= b.betSize ? "text-green-400" : "text-red-400"}`}>
-                                {preview.currency}{b.payout.toFixed(2)}
+                            <tr
+                              key={i}
+                              className="border-b border-arena-steel/5 hover:bg-white/[0.02]"
+                            >
+                              <td className="px-4 py-2 text-arena-smoke/40">
+                                {i + 1}
                               </td>
-                              <td className="px-4 py-2 text-arena-gold">{multi}x</td>
+                              <td className="px-4 py-2 text-arena-smoke font-medium">
+                                {b.slotName}
+                              </td>
+                              <td className="px-4 py-2 text-arena-smoke/60">
+                                {b.provider || "—"}
+                              </td>
+                              <td className="px-4 py-2 text-arena-smoke">
+                                {preview.currency}
+                                {b.betSize.toFixed(2)}
+                              </td>
+                              <td
+                                className={`px-4 py-2 ${b.payout >= b.betSize ? "text-green-400" : "text-red-400"}`}
+                              >
+                                {preview.currency}
+                                {b.payout.toFixed(2)}
+                              </td>
+                              <td className="px-4 py-2 text-arena-gold">
+                                {multi}x
+                              </td>
                               <td className="px-4 py-2">
                                 {b.isExtremeBonus && (
-                                  <span className="inline-block px-1.5 py-0.5 text-[10px] rounded bg-red-500/20 text-red-400 mr-1">EXTREME</span>
+                                  <span className="inline-block px-1.5 py-0.5 text-[10px] rounded bg-red-500/20 text-red-400 mr-1">
+                                    EXTREME
+                                  </span>
                                 )}
                                 {b.isSuperBonus && (
-                                  <span className="inline-block px-1.5 py-0.5 text-[10px] rounded bg-arena-gold/20 text-arena-gold">SUPER</span>
+                                  <span className="inline-block px-1.5 py-0.5 text-[10px] rounded bg-arena-gold/20 text-arena-gold">
+                                    SUPER
+                                  </span>
                                 )}
                               </td>
                             </tr>
@@ -819,7 +1061,9 @@ export default function AdminBonusHuntPage() {
                     disabled={importing}
                     className="flex-1 py-3 rounded-lg bg-gradient-to-b from-arena-gold/80 to-arena-gold/60 text-arena-dark font-bold font-[family-name:var(--font-display)] tracking-wide text-sm uppercase hover:from-arena-gold hover:to-arena-gold/80 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
-                    {importing ? "A importar..." : `⚔ Importar ${preview.bonuses.length} slots`}
+                    {importing
+                      ? "A importar..."
+                      : `⚔ Importar ${preview.bonuses.length} slots`}
                   </button>
                   <button
                     onClick={handleReset}
@@ -845,7 +1089,8 @@ export default function AdminBonusHuntPage() {
                   Importação concluída!
                 </h3>
                 <p className="text-green-400/70 text-sm">
-                  &quot;{result.hunt_name}&quot; — {result.slots_imported} slots importados com sucesso.
+                  &quot;{result.hunt_name}&quot; — {result.slots_imported} slots
+                  importados com sucesso.
                 </p>
                 <button
                   onClick={handleReset}
@@ -864,8 +1109,12 @@ export default function AdminBonusHuntPage() {
             </h3>
             <div className="flex items-center gap-3 flex-wrap">
               <div className="flex items-center gap-2">
-                <span className="text-arena-smoke/60 text-xs">Valor atual:</span>
-                <span className="font-[family-name:var(--font-display)] text-arena-gold text-lg font-bold">{jackpot}€</span>
+                <span className="text-arena-smoke/60 text-xs">
+                  Valor atual:
+                </span>
+                <span className="font-[family-name:var(--font-display)] text-arena-gold text-lg font-bold">
+                  {jackpot}€
+                </span>
               </div>
               <div className="flex items-center gap-2 ml-auto">
                 <input
@@ -888,7 +1137,10 @@ export default function AdminBonusHuntPage() {
               </div>
             </div>
             {jackpotMsg && (
-              <p className="mt-2 text-xs font-[family-name:var(--font-display)] tracking-wide" style={{ color: jackpotMsg.ok ? "#22c55e" : "#8b1a1a" }}>
+              <p
+                className="mt-2 text-xs font-[family-name:var(--font-display)] tracking-wide"
+                style={{ color: jackpotMsg.ok ? "#22c55e" : "#8b1a1a" }}
+              >
                 {jackpotMsg.ok ? "✓" : "✗"} {jackpotMsg.text}
               </p>
             )}
@@ -901,59 +1153,91 @@ export default function AdminBonusHuntPage() {
             </h3>
 
             {historyLoading ? (
-              <div className="text-arena-smoke/50 text-sm py-8 text-center">A carregar...</div>
+              <div className="text-arena-smoke/50 text-sm py-8 text-center">
+                A carregar...
+              </div>
             ) : history.length === 0 ? (
               <div className="text-arena-smoke/40 text-sm py-8 text-center">
                 Nenhum bonus hunt importado.
               </div>
             ) : (
               <div className="rounded-xl bg-arena-charcoal/60 border border-arena-steel/20 overflow-hidden">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="text-left text-arena-smoke/50 text-xs uppercase tracking-wider border-b border-arena-steel/10">
-                        <th className="px-4 py-3">Nome</th>
-                        <th className="px-4 py-3">Data</th>
-                        <th className="px-4 py-3">Estado</th>
-                        <th className="px-4 py-3">Bónus</th>
-                        <th className="px-4 py-3">Total Buy</th>
-                        <th className="px-4 py-3">Total Win</th>
-                        <th className="px-4 py-3">Profit</th>
-                        <th className="px-4 py-3">Avg Multi</th>
-                        <th className="px-4 py-3">Best Multi</th>
-                        <th className="px-4 py-3">Best Slot</th>
-                        <th className="px-4 py-3 text-right">Ações</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {history.map((s) => (
-                        <React.Fragment key={s.id}>
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-arena-smoke/50 text-xs uppercase tracking-wider border-b border-arena-steel/10">
+                      <th className="px-4 py-3">Nome</th>
+                      <th className="px-4 py-3">Data</th>
+                      <th className="px-4 py-3">Estado</th>
+                      <th className="px-4 py-3">Bónus</th>
+                      <th className="px-4 py-3">Total Buy</th>
+                      <th className="px-4 py-3">Total Win</th>
+                      <th className="px-4 py-3">Profit</th>
+                      <th className="px-4 py-3">Avg Multi</th>
+                      <th className="px-4 py-3">Best Multi</th>
+                      <th className="px-4 py-3">Best Slot</th>
+                      <th className="px-4 py-3 text-right">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {history.map((s) => (
+                      <React.Fragment key={s.id}>
                         <tr className="border-b border-arena-steel/5 hover:bg-white/[0.02]">
-                          <td className="px-4 py-3 text-arena-smoke font-medium truncate">{s.title}</td>
+                          <td className="px-4 py-3 text-arena-smoke font-medium truncate">
+                            {s.title}
+                          </td>
                           <td className="px-4 py-3 text-arena-smoke/60">
                             {s.hunt_date
-                              ? new Date(s.hunt_date).toLocaleDateString("pt-PT")
-                              : new Date(s.created_at).toLocaleDateString("pt-PT")}
+                              ? new Date(s.hunt_date).toLocaleDateString(
+                                  "pt-PT",
+                                )
+                              : new Date(s.created_at).toLocaleDateString(
+                                  "pt-PT",
+                                )}
                           </td>
                           <td className="px-4 py-3">
-                            <span className={`inline-block px-2 py-0.5 text-[10px] rounded-full font-bold uppercase tracking-wider ${
-                              s.status === "completed"
-                                ? "bg-green-500/15 text-green-400"
+                            <span
+                              className={`inline-block px-2 py-0.5 text-[10px] rounded-full font-bold uppercase tracking-wider ${
+                                s.status === "completed"
+                                  ? "bg-green-500/15 text-green-400"
+                                  : s.status === "active"
+                                    ? "bg-arena-gold/15 text-arena-gold"
+                                    : "bg-arena-steel/15 text-arena-smoke/50"
+                              }`}
+                            >
+                              {s.status === "completed"
+                                ? "Concluído"
                                 : s.status === "active"
-                                  ? "bg-arena-gold/15 text-arena-gold"
-                                  : "bg-arena-steel/15 text-arena-smoke/50"
-                            }`}>
-                              {s.status === "completed" ? "Concluído" : s.status === "active" ? "Ativo" : "Próximo"}
+                                  ? "Ativo"
+                                  : "Próximo"}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-arena-smoke">{s.bonus_count}</td>
-                          <td className="px-4 py-3 text-red-400">{s.currency}{s.total_buy.toFixed(2)}</td>
-                          <td className="px-4 py-3 text-green-400">{s.currency}{s.total_result.toFixed(2)}</td>
-                          <td className={`px-4 py-3 font-bold ${s.profit >= 0 ? "text-green-400" : "text-red-400"}`}>
-                            {s.profit >= 0 ? "+" : ""}{s.currency}{s.profit.toFixed(2)}
+                          <td className="px-4 py-3 text-arena-smoke">
+                            {s.bonus_count}
                           </td>
-                          <td className="px-4 py-3 text-arena-smoke">{s.avg_multi.toFixed(1)}x</td>
-                          <td className="px-4 py-3 text-arena-gold">{s.best_multi.toFixed(1)}x</td>
-                          <td className="px-4 py-3 text-arena-smoke/60 max-w-[120px] truncate">{s.best_slot_name || "—"}</td>
+                          <td className="px-4 py-3 text-red-400">
+                            {s.currency}
+                            {s.total_buy.toFixed(2)}
+                          </td>
+                          <td className="px-4 py-3 text-green-400">
+                            {s.currency}
+                            {s.total_result.toFixed(2)}
+                          </td>
+                          <td
+                            className={`px-4 py-3 font-bold ${s.profit >= 0 ? "text-green-400" : "text-red-400"}`}
+                          >
+                            {s.profit >= 0 ? "+" : ""}
+                            {s.currency}
+                            {s.profit.toFixed(2)}
+                          </td>
+                          <td className="px-4 py-3 text-arena-smoke">
+                            {s.avg_multi.toFixed(1)}x
+                          </td>
+                          <td className="px-4 py-3 text-arena-gold">
+                            {s.best_multi.toFixed(1)}x
+                          </td>
+                          <td className="px-4 py-3 text-arena-smoke/60 max-w-[120px] truncate">
+                            {s.best_slot_name || "—"}
+                          </td>
                           <td className="px-4 py-3 text-right">
                             <div className="flex items-center justify-end gap-2">
                               {/* Payouts panel toggle */}
@@ -982,30 +1266,30 @@ export default function AdminBonusHuntPage() {
                               </button>
 
                               {deleteConfirm === s.id ? (
-                              <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={() => handleDelete(s.id)}
+                                    disabled={deleting === s.id}
+                                    className="px-3 py-1 text-xs rounded bg-red-600/80 text-white hover:bg-red-600 transition-all disabled:opacity-50 cursor-pointer"
+                                  >
+                                    {deleting === s.id ? "..." : "Confirmar"}
+                                  </button>
+                                  <button
+                                    onClick={() => setDeleteConfirm(null)}
+                                    className="px-3 py-1 text-xs rounded border border-arena-steel/30 text-arena-smoke/50 hover:text-arena-smoke transition-all cursor-pointer"
+                                  >
+                                    Não
+                                  </button>
+                                </div>
+                              ) : (
                                 <button
-                                  onClick={() => handleDelete(s.id)}
-                                  disabled={deleting === s.id}
-                                  className="px-3 py-1 text-xs rounded bg-red-600/80 text-white hover:bg-red-600 transition-all disabled:opacity-50 cursor-pointer"
+                                  onClick={() => setDeleteConfirm(s.id)}
+                                  className="px-3 py-1.5 text-xs rounded border border-red-500/20 text-red-400/70 hover:border-red-500/40 hover:text-red-400 hover:bg-red-500/5 transition-all cursor-pointer"
+                                  title="Eliminar bonus hunt"
                                 >
-                                  {deleting === s.id ? "..." : "Confirmar"}
+                                  Eliminar
                                 </button>
-                                <button
-                                  onClick={() => setDeleteConfirm(null)}
-                                  className="px-3 py-1 text-xs rounded border border-arena-steel/30 text-arena-smoke/50 hover:text-arena-smoke transition-all cursor-pointer"
-                                >
-                                  Não
-                                </button>
-                              </div>
-                            ) : (
-                              <button
-                                onClick={() => setDeleteConfirm(s.id)}
-                                className="px-3 py-1.5 text-xs rounded border border-red-500/20 text-red-400/70 hover:border-red-500/40 hover:text-red-400 hover:bg-red-500/5 transition-all cursor-pointer"
-                                title="Eliminar bonus hunt"
-                              >
-                                Eliminar
-                              </button>
-                            )}
+                              )}
                             </div>
                           </td>
                         </tr>
@@ -1013,25 +1297,48 @@ export default function AdminBonusHuntPage() {
                         {/* ── Guess panel (expandable) ── */}
                         {guessHuntId === s.id && (
                           <tr>
-                            <td colSpan={11} className="px-4 py-4 bg-amber-950/10 border-t border-amber-400/10">
+                            <td
+                              colSpan={11}
+                              className="px-4 py-4 bg-amber-950/10 border-t border-amber-400/10"
+                            >
                               <div className="space-y-3">
                                 <div className="flex items-center justify-between">
                                   <span className="font-[family-name:var(--font-display)] text-amber-400 text-xs tracking-widest uppercase">
                                     🎯 Adivinha o Resultado — {s.title}
                                   </span>
                                   {guessSession && (
-                                    <span className="text-xs font-[family-name:var(--font-display)] tracking-wider" style={{
-                                      color: guessSession.status === "resolved" ? "#d4a843" : guessSession.betting_open ? "#22c55e" : "#8b1a1a",
-                                    }}>
-                                      {guessSession.status === "resolved" ? "✅ Resolvido" : guessSession.betting_open ? "🟢 Aberto" : guessSession.status === "locked" ? "🔐 Bloqueado" : "🔒 Fechado"}
-                                      {" · "}{guessTotal} previsões
+                                    <span
+                                      className="text-xs font-[family-name:var(--font-display)] tracking-wider"
+                                      style={{
+                                        color:
+                                          guessSession.status === "resolved"
+                                            ? "#d4a843"
+                                            : guessSession.betting_open
+                                              ? "#22c55e"
+                                              : "#8b1a1a",
+                                      }}
+                                    >
+                                      {guessSession.status === "resolved"
+                                        ? "✅ Resolvido"
+                                        : guessSession.betting_open
+                                          ? "🟢 Aberto"
+                                          : guessSession.status === "locked"
+                                            ? "🔐 Bloqueado"
+                                            : "🔒 Fechado"}
+                                      {" · "}
+                                      {guessTotal} previsões
                                     </span>
                                   )}
                                 </div>
 
                                 {!guessSession ? (
                                   <button
-                                    onClick={() => guessAction({ action: "create", huntSessionId: s.id })}
+                                    onClick={() =>
+                                      guessAction({
+                                        action: "create",
+                                        huntSessionId: s.id,
+                                      })
+                                    }
                                     disabled={guessActionLoading}
                                     className="px-4 py-1.5 text-xs rounded border border-amber-400/30 text-amber-400/80 hover:bg-amber-400/10 hover:text-amber-400 transition-all disabled:opacity-50 cursor-pointer font-[family-name:var(--font-display)] tracking-widest uppercase"
                                   >
@@ -1042,45 +1349,79 @@ export default function AdminBonusHuntPage() {
                                     {/* Toggle open/close */}
                                     {guessSession.status === "open" && (
                                       <button
-                                        onClick={() => guessAction({ action: "toggle_betting", guessSessionId: guessSession.id })}
+                                        onClick={() =>
+                                          guessAction({
+                                            action: "toggle_betting",
+                                            guessSessionId: guessSession.id,
+                                          })
+                                        }
                                         disabled={guessActionLoading}
                                         className="px-3 py-1.5 text-xs rounded border transition-all disabled:opacity-50 cursor-pointer font-[family-name:var(--font-display)] tracking-widest uppercase"
                                         style={{
-                                          borderColor: guessSession.betting_open ? "rgba(139,26,26,0.4)" : "rgba(34,197,94,0.4)",
-                                          color: guessSession.betting_open ? "#8b1a1a" : "#22c55e",
-                                          background: guessSession.betting_open ? "rgba(139,26,26,0.1)" : "rgba(34,197,94,0.08)",
+                                          borderColor: guessSession.betting_open
+                                            ? "rgba(139,26,26,0.4)"
+                                            : "rgba(34,197,94,0.4)",
+                                          color: guessSession.betting_open
+                                            ? "#8b1a1a"
+                                            : "#22c55e",
+                                          background: guessSession.betting_open
+                                            ? "rgba(139,26,26,0.1)"
+                                            : "rgba(34,197,94,0.08)",
                                         }}
                                       >
-                                        {guessSession.betting_open ? "🔒 Fechar Apostas" : "🟢 Abrir Apostas"}
+                                        {guessSession.betting_open
+                                          ? "🔒 Fechar Apostas"
+                                          : "🟢 Abrir Apostas"}
                                       </button>
                                     )}
 
                                     {/* Liga dos Brutus toggle */}
                                     {guessSession.status === "open" && (
                                       <button
-                                        onClick={() => guessAction({ action: "toggle_liga", guessSessionId: guessSession.id })}
+                                        onClick={() =>
+                                          guessAction({
+                                            action: "toggle_liga",
+                                            guessSessionId: guessSession.id,
+                                          })
+                                        }
                                         disabled={guessActionLoading}
                                         className="px-3 py-1.5 text-xs rounded border transition-all disabled:opacity-50 cursor-pointer font-[family-name:var(--font-display)] tracking-widest uppercase"
                                         style={{
-                                          borderColor: guessSession.liga_dos_brutus ? "rgba(234,179,8,0.5)" : "rgba(255,255,255,0.15)",
-                                          color: guessSession.liga_dos_brutus ? "#eab308" : "rgba(255,255,255,0.4)",
-                                          background: guessSession.liga_dos_brutus ? "rgba(234,179,8,0.12)" : "transparent",
+                                          borderColor:
+                                            guessSession.liga_dos_brutus
+                                              ? "rgba(234,179,8,0.5)"
+                                              : "rgba(255,255,255,0.15)",
+                                          color: guessSession.liga_dos_brutus
+                                            ? "#eab308"
+                                            : "rgba(255,255,255,0.4)",
+                                          background:
+                                            guessSession.liga_dos_brutus
+                                              ? "rgba(234,179,8,0.12)"
+                                              : "transparent",
                                         }}
                                       >
-                                        {guessSession.liga_dos_brutus ? "⚡ Liga Ativa" : "Liga dos Brutus"}
+                                        {guessSession.liga_dos_brutus
+                                          ? "⚡ Liga Ativa"
+                                          : "Liga dos Brutus"}
                                       </button>
                                     )}
 
                                     {/* Lock permanently */}
-                                    {guessSession.status === "open" && !guessSession.betting_open && (
-                                      <button
-                                        onClick={() => guessAction({ action: "lock", guessSessionId: guessSession.id })}
-                                        disabled={guessActionLoading}
-                                        className="px-3 py-1.5 text-xs rounded border border-amber-400/30 text-amber-400/70 hover:bg-amber-400/10 transition-all disabled:opacity-50 cursor-pointer font-[family-name:var(--font-display)] tracking-widest uppercase"
-                                      >
-                                        🔐 Bloquear
-                                      </button>
-                                    )}
+                                    {guessSession.status === "open" &&
+                                      !guessSession.betting_open && (
+                                        <button
+                                          onClick={() =>
+                                            guessAction({
+                                              action: "lock",
+                                              guessSessionId: guessSession.id,
+                                            })
+                                          }
+                                          disabled={guessActionLoading}
+                                          className="px-3 py-1.5 text-xs rounded border border-amber-400/30 text-amber-400/70 hover:bg-amber-400/10 transition-all disabled:opacity-50 cursor-pointer font-[family-name:var(--font-display)] tracking-widest uppercase"
+                                        >
+                                          🔐 Bloquear
+                                        </button>
+                                      )}
 
                                     {/* Resolve form */}
                                     {guessSession.status !== "resolved" && (
@@ -1091,22 +1432,43 @@ export default function AdminBonusHuntPage() {
                                           min="0"
                                           placeholder="Payout total (ex: 1842.50)"
                                           value={guessPayoutInput}
-                                          onChange={(e) => setGuessPayoutInput(e.target.value)}
+                                          onChange={(e) =>
+                                            setGuessPayoutInput(e.target.value)
+                                          }
                                           className="flex-1 min-w-[120px] bg-arena-charcoal border border-arena-gold/20 rounded px-2 py-1 text-arena-smoke text-xs font-[family-name:var(--font-ui)] focus:outline-none focus:border-amber-400/50"
                                         />
                                         {/* Auto-fill from hunt's total_result */}
                                         <button
-                                          onClick={() => setGuessPayoutInput(s.total_result.toFixed(2))}
+                                          onClick={() =>
+                                            setGuessPayoutInput(
+                                              s.total_result.toFixed(2),
+                                            )
+                                          }
                                           className="px-2 py-1.5 text-xs rounded border border-arena-gold/30 text-arena-gold/70 hover:bg-arena-gold/10 hover:text-arena-gold transition-all cursor-pointer font-[family-name:var(--font-display)] tracking-widest uppercase whitespace-nowrap"
                                           title={`Usar Total Win do hunt: ${s.currency}${s.total_result.toFixed(2)}`}
                                         >
-                                          📥 {s.currency}{s.total_result.toFixed(2)}
+                                          📥 {s.currency}
+                                          {s.total_result.toFixed(2)}
                                         </button>
                                         <button
-                                          onClick={() => guessAction({ action: "resolve", guessSessionId: guessSession.id, finalPayout: parseFloat((guessPayoutInput || s.total_result.toFixed(2)).replace(",", ".")) })}
+                                          onClick={() =>
+                                            guessAction({
+                                              action: "resolve",
+                                              guessSessionId: guessSession.id,
+                                              finalPayout: parseFloat(
+                                                (
+                                                  guessPayoutInput ||
+                                                  s.total_result.toFixed(2)
+                                                ).replace(",", "."),
+                                              ),
+                                            })
+                                          }
                                           disabled={guessActionLoading}
                                           className="px-3 py-1.5 text-xs rounded text-white font-[family-name:var(--font-display)] tracking-widest uppercase disabled:opacity-50 cursor-pointer whitespace-nowrap"
-                                          style={{ background: "linear-gradient(135deg, #8b6914, #b89230)" }}
+                                          style={{
+                                            background:
+                                              "linear-gradient(135deg, #8b6914, #b89230)",
+                                          }}
                                         >
                                           ⚔ Resolver
                                         </button>
@@ -1114,21 +1476,34 @@ export default function AdminBonusHuntPage() {
                                     )}
 
                                     {/* Winner display */}
-                                    {guessSession.status === "resolved" && guessSession.winner_display_name && (
-                                      <div className="flex items-center gap-3 px-3 py-1.5 rounded border border-arena-gold/25 bg-arena-gold/5">
-                                        <span className="text-sm">🏆</span>
-                                        <div>
-                                          <span className="font-[family-name:var(--font-ui)] text-xs font-bold text-arena-gold">{guessSession.winner_display_name}</span>
-                                          <span className="text-arena-smoke/60 text-xs ml-2">
-                                            apostou {guessSession.winner_predicted_amount?.toFixed(2)}€
-                                            {guessSession.winner_diff != null && ` (±${guessSession.winner_diff.toFixed(2)}€)`}
-                                          </span>
-                                          <span className="text-green-400 text-xs ml-2">
-                                            real: {guessSession.final_payout?.toFixed(2)}€
-                                          </span>
+                                    {guessSession.status === "resolved" &&
+                                      guessSession.winner_display_name && (
+                                        <div className="flex items-center gap-3 px-3 py-1.5 rounded border border-arena-gold/25 bg-arena-gold/5">
+                                          <span className="text-sm">🏆</span>
+                                          <div>
+                                            <span className="font-[family-name:var(--font-ui)] text-xs font-bold text-arena-gold">
+                                              {guessSession.winner_display_name}
+                                            </span>
+                                            <span className="text-arena-smoke/60 text-xs ml-2">
+                                              apostou{" "}
+                                              {guessSession.winner_predicted_amount?.toFixed(
+                                                2,
+                                              )}
+                                              €
+                                              {guessSession.winner_diff !=
+                                                null &&
+                                                ` (±${guessSession.winner_diff.toFixed(2)}€)`}
+                                            </span>
+                                            <span className="text-green-400 text-xs ml-2">
+                                              real:{" "}
+                                              {guessSession.final_payout?.toFixed(
+                                                2,
+                                              )}
+                                              €
+                                            </span>
+                                          </div>
                                         </div>
-                                      </div>
-                                    )}
+                                      )}
                                   </div>
                                 )}
 
@@ -1136,17 +1511,47 @@ export default function AdminBonusHuntPage() {
                                 {guessPredictions.length > 0 && (
                                   <div className="mt-1 max-h-40 overflow-y-auto rounded border border-arena-steel/20 divide-y divide-arena-steel/10">
                                     {guessPredictions.map((p, i) => {
-                                      const isWinner = guessSession?.winner_user_id === p.user_id;
-                                      const diff = guessSession?.final_payout != null ? Math.abs(p.predicted_amount - guessSession.final_payout) : null;
+                                      const isWinner =
+                                        guessSession?.winner_user_id ===
+                                        p.user_id;
+                                      const diff =
+                                        guessSession?.final_payout != null
+                                          ? Math.abs(
+                                              p.predicted_amount -
+                                                guessSession.final_payout,
+                                            )
+                                          : null;
                                       return (
-                                        <div key={p.id} className="flex items-center justify-between px-3 py-1.5 text-xs" style={{ background: isWinner ? "rgba(139,105,20,0.1)" : "transparent" }}>
+                                        <div
+                                          key={p.id}
+                                          className="flex items-center justify-between px-3 py-1.5 text-xs"
+                                          style={{
+                                            background: isWinner
+                                              ? "rgba(139,105,20,0.1)"
+                                              : "transparent",
+                                          }}
+                                        >
                                           <div className="flex items-center gap-2">
-                                            <span className="text-arena-smoke/40 w-5 text-right">{isWinner ? "🏆" : `${i + 1}`}</span>
-                                            <span className={`font-[family-name:var(--font-ui)] ${isWinner ? "text-arena-gold font-bold" : "text-arena-smoke"}`}>{p.display_name}</span>
+                                            <span className="text-arena-smoke/40 w-5 text-right">
+                                              {isWinner ? "🏆" : `${i + 1}`}
+                                            </span>
+                                            <span
+                                              className={`font-[family-name:var(--font-ui)] ${isWinner ? "text-arena-gold font-bold" : "text-arena-smoke"}`}
+                                            >
+                                              {p.display_name}
+                                            </span>
                                           </div>
                                           <div className="text-right">
-                                            <span className={`font-bold ${isWinner ? "text-arena-gold" : "text-arena-smoke"}`}>{p.predicted_amount.toFixed(2)}€</span>
-                                            {diff != null && <span className="text-arena-smoke/50 ml-2">±{diff.toFixed(2)}€</span>}
+                                            <span
+                                              className={`font-bold ${isWinner ? "text-arena-gold" : "text-arena-smoke"}`}
+                                            >
+                                              {p.predicted_amount.toFixed(2)}€
+                                            </span>
+                                            {diff != null && (
+                                              <span className="text-arena-smoke/50 ml-2">
+                                                ±{diff.toFixed(2)}€
+                                              </span>
+                                            )}
                                           </div>
                                         </div>
                                       );
@@ -1155,7 +1560,14 @@ export default function AdminBonusHuntPage() {
                                 )}
 
                                 {guessMsg && (
-                                  <p className="text-xs font-[family-name:var(--font-display)] tracking-wide" style={{ color: guessMsg.ok ? "#22c55e" : "#8b1a1a" }}>
+                                  <p
+                                    className="text-xs font-[family-name:var(--font-display)] tracking-wide"
+                                    style={{
+                                      color: guessMsg.ok
+                                        ? "#22c55e"
+                                        : "#8b1a1a",
+                                    }}
+                                  >
                                     {guessMsg.ok ? "✓" : "✗"} {guessMsg.text}
                                   </p>
                                 )}
@@ -1167,7 +1579,10 @@ export default function AdminBonusHuntPage() {
                         {/* ── Payouts panel (expandable) ── */}
                         {payoutsHuntId === s.id && (
                           <tr>
-                            <td colSpan={11} className="px-4 py-4 bg-arena-charcoal/30 border-t border-arena-steel/10">
+                            <td
+                              colSpan={11}
+                              className="px-4 py-4 bg-arena-charcoal/30 border-t border-arena-steel/10"
+                            >
                               <div className="space-y-3">
                                 <div className="flex items-center justify-between">
                                   <span className="font-[family-name:var(--font-display)] text-arena-smoke/60 text-xs tracking-widest uppercase">
@@ -1181,19 +1596,29 @@ export default function AdminBonusHuntPage() {
                                       className="hidden"
                                       onChange={(e) => {
                                         const file = e.target.files?.[0];
-                                        if (file) handlePayoutsJson(file, slots, s.id);
-                                        if (payoutsJsonRef.current) payoutsJsonRef.current.value = "";
+                                        if (file)
+                                          handlePayoutsJson(file, slots, s.id);
+                                        if (payoutsJsonRef.current)
+                                          payoutsJsonRef.current.value = "";
                                       }}
                                     />
                                     <button
-                                      onClick={() => payoutsJsonRef.current?.click()}
+                                      onClick={() =>
+                                        payoutsJsonRef.current?.click()
+                                      }
                                       className="px-3 py-1.5 text-xs rounded border border-arena-steel/30 text-arena-smoke/60 hover:border-arena-gold/30 hover:text-arena-gold transition-all cursor-pointer font-[family-name:var(--font-display)] tracking-widest uppercase"
                                       title="Importar payouts de ficheiro JSON"
                                     >
                                       📤 Upload JSON
                                     </button>
                                     <button
-                                      onClick={() => bulkSavePayouts(slotPayoutEdits, slots, s.id)}
+                                      onClick={() =>
+                                        bulkSavePayouts(
+                                          slotPayoutEdits,
+                                          slots,
+                                          s.id,
+                                        )
+                                      }
                                       className="px-3 py-1.5 text-xs rounded border border-arena-gold/30 text-arena-gold/70 hover:bg-arena-gold/10 hover:text-arena-gold transition-all cursor-pointer font-[family-name:var(--font-display)] tracking-widest uppercase"
                                     >
                                       💾 Guardar Todos
@@ -1201,7 +1626,9 @@ export default function AdminBonusHuntPage() {
                                   </div>
                                 </div>
                                 {slotsLoading ? (
-                                  <p className="text-xs text-arena-smoke/40">A carregar slots...</p>
+                                  <p className="text-xs text-arena-smoke/40">
+                                    A carregar slots...
+                                  </p>
                                 ) : (
                                   <div className="max-h-64 overflow-y-auto rounded border border-arena-steel/20">
                                     <table className="w-full text-xs">
@@ -1211,95 +1638,194 @@ export default function AdminBonusHuntPage() {
                                           <th className="px-3 py-2">Slot</th>
                                           <th className="px-3 py-2">
                                             <button
-                                              onClick={() => setSlotSort((prev) => prev === "bet_asc" ? "bet_desc" : "bet_asc")}
+                                              onClick={() =>
+                                                setSlotSort((prev) =>
+                                                  prev === "bet_asc"
+                                                    ? "bet_desc"
+                                                    : "bet_asc",
+                                                )
+                                              }
                                               className={`flex items-center gap-1 hover:text-arena-gold transition-colors cursor-pointer ${
-                                                slotSort === "bet_asc" || slotSort === "bet_desc" ? "text-arena-gold" : ""
+                                                slotSort === "bet_asc" ||
+                                                slotSort === "bet_desc"
+                                                  ? "text-arena-gold"
+                                                  : ""
                                               }`}
                                               title="Ordenar por Bet"
                                             >
-                                              Bet {slotSort === "bet_asc" ? "↑" : slotSort === "bet_desc" ? "↓" : "↕"}
+                                              Bet{" "}
+                                              {slotSort === "bet_asc"
+                                                ? "↑"
+                                                : slotSort === "bet_desc"
+                                                  ? "↓"
+                                                  : "↕"}
                                             </button>
                                           </th>
                                           <th className="px-3 py-2">Payout</th>
                                           <th className="px-3 py-2">Multi</th>
                                           <th className="px-3 py-2">
                                             <button
-                                              onClick={() => setSlotSort((prev) => prev === "provider" ? "default" : "provider")}
+                                              onClick={() =>
+                                                setSlotSort((prev) =>
+                                                  prev === "provider"
+                                                    ? "default"
+                                                    : "provider",
+                                                )
+                                              }
                                               className={`flex items-center gap-1 hover:text-arena-gold transition-colors cursor-pointer ${
-                                                slotSort === "provider" ? "text-arena-gold" : ""
+                                                slotSort === "provider"
+                                                  ? "text-arena-gold"
+                                                  : ""
                                               }`}
                                               title="Ordenar por Provider"
                                             >
-                                              Provider {slotSort === "provider" ? "↑" : "↕"}
+                                              Provider{" "}
+                                              {slotSort === "provider"
+                                                ? "↑"
+                                                : "↕"}
                                             </button>
                                           </th>
                                           <th className="px-3 py-2"></th>
                                         </tr>
                                       </thead>
                                       <tbody>
-                                        {[...slots].sort((a, b) => {
-                                          if (slotSort === "bet_asc") return ((a.bet_size ?? a.buy_value ?? 0) - (b.bet_size ?? b.buy_value ?? 0));
-                                          if (slotSort === "bet_desc") return ((b.bet_size ?? b.buy_value ?? 0) - (a.bet_size ?? a.buy_value ?? 0));
-                                          if (slotSort === "provider") return (a.provider ?? "").localeCompare(b.provider ?? "");
-                                          return a.order_index - b.order_index;
-                                        }).map((slot, i) => {
-                                          const bet = slot.bet_size ?? slot.buy_value ?? 0;
-                                          const payoutVal = parseFloat((slotPayoutEdits[slot.id] || "0").replace(",", "."));
-                                          const multi = bet > 0 && isFinite(payoutVal) ? (payoutVal / bet).toFixed(1) : "—";
-                                          return (
-                                            <tr key={slot.id} className="border-b border-arena-steel/5 hover:bg-white/[0.02]">
-                                              <td className="px-3 py-1.5 text-arena-smoke/40">{i + 1}</td>
-                                              <td className="px-3 py-1.5 text-arena-smoke max-w-[140px] truncate">{slot.name}</td>
-                                              <td className="px-3 py-1.5 text-arena-smoke/60">{s.currency}{bet.toFixed(2)}</td>
-                                              <td className="px-3 py-1.5">
-                                                <input
-                                                  type="number"
-                                                  step="0.01"
-                                                  min="0"
-                                                  value={slotPayoutEdits[slot.id] ?? ""}
-                                                  onChange={(e) => setSlotPayoutEdits((prev) => ({ ...prev, [slot.id]: e.target.value }))}
-                                                  className="w-24 bg-arena-charcoal border border-arena-gold/20 rounded px-2 py-0.5 text-arena-smoke text-xs focus:outline-none focus:border-amber-400/50"
-                                                />
-                                              </td>
-                                              <td className="px-3 py-1.5 text-arena-gold">{multi}x</td>
-                                              <td className="px-3 py-1.5 text-arena-smoke/50">{slot.provider || "—"}</td>
-                                              <td className="px-3 py-1.5">
-                                                <button
-                                                  onClick={async () => {
-                                                    const ok = await saveSlotPayout(slot.id);
-                                                    if (ok && payoutsHuntId) {
-                                                      await loadSlots(payoutsHuntId);
-                                                      fetchHistory();
-                                                      setPayoutsMsg({ ok: true, text: "Guardado!" });
+                                        {[...slots]
+                                          .sort((a, b) => {
+                                            if (slotSort === "bet_asc")
+                                              return (
+                                                (a.bet_size ??
+                                                  a.buy_value ??
+                                                  0) -
+                                                (b.bet_size ?? b.buy_value ?? 0)
+                                              );
+                                            if (slotSort === "bet_desc")
+                                              return (
+                                                (b.bet_size ??
+                                                  b.buy_value ??
+                                                  0) -
+                                                (a.bet_size ?? a.buy_value ?? 0)
+                                              );
+                                            if (slotSort === "provider")
+                                              return (
+                                                a.provider ?? ""
+                                              ).localeCompare(b.provider ?? "");
+                                            return (
+                                              a.order_index - b.order_index
+                                            );
+                                          })
+                                          .map((slot, i) => {
+                                            const bet =
+                                              slot.bet_size ??
+                                              slot.buy_value ??
+                                              0;
+                                            const payoutVal = parseFloat(
+                                              (
+                                                slotPayoutEdits[slot.id] || "0"
+                                              ).replace(",", "."),
+                                            );
+                                            const multi =
+                                              bet > 0 && isFinite(payoutVal)
+                                                ? (payoutVal / bet).toFixed(1)
+                                                : "—";
+                                            return (
+                                              <tr
+                                                key={slot.id}
+                                                className="border-b border-arena-steel/5 hover:bg-white/[0.02]"
+                                              >
+                                                <td className="px-3 py-1.5 text-arena-smoke/40">
+                                                  {i + 1}
+                                                </td>
+                                                <td className="px-3 py-1.5 text-arena-smoke max-w-[140px] truncate">
+                                                  {slot.name}
+                                                </td>
+                                                <td className="px-3 py-1.5 text-arena-smoke/60">
+                                                  {s.currency}
+                                                  {bet.toFixed(2)}
+                                                </td>
+                                                <td className="px-3 py-1.5">
+                                                  <input
+                                                    type="number"
+                                                    step="0.01"
+                                                    min="0"
+                                                    value={
+                                                      slotPayoutEdits[
+                                                        slot.id
+                                                      ] ?? ""
                                                     }
-                                                  }}
-                                                  disabled={slotSaving[slot.id]}
-                                                  className="px-2 py-0.5 text-xs rounded border border-arena-gold/30 text-arena-gold/70 hover:bg-arena-gold/10 hover:text-arena-gold transition-all disabled:opacity-50 cursor-pointer font-[family-name:var(--font-display)] tracking-widest uppercase"
-                                                >
-                                                  {slotSaving[slot.id] ? "..." : "Guardar"}
-                                                </button>
-                                              </td>
-                                            </tr>
-                                          );
-                                        })}
+                                                    onChange={(e) =>
+                                                      setSlotPayoutEdits(
+                                                        (prev) => ({
+                                                          ...prev,
+                                                          [slot.id]:
+                                                            e.target.value,
+                                                        }),
+                                                      )
+                                                    }
+                                                    className="w-24 bg-arena-charcoal border border-arena-gold/20 rounded px-2 py-0.5 text-arena-smoke text-xs focus:outline-none focus:border-amber-400/50"
+                                                  />
+                                                </td>
+                                                <td className="px-3 py-1.5 text-arena-gold">
+                                                  {multi}x
+                                                </td>
+                                                <td className="px-3 py-1.5 text-arena-smoke/50">
+                                                  {slot.provider || "—"}
+                                                </td>
+                                                <td className="px-3 py-1.5">
+                                                  <button
+                                                    onClick={async () => {
+                                                      const ok =
+                                                        await saveSlotPayout(
+                                                          slot.id,
+                                                        );
+                                                      if (ok && payoutsHuntId) {
+                                                        await loadSlots(
+                                                          payoutsHuntId,
+                                                        );
+                                                        fetchHistory();
+                                                        setPayoutsMsg({
+                                                          ok: true,
+                                                          text: "Guardado!",
+                                                        });
+                                                      }
+                                                    }}
+                                                    disabled={
+                                                      slotSaving[slot.id]
+                                                    }
+                                                    className="px-2 py-0.5 text-xs rounded border border-arena-gold/30 text-arena-gold/70 hover:bg-arena-gold/10 hover:text-arena-gold transition-all disabled:opacity-50 cursor-pointer font-[family-name:var(--font-display)] tracking-widest uppercase"
+                                                  >
+                                                    {slotSaving[slot.id]
+                                                      ? "..."
+                                                      : "Guardar"}
+                                                  </button>
+                                                </td>
+                                              </tr>
+                                            );
+                                          })}
                                       </tbody>
                                     </table>
                                   </div>
                                 )}
                                 {payoutsMsg && (
-                                  <p className="text-xs font-[family-name:var(--font-display)] tracking-wide" style={{ color: payoutsMsg.ok ? "#22c55e" : "#8b1a1a" }}>
-                                    {payoutsMsg.ok ? "✓" : "✗"} {payoutsMsg.text}
+                                  <p
+                                    className="text-xs font-[family-name:var(--font-display)] tracking-wide"
+                                    style={{
+                                      color: payoutsMsg.ok
+                                        ? "#22c55e"
+                                        : "#8b1a1a",
+                                    }}
+                                  >
+                                    {payoutsMsg.ok ? "✓" : "✗"}{" "}
+                                    {payoutsMsg.text}
                                   </p>
                                 )}
                               </div>
                             </td>
                           </tr>
                         )}
-
-                        </React.Fragment>
-                      ))}
-                    </tbody>
-                  </table>
+                      </React.Fragment>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>

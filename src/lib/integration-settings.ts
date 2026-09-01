@@ -14,7 +14,9 @@ function db() {
 }
 
 /** Reads a server-only setting stored in the database. Returns null if unset or unavailable. */
-export async function getIntegrationSetting(key: string): Promise<string | null> {
+export async function getIntegrationSetting(
+  key: string,
+): Promise<string | null> {
   const client = db();
   if (!client) return null;
   const { data, error } = await client
@@ -30,7 +32,7 @@ export async function setIntegrationSetting(key: string, value: string) {
   const client = db();
   if (!client) {
     throw new Error(
-      "SUPABASE_SERVICE_ROLE_KEY (and NEXT_PUBLIC_SUPABASE_URL) are required to save integration settings."
+      "SUPABASE_SERVICE_ROLE_KEY (and NEXT_PUBLIC_SUPABASE_URL) are required to save integration settings.",
     );
   }
   const { error } = await client
