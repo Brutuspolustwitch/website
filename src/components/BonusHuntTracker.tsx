@@ -6,6 +6,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { supabase } from "@/lib/supabase";
 import type { BonusHuntSession, BonusHuntSlot } from "@/lib/supabase";
+import type { BonusHuntDisplayTarget } from "@/lib/bonusHuntDisplay";
 
 /* ═══════════════════════════════════════════════════════════════════
    CORNER ORNAMENT — reused from the papyrus design system
@@ -24,7 +25,15 @@ function CornerOrnament({ className }: { className: string }) {
   );
 }
 
-export function BonusHuntTracker({ compact = false, hideTitle = false }: { compact?: boolean; hideTitle?: boolean } = {}) {
+export function BonusHuntTracker({
+  compact = false,
+  hideTitle = false,
+  displayTarget = "bonus_hunt",
+}: {
+  compact?: boolean;
+  hideTitle?: boolean;
+  displayTarget?: BonusHuntDisplayTarget;
+} = {}) {
   const [sessions, setSessions] = useState<BonusHuntSession[]>([]);
   const [selectedSession, setSelectedSession] = useState<BonusHuntSession | null>(null);
   const [slots, setSlots] = useState<BonusHuntSlot[]>([]);
@@ -32,23 +41,40 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
   const [sessionIdx, setSessionIdx] = useState(0);
   const [slotPage, setSlotPage] = useState(0);
   const manualSessionSelection = useRef(false);
-  const latestSessionIdRef = useRef<string | null>(null);
+  const targetSessionIdRef = useRef<string | null>(null);
   const SLOTS_PER_PAGE = 15;
 
   const loadSessions = useCallback(async () => {
-    const { data } = await supabase
-      .from("bonus_hunt_sessions")
-      .select("*")
-      .order("hunt_date", { ascending: false })
-      .order("created_at", { ascending: false });
+    const [sessionsRes, displayRes] = await Promise.all([
+      supabase
+        .from("bonus_hunt_sessions")
+        .select("*")
+        .order("hunt_date", { ascending: false })
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("bonus_hunt_page_display")
+        .select("session_id")
+        .eq("target", displayTarget)
+        .limit(1)
+        .maybeSingle(),
+    ]);
 
-    const nextSessions = data ?? [];
-    const previousLatestId = latestSessionIdRef.current;
+    const nextSessions = sessionsRes.data ?? [];
+    const previousTargetId = targetSessionIdRef.current;
     const latestSession = nextSessions[0] ?? null;
-    latestSessionIdRef.current = latestSession?.id ?? null;
+    const configuredSessionId =
+      typeof displayRes.data?.session_id === "string"
+        ? displayRes.data.session_id
+        : null;
+    const configuredSession = configuredSessionId
+      ? nextSessions.find((session) => session.id === configuredSessionId) ?? null
+      : null;
+    const targetSession = configuredSession ?? latestSession;
+
+    targetSessionIdRef.current = targetSession?.id ?? null;
     setSessions(nextSessions);
     setSelectedSession((current) => {
-      if (!latestSession) {
+      if (!targetSession) {
         manualSessionSelection.current = false;
         setSessionIdx(0);
         return null;
@@ -57,21 +83,21 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
       const currentSession = current
         ? nextSessions.find((session) => session.id === current.id) ?? null
         : null;
-      const shouldFollowLatest =
+      const shouldFollowTarget =
         !manualSessionSelection.current ||
         !currentSession ||
-        current?.id === previousLatestId;
-      const nextSelected = shouldFollowLatest ? latestSession : currentSession;
+        current?.id === previousTargetId;
+      const nextSelected = shouldFollowTarget ? targetSession : currentSession;
       const nextIndex = nextSessions.findIndex((session) => session.id === nextSelected.id);
 
-      if (nextSelected.id === latestSession.id) {
+      if (nextSelected.id === targetSession.id) {
         manualSessionSelection.current = false;
       }
       setSessionIdx(Math.max(0, nextIndex));
       return nextSelected;
     });
     setLoading(false);
-  }, []);
+  }, [displayTarget]);
 
   useEffect(() => {
     const initialLoad = window.setTimeout(() => {
@@ -83,13 +109,25 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
       .on("postgres_changes", { event: "*", schema: "public", table: "bonus_hunt_sessions" }, () => {
         loadSessions();
       })
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "bonus_hunt_page_display",
+          filter: `target=eq.${displayTarget}`,
+        },
+        () => {
+          loadSessions();
+        },
+      )
       .subscribe();
 
     return () => {
       window.clearTimeout(initialLoad);
       supabase.removeChannel(channel);
     };
-  }, [loadSessions]);
+  }, [displayTarget, loadSessions]);
 
   /* Poll the Streamers Center overlay for fresh data while this page is open.
      Throttled server-side, so multiple viewers polling concurrently is cheap.
@@ -159,7 +197,8 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
   function prevSession() {
     if (sessionIdx < sessions.length - 1) {
       const next = sessionIdx + 1;
-      manualSessionSelection.current = next !== 0;
+      manualSessionSelection.current =
+        sessions[next]?.id !== targetSessionIdRef.current;
       setSessionIdx(next);
       setSelectedSession(sessions[next]);
     }
@@ -167,7 +206,8 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
   function nextSession() {
     if (sessionIdx > 0) {
       const next = sessionIdx - 1;
-      manualSessionSelection.current = next !== 0;
+      manualSessionSelection.current =
+        sessions[next]?.id !== targetSessionIdRef.current;
       setSessionIdx(next);
       setSelectedSession(sessions[next]);
     }

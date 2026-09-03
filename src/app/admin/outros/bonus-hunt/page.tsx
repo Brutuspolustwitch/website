@@ -9,6 +9,11 @@ import {
   type GuessPrediction,
   type BonusHuntSlot,
 } from "@/lib/supabase";
+import {
+  BONUS_HUNT_DISPLAY_TARGETS,
+  BONUS_HUNT_DISPLAY_LABELS,
+  type BonusHuntDisplayTarget,
+} from "@/lib/bonusHuntDisplay";
 
 interface ImportResult {
   success: boolean;
@@ -24,6 +29,14 @@ interface ImportResult {
   source?: string;
   error?: string;
 }
+
+type DisplaySelections = Partial<Record<BonusHuntDisplayTarget, string>>;
+
+const DISPLAY_BUTTON_LABELS: Record<BonusHuntDisplayTarget, string> = {
+  bonus_hunt: "Bonus",
+  adivinha_o_resultado: "Adivinha",
+  daily_session: "Dia",
+};
 
 interface ParsedPreview {
   hunt_name: string;
@@ -77,6 +90,15 @@ export default function AdminBonusHuntPage() {
   const [error, setError] = useState("");
   const [history, setHistory] = useState<HistorySession[]>([]);
   const [historyLoading, setHistoryLoading] = useState(true);
+  const [displaySelections, setDisplaySelections] = useState<DisplaySelections>(
+    {},
+  );
+  const [displaySaving, setDisplaySaving] = useState<string | null>(null);
+  const [displayMsg, setDisplayMsg] = useState<{
+    ok: boolean;
+    text: string;
+  } | null>(null);
+  const [activeDailySession, setActiveDailySession] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
@@ -166,6 +188,89 @@ export default function AdminBonusHuntPage() {
   useEffect(() => {
     if (isAdmin) fetchHistory();
   }, [isAdmin, fetchHistory]);
+
+  const fetchDisplaySettings = useCallback(async () => {
+    try {
+      const res = await fetch("/api/bonus-hunt/display", { cache: "no-store" });
+      if (!res.ok) return;
+
+      const data = await res.json();
+      setDisplaySelections((data.display ?? {}) as DisplaySelections);
+      setActiveDailySession(Boolean(data.active_daily_session));
+      if (data.error) {
+        setDisplayMsg({ ok: false, text: data.error });
+      } else {
+        setDisplayMsg((current) => (current?.ok === false ? null : current));
+      }
+    } catch {
+      setDisplayMsg({
+        ok: false,
+        text: "Erro de rede ao carregar escolhas de páginas",
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAdmin) fetchDisplaySettings();
+  }, [isAdmin, fetchDisplaySettings]);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    const channel = supabase
+      .channel("bonus-hunt-display-admin")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "bonus_hunt_page_display" },
+        () => fetchDisplaySettings(),
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "daily_sessions" },
+        () => fetchDisplaySettings(),
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [isAdmin, fetchDisplaySettings]);
+
+  async function setPageDisplayTarget(
+    target: BonusHuntDisplayTarget,
+    sessionId: string,
+  ) {
+    const key = `${target}:${sessionId}`;
+    setDisplaySaving(key);
+    setDisplayMsg(null);
+
+    try {
+      const res = await fetch("/api/bonus-hunt/display", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ target, sessionId }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setDisplayMsg({ ok: false, text: data.error ?? "Erro ao escolher hunt" });
+        return;
+      }
+
+      setDisplaySelections((current) => ({
+        ...current,
+        [target]: data.display.session_id,
+      }));
+      setDisplayMsg({
+        ok: true,
+        text: `${BONUS_HUNT_DISPLAY_LABELS[target]} atualizado.`,
+      });
+    } catch {
+      setDisplayMsg({ ok: false, text: "Erro de rede ao escolher hunt" });
+    } finally {
+      setDisplaySaving(null);
+    }
+  }
 
   /* Load jackpot on mount */
   useEffect(() => {
@@ -382,6 +487,7 @@ export default function AdminBonusHuntPage() {
       const res = await fetch(`/api/bonus-hunt/${id}`, { method: "DELETE" });
       if (res.ok) {
         setHistory((prev) => prev.filter((s) => s.id !== id));
+        await fetchDisplaySettings();
         setDeleteConfirm(null);
       } else {
         const data = await res.json();
@@ -1178,6 +1284,25 @@ export default function AdminBonusHuntPage() {
             <h3 className="font-[family-name:var(--font-display)] text-arena-gold text-lg tracking-wide mb-4">
               Histórico de Bonus Hunts
             </h3>
+            <div className="mb-3 flex items-center gap-3 flex-wrap text-xs">
+              <span className="text-arena-smoke/50">
+                Escolhe que hunt aparece em cada página pública.
+              </span>
+              <span
+                className={
+                  activeDailySession ? "text-green-400/70" : "text-amber-300/70"
+                }
+              >
+                {activeDailySession
+                  ? "Sessão do Dia ativa"
+                  : "Sessão do Dia sem sessão ativa"}
+              </span>
+              {displayMsg && (
+                <span className={displayMsg.ok ? "text-green-400" : "text-red-400"}>
+                  {displayMsg.text}
+                </span>
+              )}
+            </div>
 
             {historyLoading ? (
               <div className="text-arena-smoke/50 text-sm py-8 text-center">
@@ -1202,6 +1327,7 @@ export default function AdminBonusHuntPage() {
                       <th className="px-4 py-3">Avg Multi</th>
                       <th className="px-4 py-3">Best Multi</th>
                       <th className="px-4 py-3">Best Slot</th>
+                      <th className="px-4 py-3">Mostrar em</th>
                       <th className="px-4 py-3 text-right">Ações</th>
                     </tr>
                   </thead>
@@ -1265,6 +1391,47 @@ export default function AdminBonusHuntPage() {
                           <td className="px-4 py-3 text-arena-smoke/60 max-w-[120px] truncate">
                             {s.best_slot_name || "—"}
                           </td>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-1.5">
+                              {BONUS_HUNT_DISPLAY_TARGETS.map((target) => {
+                                const selected =
+                                  displaySelections[target] === s.id;
+                                const saving =
+                                  displaySaving === `${target}:${s.id}`;
+                                const dailyUnavailable =
+                                  target === "daily_session" &&
+                                  !activeDailySession;
+
+                                return (
+                                  <button
+                                    key={target}
+                                    onClick={() =>
+                                      setPageDisplayTarget(target, s.id)
+                                    }
+                                    disabled={saving || dailyUnavailable}
+                                    className={`px-2.5 py-1.5 text-[10px] rounded border transition-all cursor-pointer disabled:cursor-not-allowed ${
+                                      selected
+                                        ? "border-arena-gold/60 bg-arena-gold/15 text-arena-gold"
+                                        : dailyUnavailable
+                                          ? "border-arena-steel/10 text-arena-smoke/25"
+                                          : "border-arena-steel/20 text-arena-smoke/55 hover:border-arena-gold/40 hover:text-arena-gold"
+                                    }`}
+                                    title={
+                                      dailyUnavailable
+                                        ? "Sem Sessão do Dia ativa"
+                                        : `Mostrar em ${BONUS_HUNT_DISPLAY_LABELS[target]}`
+                                    }
+                                  >
+                                    {saving
+                                      ? "..."
+                                      : selected
+                                        ? `${DISPLAY_BUTTON_LABELS[target]} ativo`
+                                        : DISPLAY_BUTTON_LABELS[target]}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </td>
                           <td className="px-4 py-3 text-right">
                             <div className="flex items-center justify-end gap-2">
                               {/* Payouts panel toggle */}
@@ -1325,7 +1492,7 @@ export default function AdminBonusHuntPage() {
                         {guessHuntId === s.id && (
                           <tr>
                             <td
-                              colSpan={11}
+                              colSpan={12}
                               className="px-4 py-4 bg-amber-950/10 border-t border-amber-400/10"
                             >
                               <div className="space-y-3">
@@ -1607,7 +1774,7 @@ export default function AdminBonusHuntPage() {
                         {payoutsHuntId === s.id && (
                           <tr>
                             <td
-                              colSpan={11}
+                              colSpan={12}
                               className="px-4 py-4 bg-arena-charcoal/30 border-t border-arena-steel/10"
                             >
                               <div className="space-y-3">

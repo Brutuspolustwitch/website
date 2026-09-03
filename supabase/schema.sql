@@ -52,6 +52,17 @@ create table if not exists bonus_hunt_slots (
 
 create index idx_bonus_hunt_slots_session on bonus_hunt_slots(session_id);
 
+-- Bonus Hunt Page Display
+create table if not exists bonus_hunt_page_display (
+  target text primary key check (
+    target in ('bonus_hunt', 'adivinha_o_resultado', 'daily_session')
+  ),
+  session_id uuid not null references bonus_hunt_sessions(id) on delete cascade,
+  updated_at timestamptz not null default now()
+);
+
+create index idx_bonus_hunt_page_display_session on bonus_hunt_page_display(session_id);
+
 -- Slot Requests
 create table if not exists slot_requests (
   id uuid primary key default gen_random_uuid(),
@@ -145,12 +156,14 @@ create index idx_users_twitch_id on users(twitch_id);
 
 -- Enable Realtime for bonus hunt tracking
 alter publication supabase_realtime add table bonus_hunt_slots;
+alter publication supabase_realtime add table bonus_hunt_page_display;
 alter publication supabase_realtime add table slot_requests;
 alter publication supabase_realtime add table spin_history;
 
 -- Row Level Security (RLS)
 alter table bonus_hunt_sessions enable row level security;
 alter table bonus_hunt_slots enable row level security;
+alter table bonus_hunt_page_display enable row level security;
 alter table slot_requests enable row level security;
 alter table leaderboard enable row level security;
 alter table casino_affiliates enable row level security;
@@ -158,6 +171,7 @@ alter table casino_affiliates enable row level security;
 -- Public read access
 create policy "Public read sessions" on bonus_hunt_sessions for select using (true);
 create policy "Public read slots" on bonus_hunt_slots for select using (true);
+create policy "Public read bonus hunt page display" on bonus_hunt_page_display for select using (true);
 create policy "Public read requests" on slot_requests for select using (true);
 create policy "Public read leaderboard" on leaderboard for select using (true);
 create policy "Public read casinos" on casino_affiliates for select using (true);

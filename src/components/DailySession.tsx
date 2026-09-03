@@ -10,6 +10,8 @@ import type { CasinoOffer } from "@/components/OfferCard";
 import { BonusHuntTracker } from "@/components/BonusHuntTracker";
 import { SlotHighlightCard } from "@/components/SlotHighlightCard";
 
+const DAILY_SESSION_HUNT_TARGET = "daily_session";
+
 /* ═══════════════════════════════════════════════════════════════════
    TYPES
    ═══════════════════════════════════════════════════════════════════ */
@@ -270,15 +272,30 @@ export default function DailySessionContent() {
   // Fetch best & worst slots from latest bonus hunt session
   useEffect(() => {
     async function loadHighlightSlots() {
-      // Get latest session
-      const { data: sessions } = await supabase
-        .from("bonus_hunt_sessions")
-        .select("id")
-        .order("hunt_date", { ascending: false })
-        .order("created_at", { ascending: false })
-        .limit(1);
+      const display = await supabase
+        .from("bonus_hunt_page_display")
+        .select("session_id")
+        .eq("target", DAILY_SESSION_HUNT_TARGET)
+        .limit(1)
+        .maybeSingle();
 
-      if (!sessions || sessions.length === 0) {
+      let sessionId =
+        typeof display.data?.session_id === "string"
+          ? display.data.session_id
+          : null;
+
+      if (!sessionId) {
+        const { data: sessions } = await supabase
+          .from("bonus_hunt_sessions")
+          .select("id")
+          .order("hunt_date", { ascending: false })
+          .order("created_at", { ascending: false })
+          .limit(1);
+
+        sessionId = sessions?.[0]?.id ?? null;
+      }
+
+      if (!sessionId) {
         setBestSlot(null);
         setWorstSlot(null);
         return;
@@ -287,7 +304,7 @@ export default function DailySessionContent() {
       const { data: openedSlots } = await supabase
         .from("bonus_hunt_slots")
         .select("*")
-        .eq("session_id", sessions[0].id)
+        .eq("session_id", sessionId)
         .eq("opened", true)
         .not("payout", "is", null);
 
@@ -321,6 +338,14 @@ export default function DailySessionContent() {
     const ch = supabase
       .channel("slot-highlights")
       .on("postgres_changes", { event: "*", schema: "public", table: "bonus_hunt_sessions" }, () => {
+        loadHighlightSlots();
+      })
+      .on("postgres_changes", {
+        event: "*",
+        schema: "public",
+        table: "bonus_hunt_page_display",
+        filter: `target=eq.${DAILY_SESSION_HUNT_TARGET}`,
+      }, () => {
         loadHighlightSlots();
       })
       .on("postgres_changes", { event: "*", schema: "public", table: "bonus_hunt_slots" }, () => {
@@ -548,7 +573,7 @@ export default function DailySessionContent() {
                   )}
                   {/* Bonus Hunt — flex-1 takes full width when no best/worst sibling */}
                   <div className="flex-1 min-w-0 w-full">
-                    <BonusHuntTracker compact />
+                    <BonusHuntTracker compact displayTarget={DAILY_SESSION_HUNT_TARGET} />
                   </div>
                 </div>
               </motion.div>}

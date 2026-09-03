@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   supabase,
@@ -13,6 +13,8 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useAuth } from "@/lib/auth-context";
 import { LoginPromptModal } from "@/components/ui/LoginPromptModal";
+
+const ADIVINHA_DISPLAY_TARGET = "adivinha_o_resultado";
 
 /* ── Helpers ────────────────────────────────────────────────────────── */
 
@@ -36,18 +38,33 @@ function CornerOrnament({ className }: { className: string }) {
 
 type StatsTab = "war-stats" | "treasury" | "favor" | "records";
 
+interface RecentWinner {
+  id: string;
+  resolved_at: string | null;
+  winner_display_name: string | null;
+  winner_predicted_amount: number | null;
+  final_payout: number | null;
+  users?: {
+    profile_image_url: string | null;
+    login: string | null;
+  } | null;
+}
+
 /* ── Component ──────────────────────────────────────────────────────── */
 
 export function GuessTheSpoils({
   hideTitle = false,
 }: { hideTitle?: boolean } = {}) {
   // Recent winners for Histórico tab
-  const [recentWinners, setRecentWinners] = useState<any[]>([]);
+  const [recentWinners, setRecentWinners] = useState<RecentWinner[]>([]);
 
   const { user } = useAuth();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [campaigns, setCampaigns] = useState<BonusHuntSession[]>([]);
   const [idx, setIdx] = useState(0);
+  const manualCampaignSelection = useRef(false);
+  const selectedCampaignIdRef = useRef<string | null>(null);
+  const targetCampaignIdRef = useRef<string | null>(null);
   const [slots, setSlots] = useState<BonusHuntSlot[]>([]);
   const [tab, setTab] = useState<StatsTab>("war-stats");
   const [loading, setLoading] = useState(true);
@@ -117,17 +134,66 @@ export function GuessTheSpoils({
   /* Fetch all campaigns — same order as BonusHuntTracker/DailySession so every
      page agrees on which session is "current" (hunt_date first, then created_at). */
   const fetchCampaigns = useCallback(async () => {
-    const { data } = await supabase
-      .from("bonus_hunt_sessions")
-      .select("*")
-      .order("hunt_date", { ascending: false })
-      .order("created_at", { ascending: false });
-    if (data) setCampaigns(data as BonusHuntSession[]);
+    const [campaignsRes, displayRes] = await Promise.all([
+      supabase
+        .from("bonus_hunt_sessions")
+        .select("*")
+        .order("hunt_date", { ascending: false })
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("bonus_hunt_page_display")
+        .select("session_id")
+        .eq("target", ADIVINHA_DISPLAY_TARGET)
+        .limit(1)
+        .maybeSingle(),
+    ]);
+
+    const nextCampaigns = (campaignsRes.data ?? []) as BonusHuntSession[];
+    const previousTargetId = targetCampaignIdRef.current;
+    const configuredSessionId =
+      typeof displayRes.data?.session_id === "string"
+        ? displayRes.data.session_id
+        : null;
+    const configuredCampaign = configuredSessionId
+      ? nextCampaigns.find((campaign) => campaign.id === configuredSessionId) ?? null
+      : null;
+    const targetCampaign = configuredCampaign ?? nextCampaigns[0] ?? null;
+
+    targetCampaignIdRef.current = targetCampaign?.id ?? null;
+    setCampaigns(nextCampaigns);
+    setIdx((currentIdx) => {
+      if (!nextCampaigns.length || !targetCampaign) {
+        manualCampaignSelection.current = false;
+        return 0;
+      }
+
+      const currentCampaign = selectedCampaignIdRef.current
+        ? nextCampaigns.find((campaign) => campaign.id === selectedCampaignIdRef.current) ?? null
+        : nextCampaigns[currentIdx] ?? null;
+      const shouldFollowTarget =
+        !manualCampaignSelection.current ||
+        !currentCampaign ||
+        currentCampaign.id === previousTargetId;
+      const nextCampaign = shouldFollowTarget ? targetCampaign : currentCampaign;
+      const nextIndex = nextCampaigns.findIndex((campaign) => campaign.id === nextCampaign.id);
+
+      if (nextCampaign.id === targetCampaign.id) {
+        manualCampaignSelection.current = false;
+      }
+
+      return Math.max(0, nextIndex);
+    });
     setLoading(false);
   }, []);
 
   useEffect(() => {
-    fetchCampaigns();
+    const initialLoad = window.setTimeout(() => {
+      fetchCampaigns();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(initialLoad);
+    };
   }, [fetchCampaigns]);
 
   /* Real-time — pick up new/updated hunts (e.g. a new session starting) without a reload */
@@ -139,6 +205,16 @@ export function GuessTheSpoils({
         { event: "*", schema: "public", table: "bonus_hunt_sessions" },
         () => fetchCampaigns(),
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "bonus_hunt_page_display",
+          filter: `target=eq.${ADIVINHA_DISPLAY_TARGET}`,
+        },
+        () => fetchCampaigns(),
+      )
       .subscribe();
     return () => {
       supabase.removeChannel(channel);
@@ -148,6 +224,10 @@ export function GuessTheSpoils({
 
   /* Fetch slots for active campaign */
   const campaign = campaigns[idx];
+  useEffect(() => {
+    selectedCampaignIdRef.current = campaign?.id ?? null;
+  }, [campaign?.id]);
+
   useEffect(() => {
     if (!campaign) return;
     (async () => {
@@ -227,9 +307,16 @@ export function GuessTheSpoils({
 
   useEffect(() => {
     if (!campaign) return;
-    fetchGuessData(campaign.id);
-    setPredPage(0);
-  }, [campaign, fetchGuessData]);
+    const campaignId = campaign.id;
+    const refresh = window.setTimeout(() => {
+      fetchGuessData(campaignId);
+      setPredPage(0);
+    }, 0);
+
+    return () => {
+      window.clearTimeout(refresh);
+    };
+  }, [campaign?.id, fetchGuessData]);
 
   /* Realtime — reflect betting open/lock/resolve + new predictions instantly */
   useEffect(() => {
@@ -441,7 +528,14 @@ export function GuessTheSpoils({
                 {campaigns.length > 1 && (
                   <>
                     <button
-                      onClick={() => setIdx((p) => Math.max(0, p - 1))}
+                      onClick={() =>
+                        setIdx((p) => {
+                          const next = Math.max(0, p - 1);
+                          manualCampaignSelection.current =
+                            campaigns[next]?.id !== targetCampaignIdRef.current;
+                          return next;
+                        })
+                      }
                       disabled={idx === 0}
                       className="bh-nav-btn"
                       aria-label="Campanha anterior"
@@ -450,7 +544,12 @@ export function GuessTheSpoils({
                     </button>
                     <button
                       onClick={() =>
-                        setIdx((p) => Math.min(campaigns.length - 1, p + 1))
+                        setIdx((p) => {
+                          const next = Math.min(campaigns.length - 1, p + 1);
+                          manualCampaignSelection.current =
+                            campaigns[next]?.id !== targetCampaignIdRef.current;
+                          return next;
+                        })
                       }
                       disabled={idx === campaigns.length - 1}
                       className="bh-nav-btn"

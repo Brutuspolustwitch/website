@@ -55,6 +55,17 @@ export interface BonusHuntSlot {
   created_at: string;
 }
 
+export type BonusHuntDisplayTarget =
+  | "bonus_hunt"
+  | "adivinha_o_resultado"
+  | "daily_session";
+
+export interface BonusHuntPageDisplay {
+  target: BonusHuntDisplayTarget;
+  session_id: string;
+  updated_at: string;
+}
+
 export interface SlotRequest {
   id: string;
   user_name: string;
