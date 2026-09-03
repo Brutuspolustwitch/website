@@ -73,6 +73,10 @@ export async function POST(request: NextRequest) {
       hunt_name: result.huntName,
       phase: result.phase,
       created: result.created,
+      daily_session_updated: result.dailySession.updated,
+      daily_session_id: result.dailySession.sessionId,
+      daily_session_fields: result.dailySession.fields,
+      daily_session_error: result.dailySession.error,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Erro desconhecido";

@@ -54,7 +54,13 @@ export async function GET() {
 
   try {
     const result = await fetchAndImportFromStreamersCenter();
-    return NextResponse.json({ synced: true, phase: result.phase, session_id: result.sessionId });
+    return NextResponse.json({
+      synced: true,
+      phase: result.phase,
+      session_id: result.sessionId,
+      daily_session_updated: result.dailySession.updated,
+      daily_session_id: result.dailySession.sessionId,
+    });
   } catch (error) {
     if (!isStreamersCenterApiConfigError(error)) {
       console.error("[bonus-hunt/live] sync error:", error);

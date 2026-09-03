@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
@@ -31,6 +31,8 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
   const [loading, setLoading] = useState(true);
   const [sessionIdx, setSessionIdx] = useState(0);
   const [slotPage, setSlotPage] = useState(0);
+  const manualSessionSelection = useRef(false);
+  const latestSessionIdRef = useRef<string | null>(null);
   const SLOTS_PER_PAGE = 15;
 
   const loadSessions = useCallback(async () => {
@@ -41,19 +43,40 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
       .order("created_at", { ascending: false });
 
     const nextSessions = data ?? [];
+    const previousLatestId = latestSessionIdRef.current;
+    const latestSession = nextSessions[0] ?? null;
+    latestSessionIdRef.current = latestSession?.id ?? null;
     setSessions(nextSessions);
     setSelectedSession((current) => {
-      const nextSelected = current
-        ? nextSessions.find((session) => session.id === current.id) ?? nextSessions[0] ?? null
-        : nextSessions[0] ?? null;
-      setSessionIdx(Math.max(0, nextSessions.findIndex((session) => session.id === nextSelected?.id)));
+      if (!latestSession) {
+        manualSessionSelection.current = false;
+        setSessionIdx(0);
+        return null;
+      }
+
+      const currentSession = current
+        ? nextSessions.find((session) => session.id === current.id) ?? null
+        : null;
+      const shouldFollowLatest =
+        !manualSessionSelection.current ||
+        !currentSession ||
+        current?.id === previousLatestId;
+      const nextSelected = shouldFollowLatest ? latestSession : currentSession;
+      const nextIndex = nextSessions.findIndex((session) => session.id === nextSelected.id);
+
+      if (nextSelected.id === latestSession.id) {
+        manualSessionSelection.current = false;
+      }
+      setSessionIdx(Math.max(0, nextIndex));
       return nextSelected;
     });
     setLoading(false);
   }, []);
 
   useEffect(() => {
-    loadSessions();
+    const initialLoad = window.setTimeout(() => {
+      loadSessions();
+    }, 0);
 
     const channel = supabase
       .channel("bonus_hunt_sessions_live")
@@ -63,6 +86,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
       .subscribe();
 
     return () => {
+      window.clearTimeout(initialLoad);
       supabase.removeChannel(channel);
     };
   }, [loadSessions]);
@@ -89,7 +113,9 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
   /* Load slots when session changes */
   useEffect(() => {
     if (!selectedSession) return;
-    setSlotPage(0);
+    const pageReset = window.setTimeout(() => {
+      setSlotPage(0);
+    }, 0);
 
     async function loadSlots() {
       const { data } = await supabase
@@ -119,6 +145,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
       .subscribe();
 
     return () => {
+      window.clearTimeout(pageReset);
       supabase.removeChannel(channel);
     };
   }, [selectedSession]);
@@ -132,6 +159,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
   function prevSession() {
     if (sessionIdx < sessions.length - 1) {
       const next = sessionIdx + 1;
+      manualSessionSelection.current = next !== 0;
       setSessionIdx(next);
       setSelectedSession(sessions[next]);
     }
@@ -139,6 +167,7 @@ export function BonusHuntTracker({ compact = false, hideTitle = false }: { compa
   function nextSession() {
     if (sessionIdx > 0) {
       const next = sessionIdx - 1;
+      manualSessionSelection.current = next !== 0;
       setSessionIdx(next);
       setSelectedSession(sessions[next]);
     }

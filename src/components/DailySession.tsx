@@ -238,8 +238,8 @@ export default function DailySessionContent() {
     try {
       const res = await fetch("/api/daily-session");
       const data = await res.json();
-      if (data.session) setSession(data.session);
-      if (data.monthly) setMonthly(data.monthly);
+      setSession(data.session ?? null);
+      setMonthly(data.monthly ?? null);
     } finally {
       setLoading(false);
     }
@@ -278,7 +278,11 @@ export default function DailySessionContent() {
         .order("created_at", { ascending: false })
         .limit(1);
 
-      if (!sessions || sessions.length === 0) return;
+      if (!sessions || sessions.length === 0) {
+        setBestSlot(null);
+        setWorstSlot(null);
+        return;
+      }
 
       const { data: openedSlots } = await supabase
         .from("bonus_hunt_slots")
@@ -287,7 +291,11 @@ export default function DailySessionContent() {
         .eq("opened", true)
         .not("payout", "is", null);
 
-      if (!openedSlots || openedSlots.length === 0) return;
+      if (!openedSlots || openedSlots.length === 0) {
+        setBestSlot(null);
+        setWorstSlot(null);
+        return;
+      }
 
       // Calculate multiplier for each and find best/worst
       let best: BonusHuntSlot | null = null;
@@ -312,6 +320,9 @@ export default function DailySessionContent() {
     // Also listen for slot updates
     const ch = supabase
       .channel("slot-highlights")
+      .on("postgres_changes", { event: "*", schema: "public", table: "bonus_hunt_sessions" }, () => {
+        loadHighlightSlots();
+      })
       .on("postgres_changes", { event: "*", schema: "public", table: "bonus_hunt_slots" }, () => {
         loadHighlightSlots();
       })

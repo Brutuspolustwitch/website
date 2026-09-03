@@ -52,6 +52,25 @@ export interface SourceBonus {
   max_win_multiplier?: number | null;
 }
 
+export interface SourceDailySession {
+  deposits?: number;
+  deposit?: number;
+  total_deposits?: number;
+  totalDeposits?: number;
+  withdrawals?: number;
+  withdrawal?: number;
+  total_withdrawals?: number;
+  totalWithdrawals?: number;
+  bonuses_count?: number;
+  bonusesCount?: number;
+  biggest_win?: number;
+  biggestWin?: number;
+  wager_target?: number;
+  wagerTarget?: number;
+  wager_done?: number;
+  wagerDone?: number;
+}
+
 export interface SourceBonusHunt {
   hunt_name?: string;
   huntName?: string;
@@ -90,6 +109,24 @@ export interface SourceBonusHunt {
   liveBreakEven?: number;
   best_slot_name?: string;
   bestSlotName?: string;
+  daily_session?: SourceDailySession;
+  dailySession?: SourceDailySession;
+  deposits?: number;
+  deposit?: number;
+  total_deposits?: number;
+  totalDeposits?: number;
+  withdrawals?: number;
+  withdrawal?: number;
+  total_withdrawals?: number;
+  totalWithdrawals?: number;
+  bonuses_count?: number;
+  bonusesCount?: number;
+  biggest_win?: number;
+  biggestWin?: number;
+  wager_target?: number;
+  wagerTarget?: number;
+  wager_done?: number;
+  wagerDone?: number;
   bonuses?: SourceBonus[];
   slots?: SourceBonus[];
   items?: SourceBonus[];
@@ -105,6 +142,12 @@ export interface ImportBonusHuntResult {
   huntName: string;
   phase: "hunting" | "opening" | "completed";
   created: boolean;
+  dailySession: {
+    updated: boolean;
+    sessionId: string | null;
+    fields: string[];
+    error?: string;
+  };
 }
 
 function num(value: unknown, fallback = 0) {
@@ -127,6 +170,20 @@ function normalizeHuntDate(value: string | undefined) {
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) return value;
   return parsed.toISOString().slice(0, 10);
+}
+
+function optionalNum(value: unknown) {
+  if (value === null || value === undefined || value === "") return null;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
+function firstNumber(...values: unknown[]) {
+  for (const value of values) {
+    const n = optionalNum(value);
+    if (n !== null) return n;
+  }
+  return null;
 }
 
 // B.E. = multiplier needed on ALL bonuses to hit the target; Live B.E. = multiplier needed
@@ -189,6 +246,136 @@ async function findSessionForUpsert(huntName: string, huntDate: string | null) {
   }
 
   return null;
+}
+
+async function findDailySessionForSync(huntDate: string | null) {
+  const db = supabase();
+  const active = await db
+    .from("daily_sessions")
+    .select("id")
+    .eq("is_active", true)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (active.error) throw active.error;
+  if (active.data?.id) return active.data.id as string;
+
+  if (!huntDate) return null;
+
+  const sameDate = await db
+    .from("daily_sessions")
+    .select("id")
+    .eq("session_date", huntDate)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (sameDate.error) throw sameDate.error;
+  return (sameDate.data?.id as string | undefined) ?? null;
+}
+
+async function syncDailySessionFromBonusHunt(
+  data: SourceBonusHunt,
+  huntDate: string | null,
+  bonusCount: number,
+  slotRows: Array<{ opened: boolean; payout: number | null; result: number | null }>,
+): Promise<ImportBonusHuntResult["dailySession"]> {
+  let dailySessionId: string | null = null;
+  try {
+    dailySessionId = await findDailySessionForSync(huntDate);
+  } catch (error) {
+    return {
+      updated: false,
+      sessionId: null,
+      fields: [],
+      error:
+        error instanceof Error
+          ? error.message
+          : "Erro ao procurar sessao do dia.",
+    };
+  }
+
+  if (!dailySessionId) {
+    return { updated: false, sessionId: null, fields: [] };
+  }
+
+  const daily = data.daily_session ?? data.dailySession ?? {};
+  const biggestSlotPayout = slotRows.reduce((max, slot) => {
+    if (!slot.opened) return max;
+    return Math.max(max, optionalNum(slot.payout ?? slot.result) ?? 0);
+  }, 0);
+
+  const patch: Record<string, number | string> = {
+    bonuses_count: Math.max(
+      0,
+      Math.round(
+        firstNumber(daily.bonuses_count, daily.bonusesCount, data.bonuses_count, data.bonusesCount) ??
+          bonusCount,
+      ),
+    ),
+    biggest_win:
+      firstNumber(daily.biggest_win, daily.biggestWin, data.biggest_win, data.biggestWin) ??
+      biggestSlotPayout,
+    updated_at: new Date().toISOString(),
+  };
+
+  const deposits = firstNumber(
+    daily.deposits,
+    daily.deposit,
+    daily.total_deposits,
+    daily.totalDeposits,
+    data.deposits,
+    data.deposit,
+    data.total_deposits,
+    data.totalDeposits,
+  );
+  if (deposits !== null) patch.deposits = deposits;
+
+  const withdrawals = firstNumber(
+    daily.withdrawals,
+    daily.withdrawal,
+    daily.total_withdrawals,
+    daily.totalWithdrawals,
+    data.withdrawals,
+    data.withdrawal,
+    data.total_withdrawals,
+    data.totalWithdrawals,
+  );
+  if (withdrawals !== null) patch.withdrawals = withdrawals;
+
+  const wagerTarget = firstNumber(
+    daily.wager_target,
+    daily.wagerTarget,
+    data.wager_target,
+    data.wagerTarget,
+  );
+  if (wagerTarget !== null) patch.wager_target = wagerTarget;
+
+  const wagerDone = firstNumber(
+    daily.wager_done,
+    daily.wagerDone,
+    data.wager_done,
+    data.wagerDone,
+  );
+  if (wagerDone !== null) patch.wager_done = wagerDone;
+
+  const { error } = await supabase()
+    .from("daily_sessions")
+    .update(patch)
+    .eq("id", dailySessionId);
+
+  const fields = Object.keys(patch).filter((field) => field !== "updated_at");
+  if (error) {
+    return {
+      updated: false,
+      sessionId: dailySessionId,
+      fields,
+      error: error.message,
+    };
+  }
+
+  return { updated: true, sessionId: dailySessionId, fields };
 }
 
 export async function importBonusHunt(
@@ -328,12 +515,20 @@ export async function importBonusHunt(
     throw new Error("Erro ao inserir slots: " + slotsError.message);
   }
 
+  const dailySession = await syncDailySessionFromBonusHunt(
+    data,
+    huntDate,
+    Number(sessionPayload.bonus_count) || slotRows.length,
+    slotRows,
+  );
+
   return {
     sessionId,
     slotsImported: slotRows.length,
     huntName,
     phase,
     created: !existingSessionId,
+    dailySession,
   };
 }
 

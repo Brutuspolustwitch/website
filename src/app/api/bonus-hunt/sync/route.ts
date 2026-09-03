@@ -60,6 +60,10 @@ export async function POST() {
       hunt_name: result.huntName,
       phase: result.phase,
       created: result.created,
+      daily_session_updated: result.dailySession.updated,
+      daily_session_id: result.dailySession.sessionId,
+      daily_session_fields: result.dailySession.fields,
+      daily_session_error: result.dailySession.error,
       source: "streamers_center_api",
     });
   } catch (error) {
@@ -81,6 +85,10 @@ export async function GET(request: NextRequest) {
       hunt_name: result.huntName,
       phase: result.phase,
       created: result.created,
+      daily_session_updated: result.dailySession.updated,
+      daily_session_id: result.dailySession.sessionId,
+      daily_session_fields: result.dailySession.fields,
+      daily_session_error: result.dailySession.error,
       source: "streamers_center_api",
     });
   } catch (error) {

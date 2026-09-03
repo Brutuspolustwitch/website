@@ -17,6 +17,10 @@ interface ImportResult {
   hunt_name?: string;
   phase?: string;
   created?: boolean;
+  daily_session_updated?: boolean;
+  daily_session_id?: string | null;
+  daily_session_fields?: string[];
+  daily_session_error?: string;
   source?: string;
   error?: string;
 }
@@ -709,6 +713,22 @@ export default function AdminBonusHuntPage() {
                 Sincronizado: {syncResult.hunt_name} -{" "}
                 {syncResult.slots_imported} slots{" "}
                 {syncResult.created ? "criados" : "atualizados"}.
+                {syncResult.daily_session_error ? (
+                  <span className="text-amber-300">
+                    {" "}
+                    Sessão do Dia: {syncResult.daily_session_error}
+                  </span>
+                ) : syncResult.daily_session_updated ? (
+                  <span>
+                    {" "}
+                    Sessão do Dia atualizada.
+                  </span>
+                ) : (
+                  <span className="text-arena-smoke/50">
+                    {" "}
+                    Sem Sessão do Dia ativa ou com a mesma data.
+                  </span>
+                )}
               </p>
             )}
             <div className="mt-4 pt-4 border-t border-arena-steel/20">
@@ -1091,6 +1111,13 @@ export default function AdminBonusHuntPage() {
                 <p className="text-green-400/70 text-sm">
                   &quot;{result.hunt_name}&quot; — {result.slots_imported} slots
                   importados com sucesso.
+                </p>
+                <p className="mt-2 text-xs text-green-400/60">
+                  {result.daily_session_error
+                    ? `Sessão do Dia: ${result.daily_session_error}`
+                    : result.daily_session_updated
+                      ? "Sessão do Dia atualizada."
+                      : "Sem Sessão do Dia ativa ou com a mesma data."}
                 </p>
                 <button
                   onClick={handleReset}
