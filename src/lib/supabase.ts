@@ -134,6 +134,38 @@ export interface UserRow {
   updated_at: string;
 }
 
+export interface DailyRewardProfileRow {
+  user_twitch_id: string;
+  user_id: string | null;
+  login: string;
+  se_username: string | null;
+  current_streak: number;
+  best_streak: number;
+  last_claimed_date: string | null;
+  total_claimed_points: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DailyRewardClaimRow {
+  id: string;
+  user_twitch_id: string;
+  user_id: string | null;
+  claim_date: string;
+  streak_count: number;
+  cycle_day: number;
+  base_amount: number;
+  multiplier: number | string;
+  streak_bonus: number;
+  total_amount: number;
+  se_username: string;
+  se_awarded: boolean;
+  se_error: string | null;
+  processing_started_at: string | null;
+  created_at: string;
+  awarded_at: string | null;
+}
+
 export interface CasinoOfferRow {
   id: string;
   slug: string;

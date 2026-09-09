@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { Footer } from "@/components/Footer";
 import { AgeGate } from "@/components/AgeGate";
 import { CookieConsent } from "@/components/CookieConsent";
+import { DailyRewardModal } from "@/components/DailyRewardModal";
 import { AuthProvider } from "@/lib/auth-context";
 import PageViewTracker from "@/components/PageViewTracker";
 import { DynamicPageBackground } from "@/components/DynamicPageBackground";
@@ -32,6 +33,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         <AgeGate />
         <CookieConsent />
+        <DailyRewardModal />
       </div>
     </AuthProvider>
   );

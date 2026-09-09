@@ -122,6 +122,21 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
       .catch(() => {});
   }, [user]);
 
+  useEffect(() => {
+    const handlePointsUpdated = (event: Event) => {
+      const detail = (event as CustomEvent<{ points?: number; delta?: number }>).detail;
+      if (typeof detail?.points === "number") {
+        setPoints(detail.points);
+      } else if (typeof detail?.delta === "number") {
+        const delta = detail.delta;
+        setPoints((current) => current + delta);
+      }
+    };
+
+    window.addEventListener("se-points-updated", handlePointsUpdated);
+    return () => window.removeEventListener("se-points-updated", handlePointsUpdated);
+  }, []);
+
   // Fetch unread notification count
   useEffect(() => {
     if (!user) return;
