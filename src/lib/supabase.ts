@@ -162,6 +162,32 @@ export interface CasinoOfferRow {
   updated_at: string;
 }
 
+export interface ExternalOfferSiteRow {
+  id: string;
+  slug: string;
+  name: string;
+  title: string;
+  description: string;
+  cta_label: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ExternalOfferSiteItemRow {
+  id: string;
+  site_id: string;
+  offer_id: string;
+  visible: boolean;
+  featured: boolean;
+  sort_order: number;
+  custom_headline: string | null;
+  custom_bonus_value: string | null;
+  custom_cta_label: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface WheelSegmentRow {
   id: string;
   label: string;

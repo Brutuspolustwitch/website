@@ -1,6 +1,5 @@
 "use client";
 
-import type { Metadata } from "next";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -22,6 +21,15 @@ const ADMIN_CATEGORIES = [
     color: "from-green-600/20 to-green-500/10",
     borderColor: "border-green-500/30",
     hoverColor: "hover:border-green-500/50",
+  },
+  {
+    href: "/admin/external-sites",
+    title: "Sites Externos",
+    description: "Controlar ofertas publicadas noutros websites",
+    icon: "🌐",
+    color: "from-cyan-600/20 to-cyan-500/10",
+    borderColor: "border-cyan-500/30",
+    hoverColor: "hover:border-cyan-500/50",
   },
   {
     href: "/admin/outros/daily-wheel",
