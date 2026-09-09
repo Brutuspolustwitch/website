@@ -4,21 +4,9 @@ import {
   DEFAULT_EXTERNAL_OFFER_SITE,
   isExternalOfferSiteSlug,
 } from "@/lib/externalOfferSites";
-import type {
-  CasinoOfferRow,
-  ExternalOfferSiteItemRow,
-  ExternalOfferSiteRow,
-} from "@/lib/supabase";
+import type { ExternalOfferSiteRow, ExternalSiteOfferRow } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
-
-type OfferForFeed = Omit<CasinoOfferRow, "affiliate_url" | "is_exclusive"> & {
-  is_exclusive?: boolean;
-};
-
-type FeedItemRow = ExternalOfferSiteItemRow & {
-  casino_offers: OfferForFeed | OfferForFeed[] | null;
-};
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -43,10 +31,11 @@ function publicBaseUrl(request: Request) {
 }
 
 function absoluteUrl(value: string | null | undefined, baseUrl: string) {
-  if (!value) return null;
-  if (/^https?:\/\//i.test(value)) return value;
-  if (value.startsWith("/")) return `${baseUrl}${value}`;
-  return value;
+  const clean = value?.trim();
+  if (!clean) return null;
+  if (/^https?:\/\//i.test(clean)) return clean;
+  if (clean.startsWith("/")) return `${baseUrl}${clean}`;
+  return clean;
 }
 
 export function OPTIONS() {
@@ -93,46 +82,9 @@ export async function GET(request: Request) {
   }
 
   const { data, error } = await supabase
-    .from("external_offer_site_items")
+    .from("external_site_offers")
     .select(
-      `
-      id,
-      site_id,
-      offer_id,
-      visible,
-      featured,
-      sort_order,
-      custom_headline,
-      custom_bonus_value,
-      custom_cta_label,
-      created_at,
-      updated_at,
-      casino_offers (
-        id,
-        slug,
-        name,
-        logo_url,
-        logo_bg,
-        banner_url,
-        badge,
-        tags,
-        headline,
-        bonus_value,
-        free_spins,
-        min_deposit,
-        code,
-        cashback,
-        withdraw_time,
-        license,
-        established,
-        notes,
-        rating,
-        visible,
-        sort_order,
-        created_at,
-        updated_at
-      )
-    `,
+      "id, site_id, slug, name, logo_url, logo_bg, banner_url, badge, tags, headline, bonus_value, free_spins, min_deposit, code, cashback, withdraw_time, license, established, notes, rating, visible, featured, sort_order, cta_label, created_at, updated_at",
     )
     .eq("site_id", site.id)
     .eq("visible", true)
@@ -143,39 +95,30 @@ export async function GET(request: Request) {
   }
 
   const baseUrl = publicBaseUrl(request);
-  const offers = ((data ?? []) as FeedItemRow[]).flatMap((item) => {
-    const offer = Array.isArray(item.casino_offers)
-      ? item.casino_offers[0]
-      : item.casino_offers;
-    if (!offer || offer.visible === false) return [];
-
-    return [
-      {
-        id: offer.id,
-        slug: offer.slug,
-        name: offer.name,
-        logoUrl: absoluteUrl(offer.logo_url, baseUrl),
-        logoBg: offer.logo_bg,
-        bannerUrl: absoluteUrl(offer.banner_url, baseUrl),
-        badge: offer.badge,
-        tags: offer.tags ?? [],
-        headline: item.custom_headline || offer.headline,
-        bonusValue: item.custom_bonus_value || offer.bonus_value,
-        freeSpins: offer.free_spins,
-        minDeposit: offer.min_deposit,
-        code: offer.code,
-        cashback: offer.cashback,
-        withdrawTime: offer.withdraw_time,
-        license: offer.license,
-        established: offer.established,
-        notes: offer.notes ?? [],
-        rating: Number(offer.rating ?? 4.5),
-        featured: item.featured,
-        ctaLabel: item.custom_cta_label || site.cta_label,
-        url: `${baseUrl}/go/${offer.slug}`,
-      },
-    ];
-  });
+  const offers = ((data ?? []) as ExternalSiteOfferRow[]).map((offer) => ({
+    id: offer.id,
+    slug: offer.slug,
+    name: offer.name,
+    logoUrl: absoluteUrl(offer.logo_url, baseUrl),
+    logoBg: offer.logo_bg,
+    bannerUrl: absoluteUrl(offer.banner_url, baseUrl),
+    badge: offer.badge,
+    tags: offer.tags ?? [],
+    headline: offer.headline,
+    bonusValue: offer.bonus_value,
+    freeSpins: offer.free_spins,
+    minDeposit: offer.min_deposit,
+    code: offer.code,
+    cashback: offer.cashback,
+    withdrawTime: offer.withdraw_time,
+    license: offer.license,
+    established: offer.established,
+    notes: offer.notes ?? [],
+    rating: Number(offer.rating ?? 5),
+    featured: offer.featured,
+    ctaLabel: offer.cta_label || site.cta_label,
+    url: `${baseUrl}/go/${offer.slug}?site=${encodeURIComponent(site.slug)}`,
+  }));
 
   return json({
     site: {

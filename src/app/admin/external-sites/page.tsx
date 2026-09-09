@@ -2,29 +2,40 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import type { CasinoOfferRow, ExternalOfferSiteRow } from "@/lib/supabase";
+import type { ExternalOfferSiteRow, ExternalSiteOfferRow } from "@/lib/supabase";
 import { DEFAULT_EXTERNAL_OFFER_SITE } from "@/lib/externalOfferSites";
 
-type ExternalCasinoOffer = Omit<CasinoOfferRow, "is_exclusive"> & {
-  is_exclusive?: boolean;
-};
-
-type ExternalOfferAdminItem = {
+type EditableOffer = {
+  localKey: string;
   id: string | null;
-  offer_id: string;
+  slug: string;
+  name: string;
+  logoUrl: string;
+  logoBg: string;
+  bannerUrl: string;
+  badge: "" | "NEW" | "HOT" | "TOP";
+  tags: string;
+  headline: string;
+  bonusValue: string;
+  freeSpins: string;
+  minDeposit: string;
+  code: string;
+  cashback: string;
+  withdrawTime: string;
+  license: string;
+  established: string;
+  notes: string;
+  affiliateUrl: string;
+  offerCtaLabel: string;
+  rating: string;
   visible: boolean;
   featured: boolean;
-  sort_order: number;
-  custom_headline: string | null;
-  custom_bonus_value: string | null;
-  custom_cta_label: string | null;
-  offer: ExternalCasinoOffer;
+  sortOrder: number;
 };
 
 type ApiResponse = {
   site?: ExternalOfferSiteRow;
-  items?: ExternalOfferAdminItem[];
+  offers?: ExternalSiteOfferRow[];
   error?: string;
 };
 
@@ -37,13 +48,100 @@ function getPublicOrigin() {
   );
 }
 
-function normalizeOrder(items: ExternalOfferAdminItem[]) {
-  return items.map((item, index) => ({ ...item, sort_order: index }));
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
+
+function listToText(value: string[]) {
+  return value.join("\n");
+}
+
+function textToList(value: string) {
+  return value
+    .split(/\r?\n|,/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function canPreviewImage(value: string) {
+  const clean = value.trim();
+  return clean.startsWith("/") || /^https?:\/\//i.test(clean);
+}
+
+function normalizeOrder(offers: EditableOffer[]) {
+  return offers.map((offer, index) => ({ ...offer, sortOrder: index }));
+}
+
+function toEditableOffer(offer: ExternalSiteOfferRow): EditableOffer {
+  return {
+    localKey: offer.id,
+    id: offer.id,
+    slug: offer.slug,
+    name: offer.name,
+    logoUrl: offer.logo_url ?? "",
+    logoBg: offer.logo_bg,
+    bannerUrl: offer.banner_url ?? "",
+    badge: offer.badge ?? "",
+    tags: listToText(offer.tags ?? []),
+    headline: offer.headline,
+    bonusValue: offer.bonus_value,
+    freeSpins: offer.free_spins,
+    minDeposit: offer.min_deposit,
+    code: offer.code,
+    cashback: offer.cashback ?? "",
+    withdrawTime: offer.withdraw_time,
+    license: offer.license,
+    established: offer.established,
+    notes: listToText(offer.notes ?? []),
+    affiliateUrl: offer.affiliate_url,
+    offerCtaLabel: offer.cta_label ?? "",
+    rating: String(offer.rating ?? 5),
+    visible: offer.visible,
+    featured: offer.featured,
+    sortOrder: offer.sort_order,
+  };
+}
+
+function createEmptyOffer(nextOrder: number): EditableOffer {
+  return {
+    localKey: `new-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    id: null,
+    slug: "",
+    name: "",
+    logoUrl: "",
+    logoBg: "#666666",
+    bannerUrl: "",
+    badge: "",
+    tags: "",
+    headline: "",
+    bonusValue: "",
+    freeSpins: "",
+    minDeposit: "",
+    code: "",
+    cashback: "",
+    withdrawTime: "0 - 24h",
+    license: "Portugal",
+    established: "",
+    notes: "",
+    affiliateUrl: "",
+    offerCtaLabel: "",
+    rating: "5",
+    visible: true,
+    featured: false,
+    sortOrder: nextOrder,
+  };
 }
 
 export default function ExternalSitesAdminPage() {
   const [site, setSite] = useState<ExternalOfferSiteRow | null>(null);
-  const [items, setItems] = useState<ExternalOfferAdminItem[]>([]);
+  const [offers, setOffers] = useState<EditableOffer[]>([]);
+  const [deletedOfferIds, setDeletedOfferIds] = useState<string[]>([]);
   const [title, setTitle] = useState<string>(DEFAULT_EXTERNAL_OFFER_SITE.title);
   const [description, setDescription] = useState<string>(
     DEFAULT_EXTERNAL_OFFER_SITE.description,
@@ -64,18 +162,15 @@ export default function ExternalSitesAdminPage() {
   const embedSnippet = `<div id="arena-dos-bonus-offers"></div>
 <script src="${widgetUrl}" data-site="${SITE_SLUG}" data-target="arena-dos-bonus-offers"></script>`;
 
-  const sortedItems = useMemo(
+  const sortedOffers = useMemo(
     () =>
-      [...items].sort(
-        (a, b) =>
-          a.sort_order - b.sort_order || a.offer.name.localeCompare(b.offer.name),
+      [...offers].sort(
+        (a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name),
       ),
-    [items],
+    [offers],
   );
 
-  const enabledCount = sortedItems.filter(
-    (item) => item.visible && item.offer.visible,
-  ).length;
+  const enabledCount = sortedOffers.filter((offer) => offer.visible).length;
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -101,7 +196,8 @@ export default function ExternalSitesAdminPage() {
       setCtaLabel(data.site.cta_label);
       setIsActive(data.site.is_active);
     }
-    setItems(normalizeOrder(data.items ?? []));
+    setOffers(normalizeOrder((data.offers ?? []).map(toEditableOffer)));
+    setDeletedOfferIds([]);
     setLoading(false);
   }, []);
 
@@ -113,95 +209,160 @@ export default function ExternalSitesAdminPage() {
     return () => window.clearTimeout(timer);
   }, [load]);
 
-  function updateItem(
-    offerId: string,
-    patch: Partial<ExternalOfferAdminItem>,
-  ) {
-    setItems((current) =>
-      current.map((item) =>
-        item.offer_id === offerId ? { ...item, ...patch } : item,
+  function updateOffer(localKey: string, patch: Partial<EditableOffer>) {
+    setOffers((current) =>
+      current.map((offer) =>
+        offer.localKey === localKey ? { ...offer, ...patch } : offer,
       ),
     );
   }
 
-  function moveItem(offerId: string, direction: -1 | 1) {
-    setItems((current) => {
+  function addOffer() {
+    setOffers((current) => [...current, createEmptyOffer(current.length)]);
+  }
+
+  function deleteOffer(offer: EditableOffer) {
+    if (!confirm(`Apagar a oferta "${offer.name || "sem nome"}"?`)) return;
+
+    setOffers((current) =>
+      normalizeOrder(current.filter((item) => item.localKey !== offer.localKey)),
+    );
+    if (offer.id) {
+      setDeletedOfferIds((current) => [...current, offer.id as string]);
+    }
+  }
+
+  function moveOffer(localKey: string, direction: -1 | 1) {
+    setOffers((current) => {
       const ordered = normalizeOrder(
         [...current].sort(
-          (a, b) =>
-            a.sort_order - b.sort_order ||
-            a.offer.name.localeCompare(b.offer.name),
+          (a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name),
         ),
       );
-      const index = ordered.findIndex((item) => item.offer_id === offerId);
+      const index = ordered.findIndex((offer) => offer.localKey === localKey);
       const nextIndex = index + direction;
       if (index < 0 || nextIndex < 0 || nextIndex >= ordered.length) {
         return current;
       }
 
-      const [item] = ordered.splice(index, 1);
-      ordered.splice(nextIndex, 0, item);
+      const [offer] = ordered.splice(index, 1);
+      ordered.splice(nextIndex, 0, offer);
       return normalizeOrder(ordered);
     });
   }
 
   async function copy(text: string) {
-    await navigator.clipboard?.writeText(text);
+    if (!navigator.clipboard) {
+      setMessage({ ok: false, text: "Clipboard indisponível neste browser." });
+      return;
+    }
+    await navigator.clipboard.writeText(text);
     setMessage({ ok: true, text: "Copiado." });
   }
 
   async function save() {
-    setSaving(true);
-    setMessage(null);
+    const normalizedOffers = normalizeOrder(sortedOffers);
+    const slugs = normalizedOffers.map((offer) => slugify(offer.slug));
+    const duplicateSlug = slugs.find(
+      (slug, index) => slug && slugs.indexOf(slug) !== index,
+    );
+    const incomplete = normalizedOffers.find(
+      (offer) =>
+        !offer.name.trim() ||
+        !slugify(offer.slug || offer.name) ||
+        !offer.headline.trim() ||
+        !offer.affiliateUrl.trim(),
+    );
 
-    const res = await fetch("/api/admin/external-offers", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        siteSlug: SITE_SLUG,
-        site: {
-          title,
-          description,
-          ctaLabel,
-          isActive,
-        },
-        items: normalizeOrder(sortedItems).map((item) => ({
-          offerId: item.offer_id,
-          visible: item.visible,
-          featured: item.featured,
-          sortOrder: item.sort_order,
-          customHeadline: item.custom_headline,
-          customBonusValue: item.custom_bonus_value,
-          customCtaLabel: item.custom_cta_label,
-        })),
-      }),
-    });
-    const data = (await res.json()) as ApiResponse;
-
-    if (!res.ok || data.error) {
-      setMessage({
-        ok: false,
-        text: data.error ?? "Erro ao guardar alterações.",
-      });
-      setSaving(false);
+    if (duplicateSlug) {
+      setMessage({ ok: false, text: `Slug repetido: ${duplicateSlug}` });
       return;
     }
 
-    if (data.site) {
-      setSite(data.site);
-      setTitle(data.site.title);
-      setDescription(data.site.description);
-      setCtaLabel(data.site.cta_label);
-      setIsActive(data.site.is_active);
+    if (incomplete) {
+      setMessage({
+        ok: false,
+        text: "Cada oferta precisa de nome, slug, headline e link afiliado.",
+      });
+      return;
     }
-    setItems(normalizeOrder(data.items ?? []));
-    setMessage({ ok: true, text: "Arena dos Bónus atualizada." });
-    setSaving(false);
+
+    setSaving(true);
+    setMessage(null);
+
+    try {
+      const res = await fetch("/api/admin/external-offers", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          siteSlug: SITE_SLUG,
+          site: {
+            title,
+            description,
+            ctaLabel,
+            isActive,
+          },
+          deletedOfferIds,
+          offers: normalizedOffers.map((offer) => ({
+            id: offer.id,
+            slug: slugify(offer.slug || offer.name),
+            name: offer.name,
+            logoUrl: offer.logoUrl,
+            logoBg: offer.logoBg,
+            bannerUrl: offer.bannerUrl,
+            badge: offer.badge,
+            tags: textToList(offer.tags),
+            headline: offer.headline,
+            bonusValue: offer.bonusValue,
+            freeSpins: offer.freeSpins,
+            minDeposit: offer.minDeposit,
+            code: offer.code,
+            cashback: offer.cashback,
+            withdrawTime: offer.withdrawTime,
+            license: offer.license,
+            established: offer.established,
+            notes: textToList(offer.notes),
+            affiliateUrl: offer.affiliateUrl,
+            ctaLabel: offer.offerCtaLabel,
+            rating: Number(offer.rating) || 5,
+            visible: offer.visible,
+            featured: offer.featured,
+            sortOrder: offer.sortOrder,
+          })),
+        }),
+      });
+      const data = (await res.json()) as ApiResponse;
+
+      if (!res.ok || data.error) {
+        setMessage({
+          ok: false,
+          text: data.error ?? "Erro ao guardar alterações.",
+        });
+        return;
+      }
+
+      if (data.site) {
+        setSite(data.site);
+        setTitle(data.site.title);
+        setDescription(data.site.description);
+        setCtaLabel(data.site.cta_label);
+        setIsActive(data.site.is_active);
+      }
+      setOffers(normalizeOrder((data.offers ?? []).map(toEditableOffer)));
+      setDeletedOfferIds([]);
+      setMessage({ ok: true, text: "Arena dos Bónus atualizada." });
+    } catch (error) {
+      const text =
+        error instanceof Error ? error.message : "Erro ao guardar alterações.";
+      setMessage({ ok: false, text });
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
     <div className="pt-24 pb-16 min-h-screen">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-arena-smoke/50">
@@ -211,16 +372,18 @@ export default function ExternalSitesAdminPage() {
               Arena dos Bónus
             </h1>
             <p className="text-sm text-arena-smoke/60 mt-2 max-w-2xl">
-              Controla as ofertas que aparecem no site externo. As alterações
-              saem pela API pública e pelo widget JavaScript.
+              Controla uma lista de ofertas própria para o Arena dos Bónus. Esta
+              lista não altera as parcerias que aparecem no Brutuspolus.
             </p>
           </div>
-          <Link
-            href="/admin/parcerias"
-            className="px-4 py-2 rounded-lg border border-arena-gold/25 text-arena-gold text-xs uppercase tracking-wider hover:bg-arena-gold/10 transition-colors"
+          <button
+            type="button"
+            onClick={addOffer}
+            disabled={loading}
+            className="px-5 py-2.5 rounded-lg bg-arena-gold/15 border border-arena-gold/35 text-arena-gold text-xs uppercase tracking-wider font-bold hover:bg-arena-gold/25 disabled:opacity-50 transition-colors"
           >
-            Editar Parcerias
-          </Link>
+            + Nova Oferta
+          </button>
         </div>
 
         {message && (
@@ -330,10 +493,10 @@ export default function ExternalSitesAdminPage() {
           <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between gap-3 flex-wrap">
             <div>
               <h2 className="font-[family-name:var(--font-display)] text-arena-gold text-sm tracking-widest uppercase">
-                Ofertas no Arena dos Bónus
+                Ofertas próprias do Arena
               </h2>
               <p className="text-xs text-arena-smoke/50 mt-1">
-                A ordem aqui é a ordem no site externo.
+                Estes dados só alimentam arenadosbonus.com.
               </p>
             </div>
             <button
@@ -350,25 +513,32 @@ export default function ExternalSitesAdminPage() {
             <div className="p-10 text-center text-arena-smoke/60">
               A carregar ofertas...
             </div>
-          ) : sortedItems.length === 0 ? (
+          ) : sortedOffers.length === 0 ? (
             <div className="p-10 text-center text-arena-smoke/60">
-              Sem parcerias criadas ainda.
+              <p>Sem ofertas para o Arena dos Bónus ainda.</p>
+              <button
+                type="button"
+                onClick={addOffer}
+                className="mt-4 text-arena-gold hover:underline"
+              >
+                Criar primeira oferta
+              </button>
             </div>
           ) : (
             <div className="divide-y divide-white/10">
-              {sortedItems.map((item, index) => (
+              {sortedOffers.map((offer, index) => (
                 <div
-                  key={item.offer_id}
-                  className={`p-4 grid gap-4 lg:grid-cols-[74px_minmax(190px,1fr)_minmax(260px,1.4fr)] ${
-                    item.visible && item.offer.visible
+                  key={offer.localKey}
+                  className={`p-4 grid gap-4 xl:grid-cols-[74px_180px_minmax(0,1fr)] ${
+                    offer.visible
                       ? "bg-arena-dark/70"
                       : "bg-arena-dark/35 opacity-70"
                   }`}
                 >
-                  <div className="flex lg:flex-col items-center justify-start gap-2">
+                  <div className="flex xl:flex-col items-center justify-start gap-2">
                     <button
                       type="button"
-                      onClick={() => moveItem(item.offer_id, -1)}
+                      onClick={() => moveOffer(offer.localKey, -1)}
                       disabled={index === 0}
                       className="w-8 h-8 rounded border border-white/10 text-arena-smoke hover:text-arena-gold hover:border-arena-gold/30 disabled:opacity-25"
                       aria-label="Subir oferta"
@@ -377,56 +547,57 @@ export default function ExternalSitesAdminPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => moveItem(item.offer_id, 1)}
-                      disabled={index === sortedItems.length - 1}
+                      onClick={() => moveOffer(offer.localKey, 1)}
+                      disabled={index === sortedOffers.length - 1}
                       className="w-8 h-8 rounded border border-white/10 text-arena-smoke hover:text-arena-gold hover:border-arena-gold/30 disabled:opacity-25"
                       aria-label="Descer oferta"
                     >
                       ▼
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => deleteOffer(offer)}
+                      className="w-8 h-8 rounded border border-red-500/30 text-red-300 hover:bg-red-500/10"
+                      aria-label="Apagar oferta"
+                    >
+                      ×
+                    </button>
                   </div>
 
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-12 h-12 rounded-lg shrink-0 overflow-hidden border border-white/10 flex items-center justify-center text-white font-bold"
-                        style={{ backgroundColor: item.offer.logo_bg }}
-                      >
-                        {item.offer.logo_url ? (
-                          <Image
-                            src={item.offer.logo_url}
-                            alt=""
-                            width={48}
-                            height={48}
-                            className="w-full h-full object-contain"
-                            unoptimized
-                          />
-                        ) : (
-                          item.offer.name.slice(0, 1)
-                        )}
-                      </div>
-                      <div className="min-w-0">
-                        <h3 className="text-white font-bold truncate">
-                          {item.offer.name}
-                        </h3>
-                        <p className="text-xs text-arena-smoke/60 truncate">
-                          {item.offer.headline} {item.offer.bonus_value}
-                        </p>
-                        {!item.offer.visible && (
-                          <p className="text-[11px] text-red-300 mt-1">
-                            Oculta nas parcerias Brutuspolus.
-                          </p>
-                        )}
-                      </div>
+                  <div className="space-y-3">
+                    <div
+                      className="h-24 rounded-lg border border-white/10 overflow-hidden flex items-center justify-center text-white text-4xl font-bold"
+                      style={{ backgroundColor: offer.logoBg || "#666666" }}
+                    >
+                      {canPreviewImage(offer.bannerUrl) ? (
+                        <Image
+                          src={offer.bannerUrl.trim()}
+                          alt=""
+                          width={320}
+                          height={180}
+                          className="w-full h-full object-cover"
+                          unoptimized
+                        />
+                      ) : canPreviewImage(offer.logoUrl) ? (
+                        <Image
+                          src={offer.logoUrl.trim()}
+                          alt=""
+                          width={160}
+                          height={90}
+                          className="max-w-full max-h-full object-contain"
+                          unoptimized
+                        />
+                      ) : (
+                        offer.name.slice(0, 1) || "?"
+                      )}
                     </div>
-
-                    <div className="mt-3 flex items-center gap-4 flex-wrap text-sm">
+                    <div className="grid grid-cols-2 gap-2 text-sm">
                       <label className="inline-flex items-center gap-2 cursor-pointer text-arena-smoke">
                         <input
                           type="checkbox"
-                          checked={item.visible}
+                          checked={offer.visible}
                           onChange={(event) =>
-                            updateItem(item.offer_id, {
+                            updateOffer(offer.localKey, {
                               visible: event.target.checked,
                             })
                           }
@@ -437,9 +608,9 @@ export default function ExternalSitesAdminPage() {
                       <label className="inline-flex items-center gap-2 cursor-pointer text-arena-smoke">
                         <input
                           type="checkbox"
-                          checked={item.featured}
+                          checked={offer.featured}
                           onChange={(event) =>
-                            updateItem(item.offer_id, {
+                            updateOffer(offer.localKey, {
                               featured: event.target.checked,
                             })
                           }
@@ -448,22 +619,80 @@ export default function ExternalSitesAdminPage() {
                         Destacar
                       </label>
                     </div>
+                    <a
+                      href={`/go/${slugify(offer.slug || offer.name)}?site=${SITE_SLUG}`}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="block truncate bg-arena-iron/70 border border-white/10 rounded-lg px-3 py-2 text-xs text-arena-gold hover:border-arena-gold/40"
+                    >
+                      /go/{slugify(offer.slug || offer.name)}?site={SITE_SLUG}
+                    </a>
                   </div>
 
-                  <div className="grid sm:grid-cols-3 gap-3">
-                    <label className="space-y-1 sm:col-span-3">
+                  <div className="grid md:grid-cols-4 gap-3">
+                    <label className="space-y-1">
                       <span className="text-[11px] uppercase tracking-wider text-arena-ash">
-                        Headline neste site
+                        Nome *
                       </span>
                       <input
-                        value={item.custom_headline ?? ""}
-                        placeholder={item.offer.headline}
+                        value={offer.name}
+                        onChange={(event) => {
+                          const name = event.target.value;
+                          updateOffer(offer.localKey, {
+                            name,
+                            slug: offer.id ? offer.slug : slugify(name),
+                          });
+                        }}
+                        className="w-full bg-arena-iron/70 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-arena-gold/50"
+                        required
+                      />
+                    </label>
+                    <label className="space-y-1">
+                      <span className="text-[11px] uppercase tracking-wider text-arena-ash">
+                        Slug *
+                      </span>
+                      <input
+                        value={offer.slug}
                         onChange={(event) =>
-                          updateItem(item.offer_id, {
-                            custom_headline: event.target.value,
+                          updateOffer(offer.localKey, {
+                            slug: slugify(event.target.value),
                           })
                         }
+                        className="w-full bg-arena-iron/70 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-arena-gold/50"
+                        required
+                      />
+                    </label>
+                    <label className="space-y-1 md:col-span-2">
+                      <span className="text-[11px] uppercase tracking-wider text-arena-ash">
+                        Link afiliado *
+                      </span>
+                      <input
+                        value={offer.affiliateUrl}
+                        onChange={(event) =>
+                          updateOffer(offer.localKey, {
+                            affiliateUrl: event.target.value,
+                          })
+                        }
+                        placeholder="https://..."
                         className="w-full bg-arena-iron/70 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-arena-smoke/35 focus:outline-none focus:border-arena-gold/50"
+                        required
+                      />
+                    </label>
+
+                    <label className="space-y-1 md:col-span-2">
+                      <span className="text-[11px] uppercase tracking-wider text-arena-ash">
+                        Headline *
+                      </span>
+                      <input
+                        value={offer.headline}
+                        onChange={(event) =>
+                          updateOffer(offer.localKey, {
+                            headline: event.target.value,
+                          })
+                        }
+                        placeholder="50 Free Spins no registo"
+                        className="w-full bg-arena-iron/70 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-arena-smoke/35 focus:outline-none focus:border-arena-gold/50"
+                        required
                       />
                     </label>
                     <label className="space-y-1">
@@ -471,44 +700,245 @@ export default function ExternalSitesAdminPage() {
                         Bónus
                       </span>
                       <input
-                        value={item.custom_bonus_value ?? ""}
-                        placeholder={item.offer.bonus_value}
+                        value={offer.bonusValue}
                         onChange={(event) =>
-                          updateItem(item.offer_id, {
-                            custom_bonus_value: event.target.value,
+                          updateOffer(offer.localKey, {
+                            bonusValue: event.target.value,
                           })
                         }
+                        placeholder="100% até 100€"
                         className="w-full bg-arena-iron/70 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-arena-smoke/35 focus:outline-none focus:border-arena-gold/50"
                       />
                     </label>
                     <label className="space-y-1">
                       <span className="text-[11px] uppercase tracking-wider text-arena-ash">
-                        CTA
+                        Código
                       </span>
                       <input
-                        value={item.custom_cta_label ?? ""}
-                        placeholder={site?.cta_label ?? ctaLabel}
+                        value={offer.code}
                         onChange={(event) =>
-                          updateItem(item.offer_id, {
-                            custom_cta_label: event.target.value,
+                          updateOffer(offer.localKey, {
+                            code: event.target.value,
                           })
                         }
+                        className="w-full bg-arena-iron/70 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-arena-gold/50"
+                      />
+                    </label>
+
+                    <label className="space-y-1">
+                      <span className="text-[11px] uppercase tracking-wider text-arena-ash">
+                        CTA desta oferta
+                      </span>
+                      <input
+                        value={offer.offerCtaLabel}
+                        onChange={(event) =>
+                          updateOffer(offer.localKey, {
+                            offerCtaLabel: event.target.value,
+                          })
+                        }
+                        placeholder={site?.cta_label ?? ctaLabel}
                         className="w-full bg-arena-iron/70 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-arena-smoke/35 focus:outline-none focus:border-arena-gold/50"
                       />
                     </label>
-                    <div className="space-y-1">
+
+                    <label className="space-y-1">
                       <span className="text-[11px] uppercase tracking-wider text-arena-ash">
-                        Link
+                        Free Spins
                       </span>
-                      <a
-                        href={`/go/${item.offer.slug}`}
-                        target="_blank"
-                        rel="noreferrer noopener"
-                        className="block truncate bg-arena-iron/70 border border-white/10 rounded-lg px-3 py-2 text-sm text-arena-gold hover:border-arena-gold/40"
+                      <input
+                        value={offer.freeSpins}
+                        onChange={(event) =>
+                          updateOffer(offer.localKey, {
+                            freeSpins: event.target.value,
+                          })
+                        }
+                        className="w-full bg-arena-iron/70 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-arena-gold/50"
+                      />
+                    </label>
+                    <label className="space-y-1">
+                      <span className="text-[11px] uppercase tracking-wider text-arena-ash">
+                        Depósito mínimo
+                      </span>
+                      <input
+                        value={offer.minDeposit}
+                        onChange={(event) =>
+                          updateOffer(offer.localKey, {
+                            minDeposit: event.target.value,
+                          })
+                        }
+                        className="w-full bg-arena-iron/70 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-arena-gold/50"
+                      />
+                    </label>
+                    <label className="space-y-1">
+                      <span className="text-[11px] uppercase tracking-wider text-arena-ash">
+                        Cashback
+                      </span>
+                      <input
+                        value={offer.cashback}
+                        onChange={(event) =>
+                          updateOffer(offer.localKey, {
+                            cashback: event.target.value,
+                          })
+                        }
+                        className="w-full bg-arena-iron/70 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-arena-gold/50"
+                      />
+                    </label>
+                    <label className="space-y-1">
+                      <span className="text-[11px] uppercase tracking-wider text-arena-ash">
+                        Rating
+                      </span>
+                      <input
+                        type="number"
+                        min="0"
+                        max="5"
+                        step="0.1"
+                        value={offer.rating}
+                        onChange={(event) =>
+                          updateOffer(offer.localKey, {
+                            rating: event.target.value,
+                          })
+                        }
+                        className="w-full bg-arena-iron/70 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-arena-gold/50"
+                      />
+                    </label>
+
+                    <label className="space-y-1 md:col-span-2">
+                      <span className="text-[11px] uppercase tracking-wider text-arena-ash">
+                        Banner URL
+                      </span>
+                      <input
+                        value={offer.bannerUrl}
+                        onChange={(event) =>
+                          updateOffer(offer.localKey, {
+                            bannerUrl: event.target.value,
+                          })
+                        }
+                        placeholder="https://..."
+                        className="w-full bg-arena-iron/70 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-arena-smoke/35 focus:outline-none focus:border-arena-gold/50"
+                      />
+                    </label>
+                    <label className="space-y-1">
+                      <span className="text-[11px] uppercase tracking-wider text-arena-ash">
+                        Logo URL
+                      </span>
+                      <input
+                        value={offer.logoUrl}
+                        onChange={(event) =>
+                          updateOffer(offer.localKey, {
+                            logoUrl: event.target.value,
+                          })
+                        }
+                        className="w-full bg-arena-iron/70 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-arena-gold/50"
+                      />
+                    </label>
+                    <label className="space-y-1">
+                      <span className="text-[11px] uppercase tracking-wider text-arena-ash">
+                        Cor fallback
+                      </span>
+                      <input
+                        type="color"
+                        value={offer.logoBg || "#666666"}
+                        onChange={(event) =>
+                          updateOffer(offer.localKey, {
+                            logoBg: event.target.value,
+                          })
+                        }
+                        className="w-full h-10 bg-arena-iron/70 border border-white/10 rounded-lg px-1 py-1"
+                      />
+                    </label>
+
+                    <label className="space-y-1">
+                      <span className="text-[11px] uppercase tracking-wider text-arena-ash">
+                        Badge
+                      </span>
+                      <select
+                        value={offer.badge}
+                        onChange={(event) =>
+                          updateOffer(offer.localKey, {
+                            badge: event.target.value as EditableOffer["badge"],
+                          })
+                        }
+                        className="w-full bg-arena-iron/70 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-arena-gold/50"
                       >
-                        /go/{item.offer.slug}
-                      </a>
-                    </div>
+                        <option value="">Nenhum</option>
+                        <option value="NEW">NEW</option>
+                        <option value="HOT">HOT</option>
+                        <option value="TOP">TOP</option>
+                      </select>
+                    </label>
+                    <label className="space-y-1">
+                      <span className="text-[11px] uppercase tracking-wider text-arena-ash">
+                        Levantamento
+                      </span>
+                      <input
+                        value={offer.withdrawTime}
+                        onChange={(event) =>
+                          updateOffer(offer.localKey, {
+                            withdrawTime: event.target.value,
+                          })
+                        }
+                        className="w-full bg-arena-iron/70 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-arena-gold/50"
+                      />
+                    </label>
+                    <label className="space-y-1">
+                      <span className="text-[11px] uppercase tracking-wider text-arena-ash">
+                        Licença
+                      </span>
+                      <input
+                        value={offer.license}
+                        onChange={(event) =>
+                          updateOffer(offer.localKey, {
+                            license: event.target.value,
+                          })
+                        }
+                        className="w-full bg-arena-iron/70 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-arena-gold/50"
+                      />
+                    </label>
+                    <label className="space-y-1">
+                      <span className="text-[11px] uppercase tracking-wider text-arena-ash">
+                        Fundado
+                      </span>
+                      <input
+                        value={offer.established}
+                        onChange={(event) =>
+                          updateOffer(offer.localKey, {
+                            established: event.target.value,
+                          })
+                        }
+                        className="w-full bg-arena-iron/70 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-arena-gold/50"
+                      />
+                    </label>
+
+                    <label className="space-y-1 md:col-span-2">
+                      <span className="text-[11px] uppercase tracking-wider text-arena-ash">
+                        Tags
+                      </span>
+                      <textarea
+                        value={offer.tags}
+                        onChange={(event) =>
+                          updateOffer(offer.localKey, {
+                            tags: event.target.value,
+                          })
+                        }
+                        placeholder="Uma por linha ou separadas por vírgula"
+                        className="w-full min-h-20 bg-arena-iron/70 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-arena-smoke/35 focus:outline-none focus:border-arena-gold/50"
+                      />
+                    </label>
+                    <label className="space-y-1 md:col-span-2">
+                      <span className="text-[11px] uppercase tracking-wider text-arena-ash">
+                        Notas
+                      </span>
+                      <textarea
+                        value={offer.notes}
+                        onChange={(event) =>
+                          updateOffer(offer.localKey, {
+                            notes: event.target.value,
+                          })
+                        }
+                        placeholder="Uma por linha"
+                        className="w-full min-h-20 bg-arena-iron/70 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-arena-smoke/35 focus:outline-none focus:border-arena-gold/50"
+                      />
+                    </label>
                   </div>
                 </div>
               ))}

@@ -174,16 +174,32 @@ export interface ExternalOfferSiteRow {
   updated_at: string;
 }
 
-export interface ExternalOfferSiteItemRow {
+export interface ExternalSiteOfferRow {
   id: string;
   site_id: string;
-  offer_id: string;
+  slug: string;
+  name: string;
+  logo_url: string | null;
+  logo_bg: string;
+  banner_url: string | null;
+  badge: "NEW" | "HOT" | "TOP" | null;
+  tags: string[];
+  headline: string;
+  bonus_value: string;
+  free_spins: string;
+  min_deposit: string;
+  code: string;
+  cashback: string | null;
+  withdraw_time: string;
+  license: string;
+  established: string;
+  notes: string[];
+  affiliate_url: string;
+  cta_label: string | null;
+  rating: number;
   visible: boolean;
   featured: boolean;
   sort_order: number;
-  custom_headline: string | null;
-  custom_bonus_value: string | null;
-  custom_cta_label: string | null;
   created_at: string;
   updated_at: string;
 }

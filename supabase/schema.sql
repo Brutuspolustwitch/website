@@ -149,23 +149,40 @@ create table if not exists external_offer_sites (
   updated_at timestamptz not null default now()
 );
 
-create table if not exists external_offer_site_items (
+create index idx_external_offer_sites_slug on external_offer_sites(slug);
+
+create table if not exists external_site_offers (
   id uuid primary key default gen_random_uuid(),
   site_id uuid not null references external_offer_sites(id) on delete cascade,
-  offer_id uuid not null references casino_offers(id) on delete cascade,
+  slug text not null check (slug ~ '^[a-z0-9][a-z0-9-]{0,78}[a-z0-9]$'),
+  name text not null,
+  logo_url text,
+  logo_bg text not null default '#666666',
+  banner_url text,
+  badge text check (badge in ('NEW', 'HOT', 'TOP')),
+  tags text[] not null default '{}',
+  headline text not null default '',
+  bonus_value text not null default '',
+  free_spins text not null default '',
+  min_deposit text not null default '',
+  code text not null default '',
+  cashback text,
+  withdraw_time text not null default '',
+  license text not null default '',
+  established text not null default '',
+  notes text[] not null default '{}',
+  affiliate_url text not null default '#',
+  cta_label text,
+  rating numeric(3,1) not null default 5.0,
   visible boolean not null default true,
   featured boolean not null default false,
   sort_order integer not null default 0,
-  custom_headline text,
-  custom_bonus_value text,
-  custom_cta_label text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  unique (site_id, offer_id)
+  unique (site_id, slug)
 );
 
-create index idx_external_offer_sites_slug on external_offer_sites(slug);
-create index idx_external_offer_site_items_site_sort on external_offer_site_items(site_id, visible, sort_order);
+create index idx_external_site_offers_site_sort on external_site_offers(site_id, visible, sort_order);
 
 insert into external_offer_sites (
   slug,
@@ -188,22 +205,6 @@ on conflict (slug) do update set
   description = external_offer_sites.description,
   cta_label = external_offer_sites.cta_label,
   updated_at = now();
-
-insert into external_offer_site_items (
-  site_id,
-  offer_id,
-  visible,
-  sort_order
-)
-select
-  sites.id,
-  offers.id,
-  offers.visible,
-  offers.sort_order
-from external_offer_sites sites
-cross join casino_offers offers
-where sites.slug = 'arena-dos-bonus'
-on conflict (site_id, offer_id) do nothing;
 
 -- Users (Twitch-authenticated, with roles)
 create table if not exists users (
@@ -238,7 +239,7 @@ alter table slot_requests enable row level security;
 alter table leaderboard enable row level security;
 alter table casino_affiliates enable row level security;
 alter table external_offer_sites enable row level security;
-alter table external_offer_site_items enable row level security;
+alter table external_site_offers enable row level security;
 
 -- Public read access
 create policy "Public read sessions" on bonus_hunt_sessions for select using (true);
@@ -248,7 +249,7 @@ create policy "Public read requests" on slot_requests for select using (true);
 create policy "Public read leaderboard" on leaderboard for select using (true);
 create policy "Public read casinos" on casino_affiliates for select using (true);
 create policy "Public read external offer sites" on external_offer_sites for select using (true);
-create policy "Public read external offer site items" on external_offer_site_items for select using (true);
+create policy "Public read external site offers" on external_site_offers for select using (true);
 
 -- Insert policy for slot requests (anyone can request)
 create policy "Anyone can request slots" on slot_requests for insert with check (true);
