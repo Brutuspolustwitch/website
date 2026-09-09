@@ -17,7 +17,7 @@ import {
   Star,
   Trash2,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { ExternalOfferSiteRow, ExternalSiteOfferRow } from "@/lib/supabase";
 import { DEFAULT_EXTERNAL_OFFER_SITE } from "@/lib/externalOfferSites";
 
@@ -137,12 +137,7 @@ function cssImage(value: string) {
   return `url("${value.trim().replace(/\\/g, "\\\\").replace(/"/g, '\\"')}")`;
 }
 
-function stars(rating: string) {
-  const rounded = Math.max(0, Math.min(5, Math.round(Number(rating) || 0)));
-  return Array.from({ length: 5 }, (_, index) =>
-    index < rounded ? "★" : "☆",
-  ).join("");
-}
+
 
 function getOfferMedia(offer: EditableOffer) {
   return offer.bannerUrl.trim() || offer.logoUrl.trim();
@@ -259,122 +254,52 @@ function MiniMedia({ offer }: { offer: EditableOffer }) {
   );
 }
 
-function OfferPreview({
-  offer,
-  defaultCta,
-}: {
-  offer: EditableOffer;
-  defaultCta: string;
-}) {
-  const media = getOfferMedia(offer);
-  const mediaMode = getMediaMode(offer);
-  const mediaScale = clampLogoScale(offer.logoScale);
-  const tags = textToList(offer.tags).slice(0, 3);
-  const notes = textToList(offer.notes).slice(0, 3);
-  const code = offer.code.trim();
-  const details = [
-    offer.freeSpins.trim() ? `${offer.freeSpins.trim()} Free Spins` : "",
-    offer.cashback.trim() ? `${offer.cashback.trim()} Cashback` : "",
-    offer.minDeposit.trim() ? `Min. ${offer.minDeposit.trim()}` : "",
-  ].filter(Boolean);
-
+function OfferPreview({ offer, defaultCta }: { offer: EditableOffer; defaultCta: string }) {
+  const frame = useRef<HTMLIFrameElement>(null);
+  const updatePreview = useCallback(() => {
+    const imageUrl = (value: string) => {
+      try { return canPreviewImage(value) ? new URL(value.trim(), window.location.origin).href : ""; }
+      catch { return ""; }
+    };
+    // The sandbox has an opaque origin, so delivery uses * and the child verifies
+    // event.source. It receives only this editable public offer, never credentials.
+    frame.current?.contentWindow?.postMessage({
+      type: "arena-offer-preview",
+      offer: {
+        id: offer.localKey,
+        name: offer.name,
+        logoUrl: imageUrl(offer.logoUrl),
+        bannerUrl: imageUrl(offer.bannerUrl),
+        logoBg: offer.logoBg,
+        logoScale: clampLogoScale(offer.logoScale),
+        headline: offer.headline,
+        bonusValue: offer.bonusValue,
+        freeSpins: offer.freeSpins,
+        minDeposit: offer.minDeposit,
+        withdrawTime: offer.withdrawTime,
+        cashback: offer.cashback,
+        license: offer.license,
+        established: offer.established,
+        code: offer.code,
+        tags: textToList(offer.tags),
+        notes: textToList(offer.notes),
+        badge: offer.badge,
+        featured: offer.featured,
+        ctaLabel: offer.offerCtaLabel || defaultCta || "Registar Agora",
+        url: "",
+      },
+    }, "*");
+  }, [offer, defaultCta]);
+  useEffect(updatePreview, [updatePreview]);
   return (
-    <article
-      className={`overflow-hidden rounded-lg border bg-gradient-to-b from-[#20150c] to-[#0c0805] shadow-2xl ${
-        offer.featured
-          ? "border-arena-gold/70 shadow-arena-gold/10"
-          : "border-arena-gold/30"
-      }`}
-    >
-      <a
-        href={`/go/${slugify(offer.slug || offer.name)}?site=${SITE_SLUG}`}
-        target="_blank"
-        rel="noreferrer noopener"
-        className="flex min-h-full flex-col text-inherit no-underline"
-      >
-        <div
-          className="relative aspect-video overflow-hidden"
-          style={{ backgroundColor: offer.logoBg || "#2b2117" }}
-        >
-          {canPreviewImage(media) ? (
-            <div
-              className="absolute inset-0 bg-center bg-no-repeat transition-transform duration-300"
-              style={{
-                backgroundImage: cssImage(media),
-                backgroundSize: mediaMode === "banner" ? "cover" : "contain",
-                transform: `scale(${mediaScale})`,
-              }}
-            />
-          ) : (
-            <div
-              className="absolute inset-0 flex items-center justify-center text-5xl font-black text-white"
-              style={{ backgroundColor: offer.logoBg || "#666666" }}
-            >
-              {offer.name.trim().slice(0, 1) || "?"}
-            </div>
-          )}
-          <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/80 to-transparent" />
-          {offer.badge && (
-            <span className="absolute right-3 top-3 rounded-full border border-arena-gold/40 bg-arena-crimson px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-white">
-              {offer.badge}
-            </span>
-          )}
-        </div>
-
-        <div className="flex flex-1 flex-col gap-3 p-4">
-          <div className="flex items-center justify-between gap-3 text-[11px] uppercase tracking-[0.12em] text-arena-smoke/70">
-            <span className="truncate">{offer.name || "Nome da oferta"}</span>
-            <span className="shrink-0 text-arena-gold">
-              {stars(offer.rating)}
-            </span>
-          </div>
-          <h3 className="m-0 text-xl font-black leading-tight tracking-normal text-[#fff7df]">
-            {offer.headline || "Headline da oferta"}
-            <strong className="block text-[1.2em] text-arena-gold-light">
-              {offer.bonusValue || "Valor do bónus"}
-            </strong>
-          </h3>
-          {details.length > 0 && (
-            <p className="m-0 text-sm font-bold text-[#d9b85b]">
-              {details.join(" · ")}
-            </p>
-          )}
-          {tags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-full border border-arena-gold/25 bg-arena-gold/10 px-2 py-1 text-[11px] text-[#f6ead1]"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-          {code && code !== "—" && (
-            <div className="flex w-full items-center justify-between gap-3 rounded-lg border border-dashed border-arena-gold/45 bg-arena-gold/10 px-3 py-2 text-left text-arena-gold-light">
-              <span className="text-[11px] uppercase tracking-wider text-[#f6ead1]/55">
-                Código
-              </span>
-              <strong className="text-sm tracking-[0.1em]">{code}</strong>
-            </div>
-          )}
-          {notes.length > 0 && (
-            <ul className="m-0 space-y-1 pl-4 text-xs leading-relaxed text-[#f6ead1]/60">
-              {notes.map((note) => (
-                <li key={note}>{note}</li>
-              ))}
-            </ul>
-          )}
-          <span className="mt-auto flex items-center justify-center rounded-lg bg-gradient-to-b from-arena-gold to-[#9d7020] px-3 py-3 text-xs font-black uppercase tracking-[0.1em] text-[#130b04]">
-            {offer.offerCtaLabel || defaultCta || "Apostar Agora"}
-          </span>
-          <p className="m-0 text-center text-[11px] text-[#f6ead1]/45">
-            18+ · T&amp;Cs aplicáveis · Joga com responsabilidade
-          </p>
-        </div>
-      </a>
-    </article>
+    <iframe
+      ref={frame}
+      title="Pré-visualização do cartão Arena dos Bónus"
+      src="/arena-preview/index.html"
+      sandbox="allow-scripts"
+      onLoad={updatePreview}
+      className="h-[380px] w-full border-0"
+    />
   );
 }
 
@@ -1516,7 +1441,7 @@ export default function ExternalSitesAdminPage() {
                         Preview no Arena dos Bónus
                       </h2>
                       <p className="mt-1 text-xs text-arena-smoke/50">
-                        A imagem usa o mesmo zoom que será enviado ao widget.
+                        Design da Arena com os valores atuais do formulário. Clica em T&C para virar o cartão.
                       </p>
                     </div>
                     <div className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-xs uppercase tracking-wider text-arena-smoke">
@@ -1524,7 +1449,7 @@ export default function ExternalSitesAdminPage() {
                       {formatScale(selectedOffer.logoScale)}
                     </div>
                   </div>
-                  <div className="mx-auto max-w-sm">
+                  <div className="mx-auto max-w-[324px]">
                     <OfferPreview offer={selectedOffer} defaultCta={ctaLabel} />
                   </div>
                 </section>
