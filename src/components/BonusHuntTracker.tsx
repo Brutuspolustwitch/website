@@ -6,7 +6,10 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { supabase } from "@/lib/supabase";
 import type { BonusHuntSession, BonusHuntSlot } from "@/lib/supabase";
-import type { BonusHuntDisplayTarget } from "@/lib/bonusHuntDisplay";
+import {
+  BONUS_HUNT_DISPLAY_LABELS,
+  type BonusHuntDisplayTarget,
+} from "@/lib/bonusHuntDisplay";
 
 /* ═══════════════════════════════════════════════════════════════════
    CORNER ORNAMENT — reused from the papyrus design system
@@ -38,6 +41,7 @@ export function BonusHuntTracker({
   const [selectedSession, setSelectedSession] = useState<BonusHuntSession | null>(null);
   const [slots, setSlots] = useState<BonusHuntSlot[]>([]);
   const [loading, setLoading] = useState(true);
+  const [displayEnabled, setDisplayEnabled] = useState(true);
   const [sessionIdx, setSessionIdx] = useState(0);
   const [slotPage, setSlotPage] = useState(0);
   const manualSessionSelection = useRef(false);
@@ -53,7 +57,7 @@ export function BonusHuntTracker({
         .order("created_at", { ascending: false }),
       supabase
         .from("bonus_hunt_page_display")
-        .select("session_id")
+        .select("session_id, enabled")
         .eq("target", displayTarget)
         .limit(1)
         .maybeSingle(),
@@ -66,6 +70,20 @@ export function BonusHuntTracker({
       typeof displayRes.data?.session_id === "string"
         ? displayRes.data.session_id
         : null;
+    const disabled = displayRes.data?.enabled === false;
+
+    setDisplayEnabled(!disabled);
+    if (disabled) {
+      targetSessionIdRef.current = null;
+      manualSessionSelection.current = false;
+      setSessions([]);
+      setSelectedSession(null);
+      setSessionIdx(0);
+      setSlots([]);
+      setLoading(false);
+      return;
+    }
+
     const configuredSession = configuredSessionId
       ? nextSessions.find((session) => session.id === configuredSessionId) ?? null
       : null;
@@ -133,6 +151,8 @@ export function BonusHuntTracker({
      Throttled server-side, so multiple viewers polling concurrently is cheap.
      Any change lands in Supabase and reaches every viewer via the realtime channel above. */
   useEffect(() => {
+    if (!displayEnabled) return;
+
     const poll = () => {
       if (document.visibilityState !== "visible") return;
       fetch("/api/bonus-hunt/live", { cache: "no-store" }).catch(() => {});
@@ -146,7 +166,7 @@ export function BonusHuntTracker({
       clearInterval(interval);
       document.removeEventListener("visibilitychange", poll);
     };
-  }, []);
+  }, [displayEnabled]);
 
   /* Load slots when session changes */
   useEffect(() => {
@@ -235,6 +255,31 @@ export function BonusHuntTracker({
                 <div key={i} className="h-12 rounded" style={{ background: "rgba(139,105,20,0.08)" }} />
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (!displayEnabled) {
+    const label = BONUS_HUNT_DISPLAY_LABELS[displayTarget];
+    if (compact) {
+      return (
+        <div className="papyrus-scroll greek-key-border" style={{ maxWidth: "100%", padding: "32px", textAlign: "center" }}>
+          <p style={{ fontFamily: "var(--font-display)", color: "var(--ink-light)", fontSize: "0.9rem" }}>
+            {label} desligado.
+          </p>
+        </div>
+      );
+    }
+    return (
+      <section className="relative py-20 px-2 sm:px-4 lg:px-6 bg-arena-dark/50">
+        <div className="max-w-7xl mx-auto text-center">
+          {!hideTitle && <SectionHeading title="Bonus Hunt" subtitle={`${label} desligado`} />}
+          <div className="papyrus-scroll greek-key-border" style={{ maxWidth: "100%", padding: "32px", textAlign: "center" }}>
+            <p style={{ fontFamily: "var(--font-display)", color: "var(--ink-light)", fontSize: "0.9rem" }}>
+              Este painel está temporariamente desligado.
+            </p>
           </div>
         </div>
       </section>

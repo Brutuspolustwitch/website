@@ -4,8 +4,12 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import type { Victory } from "./types";
 
-function fmt(n: number) {
+function fmtAmount(n: number) {
   return n.toLocaleString("pt-PT", { maximumFractionDigits: 2 });
+}
+
+function fmtThumbnailNumber(n: number) {
+  return Math.round(n).toLocaleString("pt-PT", { maximumFractionDigits: 0 });
 }
 
 export default function VictoryCard({ v }: { v: Victory }) {
@@ -73,7 +77,7 @@ export default function VictoryCard({ v }: { v: Victory }) {
               textShadow: "0 0 18px rgba(255,180,71,0.7), 0 3px 0 rgba(0,0,0,0.85)",
             }}
           >
-            ×{fmt(v.multiplier)}
+            ×{fmtThumbnailNumber(v.multiplier)}
           </div>
         </motion.div>
 
@@ -85,9 +89,9 @@ export default function VictoryCard({ v }: { v: Victory }) {
         <div className="text-[11px] uppercase tracking-widest text-arena-smoke">{v.provider}</div>
         <div className="mt-2 flex items-center justify-between text-xs">
           <span className="text-arena-smoke">
-            <span className="text-emerald-400/90">{fmt(v.bet_amount)}€</span>
+            <span className="text-emerald-400/90">{fmtAmount(v.bet_amount)}€</span>
             <span className="mx-1.5 opacity-60">→</span>
-            <span className="text-amber-300">{fmt(v.win_amount)}€</span>
+            <span className="text-amber-300">{fmtAmount(v.win_amount)}€</span>
           </span>
           <div className="flex flex-col items-end gap-0.5 ml-2 max-w-[55%] min-w-0">
             <span className="text-[10px] text-arena-smoke/50 shrink-0">

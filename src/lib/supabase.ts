@@ -63,6 +63,7 @@ export type BonusHuntDisplayTarget =
 export interface BonusHuntPageDisplay {
   target: BonusHuntDisplayTarget;
   session_id: string;
+  enabled: boolean;
   updated_at: string;
 }
 

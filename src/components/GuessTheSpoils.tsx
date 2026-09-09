@@ -62,6 +62,7 @@ export function GuessTheSpoils({
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [campaigns, setCampaigns] = useState<BonusHuntSession[]>([]);
   const [idx, setIdx] = useState(0);
+  const [displayEnabled, setDisplayEnabled] = useState(true);
   const manualCampaignSelection = useRef(false);
   const selectedCampaignIdRef = useRef<string | null>(null);
   const targetCampaignIdRef = useRef<string | null>(null);
@@ -116,6 +117,8 @@ export function GuessTheSpoils({
      across all viewers/pages), so this page alone can keep the hunt in sync
      even if no one has /bonus-hunt or /daily-session open elsewhere. */
   useEffect(() => {
+    if (!displayEnabled) return;
+
     const poll = () => {
       if (document.visibilityState !== "visible") return;
       fetch("/api/bonus-hunt/live", { cache: "no-store" }).catch(() => {});
@@ -129,7 +132,7 @@ export function GuessTheSpoils({
       clearInterval(interval);
       document.removeEventListener("visibilitychange", poll);
     };
-  }, []);
+  }, [displayEnabled]);
 
   /* Fetch all campaigns — same order as BonusHuntTracker/DailySession so every
      page agrees on which session is "current" (hunt_date first, then created_at). */
@@ -142,7 +145,7 @@ export function GuessTheSpoils({
         .order("created_at", { ascending: false }),
       supabase
         .from("bonus_hunt_page_display")
-        .select("session_id")
+        .select("session_id, enabled")
         .eq("target", ADIVINHA_DISPLAY_TARGET)
         .limit(1)
         .maybeSingle(),
@@ -154,6 +157,20 @@ export function GuessTheSpoils({
       typeof displayRes.data?.session_id === "string"
         ? displayRes.data.session_id
         : null;
+    const disabled = displayRes.data?.enabled === false;
+
+    setDisplayEnabled(!disabled);
+    if (disabled) {
+      targetCampaignIdRef.current = null;
+      selectedCampaignIdRef.current = null;
+      manualCampaignSelection.current = false;
+      setCampaigns([]);
+      setIdx(0);
+      setSlots([]);
+      setLoading(false);
+      return;
+    }
+
     const configuredCampaign = configuredSessionId
       ? nextCampaigns.find((campaign) => campaign.id === configuredSessionId) ?? null
       : null;
@@ -229,7 +246,7 @@ export function GuessTheSpoils({
   }, [campaign?.id]);
 
   useEffect(() => {
-    if (!campaign) return;
+    if (!displayEnabled || !campaign) return;
     (async () => {
       const { data } = await supabase
         .from("bonus_hunt_slots")
@@ -238,11 +255,11 @@ export function GuessTheSpoils({
         .order("order_index", { ascending: true });
       if (data) setSlots(data as BonusHuntSlot[]);
     })();
-  }, [campaign]);
+  }, [displayEnabled, campaign]);
 
   /* Real-time subscription — update slots live during active sessions */
   useEffect(() => {
-    if (!campaign) return;
+    if (!displayEnabled || !campaign) return;
     const channel = supabase
       .channel(`gts-slots-${campaign.id}`)
       .on(
@@ -282,7 +299,7 @@ export function GuessTheSpoils({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [campaign?.id]);
+  }, [displayEnabled, campaign]);
 
   /* Derived stats */
   const victories = slots.filter(
@@ -306,7 +323,7 @@ export function GuessTheSpoils({
   }, []);
 
   useEffect(() => {
-    if (!campaign) return;
+    if (!displayEnabled || !campaign) return;
     const campaignId = campaign.id;
     const refresh = window.setTimeout(() => {
       fetchGuessData(campaignId);
@@ -316,11 +333,11 @@ export function GuessTheSpoils({
     return () => {
       window.clearTimeout(refresh);
     };
-  }, [campaign?.id, fetchGuessData]);
+  }, [displayEnabled, campaign, fetchGuessData]);
 
   /* Realtime — reflect betting open/lock/resolve + new predictions instantly */
   useEffect(() => {
-    if (!campaign) return;
+    if (!displayEnabled || !campaign) return;
     const channel = supabase
       .channel(`gts-guess-${campaign.id}`)
       .on(
@@ -337,10 +354,10 @@ export function GuessTheSpoils({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [campaign, fetchGuessData]);
+  }, [displayEnabled, campaign, fetchGuessData]);
 
   useEffect(() => {
-    if (!guessSession || !campaign) return;
+    if (!displayEnabled || !guessSession || !campaign) return;
     const channel = supabase
       .channel(`gts-predictions-${guessSession.id}`)
       .on(
@@ -357,17 +374,17 @@ export function GuessTheSpoils({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [guessSession?.id, campaign, fetchGuessData]);
+  }, [displayEnabled, guessSession, campaign, fetchGuessData]);
 
   /* Safety-net poll every 5 min in case the realtime socket drops */
   useEffect(() => {
-    if (!campaign) return;
+    if (!displayEnabled || !campaign) return;
     const interval = setInterval(
       () => fetchGuessData(campaign.id),
       5 * 60 * 1000,
     );
     return () => clearInterval(interval);
-  }, [campaign, fetchGuessData]);
+  }, [displayEnabled, campaign, fetchGuessData]);
 
   /* Submit prediction */
   async function submitPrediction() {
@@ -492,6 +509,21 @@ export function GuessTheSpoils({
                 />
               ))}
             </div>
+          </div>
+        ) : !displayEnabled ? (
+          <div
+            className="papyrus-scroll greek-key-border"
+            style={{ maxWidth: "100%", padding: "32px", textAlign: "center" }}
+          >
+            <p
+              style={{
+                fontFamily: "var(--font-display)",
+                color: "var(--ink-light)",
+                fontSize: "0.9rem",
+              }}
+            >
+              O Adivinha o Resultado está desligado.
+            </p>
           </div>
         ) : !campaign ? (
           <div

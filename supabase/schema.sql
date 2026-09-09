@@ -58,6 +58,7 @@ create table if not exists bonus_hunt_page_display (
     target in ('bonus_hunt', 'adivinha_o_resultado', 'daily_session')
   ),
   session_id uuid not null references bonus_hunt_sessions(id) on delete cascade,
+  enabled boolean not null default true,
   updated_at timestamptz not null default now()
 );
 

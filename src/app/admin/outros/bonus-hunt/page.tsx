@@ -12,6 +12,8 @@ import {
 import {
   BONUS_HUNT_DISPLAY_TARGETS,
   BONUS_HUNT_DISPLAY_LABELS,
+  type BonusHuntDisplayEnabled,
+  type BonusHuntDisplaySelections,
   type BonusHuntDisplayTarget,
 } from "@/lib/bonusHuntDisplay";
 
@@ -29,8 +31,6 @@ interface ImportResult {
   source?: string;
   error?: string;
 }
-
-type DisplaySelections = Partial<Record<BonusHuntDisplayTarget, string>>;
 
 const DISPLAY_BUTTON_LABELS: Record<BonusHuntDisplayTarget, string> = {
   bonus_hunt: "Bonus",
@@ -90,9 +90,10 @@ export default function AdminBonusHuntPage() {
   const [error, setError] = useState("");
   const [history, setHistory] = useState<HistorySession[]>([]);
   const [historyLoading, setHistoryLoading] = useState(true);
-  const [displaySelections, setDisplaySelections] = useState<DisplaySelections>(
-    {},
-  );
+  const [displaySelections, setDisplaySelections] =
+    useState<BonusHuntDisplaySelections>({});
+  const [displayEnabled, setDisplayEnabled] =
+    useState<BonusHuntDisplayEnabled>({});
   const [displaySaving, setDisplaySaving] = useState<string | null>(null);
   const [displayMsg, setDisplayMsg] = useState<{
     ok: boolean;
@@ -195,7 +196,10 @@ export default function AdminBonusHuntPage() {
       if (!res.ok) return;
 
       const data = await res.json();
-      setDisplaySelections((data.display ?? {}) as DisplaySelections);
+      setDisplaySelections(
+        (data.display ?? {}) as BonusHuntDisplaySelections,
+      );
+      setDisplayEnabled((data.enabled ?? {}) as BonusHuntDisplayEnabled);
       setActiveDailySession(Boolean(data.active_daily_session));
       if (data.error) {
         setDisplayMsg({ ok: false, text: data.error });
@@ -239,6 +243,7 @@ export default function AdminBonusHuntPage() {
   async function setPageDisplayTarget(
     target: BonusHuntDisplayTarget,
     sessionId: string,
+    enabled = true,
   ) {
     const key = `${target}:${sessionId}`;
     setDisplaySaving(key);
@@ -248,7 +253,7 @@ export default function AdminBonusHuntPage() {
       const res = await fetch("/api/bonus-hunt/display", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ target, sessionId }),
+        body: JSON.stringify({ target, sessionId, enabled }),
       });
       const data = await res.json();
 
@@ -261,9 +266,15 @@ export default function AdminBonusHuntPage() {
         ...current,
         [target]: data.display.session_id,
       }));
+      setDisplayEnabled((current) => ({
+        ...current,
+        [target]: data.display.enabled !== false,
+      }));
       setDisplayMsg({
         ok: true,
-        text: `${BONUS_HUNT_DISPLAY_LABELS[target]} atualizado.`,
+        text: `${BONUS_HUNT_DISPLAY_LABELS[target]} ${
+          data.display.enabled === false ? "desligado" : "atualizado"
+        }.`,
       });
     } catch {
       setDisplayMsg({ ok: false, text: "Erro de rede ao escolher hunt" });
@@ -791,6 +802,8 @@ export default function AdminBonusHuntPage() {
     );
   }
 
+  const fallbackDisplaySessionId = history[0]?.id ?? null;
+
   return (
     <div className="pt-24 pb-16 min-h-screen">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -1286,7 +1299,7 @@ export default function AdminBonusHuntPage() {
             </h3>
             <div className="mb-3 flex items-center gap-3 flex-wrap text-xs">
               <span className="text-arena-smoke/50">
-                Escolhe que hunt aparece em cada página pública.
+                Escolhe que hunt aparece em cada página pública. Clica no ativo para desligar.
               </span>
               <span
                 className={
@@ -1394,24 +1407,39 @@ export default function AdminBonusHuntPage() {
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-1.5">
                               {BONUS_HUNT_DISPLAY_TARGETS.map((target) => {
+                                const selectedSessionId =
+                                  displaySelections[target] ??
+                                  fallbackDisplaySessionId;
                                 const selected =
-                                  displaySelections[target] === s.id;
+                                  selectedSessionId === s.id;
+                                const targetEnabled =
+                                  displayEnabled[target] !== false;
+                                const active = selected && targetEnabled;
+                                const selectedOff = selected && !targetEnabled;
+                                const nextEnabled = !active;
                                 const saving =
                                   displaySaving === `${target}:${s.id}`;
                                 const dailyUnavailable =
                                   target === "daily_session" &&
-                                  !activeDailySession;
+                                  !activeDailySession &&
+                                  nextEnabled;
 
                                 return (
                                   <button
                                     key={target}
                                     onClick={() =>
-                                      setPageDisplayTarget(target, s.id)
+                                      setPageDisplayTarget(
+                                        target,
+                                        s.id,
+                                        nextEnabled,
+                                      )
                                     }
                                     disabled={saving || dailyUnavailable}
                                     className={`px-2.5 py-1.5 text-[10px] rounded border transition-all cursor-pointer disabled:cursor-not-allowed ${
-                                      selected
+                                      active
                                         ? "border-arena-gold/60 bg-arena-gold/15 text-arena-gold"
+                                        : selectedOff
+                                          ? "border-red-500/45 bg-red-950/20 text-red-300"
                                         : dailyUnavailable
                                           ? "border-arena-steel/10 text-arena-smoke/25"
                                           : "border-arena-steel/20 text-arena-smoke/55 hover:border-arena-gold/40 hover:text-arena-gold"
@@ -1419,13 +1447,17 @@ export default function AdminBonusHuntPage() {
                                     title={
                                       dailyUnavailable
                                         ? "Sem Sessão do Dia ativa"
-                                        : `Mostrar em ${BONUS_HUNT_DISPLAY_LABELS[target]}`
+                                        : active
+                                          ? `Desligar ${BONUS_HUNT_DISPLAY_LABELS[target]}`
+                                          : `Mostrar em ${BONUS_HUNT_DISPLAY_LABELS[target]}`
                                     }
                                   >
                                     {saving
                                       ? "..."
-                                      : selected
+                                      : active
                                         ? `${DISPLAY_BUTTON_LABELS[target]} ativo`
+                                        : selectedOff
+                                          ? `${DISPLAY_BUTTON_LABELS[target]} off`
                                         : DISPLAY_BUTTON_LABELS[target]}
                                   </button>
                                 );

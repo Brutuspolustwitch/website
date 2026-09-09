@@ -4,7 +4,8 @@ import { createClient } from "@supabase/supabase-js";
 import {
   BONUS_HUNT_DISPLAY_TARGETS,
   isBonusHuntDisplayTarget,
-  type BonusHuntDisplayTarget,
+  type BonusHuntDisplayEnabled,
+  type BonusHuntDisplaySelections,
 } from "@/lib/bonusHuntDisplay";
 import { supabase } from "@/lib/supabase";
 
@@ -12,8 +13,6 @@ export const dynamic = "force-dynamic";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-type DisplayMap = Partial<Record<BonusHuntDisplayTarget, string>>;
 
 function getServiceRoleClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -46,7 +45,7 @@ export async function GET() {
   const [displayRes, dailySessionRes] = await Promise.all([
     supabase
       .from("bonus_hunt_page_display")
-      .select("target, session_id, updated_at"),
+      .select("target, session_id, enabled, updated_at"),
     supabase
       .from("daily_sessions")
       .select("id")
@@ -55,15 +54,18 @@ export async function GET() {
       .maybeSingle(),
   ]);
 
-  const display: DisplayMap = {};
+  const display: BonusHuntDisplaySelections = {};
+  const enabled: BonusHuntDisplayEnabled = {};
   for (const row of displayRes.data ?? []) {
     if (isBonusHuntDisplayTarget(row.target)) {
       display[row.target] = row.session_id;
+      enabled[row.target] = row.enabled !== false;
     }
   }
 
   return NextResponse.json({
     display,
+    enabled,
     targets: BONUS_HUNT_DISPLAY_TARGETS,
     active_daily_session: Boolean(dailySessionRes.data?.id),
     active_daily_session_id: dailySessionRes.data?.id ?? null,
@@ -79,6 +81,7 @@ export async function PATCH(request: Request) {
   const body = (await request.json().catch(() => null)) as {
     target?: unknown;
     sessionId?: unknown;
+    enabled?: unknown;
   } | null;
 
   if (!body || !isBonusHuntDisplayTarget(body.target)) {
@@ -89,6 +92,7 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "Bonus hunt invalido" }, { status: 400 });
   }
 
+  const enabled = typeof body.enabled === "boolean" ? body.enabled : true;
   const db = getServiceRoleClient();
   const { data: hunt, error: huntError } = await db
     .from("bonus_hunt_sessions")
@@ -113,11 +117,12 @@ export async function PATCH(request: Request) {
       {
         target: body.target,
         session_id: body.sessionId,
+        enabled,
         updated_at: new Date().toISOString(),
       },
       { onConflict: "target" },
     )
-    .select("target, session_id, updated_at")
+    .select("target, session_id, enabled, updated_at")
     .single();
 
   if (error) {

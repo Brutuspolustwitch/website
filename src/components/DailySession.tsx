@@ -274,10 +274,16 @@ export default function DailySessionContent() {
     async function loadHighlightSlots() {
       const display = await supabase
         .from("bonus_hunt_page_display")
-        .select("session_id")
+        .select("session_id, enabled")
         .eq("target", DAILY_SESSION_HUNT_TARGET)
         .limit(1)
         .maybeSingle();
+
+      if (display.data?.enabled === false) {
+        setBestSlot(null);
+        setWorstSlot(null);
+        return;
+      }
 
       let sessionId =
         typeof display.data?.session_id === "string"

@@ -6,6 +6,14 @@ export const BONUS_HUNT_DISPLAY_TARGETS = [
 
 export type BonusHuntDisplayTarget = (typeof BONUS_HUNT_DISPLAY_TARGETS)[number];
 
+export type BonusHuntDisplaySelections = Partial<
+  Record<BonusHuntDisplayTarget, string>
+>;
+
+export type BonusHuntDisplayEnabled = Partial<
+  Record<BonusHuntDisplayTarget, boolean>
+>;
+
 export const BONUS_HUNT_DISPLAY_LABELS: Record<BonusHuntDisplayTarget, string> = {
   bonus_hunt: "Bonus Hunt",
   adivinha_o_resultado: "Adivinha",
