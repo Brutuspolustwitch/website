@@ -46,6 +46,22 @@ npm run dev
 
 ## Database Setup
 
+### Shared Arena offer cards
+
+The cards on `/` and `/ofertas` use `/api/arena-offers`, which reads the public
+`/api/external-offers` feed from the Brutuspolus application. That feed queries
+the same `external_offer_sites` and `external_site_offers` Supabase tables used
+by `brutuspolusWS`. Manage Arena's cards in Brutuspolus at `/admin/external-sites`.
+Only visible offers for the active configured site are returned, in admin order.
+Images and tracked offer links continue to point to Brutuspolus.
+
+Set `NEXT_PUBLIC_BRUTUSPOLUS_OFFERS_ORIGIN` to the Brutuspolus deployment origin
+(default `https://www.brutuspolus.com`) and `NEXT_PUBLIC_EXTERNAL_OFFERS_SITE` to
+the site slug (default `arena-dos-bonus`). Both are listed in the environment
+examples. The feed is fetched without caching on each card-page mount. This
+integration needs no Supabase keys on Arena and adds no database migrations.
+Existing Arena database configuration still serves its other features.
+
 Run `supabase/schema.sql` in your Supabase SQL Editor, then apply the migrations in `supabase/migrations/` in order (includes `add_bonus_hunt_sync_lock.sql`, needed by the `/api/bonus-hunt/live` poll endpoint).
 
 ## Deployment

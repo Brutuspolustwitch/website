@@ -137,7 +137,7 @@
     var siteData = data.site || {};
     var offers = Array.isArray(data.offers) ? data.offers : [];
     if (!offers.length) {
-      mount.innerHTML = "";
+      mount.innerHTML = '<div style="padding:32px;text-align:center;color:#d4a843;background:#090604">Sem ofertas disponíveis de momento.</div>';
       return;
     }
 
@@ -206,14 +206,19 @@
   mount.innerHTML =
     '<div style="padding:32px;text-align:center;color:#d4a843;background:#090604">A carregar ofertas...</div>';
 
-  fetch(apiOrigin + "/api/external-offers?site=" + encodeURIComponent(site), {
+  var apiPath = currentScript.getAttribute("data-api-path");
+  var feedUrl = apiPath || apiOrigin + "/api/external-offers?site=" + encodeURIComponent(site);
+  fetch(feedUrl, {
     cache: "no-store",
+    signal: AbortSignal.timeout(15000),
   })
     .then(function (response) {
       if (!response.ok) throw new Error("Request failed");
       return response.json();
     })
-    .then(render)
+    .then(function (data) {
+      if (mount.isConnected) render(data);
+    })
     .catch(function () {
       mount.innerHTML =
         '<div style="padding:32px;text-align:center;color:#d4a843;background:#090604">Ofertas indisponiveis de momento.</div>';
