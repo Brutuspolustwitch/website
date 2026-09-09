@@ -26,6 +26,7 @@ export function ExternalOffersEmbed() {
       <Script
         src={`${origin}/external-offers-widget.js`}
         data-site={site}
+        data-api-origin={origin}
         data-target={widgetId}
         strategy="afterInteractive"
       />

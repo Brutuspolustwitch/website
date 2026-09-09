@@ -148,6 +148,10 @@ function getOfferMedia(offer: EditableOffer) {
   return offer.bannerUrl.trim() || offer.logoUrl.trim();
 }
 
+function getMediaMode(offer: EditableOffer) {
+  return offer.bannerUrl.trim() ? "banner" : "logo";
+}
+
 function hasMedia(offer: EditableOffer) {
   return canPreviewImage(getOfferMedia(offer));
 }
@@ -235,13 +239,15 @@ function Field({
 
 function MiniMedia({ offer }: { offer: EditableOffer }) {
   const media = getOfferMedia(offer);
+  const mediaMode = getMediaMode(offer);
 
   return (
     <div
-      className="relative h-12 w-16 shrink-0 overflow-hidden rounded-md border border-white/10 bg-center bg-cover"
+      className="relative h-12 w-16 shrink-0 overflow-hidden rounded-md border border-white/10 bg-center bg-no-repeat"
       style={{
         backgroundColor: offer.logoBg || "#666666",
         backgroundImage: canPreviewImage(media) ? cssImage(media) : undefined,
+        backgroundSize: mediaMode === "banner" ? "cover" : "contain",
       }}
     >
       {!canPreviewImage(media) && (
@@ -261,6 +267,7 @@ function OfferPreview({
   defaultCta: string;
 }) {
   const media = getOfferMedia(offer);
+  const mediaMode = getMediaMode(offer);
   const mediaScale = clampLogoScale(offer.logoScale);
   const tags = textToList(offer.tags).slice(0, 3);
   const notes = textToList(offer.notes).slice(0, 3);
@@ -285,12 +292,16 @@ function OfferPreview({
         rel="noreferrer noopener"
         className="flex min-h-full flex-col text-inherit no-underline"
       >
-        <div className="relative aspect-video overflow-hidden bg-[#120d08]">
+        <div
+          className="relative aspect-video overflow-hidden"
+          style={{ backgroundColor: offer.logoBg || "#2b2117" }}
+        >
           {canPreviewImage(media) ? (
             <div
-              className="absolute inset-0 bg-cover bg-center transition-transform duration-300"
+              className="absolute inset-0 bg-center bg-no-repeat transition-transform duration-300"
               style={{
                 backgroundImage: cssImage(media),
+                backgroundSize: mediaMode === "banner" ? "cover" : "contain",
                 transform: `scale(${mediaScale})`,
               }}
             />

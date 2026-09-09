@@ -3,6 +3,10 @@
   if (!currentScript) return;
 
   var scriptUrl = new URL(currentScript.src, window.location.href);
+  var apiOrigin = (
+    currentScript.getAttribute("data-api-origin") ||
+    scriptUrl.origin
+  ).replace(/\/$/, "");
   var site =
     currentScript.getAttribute("data-site") ||
     scriptUrl.searchParams.get("site") ||
@@ -36,8 +40,16 @@
     }).join("");
   }
 
+  function safeColor(value) {
+    var color = String(value || "").trim();
+    return /^#[0-9a-f]{3}([0-9a-f]{3})?$/i.test(color) ? color : "#2b2117";
+  }
+
   function renderOffer(offer) {
-    var media = offer.bannerUrl || offer.logoUrl || "";
+    var hasBanner = Boolean(offer.bannerUrl);
+    var media = hasBanner ? offer.bannerUrl : offer.logoUrl || "";
+    var mediaClass = hasBanner ? " bp-offer-media--banner" : " bp-offer-media--logo";
+    var mediaBg = safeColor(offer.logoBg);
     var tags = Array.isArray(offer.tags) ? offer.tags.slice(0, 3) : [];
     var notes = Array.isArray(offer.notes) ? offer.notes.slice(0, 3) : [];
     var code = offer.code && offer.code !== "—" ? offer.code : "";
@@ -56,7 +68,11 @@
       '<a class="bp-offer-link" href="' +
       escapeHtml(offer.url) +
       '" target="_blank" rel="noopener noreferrer">' +
-      '<div class="bp-offer-media">' +
+      '<div class="bp-offer-media' +
+      mediaClass +
+      '" style="background:' +
+      mediaBg +
+      '">' +
       (media
         ? '<img src="' +
           escapeHtml(media) +
@@ -68,7 +84,7 @@
           hoverScale +
           '">'
         : '<div class="bp-offer-initial" style="background:' +
-          escapeHtml(offer.logoBg || "#2b2117") +
+          mediaBg +
           '">' +
           escapeHtml(String(offer.name || "?").charAt(0)) +
           "</div>") +
@@ -140,6 +156,7 @@
       ".bp-offer-link{display:flex;flex-direction:column;min-height:100%;color:inherit;text-decoration:none}" +
       ".bp-offer-media{position:relative;aspect-ratio:16/9;background:#120d08;overflow:hidden}" +
       ".bp-offer-media img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(var(--bp-media-scale,1.01));transition:transform .25s ease}" +
+      ".bp-offer-media--logo img{object-fit:contain;padding:16px;box-sizing:border-box}" +
       ".bp-offer-card:hover img{transform:scale(var(--bp-media-hover-scale,1.05))}" +
       ".bp-offer-initial{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:48px;font-weight:900}" +
       ".bp-offer-media:after{content:'';position:absolute;inset:auto 0 0;height:55%;background:linear-gradient(to top,rgba(0,0,0,.78),transparent);pointer-events:none}" +
@@ -189,7 +206,7 @@
   mount.innerHTML =
     '<div style="padding:32px;text-align:center;color:#d4a843;background:#090604">A carregar ofertas...</div>';
 
-  fetch(scriptUrl.origin + "/api/external-offers?site=" + encodeURIComponent(site), {
+  fetch(apiOrigin + "/api/external-offers?site=" + encodeURIComponent(site), {
     cache: "no-store",
   })
     .then(function (response) {
