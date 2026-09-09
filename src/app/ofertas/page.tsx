@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { OfferCards } from "@/components/OfferCard";
+import { ExternalOffersEmbed } from "@/components/ExternalOffersEmbed";
 
 export const metadata: Metadata = {
   title: "Ofertas",
@@ -16,7 +16,7 @@ export default function OfertasPage() {
       {/* Content */}
       <div className="relative z-10 pt-16 pb-16">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-6">
-          <OfferCards />
+          <ExternalOffersEmbed />
         </div>
       </div>
     </div>

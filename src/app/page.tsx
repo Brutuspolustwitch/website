@@ -1,4 +1,4 @@
-import { HeroSection } from "@/components/HeroSection";
+import { ExternalOffersEmbed } from "@/components/ExternalOffersEmbed";
 import { generateWebsiteSchema } from "@/lib/schema";
 import type { Metadata } from "next";
 import { SITE_NAME, SITE_DESCRIPTION, SITE_URL } from "@/lib/constants";
@@ -34,7 +34,11 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
       />
-      <HeroSection />
+      <main className="relative z-10 pt-16 pb-16">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-6">
+          <ExternalOffersEmbed />
+        </div>
+      </main>
     </>
   );
 }
