@@ -148,6 +148,7 @@ export async function GET(request: Request) {
     cookieStore.set(
       "twitch_user",
       JSON.stringify({
+        id: user.id,
         login: user.login,
         display_name: user.display_name,
         profile_image_url: user.profile_image_url,

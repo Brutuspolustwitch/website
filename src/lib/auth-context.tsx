@@ -25,36 +25,42 @@ const AuthContext = createContext<AuthContextType>({
   logout: async () => {},
 });
 
+function clearCachedUser() {
+  document.cookie = "twitch_user=; path=/; max-age=0";
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<TwitchUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   /* Read session on mount */
   useEffect(() => {
-    // First try the client-readable cookie for instant hydration
-    try {
-      const cookieStr = document.cookie
-        .split("; ")
-        .find((c) => c.startsWith("twitch_user="));
-      if (cookieStr) {
-        const decoded = decodeURIComponent(cookieStr.split("=").slice(1).join("="));
-        const parsed = JSON.parse(decoded);
-        setUser(parsed);
-        setLoading(false);
-        return;
-      }
-    } catch {
-      // Fall through to API check
-    }
+    let cancelled = false;
 
-    // Fallback: fetch from server
-    fetch("/api/auth/me")
+    // Always validate the httpOnly server session. The client-readable cookie
+    // is only a fast UI cache and must not be treated as authenticated state.
+    fetch("/api/auth/me", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
-        if (data.user) setUser(data.user);
+        if (cancelled) return;
+
+        if (data.user?.id) {
+          setUser(data.user);
+        } else {
+          clearCachedUser();
+          setUser(null);
+        }
       })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .catch(() => {
+        if (!cancelled) setUser(null);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const login = useCallback(() => {
@@ -64,7 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     await fetch("/api/auth/logout", { method: "POST" });
     // Clear client cookie
-    document.cookie = "twitch_user=; path=/; max-age=0";
+    clearCachedUser();
     setUser(null);
   }, []);
 
