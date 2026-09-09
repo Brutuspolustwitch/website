@@ -74,6 +74,15 @@ function canPreviewImage(value: string) {
   return clean.startsWith("/") || /^https?:\/\//i.test(clean);
 }
 
+function messageFromUnknown(error: unknown, fallback: string) {
+  if (error instanceof Error && error.message) return error.message;
+  if (error && typeof error === "object" && "message" in error) {
+    const message = (error as { message?: unknown }).message;
+    if (typeof message === "string" && message) return message;
+  }
+  return fallback;
+}
+
 function normalizeOrder(offers: EditableOffer[]) {
   return offers.map((offer, index) => ({ ...offer, sortOrder: index }));
 }
@@ -175,30 +184,38 @@ export default function ExternalSitesAdminPage() {
   const load = useCallback(async () => {
     setLoading(true);
     setMessage(null);
-    const res = await fetch(`/api/admin/external-offers?site=${SITE_SLUG}`, {
-      cache: "no-store",
-    });
-    const data = (await res.json()) as ApiResponse;
 
-    if (!res.ok || data.error) {
+    try {
+      const res = await fetch(`/api/admin/external-offers?site=${SITE_SLUG}`, {
+        cache: "no-store",
+      });
+      const data = (await res.json().catch(() => ({}))) as ApiResponse;
+
+      if (!res.ok || data.error) {
+        setMessage({
+          ok: false,
+          text: data.error ?? "Erro ao carregar site externo.",
+        });
+        return;
+      }
+
+      if (data.site) {
+        setSite(data.site);
+        setTitle(data.site.title);
+        setDescription(data.site.description);
+        setCtaLabel(data.site.cta_label);
+        setIsActive(data.site.is_active);
+      }
+      setOffers(normalizeOrder((data.offers ?? []).map(toEditableOffer)));
+      setDeletedOfferIds([]);
+    } catch (error) {
       setMessage({
         ok: false,
-        text: data.error ?? "Erro ao carregar site externo.",
+        text: messageFromUnknown(error, "Erro ao carregar site externo."),
       });
+    } finally {
       setLoading(false);
-      return;
     }
-
-    if (data.site) {
-      setSite(data.site);
-      setTitle(data.site.title);
-      setDescription(data.site.description);
-      setCtaLabel(data.site.cta_label);
-      setIsActive(data.site.is_active);
-    }
-    setOffers(normalizeOrder((data.offers ?? []).map(toEditableOffer)));
-    setDeletedOfferIds([]);
-    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -352,9 +369,10 @@ export default function ExternalSitesAdminPage() {
       setDeletedOfferIds([]);
       setMessage({ ok: true, text: "Arena dos Bónus atualizada." });
     } catch (error) {
-      const text =
-        error instanceof Error ? error.message : "Erro ao guardar alterações.";
-      setMessage({ ok: false, text });
+      setMessage({
+        ok: false,
+        text: messageFromUnknown(error, "Erro ao guardar alterações."),
+      });
     } finally {
       setSaving(false);
     }

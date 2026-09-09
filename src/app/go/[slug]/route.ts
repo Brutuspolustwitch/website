@@ -23,7 +23,10 @@ function getSupabaseClient() {
 
 function redirectToOffers() {
   return NextResponse.redirect(
-    new URL("/ofertas", process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.brutuspolus.com"),
+    new URL(
+      "/ofertas",
+      process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.brutuspolus.com",
+    ),
   );
 }
 
@@ -102,11 +105,13 @@ export async function GET(
 
   let offer: RedirectOffer | null = null;
 
-  if (siteSlug && isExternalOfferSiteSlug(siteSlug)) {
-    offer = await findExternalOffer(db, siteSlug, slug);
-  }
+  if (siteSlug) {
+    if (!isExternalOfferSiteSlug(siteSlug)) {
+      return redirectToOffers();
+    }
 
-  if (!offer) {
+    offer = await findExternalOffer(db, siteSlug, slug);
+  } else {
     offer = await findCasinoOffer(db, slug);
   }
 

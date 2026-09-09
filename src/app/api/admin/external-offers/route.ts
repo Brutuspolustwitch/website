@@ -127,6 +127,39 @@ function cleanBadge(value: unknown) {
   return BADGES.has(badge) ? badge : null;
 }
 
+function errorMessage(error: unknown) {
+  if (error instanceof Error) return error.message;
+
+  if (error && typeof error === "object") {
+    const source = error as {
+      code?: unknown;
+      message?: unknown;
+      details?: unknown;
+      hint?: unknown;
+    };
+    const parts = [
+      typeof source.message === "string" ? source.message : "",
+      typeof source.details === "string" ? source.details : "",
+      typeof source.hint === "string" ? source.hint : "",
+      typeof source.code === "string" ? `Código: ${source.code}` : "",
+    ].filter(Boolean);
+
+    if (parts.length > 0) {
+      const message = parts.join(" ");
+      if (
+        message.includes("external_site_offers") ||
+        message.includes("external_offer_sites")
+      ) {
+        return `${message} Aplica a migration supabase/migrations/add_standalone_external_site_offers.sql no Supabase.`;
+      }
+
+      return message;
+    }
+  }
+
+  return "Erro desconhecido";
+}
+
 async function ensureSite(
   db: ReturnType<typeof getServiceRoleClient>,
   slug: string,
@@ -205,9 +238,7 @@ export async function GET(request: Request) {
     const state = await readAdminState(db, site);
     return NextResponse.json(state);
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Erro desconhecido";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: errorMessage(error) }, { status: 500 });
   }
 }
 
@@ -366,8 +397,6 @@ export async function PATCH(request: Request) {
     const state = await readAdminState(db, site);
     return NextResponse.json(state);
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Erro desconhecido";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: errorMessage(error) }, { status: 500 });
   }
 }
