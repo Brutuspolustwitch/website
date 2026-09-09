@@ -25,6 +25,7 @@ type DailyRewardState = {
   canClaim: boolean;
   alreadyClaimed: boolean;
   pending: boolean;
+  shouldPrompt: boolean;
   today: {
     date: string;
     streak: number;
@@ -41,6 +42,7 @@ type DailyRewardState = {
     bestStreak: number;
     totalClaimedPoints: number;
     lastClaimedDate: string | null;
+    lastPromptedDate: string | null;
   };
   balance: number | null;
   nextResetAt: string;
@@ -76,6 +78,21 @@ function formatCountdown(resetAt: string, now: number) {
 
 function dismissedKey(state: DailyRewardState) {
   return `brutuspolus:daily-reward:dismissed:${state.user.twitchId}:${state.today.date}`;
+}
+
+function markPromptSeen(state: DailyRewardState) {
+  try {
+    localStorage.setItem(dismissedKey(state), "true");
+  } catch {
+    // ignore storage failures
+  }
+
+  fetch("/api/daily-reward", {
+    method: "PATCH",
+    cache: "no-store",
+  }).catch(() => {
+    // The local flag still prevents repeat popups in this browser.
+  });
 }
 
 function daysUntil(streak: number, target: number) {
@@ -129,9 +146,11 @@ export function DailyRewardModal() {
       }
 
       setState(data);
-      if (data.canClaim) {
+      if (data.canClaim && data.shouldPrompt) {
         const dismissed = localStorage.getItem(dismissedKey(data));
-        setOpen(dismissed !== "true");
+        const shouldOpen = dismissed !== "true";
+        setOpen(shouldOpen);
+        if (shouldOpen) markPromptSeen(data);
       } else {
         setOpen(false);
       }
@@ -259,62 +278,62 @@ export function DailyRewardModal() {
         type="button"
       />
 
-      <section className="relative w-full max-w-[640px] max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl border border-arena-gold/25 bg-[#151515] shadow-[0_30px_90px_rgba(0,0,0,0.75)]">
-        <div className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_50%_0%,rgba(212,168,67,0.18),transparent_42%)]" />
+      <section className="relative w-full max-w-[520px] max-h-[calc(100dvh-1rem)] overflow-y-auto rounded-xl border border-arena-gold/25 bg-[#151515] shadow-[0_30px_90px_rgba(0,0,0,0.75)]">
+        <div className="pointer-events-none absolute inset-0 rounded-xl bg-[radial-gradient(circle_at_50%_0%,rgba(212,168,67,0.18),transparent_42%)]" />
 
-        <div className="relative p-5 sm:p-7">
+        <div className="relative p-4 sm:p-5">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-arena-gold/25 bg-arena-gold/10 text-arena-gold">
-                <Gift className="h-5 w-5" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-arena-gold/25 bg-arena-gold/10 text-arena-gold">
+                <Gift className="h-4 w-4" />
               </div>
               <h2
                 id="daily-reward-title"
-                className="text-lg font-bold text-arena-white"
+                className="text-base font-bold text-arena-white"
               >
                 Recompensa diária
               </h2>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="hidden items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-bold text-arena-white sm:flex">
-                <Coins className="h-4 w-4 text-arena-gold" />
+              <div className="hidden items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-xs font-bold text-arena-white sm:flex">
+                <Coins className="h-3.5 w-3.5 text-arena-gold" />
                 {typeof state.balance === "number"
                   ? `${formatPoints(state.balance)} SE`
                   : "SE"}
               </div>
               <button
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-arena-gold/70 text-arena-gold transition-colors hover:bg-arena-gold/10"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-arena-gold/70 text-arena-gold transition-colors hover:bg-arena-gold/10"
                 aria-label="Fechar recompensa diária"
                 onClick={close}
                 type="button"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
             </div>
           </div>
 
-          <div className="mt-7 grid gap-5 sm:grid-cols-[1fr_auto] sm:items-end">
+          <div className="mt-5 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
             <div>
-              <p className="text-sm text-arena-smoke">Recompensa de hoje</p>
+              <p className="text-xs text-arena-smoke">Recompensa de hoje</p>
               <div className="mt-1 flex items-end gap-3">
-                <span className="text-6xl font-bold leading-none text-white">
+                <span className="text-5xl font-bold leading-none text-white">
                   {formatPoints(state.today.amount)}
                 </span>
-                <span className="pb-2 text-xl font-bold text-arena-gold">SE</span>
+                <span className="pb-1.5 text-base font-bold text-arena-gold">SE</span>
               </div>
               {state.today.streakBonus > 0 && (
-                <p className="mt-2 text-sm text-arena-gold-light">
+                <p className="mt-2 text-xs text-arena-gold-light">
                   Inclui +{formatPoints(state.today.streakBonus)} SE de bónus.
                 </p>
               )}
             </div>
 
             <div className="text-left sm:text-right">
-              <p className="text-sm text-arena-smoke">Sequência</p>
-              <p className="mt-1 text-4xl font-bold leading-none text-arena-gold-light">
+              <p className="text-xs text-arena-smoke">Sequência</p>
+              <p className="mt-1 text-3xl font-bold leading-none text-arena-gold-light">
                 {state.today.streak}
-                <span className="ml-2 text-base text-arena-gold">
+                <span className="ml-2 text-sm text-arena-gold">
                   {state.today.streak === 1 ? "dia" : "dias"}
                 </span>
               </p>
@@ -324,14 +343,14 @@ export function DailyRewardModal() {
             </div>
           </div>
 
-          <div className="my-6 h-px bg-white/10" />
+          <div className="my-4 h-px bg-white/10" />
 
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-arena-smoke">
+            <p className="text-xs text-arena-smoke">
               Dia {state.today.cycleDay} de 7 · Semana {state.today.week}
             </p>
-            <div className="flex items-center gap-2 text-sm text-arena-smoke">
-              <Clock3 className="h-4 w-4 text-arena-gold/70" />
+            <div className="flex items-center gap-2 text-xs text-arena-smoke">
+              <Clock3 className="h-3.5 w-3.5 text-arena-gold/70" />
               Reinicia em{" "}
               <span className="font-mono font-bold text-arena-gold-light">
                 {formatCountdown(state.nextResetAt, now)}
@@ -339,7 +358,7 @@ export function DailyRewardModal() {
             </div>
           </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-2 min-[460px]:grid-cols-4 sm:grid-cols-7">
+          <div className="mt-3 grid grid-cols-2 gap-1.5 min-[420px]:grid-cols-4 sm:grid-cols-7">
             {rewardCards.map((reward) => {
               const isToday = reward.status === "today";
               const isDone = reward.status === "done";
@@ -348,7 +367,7 @@ export function DailyRewardModal() {
               return (
                 <div
                   key={reward.day}
-                  className={`flex min-h-[126px] flex-col items-center justify-between rounded-lg border px-2 py-3 text-center transition-colors ${
+                  className={`flex min-h-[96px] flex-col items-center justify-between rounded-lg border px-1.5 py-2 text-center transition-colors ${
                     isToday
                       ? "border-arena-gold bg-arena-gold/15 text-arena-gold-light shadow-[0_0_20px_rgba(212,168,67,0.16)]"
                       : isDone
@@ -356,26 +375,26 @@ export function DailyRewardModal() {
                         : "border-white/10 bg-black/20 text-arena-ash"
                   }`}
                 >
-                  <span className="text-xs">Dia {reward.day}</span>
+                  <span className="text-[10px]">Dia {reward.day}</span>
                   <div
-                    className={`flex h-9 w-9 items-center justify-center rounded-full border ${
+                    className={`flex h-7 w-7 items-center justify-center rounded-full border ${
                       isToday
                         ? "border-arena-gold bg-arena-gold/30 text-arena-gold-light"
                         : "border-white/10 bg-white/[0.06] text-arena-smoke"
                     }`}
                   >
                     {reward.day === 7 ? (
-                      <Trophy className="h-5 w-5" />
+                      <Trophy className="h-4 w-4" />
                     ) : (
-                      <Coins className="h-5 w-5" />
+                      <Coins className="h-4 w-4" />
                     )}
                   </div>
                   <strong
-                    className={`text-base ${isLocked ? "text-arena-smoke" : "text-white"}`}
+                    className={`text-sm ${isLocked ? "text-arena-smoke" : "text-white"}`}
                   >
                     +{formatPoints(reward.amount)}
                   </strong>
-                  <span className="flex items-center gap-1 text-[11px] text-arena-smoke">
+                  <span className="flex items-center gap-1 text-[10px] text-arena-smoke">
                     {isDone && <Check className="h-3 w-3 text-arena-gold" />}
                     {isLocked && <Lock className="h-3 w-3" />}
                     {isToday ? "Hoje" : isDone ? "Feito" : "Bloqueado"}
@@ -385,37 +404,37 @@ export function DailyRewardModal() {
             })}
           </div>
 
-          <div className="mt-6">
-            <p className="text-sm text-arena-smoke">Bónus de sequência</p>
-            <div className="mt-3 overflow-hidden rounded-lg border border-white/10 bg-white/[0.035]">
-              <div className="flex items-center justify-between gap-4 border-b border-white/10 px-4 py-3">
+          <div className="mt-4">
+            <p className="text-xs text-arena-smoke">Bónus de sequência</p>
+            <div className="mt-2 overflow-hidden rounded-lg border border-white/10 bg-white/[0.035]">
+              <div className="flex items-center justify-between gap-4 border-b border-white/10 px-3 py-2.5">
                 <div>
-                  <p className="font-bold text-arena-white">Bónus 7 dias</p>
-                  <p className="text-xs text-arena-smoke">
+                  <p className="text-sm font-bold text-arena-white">Bónus 7 dias</p>
+                  <p className="text-[11px] text-arena-smoke">
                     {bonusCopy(sevenDayDistance)}
                   </p>
                 </div>
-                <strong className="text-arena-gold-light">
+                <strong className="text-sm text-arena-gold-light">
                   +{formatPoints(500)} SE
                 </strong>
               </div>
-              <div className="flex items-center justify-between gap-4 border-b border-white/10 px-4 py-3">
+              <div className="flex items-center justify-between gap-4 border-b border-white/10 px-3 py-2.5">
                 <div>
-                  <p className="font-bold text-arena-white">Bónus 30 dias</p>
-                  <p className="text-xs text-arena-smoke">
+                  <p className="text-sm font-bold text-arena-white">Bónus 30 dias</p>
+                  <p className="text-[11px] text-arena-smoke">
                     {bonusCopy(thirtyDayDistance)}
                   </p>
                 </div>
-                <strong className="text-arena-gold-light">
+                <strong className="text-sm text-arena-gold-light">
                   +{formatPoints(5000)} SE
                 </strong>
               </div>
-              <div className="flex items-center justify-between gap-4 px-4 py-3">
+              <div className="flex items-center justify-between gap-4 px-3 py-2.5">
                 <div>
-                  <p className="font-bold text-arena-white">Multiplicador diário</p>
-                  <p className="text-xs text-arena-smoke">x1.25 a partir do dia 8</p>
+                  <p className="text-sm font-bold text-arena-white">Multiplicador diário</p>
+                  <p className="text-[11px] text-arena-smoke">x1.25 a partir do dia 8</p>
                 </div>
-                <strong className="text-arena-gold-light">
+                <strong className="text-sm text-arena-gold-light">
                   {formatMultiplier(state.today.multiplier)}
                 </strong>
               </div>
@@ -434,17 +453,17 @@ export function DailyRewardModal() {
             </div>
           )}
 
-          <div className="mt-6 border-t border-white/10 pt-5">
+          <div className="mt-4 border-t border-white/10 pt-4">
             <button
               type="button"
               onClick={claimReward}
               disabled={claimDisabled}
-              className="flex w-full items-center justify-center gap-3 rounded-lg bg-gradient-to-r from-arena-gold-light to-arena-gold px-5 py-4 text-sm font-black uppercase tracking-wider text-black transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+              className="flex w-full items-center justify-center gap-3 rounded-lg bg-gradient-to-r from-arena-gold-light to-arena-gold px-5 py-3 text-xs font-black uppercase tracking-wider text-black transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
             >
               {claiming ? "A atribuir pontos..." : claimLabel}
               {!claiming && !state.alreadyClaimed && <ArrowRight className="h-4 w-4" />}
             </button>
-            <p className="mt-4 text-center text-xs leading-relaxed text-arena-smoke">
+            <p className="mt-3 text-center text-[11px] leading-relaxed text-arena-smoke">
               Uma recompensa por dia. Reinicia às 00:00 UTC. Se falhares um dia,
               a sequência volta ao dia 1. Os pontos ganhos ficam contigo.
             </p>

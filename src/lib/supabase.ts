@@ -142,6 +142,7 @@ export interface DailyRewardProfileRow {
   current_streak: number;
   best_streak: number;
   last_claimed_date: string | null;
+  last_prompted_date: string | null;
   total_claimed_points: number;
   created_at: string;
   updated_at: string;

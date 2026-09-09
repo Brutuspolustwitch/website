@@ -339,12 +339,14 @@ async function buildState(
     canClaim,
     alreadyClaimed,
     pending,
+    shouldPrompt: canClaim && profile.last_prompted_date !== today,
     today: plannedReward,
     profile: {
       currentStreak: intValue(profile.current_streak, 0),
       bestStreak: intValue(profile.best_streak, 0),
       totalClaimedPoints: intValue(profile.total_claimed_points, 0),
       lastClaimedDate: profile.last_claimed_date,
+      lastPromptedDate: profile.last_prompted_date,
     },
     balance,
     nextResetAt: nextResetAtUtc(),
@@ -438,6 +440,39 @@ export async function GET() {
     return NextResponse.json(
       {
         error: "Erro ao carregar recompensa diária",
+        detail: err instanceof Error ? err.message : String(err),
+      },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PATCH() {
+  try {
+    const context = await loadContext();
+    if ("response" in context) return context.response;
+
+    const { data, error } = await context.db
+      .from("daily_reward_profiles")
+      .update({
+        last_prompted_date: context.today,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("user_twitch_id", context.session.id)
+      .select("*")
+      .single<DailyRewardProfileRow>();
+
+    if (error || !data) {
+      throw error ?? new Error("Falha ao registar popup diário");
+    }
+
+    const state = await buildState(context.session, data, context.claim);
+    return NextResponse.json(state);
+  } catch (err) {
+    console.error("daily reward prompt mark failed:", err);
+    return NextResponse.json(
+      {
+        error: "Erro ao registar popup diário",
         detail: err instanceof Error ? err.message : String(err),
       },
       { status: 500 },

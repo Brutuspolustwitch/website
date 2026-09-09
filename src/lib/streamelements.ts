@@ -37,6 +37,18 @@ async function readResponse(res: Response) {
   }
 }
 
+function streamElementsError(status: number) {
+  if (status === 401) {
+    return "StreamElements 401: token JWT inválido, expirado ou sem acesso ao canal";
+  }
+
+  if (status === 403) {
+    return "StreamElements 403: token JWT sem permissão para alterar pontos";
+  }
+
+  return `Erro StreamElements ${status}`;
+}
+
 function readPoints(data: unknown): number | null {
   if (typeof data === "number" && Number.isFinite(data)) return data;
   if (!data || typeof data !== "object") return null;
@@ -97,7 +109,7 @@ export async function updateStreamElementsPoints(
     if (!res.ok) {
       return {
         ok: false,
-        error: `Erro StreamElements ${res.status}`,
+        error: streamElementsError(res.status),
         status: res.status,
         detail: typeof payload === "string" ? payload : JSON.stringify(payload),
       };
@@ -149,7 +161,7 @@ export async function getStreamElementsPoints(
       return {
         ok: false,
         points: null,
-        error: `Erro StreamElements ${res.status}`,
+        error: streamElementsError(res.status),
         status: res.status,
         detail: typeof payload === "string" ? payload : JSON.stringify(payload),
       };
