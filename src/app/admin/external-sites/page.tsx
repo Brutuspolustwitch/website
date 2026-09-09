@@ -256,6 +256,7 @@ function MiniMedia({ offer }: { offer: EditableOffer }) {
 
 function OfferPreview({ offer, defaultCta }: { offer: EditableOffer; defaultCta: string }) {
   const frame = useRef<HTMLIFrameElement>(null);
+  const [frameHeight, setFrameHeight] = useState(560);
   const updatePreview = useCallback(() => {
     const imageUrl = (value: string) => {
       try { return canPreviewImage(value) ? new URL(value.trim(), window.location.origin).href : ""; }
@@ -290,6 +291,21 @@ function OfferPreview({ offer, defaultCta }: { offer: EditableOffer; defaultCta:
       },
     }, "*");
   }, [offer, defaultCta]);
+
+  useEffect(() => {
+    const handlePreviewSize = (event: MessageEvent) => {
+      if (event.source !== frame.current?.contentWindow) return;
+      if (event.data?.type !== "arena-offer-preview-size") return;
+
+      const nextHeight = Number(event.data.height);
+      if (!Number.isFinite(nextHeight)) return;
+      setFrameHeight(Math.min(900, Math.max(420, Math.ceil(nextHeight) + 4)));
+    };
+
+    window.addEventListener("message", handlePreviewSize);
+    return () => window.removeEventListener("message", handlePreviewSize);
+  }, []);
+
   useEffect(updatePreview, [updatePreview]);
   return (
     <iframe
@@ -298,7 +314,8 @@ function OfferPreview({ offer, defaultCta }: { offer: EditableOffer; defaultCta:
       src="/arena-preview/index.html"
       sandbox="allow-scripts"
       onLoad={updatePreview}
-      className="h-[380px] w-full border-0"
+      style={{ height: frameHeight }}
+      className="w-full border-0"
     />
   );
 }
@@ -1449,7 +1466,7 @@ export default function ExternalSitesAdminPage() {
                       {formatScale(selectedOffer.logoScale)}
                     </div>
                   </div>
-                  <div className="mx-auto max-w-[324px]">
+                  <div className="mx-auto max-w-[284px]">
                     <OfferPreview offer={selectedOffer} defaultCta={ctaLabel} />
                   </div>
                 </section>

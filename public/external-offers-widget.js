@@ -16,6 +16,7 @@
     currentScript.getAttribute("data-container") ||
     "brutuspolus-offers";
   var targetSelector = targetName.charAt(0) === "#" ? targetName : "#" + targetName;
+  var previewMode = currentScript.hasAttribute("data-preview");
   var mount = document.querySelector(targetSelector);
 
   if (!mount) {
@@ -133,24 +134,74 @@
     );
   }
 
+  var clickHandlerBound = false;
+
+  function getRenderRoot() {
+    if (!mount.attachShadow) return mount;
+    return mount.shadowRoot || mount.attachShadow({ mode: "open" });
+  }
+
+  function bindClickHandler(root) {
+    if (clickHandlerBound) return;
+    clickHandlerBound = true;
+
+    root.addEventListener("click", function (event) {
+      if (previewMode) event.preventDefault();
+
+      var target = event.target;
+      var button = target && target.closest ? target.closest("[data-code]") : null;
+      if (!button) return;
+      event.preventDefault();
+      event.stopPropagation();
+      var code = button.getAttribute("data-code") || "";
+      if (!code || !navigator.clipboard) return;
+      navigator.clipboard.writeText(code).then(function () {
+        var label = button.querySelector("span");
+        if (!label) return;
+        var previous = label.textContent;
+        label.textContent = "Copiado";
+        window.setTimeout(function () {
+          label.textContent = previous;
+        }, 1400);
+      });
+    });
+  }
+
+  function notifyPreviewSize() {
+    if (!previewMode || !window.parent) return;
+    window.requestAnimationFrame(function () {
+      window.parent.postMessage(
+        {
+          type: "arena-offer-preview-size",
+          height: Math.ceil(mount.getBoundingClientRect().height),
+        },
+        "*",
+      );
+    });
+  }
+
   function render(data) {
     var siteData = data.site || {};
     var offers = Array.isArray(data.offers) ? data.offers : [];
     if (!offers.length) {
       mount.innerHTML = '<div style="padding:32px;text-align:center;color:#d4a843;background:#090604">Sem ofertas disponíveis de momento.</div>';
+      notifyPreviewSize();
       return;
     }
 
-    var root = mount.attachShadow ? mount.attachShadow({ mode: "open" }) : mount;
+    var root = getRenderRoot();
     root.innerHTML =
       "<style>" +
       ":host{display:block;color:#f6ead1;font-family:Inter,Arial,sans-serif}" +
       ".bp-widget{width:100%;box-sizing:border-box;padding:48px 16px;background:radial-gradient(circle at 50% 0%,rgba(214,164,65,.22),transparent 34%),linear-gradient(180deg,#120b06,#050302);}" +
+      ".bp-widget--preview{padding:0;background:transparent}" +
       ".bp-inner{max-width:1180px;margin:0 auto}" +
+      ".bp-widget--preview .bp-inner{max-width:none}" +
       ".bp-heading{text-align:center;margin:0 0 28px}" +
       ".bp-heading h2{margin:0;color:#f0d78c;font:800 30px/1.05 Georgia,serif;letter-spacing:.12em;text-transform:uppercase;text-shadow:0 0 18px rgba(255,180,71,.34)}" +
       ".bp-heading p{max-width:640px;margin:10px auto 0;color:rgba(246,234,209,.68);font-size:14px;line-height:1.6}" +
       ".bp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:16px}" +
+      ".bp-widget--preview .bp-grid{grid-template-columns:minmax(0,1fr);gap:0}" +
       ".bp-offer-card{position:relative;overflow:hidden;border:1px solid rgba(212,168,67,.28);border-radius:12px;background:linear-gradient(180deg,rgba(32,21,12,.94),rgba(12,8,5,.98));box-shadow:0 12px 32px rgba(0,0,0,.42)}" +
       ".bp-offer-card--featured{border-color:rgba(240,215,140,.68);box-shadow:0 0 0 1px rgba(240,215,140,.18),0 18px 44px rgba(0,0,0,.52)}" +
       ".bp-offer-link{display:flex;flex-direction:column;min-height:100%;color:inherit;text-decoration:none}" +
@@ -176,31 +227,39 @@
       ".bp-offer-cta{margin-top:auto;display:flex;align-items:center;justify-content:center;border-radius:9px;background:linear-gradient(180deg,#d4a843,#9d7020);color:#130b04;font-size:13px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:12px 14px}" +
       ".bp-offer-legal{margin:0;text-align:center;color:rgba(246,234,209,.45);font-size:11px}" +
       "@media(max-width:520px){.bp-widget{padding:34px 10px}.bp-heading h2{font-size:24px}.bp-grid{grid-template-columns:1fr}}" +
+      "@media(max-width:520px){.bp-widget--preview{padding:0}}" +
       "</style>" +
-      '<section class="bp-widget"><div class="bp-inner"><header class="bp-heading"><h2>' +
-      escapeHtml(siteData.title || "Ofertas") +
-      "</h2>" +
-      (siteData.description ? "<p>" + escapeHtml(siteData.description) + "</p>" : "") +
-      '</header><div class="bp-grid">' +
+      '<section class="bp-widget' +
+      (previewMode ? " bp-widget--preview" : "") +
+      '"><div class="bp-inner">' +
+      (previewMode
+        ? ""
+        : '<header class="bp-heading"><h2>' +
+          escapeHtml(siteData.title || "Ofertas") +
+          "</h2>" +
+          (siteData.description ? "<p>" + escapeHtml(siteData.description) + "</p>" : "") +
+          "</header>") +
+      '<div class="bp-grid">' +
       offers.map(renderOffer).join("") +
       "</div></div></section>";
 
-    root.addEventListener("click", function (event) {
-      var target = event.target;
-      var button = target && target.closest ? target.closest("[data-code]") : null;
-      if (!button) return;
-      event.preventDefault();
-      event.stopPropagation();
-      var code = button.getAttribute("data-code") || "";
-      if (!code || !navigator.clipboard) return;
-      navigator.clipboard.writeText(code).then(function () {
-        var previous = button.querySelector("span").textContent;
-        button.querySelector("span").textContent = "Copiado";
-        window.setTimeout(function () {
-          button.querySelector("span").textContent = previous;
-        }, 1400);
+    bindClickHandler(root);
+    notifyPreviewSize();
+  }
+
+  if (previewMode) {
+    mount.innerHTML =
+      '<div style="padding:32px;text-align:center;color:#d4a843;background:#090604">A carregar preview...</div>';
+
+    window.addEventListener("message", function (event) {
+      if (event.source !== window.parent || event.data?.type !== "arena-offer-preview") return;
+      render({
+        site: event.data.site || {},
+        offers: event.data.offer ? [event.data.offer] : [],
       });
     });
+    notifyPreviewSize();
+    return;
   }
 
   mount.innerHTML =

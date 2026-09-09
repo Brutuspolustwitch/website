@@ -96,7 +96,50 @@ export default function HallOfVictorsArena() {
 
         {/* Section B: Latest grid */}
         <section className="mb-12">
-          <SectionTitle>Latest Victories</SectionTitle>
+          <div className="mb-8 flex flex-col items-center gap-0">
+            {user ? (
+              <motion.button
+                whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.98 }}
+                onClick={() => setModalOpen(true)}
+                className="w-full sm:w-auto px-8 sm:px-10 py-4 rounded-lg font-[family-name:var(--font-display)] font-black uppercase tracking-[0.3em] text-base sm:text-lg"
+                style={{
+                  background: "linear-gradient(180deg,#c0392b,#7d1f15)",
+                  color: "#fff1d6",
+                  border: "2px solid rgba(240,215,140,0.7)",
+                  boxShadow: "0 0 30px rgba(199,57,43,0.55), inset 0 0 0 1px rgba(0,0,0,0.4)",
+                }}
+              >
+                Submeter a Tua Vitória
+              </motion.button>
+            ) : (
+              <div className="text-arena-smoke">
+                Inicia sessão com Twitch para submeteres a tua vitória.
+              </div>
+            )}
+
+            <div className="mt-6 flex flex-col items-center gap-2">
+              <p className="text-xs uppercase tracking-[0.2em] text-arena-smoke/60">Recompensas em pontos SE</p>
+              <div className="flex flex-wrap justify-center gap-3 text-xs text-arena-smoke/80">
+                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-arena-gold/25 bg-arena-gold/[0.06]">
+                  <span style={{ color: "#ffd700" }}>🥇</span>
+                  <span style={{ color: "#f0d78c" }}>1.500 pts</span>
+                </span>
+                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-arena-gold/20 bg-arena-gold/[0.04]">
+                  <span style={{ color: "#c0c0c0" }}>🥈</span>
+                  <span className="text-arena-smoke">750 pts</span>
+                </span>
+                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-arena-gold/15 bg-arena-gold/[0.03]">
+                  <span style={{ color: "#cd7f32" }}>🥉</span>
+                  <span className="text-arena-smoke">500 pts</span>
+                </span>
+                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/10 bg-white/[0.03]">
+                  <span>✅</span>
+                  <span className="text-arena-smoke">250 pts por vitória submetida</span>
+                </span>
+              </div>
+              <p className="text-[10px] text-arena-smoke/40 mt-1">Top 3 mensal · ordenado por maior multiplicador</p>
+            </div>
+          </div>
 
           {/* Filters */}
           <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-center gap-3 mb-6">
@@ -121,53 +164,6 @@ export default function HallOfVictorsArena() {
               </AnimatePresence>
             </motion.div>
           )}
-        </section>
-
-        {/* Section C: Submit CTA */}
-        <section className="flex flex-col items-center gap-0">
-          {user ? (
-            <motion.button
-              whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.98 }}
-              onClick={() => setModalOpen(true)}
-              className="w-full sm:w-auto px-8 sm:px-10 py-4 rounded-lg font-[family-name:var(--font-display)] font-black uppercase tracking-[0.3em] text-base sm:text-lg"
-              style={{
-                background: "linear-gradient(180deg,#c0392b,#7d1f15)",
-                color: "#fff1d6",
-                border: "2px solid rgba(240,215,140,0.7)",
-                boxShadow: "0 0 30px rgba(199,57,43,0.55), inset 0 0 0 1px rgba(0,0,0,0.4)",
-              }}
-            >
-              Submeter a Tua Vitória
-            </motion.button>
-          ) : (
-            <div className="text-arena-smoke">
-              Inicia sessão com Twitch para submeteres a tua vitória.
-            </div>
-          )}
-
-          {/* Rewards info */}
-          <div className="mt-6 flex flex-col items-center gap-2">
-            <p className="text-xs uppercase tracking-[0.2em] text-arena-smoke/60">Recompensas em pontos SE</p>
-            <div className="flex flex-wrap justify-center gap-3 text-xs text-arena-smoke/80">
-              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-arena-gold/25 bg-arena-gold/[0.06]">
-                <span style={{ color: "#ffd700" }}>🥇</span>
-                <span style={{ color: "#f0d78c" }}>1.500 pts</span>
-              </span>
-              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-arena-gold/20 bg-arena-gold/[0.04]">
-                <span style={{ color: "#c0c0c0" }}>🥈</span>
-                <span className="text-arena-smoke">750 pts</span>
-              </span>
-              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-arena-gold/15 bg-arena-gold/[0.03]">
-                <span style={{ color: "#cd7f32" }}>🥉</span>
-                <span className="text-arena-smoke">500 pts</span>
-              </span>
-              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/10 bg-white/[0.03]">
-                <span>✅</span>
-                <span className="text-arena-smoke">250 pts por vitória submetida</span>
-              </span>
-            </div>
-            <p className="text-[10px] text-arena-smoke/40 mt-1">Top 3 mensal · ordenado por maior multiplicador</p>
-          </div>
         </section>
       </div>
 
