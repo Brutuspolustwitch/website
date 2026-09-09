@@ -1,9 +1,9 @@
 ﻿/* Site-wide constants */
 
-export const SITE_NAME = "Arena dos Bónus";
+export const SITE_NAME = "BRUTUSPOLUS";
 export const SITE_DESCRIPTION =
-  "Ofertas de casino e bónus online selecionados para a comunidade Arena dos Bónus.";
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://arenadosbonus.com";
+  "BRUTUSPOLUS e a sua arena de iGaming em Portugal: streams ao vivo, bonus hunts, ofertas de casino, giveaways, rankings e comunidade.";
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.brutuspolus.com";
 export const TWITCH_CHANNEL = process.env.NEXT_PUBLIC_TWITCH_CHANNEL || "brutuspolus";
 
 export const NAV_LINKS = [
