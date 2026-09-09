@@ -11,6 +11,16 @@ import { PROVIDERS } from "./types";
 
 type SortMode = "created_at" | "multiplier";
 
+function formatMonthLabel(monthStart: string) {
+  const date = new Date(monthStart);
+  if (Number.isNaN(date.getTime())) return "Mês atual";
+  return date.toLocaleDateString("pt-PT", {
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
 export default function HallOfVictorsArena() {
   const { user } = useAuth();
   const [winners, setWinners] = useState<Victory[]>([]);
@@ -26,20 +36,12 @@ export default function HallOfVictorsArena() {
     const res = await fetch("/api/hall-of-victors/winners", { cache: "no-store" });
     if (!res.ok) return;
     const j: WinnersResponse = await res.json();
-    // Prefer the current week's live top 3 — it updates as victories are approved.
-    // Only fall back to the frozen (previous) week when nobody has submitted yet this week.
-    if (j.live_top3 && j.live_top3.length > 0) {
-      setWinners(j.live_top3);
-      setWinnersLabel("Esta semana — em curso");
-    } else if (j.frozen && j.frozen.victories.length > 0) {
-      setWinners(j.frozen.victories);
-      // Format: "Semana de DD/MM" for the frozen week's Sunday date
-      const d = new Date(j.frozen.week_id + "T12:00:00Z");
-      const label = d.toLocaleDateString("pt-PT", { day: "2-digit", month: "2-digit", timeZone: "UTC" });
-      setWinnersLabel(`Semana de ${label}`);
+    if (j.month_top3 && j.month_top3.length > 0) {
+      setWinners(j.month_top3);
+      setWinnersLabel(formatMonthLabel(j.month_start));
     } else {
       setWinners([]);
-      setWinnersLabel("Sem vitórias esta semana ainda");
+      setWinnersLabel(`Sem vitórias em ${formatMonthLabel(j.month_start)} ainda`);
     }
   }, []);
 
@@ -87,7 +89,7 @@ export default function HallOfVictorsArena() {
       <div className="relative max-w-7xl mx-auto px-1 sm:px-2">
         {/* Section A: Podium */}
         <section className="mb-16">
-          <SectionTitle>Brutas da Semana</SectionTitle>
+          <SectionTitle>Brutas do Mês</SectionTitle>
           <div className="text-center text-arena-smoke text-sm mb-6">{winnersLabel}</div>
           <WeeklyPodium winners={winners} />
         </section>
@@ -164,7 +166,7 @@ export default function HallOfVictorsArena() {
                 <span className="text-arena-smoke">250 pts por vitória submetida</span>
               </span>
             </div>
-            <p className="text-[10px] text-arena-smoke/40 mt-1">Top 3 semanal · os pontos são atribuídos automaticamente</p>
+            <p className="text-[10px] text-arena-smoke/40 mt-1">Top 3 mensal · ordenado por maior multiplicador</p>
           </div>
         </section>
       </div>

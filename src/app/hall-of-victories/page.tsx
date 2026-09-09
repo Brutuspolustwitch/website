@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import HallOfVictorsArena from "@/components/hov/HallOfVictorsArena";
 
 export const metadata: Metadata = {
-  title: "Hall of Victors — Bruta do Mês",
-  description: "Champions of the Arena. Top wins of the week. Submete a tua vitória.",
+  title: "Hall of Victors — Brutas do Mês",
+  description: "Champions of the Arena. Top wins of the current month. Submete a tua vitória.",
   openGraph: {
-    title: "Hall of Victors | Bruta do Mês",
-    description: "Champions of the Arena — Top wins of the week.",
+    title: "Hall of Victors | Brutas do Mês",
+    description: "Champions of the Arena — Top wins of the current month.",
   },
 };
 

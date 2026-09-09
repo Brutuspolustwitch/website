@@ -63,7 +63,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
     "/admin/analitics/fraude": "Fraude",
     "/admin/outros/liga": "Liga dos Brutus",
     "/leaderboard": "Leaderboard",
-    "/hall-of-victories": "Brutas da Semana",
+    "/hall-of-victories": "Brutas do Mês",
     "/comunidade/mines": "Minas",
     "/comunidade/keno": "Keno",
   };
@@ -76,7 +76,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
   const [nextStream, setNextStream] = useState<{ title: string; stream_date: string; start_time: string; categories: string[]; casino: string | null } | null>(null);
 
   useEffect(() => {
-    if (!isLive) { setNextStream(null); return; }
+    if (!isLive) return;
     const today = new Date().toISOString().split("T")[0];
     fetch("/api/scheduled-streams")
       .then((r) => r.json())
@@ -84,7 +84,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
         const upcoming = (d.streams ?? []).filter(
           (s: { stream_date: string; is_cancelled: boolean }) => s.stream_date >= today && !s.is_cancelled
         );
-        if (upcoming.length > 0) setNextStream(upcoming[0]);
+        setNextStream(upcoming[0] ?? null);
       })
       .catch(() => {});
   }, [isLive]);
@@ -93,7 +93,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
   const [sessionInfo, setSessionInfo] = useState<{ title: string; date: string; is_active: boolean } | null>(null);
 
   useEffect(() => {
-    if (!isDailySession) { setSessionInfo(null); return; }
+    if (!isDailySession) return;
     (async () => {
       const { data } = await supabase
         .from("daily_sessions")
@@ -107,6 +107,8 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
           weekday: "long", year: "numeric", month: "long", day: "numeric",
         });
         setSessionInfo({ title: data.title, date: formatted, is_active: data.is_active });
+      } else {
+        setSessionInfo(null);
       }
     })();
   }, [isDailySession]);

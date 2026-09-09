@@ -182,7 +182,7 @@ export default function WeeklyPodium({ winners }: { winners: Victory[] }) {
   if (!winners || winners.length === 0) {
     return (
       <div className="text-center py-10 text-arena-smoke italic">
-        A arena aguarda os primeiros campeões desta semana…
+        A arena aguarda os primeiros campeões deste mês…
       </div>
     );
   }

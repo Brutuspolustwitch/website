@@ -23,8 +23,11 @@ export interface Victory {
 }
 
 export interface WinnersResponse {
-  current_week: string;
-  live_top3: Victory[];
+  current_month: string;
+  month_start: string;
+  month_end: string;
+  month_top3: Victory[];
+  live_top3?: Victory[];
   frozen: { week_id: string; victories: Victory[] } | null;
 }
 

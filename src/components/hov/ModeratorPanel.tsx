@@ -45,7 +45,7 @@ export default function ModeratorPanel() {
   useEffect(() => {
     fetch("/api/hall-of-victors/winners")
       .then(r => r.json())
-      .then(j => setTop3(j.live_top3 ?? []));
+      .then(j => setTop3(j.month_top3 ?? j.live_top3 ?? []));
   }, []);
 
   function notify(text: string, ok = true) {
