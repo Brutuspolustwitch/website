@@ -83,9 +83,7 @@ export async function GET(request: Request) {
 
   const { data, error } = await supabase
     .from("external_site_offers")
-    .select(
-      "id, site_id, slug, name, logo_url, logo_bg, banner_url, badge, tags, headline, bonus_value, free_spins, min_deposit, code, cashback, withdraw_time, license, established, notes, rating, visible, featured, sort_order, cta_label, created_at, updated_at",
-    )
+    .select("*")
     .eq("site_id", site.id)
     .eq("visible", true)
     .order("sort_order", { ascending: true });
@@ -117,6 +115,7 @@ export async function GET(request: Request) {
     rating: Number(offer.rating ?? 5),
     featured: offer.featured,
     ctaLabel: offer.cta_label || site.cta_label,
+    logoScale: Number(offer.logo_scale ?? 1),
     url: `${baseUrl}/go/${offer.slug}?site=${encodeURIComponent(site.slug)}`,
   }));
 

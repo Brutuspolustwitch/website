@@ -196,6 +196,7 @@ export interface ExternalSiteOfferRow {
   notes: string[];
   affiliate_url: string;
   cta_label: string | null;
+  logo_scale: number;
   rating: number;
   visible: boolean;
   featured: boolean;

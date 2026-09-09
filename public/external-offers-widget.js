@@ -41,6 +41,8 @@
     var tags = Array.isArray(offer.tags) ? offer.tags.slice(0, 3) : [];
     var notes = Array.isArray(offer.notes) ? offer.notes.slice(0, 3) : [];
     var code = offer.code && offer.code !== "—" ? offer.code : "";
+    var logoScale = Math.max(0.5, Math.min(2, Number(offer.logoScale) || 1));
+    var hoverScale = Math.min(2.1, Math.round(logoScale * 1.05 * 100) / 100);
     var details = [
       offer.freeSpins ? escapeHtml(offer.freeSpins) + " Free Spins" : "",
       offer.cashback ? escapeHtml(offer.cashback) + " Cashback" : "",
@@ -56,7 +58,15 @@
       '" target="_blank" rel="noopener noreferrer">' +
       '<div class="bp-offer-media">' +
       (media
-        ? '<img src="' + escapeHtml(media) + '" alt="' + escapeHtml(offer.name) + '" loading="lazy" decoding="async">'
+        ? '<img src="' +
+          escapeHtml(media) +
+          '" alt="' +
+          escapeHtml(offer.name) +
+          '" loading="lazy" decoding="async" style="--bp-media-scale:' +
+          logoScale +
+          ";--bp-media-hover-scale:" +
+          hoverScale +
+          '">'
         : '<div class="bp-offer-initial" style="background:' +
           escapeHtml(offer.logoBg || "#2b2117") +
           '">' +
@@ -129,8 +139,8 @@
       ".bp-offer-card--featured{border-color:rgba(240,215,140,.68);box-shadow:0 0 0 1px rgba(240,215,140,.18),0 18px 44px rgba(0,0,0,.52)}" +
       ".bp-offer-link{display:flex;flex-direction:column;min-height:100%;color:inherit;text-decoration:none}" +
       ".bp-offer-media{position:relative;aspect-ratio:16/9;background:#120d08;overflow:hidden}" +
-      ".bp-offer-media img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.01);transition:transform .25s ease}" +
-      ".bp-offer-card:hover img{transform:scale(1.05)}" +
+      ".bp-offer-media img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(var(--bp-media-scale,1.01));transition:transform .25s ease}" +
+      ".bp-offer-card:hover img{transform:scale(var(--bp-media-hover-scale,1.05))}" +
       ".bp-offer-initial{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:48px;font-weight:900}" +
       ".bp-offer-media:after{content:'';position:absolute;inset:auto 0 0;height:55%;background:linear-gradient(to top,rgba(0,0,0,.78),transparent);pointer-events:none}" +
       ".bp-offer-badge{position:absolute;top:10px;right:10px;z-index:1;border-radius:999px;background:#9e1f1f;color:#fff1d6;border:1px solid rgba(240,215,140,.4);font-size:11px;font-weight:900;padding:5px 9px;letter-spacing:.08em}" +

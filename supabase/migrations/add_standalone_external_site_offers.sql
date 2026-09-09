@@ -56,6 +56,7 @@ create table if not exists external_site_offers (
   notes text[] not null default '{}',
   affiliate_url text not null default '#',
   cta_label text,
+  logo_scale numeric(3,2) not null default 1.00 check (logo_scale >= 0.50 and logo_scale <= 2.00),
   rating numeric(3,1) not null default 5.0,
   visible boolean not null default true,
   featured boolean not null default false,

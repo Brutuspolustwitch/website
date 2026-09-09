@@ -35,6 +35,7 @@ type RawPayloadOffer = {
   notes?: unknown;
   affiliateUrl?: unknown;
   ctaLabel?: unknown;
+  logoScale?: unknown;
   rating?: unknown;
   visible?: unknown;
   featured?: unknown;
@@ -93,6 +94,12 @@ function rating(value: unknown) {
   return Math.min(5, Math.max(0, Math.round(parsed * 10) / 10));
 }
 
+function logoScale(value: unknown) {
+  const parsed = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(parsed)) return 1;
+  return Math.min(2, Math.max(0.5, Math.round(parsed * 100) / 100));
+}
+
 function slugify(value: string) {
   return value
     .toLowerCase()
@@ -146,6 +153,10 @@ function errorMessage(error: unknown) {
 
     if (parts.length > 0) {
       const message = parts.join(" ");
+      if (message.includes("logo_scale")) {
+        return `${message} Aplica a migration supabase/migrations/add_external_site_offer_logo_scale.sql no Supabase.`;
+      }
+
       if (
         message.includes("external_site_offers") ||
         message.includes("external_offer_sites")
@@ -340,6 +351,7 @@ export async function PATCH(request: Request) {
           notes: textList(offer.notes, 20),
           affiliate_url: affiliateUrl,
           cta_label: nullableText(offer.ctaLabel, 40),
+          logo_scale: logoScale(offer.logoScale),
           rating: rating(offer.rating),
           visible: Boolean(offer.visible),
           featured: Boolean(offer.featured),
@@ -371,6 +383,7 @@ export async function PATCH(request: Request) {
       notes: row.notes,
       affiliate_url: row.affiliate_url,
       cta_label: row.cta_label,
+      logo_scale: row.logo_scale,
       rating: row.rating,
       visible: row.visible,
       featured: row.featured,
