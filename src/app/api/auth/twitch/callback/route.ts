@@ -9,6 +9,14 @@ export const dynamic = "force-dynamic";
 const isProduction = process.env.NODE_ENV === "production";
 const sessionMaxAge = 60 * 60 * 24 * 7;
 
+type TwitchUser = {
+  id: string;
+  login: string;
+  display_name: string;
+  profile_image_url: string;
+  email?: string | null;
+};
+
 function clearOauthState(response: NextResponse) {
   response.cookies.set("twitch_oauth_state", "", {
     httpOnly: true,
@@ -25,6 +33,69 @@ function redirectHome(origin: string, error?: string) {
   const response = NextResponse.redirect(url);
   clearOauthState(response);
   return response;
+}
+
+async function resolveUserRole(twitchId: string): Promise<UserRole> {
+  const { data, error } = await supabase
+    .from("users")
+    .select("role, role_expires_at")
+    .eq("twitch_id", twitchId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Twitch login role lookup failed:", error.message);
+    return "viewer";
+  }
+
+  const role = (data?.role ?? "viewer") as UserRole;
+  if (data?.role_expires_at && new Date(data.role_expires_at) < new Date()) {
+    return "viewer";
+  }
+
+  return role;
+}
+
+async function syncUserProfile(user: TwitchUser, role: UserRole, clientIp: string | null) {
+  const { data: existingUser, error: lookupError } = await supabase
+    .from("users")
+    .select("twitch_id")
+    .eq("twitch_id", user.id)
+    .maybeSingle();
+
+  if (lookupError) {
+    throw lookupError;
+  }
+
+  if (existingUser) {
+    const { error } = await supabase
+      .from("users")
+      .update({
+        login: user.login,
+        display_name: user.display_name,
+        profile_image_url: user.profile_image_url,
+        email: user.email || null,
+        ip_address: clientIp,
+        role,
+        ...(role === "viewer" ? { role_expires_at: null } : {}),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("twitch_id", user.id);
+
+    if (error) throw error;
+    return;
+  }
+
+  const { error } = await supabase.from("users").insert({
+    twitch_id: user.id,
+    login: user.login,
+    display_name: user.display_name,
+    profile_image_url: user.profile_image_url,
+    email: user.email || null,
+    ip_address: clientIp,
+    role: "viewer",
+  });
+
+  if (error) throw error;
 }
 
 export async function GET(request: Request) {
@@ -94,7 +165,7 @@ export async function GET(request: Request) {
     }
 
     const userData = await userRes.json();
-    const user = userData.data?.[0];
+    const user = userData.data?.[0] as TwitchUser | undefined;
 
     if (!user) {
       return redirectHome(origin, "no_user");
@@ -104,46 +175,7 @@ export async function GET(request: Request) {
     const clientIp = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
       || request.headers.get("x-real-ip")
       || null;
-
-    let role: UserRole = "viewer";
-    const { data: existingUser } = await supabase
-      .from("users")
-      .select("role, role_expires_at")
-      .eq("twitch_id", user.id)
-      .single();
-
-    if (existingUser) {
-      // Check if temporary role has expired
-      role = existingUser.role as UserRole;
-      if (existingUser.role_expires_at && new Date(existingUser.role_expires_at) < new Date()) {
-        role = "viewer"; // expired → revert
-      }
-
-      await supabase
-        .from("users")
-        .update({
-          login: user.login,
-          display_name: user.display_name,
-          profile_image_url: user.profile_image_url,
-          email: user.email || null,
-          ip_address: clientIp,
-          role,
-          ...(role === "viewer" ? { role_expires_at: null } : {}),
-          updated_at: new Date().toISOString(),
-        })
-        .eq("twitch_id", user.id);
-    } else {
-      // New user — insert with default "viewer" role
-      await supabase.from("users").insert({
-        twitch_id: user.id,
-        login: user.login,
-        display_name: user.display_name,
-        profile_image_url: user.profile_image_url,
-        email: user.email || null,
-        ip_address: clientIp,
-        role: "viewer",
-      });
-    }
+    const role = await resolveUserRole(user.id);
 
     // Build session payload (stored in httpOnly cookie)
     const session = {
@@ -186,6 +218,13 @@ export async function GET(request: Request) {
         path: "/",
       }
     );
+
+    await syncUserProfile(user, role, clientIp).catch((syncError: unknown) => {
+      console.error(
+        "Twitch login profile sync failed:",
+        syncError instanceof Error ? syncError.message : syncError,
+      );
+    });
 
     return response;
   } catch {
