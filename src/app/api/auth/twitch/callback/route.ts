@@ -1,10 +1,34 @@
 import { NextResponse } from "next/server";
-import { SITE_URL } from "@/lib/constants";
 import { cookies } from "next/headers";
 import { supabase } from "@/lib/supabase";
 import type { UserRole } from "@/lib/supabase";
+import { getRequestOrigin } from "@/lib/request-origin";
+
+export const dynamic = "force-dynamic";
+
+const isProduction = process.env.NODE_ENV === "production";
+const sessionMaxAge = 60 * 60 * 24 * 7;
+
+function clearOauthState(response: NextResponse) {
+  response.cookies.set("twitch_oauth_state", "", {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: "lax",
+    maxAge: 0,
+    path: "/",
+  });
+}
+
+function redirectHome(origin: string, error?: string) {
+  const url = new URL("/", origin);
+  if (error) url.searchParams.set("auth_error", error);
+  const response = NextResponse.redirect(url);
+  clearOauthState(response);
+  return response;
+}
 
 export async function GET(request: Request) {
+  const origin = getRequestOrigin(request);
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
   const state = searchParams.get("state");
@@ -13,31 +37,28 @@ export async function GET(request: Request) {
   const cookieStore = await cookies();
   const storedState = cookieStore.get("twitch_oauth_state")?.value;
 
-  // Clean up the state cookie
-  cookieStore.delete("twitch_oauth_state");
-
   // User denied or error
   if (error) {
-    return NextResponse.redirect(`${SITE_URL}/?auth_error=${error}`);
+    return redirectHome(origin, error);
   }
 
   // Validate CSRF state
   if (!state || !storedState || state !== storedState) {
-    return NextResponse.redirect(`${SITE_URL}/?auth_error=invalid_state`);
+    return redirectHome(origin, "invalid_state");
   }
 
   if (!code) {
-    return NextResponse.redirect(`${SITE_URL}/?auth_error=no_code`);
+    return redirectHome(origin, "no_code");
   }
 
   const clientId = process.env.TWITCH_CLIENT_ID;
   const clientSecret = process.env.TWITCH_CLIENT_SECRET;
 
   if (!clientId || !clientSecret) {
-    return NextResponse.redirect(`${SITE_URL}/?auth_error=not_configured`);
+    return redirectHome(origin, "not_configured");
   }
 
-  const redirectUri = `${SITE_URL}/api/auth/twitch/callback`;
+  const redirectUri = `${origin}/api/auth/twitch/callback`;
 
   try {
     // Exchange code for access token
@@ -54,7 +75,7 @@ export async function GET(request: Request) {
     });
 
     if (!tokenRes.ok) {
-      return NextResponse.redirect(`${SITE_URL}/?auth_error=token_failed`);
+      return redirectHome(origin, "token_failed");
     }
 
     const tokenData = await tokenRes.json();
@@ -69,14 +90,14 @@ export async function GET(request: Request) {
     });
 
     if (!userRes.ok) {
-      return NextResponse.redirect(`${SITE_URL}/?auth_error=user_fetch_failed`);
+      return redirectHome(origin, "user_fetch_failed");
     }
 
     const userData = await userRes.json();
     const user = userData.data?.[0];
 
     if (!user) {
-      return NextResponse.redirect(`${SITE_URL}/?auth_error=no_user`);
+      return redirectHome(origin, "no_user");
     }
 
     // Upsert user into Supabase users table
@@ -135,17 +156,20 @@ export async function GET(request: Request) {
       created_at: new Date().toISOString(),
     };
 
+    const response = NextResponse.redirect(`${origin}/`);
+    clearOauthState(response);
+
     // Set session cookie (JSON-encoded, httpOnly, secure)
-    cookieStore.set("twitch_session", JSON.stringify(session), {
+    response.cookies.set("twitch_session", JSON.stringify(session), {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: isProduction,
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: sessionMaxAge,
       path: "/",
     });
 
     // Set a client-readable cookie with minimal info for the UI
-    cookieStore.set(
+    response.cookies.set(
       "twitch_user",
       JSON.stringify({
         id: user.id,
@@ -156,15 +180,15 @@ export async function GET(request: Request) {
       }),
       {
         httpOnly: false,
-        secure: process.env.NODE_ENV === "production",
+        secure: isProduction,
         sameSite: "lax",
-        maxAge: 60 * 60 * 24 * 7,
+        maxAge: sessionMaxAge,
         path: "/",
       }
     );
 
-    return NextResponse.redirect(`${SITE_URL}/`);
+    return response;
   } catch {
-    return NextResponse.redirect(`${SITE_URL}/?auth_error=unexpected`);
+    return redirectHome(origin, "unexpected");
   }
 }

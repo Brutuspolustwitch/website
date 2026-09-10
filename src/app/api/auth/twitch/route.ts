@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
-import { SITE_URL } from "@/lib/constants";
 import crypto from "crypto";
-import { cookies } from "next/headers";
+import { getRequestOrigin } from "@/lib/request-origin";
 
-export async function GET() {
+export const dynamic = "force-dynamic";
+
+const isProduction = process.env.NODE_ENV === "production";
+
+export async function GET(request: Request) {
   const clientId = process.env.TWITCH_CLIENT_ID;
 
   if (!clientId) {
@@ -13,19 +16,9 @@ export async function GET() {
     );
   }
 
-  const redirectUri = `${SITE_URL}/api/auth/twitch/callback`;
+  const origin = getRequestOrigin(request);
+  const redirectUri = `${origin}/api/auth/twitch/callback`;
   const state = crypto.randomBytes(16).toString("hex");
-
-  // Store state in a short-lived cookie for CSRF protection
-  const cookieStore = await cookies();
-  cookieStore.set("twitch_oauth_state", state, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 300, // 5 minutes
-    path: "/",
-  });
-
   const scopes = ["user:read:email"].join(" ");
 
   const params = new URLSearchParams({
@@ -34,9 +27,34 @@ export async function GET() {
     response_type: "code",
     scope: scopes,
     state,
+    force_verify: "true",
   });
 
-  return NextResponse.redirect(
-    `https://id.twitch.tv/oauth2/authorize?${params.toString()}`
+  const response = NextResponse.redirect(
+    `https://id.twitch.tv/oauth2/authorize?${params.toString()}`,
   );
+
+  response.cookies.set("twitch_oauth_state", state, {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: "lax",
+    maxAge: 300,
+    path: "/",
+  });
+  response.cookies.set("twitch_session", "", {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: "lax",
+    maxAge: 0,
+    path: "/",
+  });
+  response.cookies.set("twitch_user", "", {
+    httpOnly: false,
+    secure: isProduction,
+    sameSite: "lax",
+    maxAge: 0,
+    path: "/",
+  });
+
+  return response;
 }
